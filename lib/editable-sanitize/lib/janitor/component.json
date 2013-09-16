@@ -1,0 +1,7 @@
+{
+  "name": "janitor",
+  "description": "Janitor",
+  "version": "0.0.1",
+  "development": {},
+  "scripts": ["index.js"]
+}

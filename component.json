@@ -1,0 +1,7 @@
+{
+  "name": "editor",
+  "description": "Editor",
+  "version": "0.0.1",
+  "paths": ["lib"],
+  "local": ["boot"]
+}

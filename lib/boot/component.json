@@ -1,0 +1,9 @@
+{
+  "name": "boot",
+  "description": "Main app boot component",
+  "local": [
+    "editable",
+    "editable-sanitize"
+  ],
+  "scripts": ["index.js"]
+}
