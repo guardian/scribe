@@ -5,9 +5,11 @@
   "development": {},
   "dependencies": {
     "component/classes": "*",
-    "component/emitter": "*"
+    "component/emitter": "*",
+    "component/events": "*"
   },
   "scripts": [
     "index.js"
-  ]
+  ],
+  "remotes": []
 }
