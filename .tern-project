@@ -1,5 +1,7 @@
 {
   "plugins": {
-    "component": {}
+    "requirejs": {
+      "baseURL": "./src"
+    }
   }
 }
