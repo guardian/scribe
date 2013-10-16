@@ -20,7 +20,14 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
 //    this.events.bind('drop', 'clean');
 //    editable.once('unbind', this.events.unbind.bind(this.events));
     
-    this.el.addEventListener('paste', this.clean.bind(this));
+    this.el.addEventListener('paste', function (event) {
+      // TODO: is this needed?
+      event.preventDefault();
+      // TODO: what data should we be getting?
+      var data = event.clipboardData.getData('text/html') || event.clipboardData.getData('text/plain');
+      console.log('Event: paste', data);
+      this.clean(data);
+    }.bind(this));
   }
 
 
@@ -30,9 +37,7 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
    *
    * @api private
    */
-  Sanitize.prototype.clean = function (event) {
-    // TODO: is this needed?
-    event.preventDefault();
+  Sanitize.prototype.clean = function (data) {
     var editable = this.editable;
 
     // Substitute `this`…!
@@ -71,15 +76,9 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
       selection.addRange(range);
     })();
 
-    // To be continued…
-
-    var pastedData = event.clipboardData.getData('text/html');
-
-    console.log('Paste event', pastedData);
-
     // Undo/redo management issues: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
 
-    var sanitizedData = this.janitor.clean(pastedData);
+    var sanitizedData = this.janitor.clean(data);
 
     (function () {
       /**
