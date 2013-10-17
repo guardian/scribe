@@ -1,5 +1,5 @@
 require({
-  baseUrl: '/src',
+  baseUrl: './src',
   paths: {
     'html-janitor': '../bower_components/html-janitor/src/html-janitor'
   }
