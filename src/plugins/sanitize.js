@@ -13,13 +13,8 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
     editable.sanitize = this;
 
     this.janitor = new HTMLJanitor(config);
-
-//    TODO:
-//    this.events = events(el, this);
-//    this.events.bind('paste', 'clean');
-//    this.events.bind('drop', 'clean');
-//    editable.once('unbind', this.events.unbind.bind(this.events));
     
+    // We need to sanitize when the user pastes data in.
     this.el.addEventListener('paste', function (event) {
       // TODO: is this needed?
       event.preventDefault();
@@ -31,19 +26,16 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
   }
 
 
-  /**
-   * Removes any html by setting the text
-   * content with the text content. Bit lame.
-   *
-   * @api private
-   */
-  Sanitize.prototype.clean = function (data) {
+  // Undo/redo management issues: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
+  Sanitize.prototype.clean = function (data) {    
     var editable = this.editable;
 
     // Substitute `this`…!
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
     var startMarker, endMarker;
+    
+    var sanitizedData = this.janitor.clean(data);
 
     (function () {
       /**
@@ -75,10 +67,6 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
       selection.removeAllRanges();
       selection.addRange(range);
     })();
-
-    // Undo/redo management issues: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
-
-    var sanitizedData = this.janitor.clean(data);
 
     (function () {
       /**
