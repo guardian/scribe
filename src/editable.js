@@ -5,15 +5,22 @@ define(function () {
     this.context = document;
 
     this.el.setAttribute('contenteditable', true);
+    /**
+     * We have to begin with the following HTML, because otherwise some browsers(?) will
+     * position the caret outside of the `p` element when the editor is focused.
+     */
     this.html('<p><br></p>');
-
-    // tinymce/util/Quirks: emptyEditorWhenDeleting
 
     function getRange() {
       var selection = window.getSelection();
       return selection.getRangeAt(0);
     }
 
+    /**
+     * Serialise a range into a HTML string.
+     * @param  {Range} range
+     * @return {string}
+     */
     function serialiseRangeToHTML(range) {
       var div = document.createElement('div');
       var contents = range.cloneContents();
@@ -21,7 +28,14 @@ define(function () {
       return div.innerHTML;
     }
 
-    function isAllContentSelected(range) {
+    /**
+     * Takes a range and checks whether this range represents the whole content.
+     * @param  {Range}  range
+     * @return {Boolean}
+     */
+    function isAllContent(range) {
+      // To compare ranges, we serialise them into HTML strings and compare them with
+      // the stricly equality operator.
       var serialisedSelection = serialiseRangeToHTML(range);
 
       var contentRange = document.createRange();
@@ -31,6 +45,8 @@ define(function () {
 
       return serialisedSelection === serialisedContent;
     }
+
+    // tinymce/util/Quirks: emptyEditorWhenDeleting
 
     function emptyEditorWhenDeleting(event) {
       // Delete or backspace
@@ -42,9 +58,11 @@ define(function () {
          * In Firefox, erasing the range created by ‘Select All’ will leave the
          * editor in a pristine state. We polyfill this behaviour to match that of
          * Chrome: that is, to always default to a paragraph element.
+         *
+         * This branch need not run in Chrome upon the second condition, but it does, for now.
          */
         if (selection.isCollapsed && this.text() === '' ||
-            ! selection.isCollapsed && isAllContentSelected(getRange())) {
+            ! selection.isCollapsed && isAllContent(getRange())) {
           event.preventDefault();
 
           var contentRange = document.createRange();
