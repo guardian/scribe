@@ -34,7 +34,7 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
   Sanitize.prototype.clean = function (data) {
     var editable = this.editable;
 
-    // Substitute `this`…!
+    // TODO: use internal API for getting range
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
 
