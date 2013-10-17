@@ -8,14 +8,13 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
    */
 
   function Sanitize(editable, config) {
-    var el = this.el = editable.el;
     this.editable = editable;
     editable.sanitize = this;
 
     this.janitor = new HTMLJanitor(config);
 
     // We need to sanitize when the user pastes data in.
-    this.el.addEventListener('paste', function (event) {
+    this.editable.el.addEventListener('paste', function (event) {
       /**
        * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
        * will execute the second branch here.
@@ -106,7 +105,7 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
             selection.addRange(range);
           })();
 
-          this.el.focus();
+          this.editable.el.focus();
           this.insert(data);
         }.bind(this), 1);
       }
