@@ -27,4 +27,10 @@ require({
       h2: []
     }
   }));
+
+  function updateHTML() {
+    document.querySelector('.editor-html').textContent = editable.el.innerHTML;
+  }
+
+  editable.el.addEventListener('keyup', updateHTML);
 });
