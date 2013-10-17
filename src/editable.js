@@ -38,7 +38,7 @@ define(function () {
         var selection = window.getSelection();
 
         /**
-         * The second condition in this condition is only relevant for Firefox.
+         * The second condition in this statement is only relevant for Firefox.
          * In Firefox, erasing the range created by ‘Select All’ will leave the
          * editor in a pristine state. We polyfill this behaviour to match that of
          * Chrome: that is, to always default to a paragraph element.
