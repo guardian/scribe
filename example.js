@@ -33,4 +33,5 @@ require({
   }
 
   editable.el.addEventListener('keyup', updateHTML);
+  editable.el.addEventListener('paste', updateHTML);
 });
