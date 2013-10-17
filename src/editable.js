@@ -47,7 +47,20 @@ define(function () {
             ! selection.isCollapsed && isAllContentSelected(getRange())) {
           event.preventDefault();
 
-          this.html('<p><br></p>');
+          var contentRange = document.createRange();
+          contentRange.selectNodeContents(el);
+
+          /**
+           * TODO: Doing things this way means we don't break the browser's undo manager.
+           * However, would this work if the editor didn't have focus? Can we afford
+           * to give the editor focus every time this needs to be done?
+           */
+          // this.html('<p><br></p>');
+          var selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(contentRange);
+
+          document.execCommand('insertHTML', false, '<p><br></p>');
 
           // TinyMce: setCursorLocation
           var node = this.el.querySelector('p');
