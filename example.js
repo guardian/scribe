@@ -19,6 +19,8 @@ require({
   editable.el.addEventListener('input', updateHTML);
 
   /**
+   * Toolbar extension: link buttons
+   *
    * The link button depends on the toolbar plugin, which will implicitly register
    * the click handler.
    */
