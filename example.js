@@ -79,6 +79,33 @@ require({
     };
   });
 
+  /**
+   * Toolbar extension: H1 buttons
+   *
+   * The link button depends on the toolbar plugin, which will implicitly register
+   * the click handler.
+   */
+
+  var h1Btns = document.querySelectorAll('.toolbar .h1-btn');
+
+  Array.prototype.forEach.call(h1Btns, function (h1Btn) {
+    h1Btn.editor = {};
+    h1Btn.editor.command = new Command('formatBlock');
+
+    h1Btn.editor.command.execute = function () {
+      // Call the super
+      if (this.queryState()) {
+        Command.prototype.execute.call(this, '<p>');
+      } else {
+        Command.prototype.execute.call(this, '<h1>');
+      }
+    };
+
+    h1Btn.editor.command.queryState = function () {
+      return selectionParentNode().nodeName === 'H1';
+    };
+  });
+
   function selectionParentNode() {
     // TODO: use internal API for getting range
     var selection = window.getSelection();
