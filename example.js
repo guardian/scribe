@@ -6,11 +6,13 @@ require({
 }, [
   'editable',
   'plugins/sanitize',
-  'plugins/toolbar'
+  'plugins/toolbar',
+  'api/command'
 ], function (
   Editable,
   sanitize,
-  toolbar
+  toolbar,
+  Command
 ) {
   var editable = new Editable(document.querySelector('.editor'));
 
@@ -20,6 +22,35 @@ require({
 
   editable.el.addEventListener('keyup', updateHTML);
   editable.el.addEventListener('paste', updateHTML);
+
+  /**
+   * The link button, depends on the toolbar plugin, which will implicitly register
+   * the click handler.
+   */
+
+  var createLinkBtn = document.querySelector('.toolbar .create-link-btn');
+
+  createLinkBtn.editor = {};
+  createLinkBtn.editor.command = new Command('createLink');
+
+  function selectionParentNode() {
+    // TODO: use internal API for getting range
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    return range.commonAncestorContainer.parentNode;
+  }
+
+  createLinkBtn.editor.command.execute = function () {
+    var parentNode = selectionParentNode();
+    var initialUrl = parentNode.nodeName === 'A' ? parentNode.href : 'http://';
+    var url = window.prompt('Enter a URL.', initialUrl);
+    // Call the super
+    Command.prototype.execute.call(this, url);
+  };
+
+  createLinkBtn.editor.command.queryState = function () {
+    return selectionParentNode().nodeName === 'A';
+  };
 
   editable.use(toolbar(document.querySelector('.toolbar')));
   editable.use(sanitize({
