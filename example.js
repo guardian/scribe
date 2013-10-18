@@ -54,10 +54,12 @@ require({
   }
 
   /**
-   * Toolbar extension: link buttons
-   *
-   * The link button depends on the toolbar plugin, which will implicitly register
+   * Toolbar extensions depend on the toolbar plugin, which will implicitly register
    * the click handler.
+   */
+
+  /**
+   * Toolbar extension: link buttons
    */
 
   var createLinkBtns = document.querySelectorAll('.toolbar .create-link-btn');
@@ -85,9 +87,6 @@ require({
 
   /**
    * Toolbar extension: H1 buttons
-   *
-   * The link button depends on the toolbar plugin, which will implicitly register
-   * the click handler.
    */
 
   var h1Btns = document.querySelectorAll('.toolbar .h1-btn');
