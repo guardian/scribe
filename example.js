@@ -19,6 +19,37 @@ require({
   editable.el.addEventListener('input', updateHTML);
 
   /**
+   * Inline/tooltip style toolbar
+   */
+
+  // Unfortunately, there is no `selectionchange` event.
+  editable.el.addEventListener('keyup', showOrHideInlineToolbar);
+  editable.el.addEventListener('mouseup', showOrHideInlineToolbar);
+
+  var tooltip = document.createElement('div');
+  // Lazily copy the existing toolbar, insert it dynamically
+  tooltip.appendChild(document.querySelector('.toolbar').cloneNode());
+  tooltip.hidden = true;
+  document.body.appendChild(tooltip);
+
+  function showOrHideInlineToolbar() {
+    // TODO: use internal API for getting range
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+
+    if (range.commonAncestorContainer.textContent && ! selection.isCollapsed) {
+      var boundary = range.getClientRects()[0];
+
+      tooltip.style.position = 'absolute';
+      tooltip.hidden = false;
+      tooltip.style.left = (((boundary.left + boundary.right) / 2) - (tooltip.offsetWidth / 2)) + 'px';
+      tooltip.style.top = boundary.top - tooltip.offsetHeight + 'px';
+    } else {
+      tooltip.hidden = true;
+    }
+  }
+
+  /**
    * Toolbar extension: link buttons
    *
    * The link button depends on the toolbar plugin, which will implicitly register
