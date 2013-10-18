@@ -13,18 +13,21 @@ define(function () {
 
   return function (toolbar) {
     return function (editable) {
-      var button = toolbar.querySelector('button');
+      var buttons = toolbar.querySelectorAll('button');
 
-      var command = new Command('bold');
-      button.addEventListener('click', function () {
-        command.execute();
+      Array.prototype.forEach.call(buttons, function (button) {
+        var command = new Command(button.dataset.commandName);
+        button.addEventListener('click', function () {
+          command.execute();
 
-        if (command.queryState()) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
+          if (command.queryState()) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
+        });
       });
+
     };
   };
 });
