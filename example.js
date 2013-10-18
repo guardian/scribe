@@ -16,10 +16,6 @@ require({
 ) {
   var editable = new Editable(document.querySelector('.editor'));
 
-  function updateHTML() {
-    document.querySelector('.editor-html').textContent = editable.el.innerHTML;
-  }
-
   editable.el.addEventListener('input', updateHTML);
 
   /**
@@ -31,13 +27,6 @@ require({
 
   createLinkBtn.editor = {};
   createLinkBtn.editor.command = new Command('createLink');
-
-  function selectionParentNode() {
-    // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    return range.commonAncestorContainer.parentNode;
-  }
 
   createLinkBtn.editor.command.execute = function () {
     var parentNode = selectionParentNode();
@@ -67,4 +56,15 @@ require({
       h2: []
     }
   }));
+
+  function updateHTML() {
+    document.querySelector('.editor-html').textContent = editable.el.innerHTML;
+  }
+
+  function selectionParentNode() {
+    // TODO: use internal API for getting range
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    return range.commonAncestorContainer.parentNode;
+  }
 });
