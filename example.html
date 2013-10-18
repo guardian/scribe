@@ -4,19 +4,34 @@
     <title>Editor</title>
   </head>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     .editor {
-      height: 500px;
+      height: 370px;
       overflow: auto;
       margin-bottom: 1em;
+      border: 1px solid hsl(0, 0%, 80%);
+      padding: 0.5em;
     }
-      
+
     .editor-html {
       width: 100%;
+      font-family: monospace;
+      border: 1px solid hsl(0, 0%, 80%);
+      padding: 0.5em;
+    }
+
+    p {
+      margin-top: 0;
     }
   </style>
   <body>
+    <h1>Editor</h1>
     <div class="editor"></div>
-    <textarea class="editor-html" rows="20"></textarea>
+    <h2>Output</h2>
+    <textarea class="editor-html" rows="18"></textarea>
     <script src="bower_components/requirejs/require.js" data-main="./example"></script>
   </body>
 </html>
