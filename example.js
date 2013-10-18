@@ -112,23 +112,6 @@ require({
     };
   });
 
-  function getContaining(nodeFilter) {
-    // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    return getAncestor(range.commonAncestorContainer, nodeFilter);
-  }
-
-  function getAncestor(node, nodeFilter) {
-    // TODO: use do instead?
-    while (node && node.nodeName !== 'body') {
-      if (nodeFilter(node)) {
-        return node;
-      }
-      node = node.parentNode;
-    }
-  }
-
   /**
    * Plugins
    */
@@ -149,4 +132,25 @@ require({
       h2: []
     }
   }));
+
+  /**
+   * Shared functions, move into API?
+   */
+
+  function getContaining(nodeFilter) {
+    // TODO: use internal API for getting range
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    return getAncestor(range.commonAncestorContainer, nodeFilter);
+  }
+
+  function getAncestor(node, nodeFilter) {
+    // TODO: use do instead?
+    while (node && node.nodeName !== 'body') {
+      if (nodeFilter(node)) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+  }
 });
