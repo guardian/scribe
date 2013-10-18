@@ -14,13 +14,15 @@ define([ '../api/command' ], function (Command) {
 
           button.addEventListener('click', function () {
             command.execute();
-            updateUi();
           });
 
           // Keep the state of toolbar buttons in sync with the current selection.
           // Unfortunately, there is no `selectionchange` event.
           editable.el.addEventListener('keyup', updateUi);
           editable.el.addEventListener('mouseup', updateUi);
+          // We also want to update the UI whenever the content changes. This
+          // could be when one of the toolbar buttons is actioned.
+          editable.el.addEventListener('input', updateUi);
 
           function updateUi() {
             if (command.queryState()) {
