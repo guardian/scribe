@@ -67,15 +67,19 @@ require({
     createLinkBtn.editor.command = new Command('createLink');
 
     createLinkBtn.editor.command.execute = function () {
-      var parentNode = selectionParentNode();
-      var initialUrl = parentNode.nodeName === 'A' ? parentNode.href : 'http://';
+      var anchorNode = getContaining(function (node) {
+        return node.nodeName === 'A';
+      });
+      var initialUrl = anchorNode ? anchorNode.href : 'http://';
       var url = window.prompt('Enter a URL.', initialUrl);
       // Call the super
       Command.prototype.execute.call(this, url);
     };
 
     createLinkBtn.editor.command.queryState = function () {
-      return selectionParentNode().nodeName === 'A';
+      return getContaining(function (node) {
+        return node.nodeName === 'A';
+      });
     };
   });
 
@@ -102,15 +106,27 @@ require({
     };
 
     h1Btn.editor.command.queryState = function () {
-      return selectionParentNode().nodeName === 'H1';
+      return getContaining(function (node) {
+        return node.nodeName === 'H1';
+      });
     };
   });
 
-  function selectionParentNode() {
+  function getContaining(nodeFilter) {
     // TODO: use internal API for getting range
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
-    return range.commonAncestorContainer.parentNode;
+    return getAncestor(range.commonAncestorContainer, nodeFilter);
+  }
+
+  function getAncestor(node, nodeFilter) {
+    // TODO: use do instead?
+    while (node && node.nodeName !== 'body') {
+      if (nodeFilter(node)) {
+        return node;
+      }
+      node = node.parentNode;
+    }
   }
 
   /**
