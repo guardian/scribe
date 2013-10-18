@@ -4,7 +4,7 @@ define([ '../api/command' ], function (Command) {
       var buttons = toolbar.querySelectorAll('button');
 
       Array.prototype.forEach.call(buttons, function (button) {
-        var command = new Command(button.dataset.commandName);
+        var command = button.editor && button.editor.command || new Command(button.dataset.commandName);
 
         button.addEventListener('click', function () {
           command.execute();
