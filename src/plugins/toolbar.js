@@ -1,16 +1,4 @@
-define(function () {
-  function Command(commandName) {
-    this.commandName = commandName;
-  }
-
-  Command.prototype.execute = function () {
-    document.execCommand(this.commandName, false, null);
-  };
-
-  Command.prototype.queryState = function () {
-    return document.queryCommandState(this.commandName);
-  };
-
+define([ '../api/command' ], function (Command) {
   return function (toolbar) {
     return function (editable) {
       var buttons = toolbar.querySelectorAll('button');
