@@ -44,7 +44,7 @@ require({
    * Plugins
    */
 
-  editable.use(toolbar(document.querySelector('.toolbar')));
+  editable.use(toolbar(document.querySelectorAll('.toolbar')));
   editable.use(sanitize({
     tags: {
       p: [],
