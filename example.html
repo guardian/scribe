@@ -8,6 +8,18 @@
       box-sizing: border-box;
     }
 
+    .toolbar {
+      margin-bottom: 1em;
+    }
+
+    button {
+      height: 3em;
+    }
+
+    button.active {
+      border-style: inset;
+    }
+
     .editor {
       height: 370px;
       overflow: auto;
@@ -29,6 +41,9 @@
   </style>
   <body>
     <h1>Editor</h1>
+    <div class="toolbar">
+      <button>Bold</button>
+    </div>
     <div class="editor"></div>
     <h2>Output</h2>
     <textarea class="editor-html" rows="18"></textarea>

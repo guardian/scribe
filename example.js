@@ -5,13 +5,16 @@ require({
   }
 }, [
   'editable',
-  'plugins/sanitize'
+  'plugins/sanitize',
+  'plugins/toolbar'
 ], function (
   Editable,
-  sanitize
+  sanitize,
+  toolbar
 ) {
   var editable = new Editable(document.querySelector('.editor'));
 
+  editable.use(toolbar(document.querySelector('.toolbar')));
   editable.use(sanitize({
     tags: {
       p: [],
