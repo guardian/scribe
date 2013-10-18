@@ -23,22 +23,24 @@ require({
    * the click handler.
    */
 
-  var createLinkBtn = document.querySelector('.toolbar .create-link-btn');
+  var createLinkBtns = document.querySelectorAll('.toolbar .create-link-btn');
 
-  createLinkBtn.editor = {};
-  createLinkBtn.editor.command = new Command('createLink');
+  Array.prototype.forEach.call(createLinkBtns, function (createLinkBtn) {
+    createLinkBtn.editor = {};
+    createLinkBtn.editor.command = new Command('createLink');
 
-  createLinkBtn.editor.command.execute = function () {
-    var parentNode = selectionParentNode();
-    var initialUrl = parentNode.nodeName === 'A' ? parentNode.href : 'http://';
-    var url = window.prompt('Enter a URL.', initialUrl);
-    // Call the super
-    Command.prototype.execute.call(this, url);
-  };
+    createLinkBtn.editor.command.execute = function () {
+      var parentNode = selectionParentNode();
+      var initialUrl = parentNode.nodeName === 'A' ? parentNode.href : 'http://';
+      var url = window.prompt('Enter a URL.', initialUrl);
+      // Call the super
+      Command.prototype.execute.call(this, url);
+    };
 
-  createLinkBtn.editor.command.queryState = function () {
-    return selectionParentNode().nodeName === 'A';
-  };
+    createLinkBtn.editor.command.queryState = function () {
+      return selectionParentNode().nodeName === 'A';
+    };
+  });
 
   /**
    * Plugins
