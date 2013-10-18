@@ -20,8 +20,7 @@ require({
     document.querySelector('.editor-html').textContent = editable.el.innerHTML;
   }
 
-  editable.el.addEventListener('keyup', updateHTML);
-  editable.el.addEventListener('paste', updateHTML);
+  editable.el.addEventListener('input', updateHTML);
 
   /**
    * The link button, depends on the toolbar plugin, which will implicitly register
