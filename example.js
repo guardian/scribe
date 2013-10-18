@@ -19,7 +19,7 @@ require({
   editable.el.addEventListener('input', updateHTML);
 
   /**
-   * The link button, depends on the toolbar plugin, which will implicitly register
+   * The link button depends on the toolbar plugin, which will implicitly register
    * the click handler.
    */
 
@@ -39,6 +39,10 @@ require({
   createLinkBtn.editor.command.queryState = function () {
     return selectionParentNode().nodeName === 'A';
   };
+
+  /**
+   * Plugins
+   */
 
   editable.use(toolbar(document.querySelector('.toolbar')));
   editable.use(sanitize({
