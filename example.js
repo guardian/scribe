@@ -32,7 +32,7 @@ require({
 
   var tooltip = document.createElement('div');
   // Lazily copy the existing toolbar, insert it dynamically
-  tooltip.appendChild(document.querySelector('.toolbar').cloneNode());
+  tooltip.appendChild(document.querySelector('.toolbar').cloneNode(true));
   tooltip.hidden = true;
   document.body.appendChild(tooltip);
 
