@@ -1,8 +1,1 @@
 * Remove event listeners, emit unbind to plugins so that can too
-
-
-* Over type mode
-* output HTML
-
-* replace text in firefox
-* erase part of text
