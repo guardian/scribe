@@ -1,1 +1,7 @@
+# Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
+
+# Outstanding Patches
+* Chrome: Add H1, <enter>, creates `div`
+
+# Known Issues
