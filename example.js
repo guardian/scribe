@@ -5,12 +5,12 @@ require({
   }
 }, [
   'editable',
-  'plugins/sanitize',
+  'plugins/sanitizer',
   'plugins/toolbar',
   'api/command'
 ], function (
   Editable,
-  sanitize,
+  sanitizer,
   toolbar,
   Command
 ) {
@@ -116,7 +116,7 @@ require({
    */
 
   editable.use(toolbar(document.querySelectorAll('.toolbar')));
-  editable.use(sanitize({
+  editable.use(sanitizer({
     tags: {
       p: [],
       b: [],

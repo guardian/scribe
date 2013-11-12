@@ -4,18 +4,18 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
 
   return function (config) {
     return function (editable) {
-      return sanitize(editable, config);
+      return sanitizer(editable, config);
     };
   };
 
   /**
-   * Initializes sanitize plugin on Editable instance.
+   * Initializes sanitizer plugin on Editable instance.
    *
    * @param {Editable} editable
    * @param {Object} config For configuring the janitor
    * @return {self}
    */
-  function sanitize(editable, config) {
+  function sanitizer(editable, config) {
     var janitor = new HTMLJanitor(config);
 
     // We need to sanitize when the user pastes data in.
