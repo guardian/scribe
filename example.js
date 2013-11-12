@@ -55,62 +55,51 @@ require({
   }
 
   /**
-   * Toolbar extensions depend on the toolbar plugin, which will implicitly register
-   * the click handler.
+   * Command: Link prompt
    */
+
+  var linkPromptCommand = new Command('createLink');
+
+  linkPromptCommand.execute = function () {
+    var anchorNode = getContaining(function (node) {
+      return node.nodeName === 'A';
+    });
+    var initialUrl = anchorNode ? anchorNode.href : 'http://';
+    var url = window.prompt('Enter a URL.', initialUrl);
+    // Call the super
+    Command.prototype.execute.call(this, url);
+  };
+
+  linkPromptCommand.queryState = function () {
+    return getContaining(function (node) {
+      return node.nodeName === 'A';
+    });
+  };
+
+  editable.commands.linkPrompt = linkPromptCommand;
 
   /**
-   * Toolbar extension: link buttons
+   * Command: H1
    */
 
-  var createLinkBtns = document.querySelectorAll('.toolbar .create-link-btn');
+  var h1Command = new Command('formatBlock');
 
-  Array.prototype.forEach.call(createLinkBtns, function (createLinkBtn) {
-    createLinkBtn.editor = {};
-    createLinkBtn.editor.command = new Command('createLink');
+  h1Command.execute = function () {
+    // Call the super
+    if (this.queryState()) {
+      Command.prototype.execute.call(this, '<p>');
+    } else {
+      Command.prototype.execute.call(this, '<h1>');
+    }
+  };
 
-    createLinkBtn.editor.command.execute = function () {
-      var anchorNode = getContaining(function (node) {
-        return node.nodeName === 'A';
-      });
-      var initialUrl = anchorNode ? anchorNode.href : 'http://';
-      var url = window.prompt('Enter a URL.', initialUrl);
-      // Call the super
-      Command.prototype.execute.call(this, url);
-    };
+  h1Command.queryState = function () {
+    return getContaining(function (node) {
+      return node.nodeName === 'H1';
+    });
+  };
 
-    createLinkBtn.editor.command.queryState = function () {
-      return getContaining(function (node) {
-        return node.nodeName === 'A';
-      });
-    };
-  });
-
-  /**
-   * Toolbar extension: H1 buttons
-   */
-
-  var h1Btns = document.querySelectorAll('.toolbar .h1-btn');
-
-  Array.prototype.forEach.call(h1Btns, function (h1Btn) {
-    h1Btn.editor = {};
-    h1Btn.editor.command = new Command('formatBlock');
-
-    h1Btn.editor.command.execute = function () {
-      // Call the super
-      if (this.queryState()) {
-        Command.prototype.execute.call(this, '<p>');
-      } else {
-        Command.prototype.execute.call(this, '<h1>');
-      }
-    };
-
-    h1Btn.editor.command.queryState = function () {
-      return getContaining(function (node) {
-        return node.nodeName === 'H1';
-      });
-    };
-  });
+  editable.commands.h1 = h1Command;
 
   /**
    * Plugins

@@ -9,6 +9,8 @@ define([
   function Editable(el) {
     this.el = el;
     this.context = document;
+    // TODO: put on prototype?
+    this.commands = {};
 
     this.el.setAttribute('contenteditable', true);
 
