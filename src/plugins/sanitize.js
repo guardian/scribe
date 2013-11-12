@@ -4,26 +4,22 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
 
   return function (config) {
     return function (editable) {
-      return new Sanitize(editable, config);
+      return sanitize(editable, config);
     };
   };
 
   /**
-   * Initializes Sanitize with `editable`.
+   * Initializes sanitize plugin on Editable instance.
    *
    * @param {Editable} editable
+   * @param {Object} config For configuring the janitor
    * @return {self}
-   * @api private
    */
-
-  function Sanitize(editable, config) {
-    this.editable = editable;
-    editable.sanitize = this;
-
-    this.janitor = new HTMLJanitor(config);
+  function sanitize(editable, config) {
+    var janitor = new HTMLJanitor(config);
 
     // We need to sanitize when the user pastes data in.
-    this.editable.el.addEventListener('paste', function (event) {
+    editable.el.addEventListener('paste', function (event) {
       /**
        * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
        * will execute the second branch here.
@@ -34,7 +30,7 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
         // TODO: what data should we be getting?
         data = event.clipboardData.getData('text/html') || event.clipboardData.getData('text/plain');
 
-        this.insert(data);
+        sanitizeAndInsert(data);
       } else {
         /**
          * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
@@ -114,22 +110,17 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
             selection.addRange(range);
           })();
 
-          this.editable.el.focus();
-          this.insert(data);
-        }.bind(this), 1);
+          editable.el.focus();
+          sanitizeAndInsert(data);
+        }, 1);
       }
-    }.bind(this));
+    });
+
+    function sanitizeAndInsert(data) {
+      var sanitizedData = janitor.clean(data);
+
+      document.execCommand('insertHTML', false, sanitizedData);
+    }
   }
-
-  Sanitize.prototype.clean = function (data) {
-    return this.janitor.clean(data);
-  };
-
-  Sanitize.prototype.insert = function (data) {
-    var sanitizedData = this.clean(data);
-
-    // Mercury.Regions.Full#execCommand
-    document.execCommand('insertHTML', false, sanitizedData);
-  };
 
 });
