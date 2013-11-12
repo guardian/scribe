@@ -16,5 +16,8 @@
   "devDependencies": {
     "requirejs": "~2.1.9",
     "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.0.1"
+  },
+  "dependencies": {
+    "q": "~0.9.7"
   }
 }

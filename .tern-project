@@ -1,7 +1,11 @@
 {
   "plugins": {
     "requirejs": {
-      "baseURL": "./src"
+      "baseURL": "./src",
+      "paths": {
+        "html-janitor": "./bower_components/html-janitor/src/html-janitor",
+        "q": "./bower_components/q/src/q"
+      }
     }
   }
 }

@@ -1,7 +1,8 @@
 require({
   baseUrl: './src',
   paths: {
-    'html-janitor': '../bower_components/html-janitor/src/html-janitor'
+    'html-janitor': '../bower_components/html-janitor/src/html-janitor',
+    'q': '../bower_components/q/q'
   }
 }, [
   'editable',
