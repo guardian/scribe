@@ -1,5 +1,5 @@
 define([
-  'plugins/patches/empty-editor-when-deleting',
+  'plugins/core/patches/empty-editor-when-deleting',
 ], function (
   emptyEditorWhenDeleting
 ) {
