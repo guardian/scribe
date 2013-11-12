@@ -102,6 +102,29 @@ require({
   editable.commands.h1 = h1Command;
 
   /**
+   * Command: Blockquote
+   */
+
+  var blockquoteCommand = new Command('formatBlock');
+
+  blockquoteCommand.execute = function () {
+    // Call the super
+    if (this.queryState()) {
+      Command.prototype.execute.call(this, '<p>');
+    } else {
+      Command.prototype.execute.call(this, '<blockquote>');
+    }
+  };
+
+  blockquoteCommand.queryState = function () {
+    return !! getContaining(function (node) {
+      return node.nodeName === 'BLOCKQUOTE';
+    });
+  };
+
+  editable.commands.blockquote = blockquoteCommand;
+
+  /**
    * Command: bold
    */
 
