@@ -85,7 +85,7 @@ define(function () {
              * and it is easy to recover from.
              */
             var firstChild = editor.el.firstChild;
-            if (firstChild.nodeName === 'H1') {
+            if (firstChild.nodeName === 'H2') {
               var pNode = document.createElement('p');
               pNode.innerHTML = firstChild.innerHTML;
               editor.el.insertBefore(pNode, firstChild);

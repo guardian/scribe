@@ -79,27 +79,27 @@ require({
   editable.commands.linkPrompt = linkPromptCommand;
 
   /**
-   * Command: H1
+   * Command: H2
    */
 
-  var h1Command = new Command('formatBlock');
+  var h2Command = new Command('formatBlock');
 
-  h1Command.execute = function () {
+  h2Command.execute = function () {
     // Call the super
     if (this.queryState()) {
       Command.prototype.execute.call(this, '<p>');
     } else {
-      Command.prototype.execute.call(this, '<h1>');
+      Command.prototype.execute.call(this, '<h2>');
     }
   };
 
-  h1Command.queryState = function () {
+  h2Command.queryState = function () {
     return !! getContaining(function (node) {
-      return node.nodeName === 'H1';
+      return node.nodeName === 'H2';
     });
   };
 
-  editable.commands.h1 = h1Command;
+  editable.commands.h2 = h2Command;
 
   /**
    * Command: Blockquote
@@ -131,11 +131,11 @@ require({
   var boldCommand = new Command('bold');
 
   boldCommand.execute = function () {
-    var h1Node = getContaining(function (node) {
-      return node.nodeName === 'H1';
+    var h2Node = getContaining(function (node) {
+      return node.nodeName === 'H2';
     });
 
-    if (!! h1Node) {
+    if (!! h2Node) {
       var strongNode;
       if (this.queryState() === false) {
         // TODO: use internal API for getting range
@@ -156,9 +156,9 @@ require({
         // Remove the containing strongNode
         // TODO: create unwrap function?
         while (strongNode.childNodes.length > 0) {
-          h1Node.insertBefore(strongNode.childNodes[0], strongNode);
+          h2Node.insertBefore(strongNode.childNodes[0], strongNode);
         }
-        h1Node.removeChild(strongNode);
+        h2Node.removeChild(strongNode);
       }
     } else {
       Command.prototype.execute.apply(this, arguments);
