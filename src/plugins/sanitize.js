@@ -1,4 +1,7 @@
 define([ 'html-janitor' ], function (HTMLJanitor) {
+
+  'use strict';
+
   /**
    * Initializes Sanitize with `editable`.
    *
@@ -138,4 +141,5 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
       return new Sanitize(editable, config);
     };
   };
+
 });

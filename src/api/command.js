@@ -1,4 +1,7 @@
 define(function () {
+
+  'use strict';
+
   function Command(commandName) {
     this.commandName = commandName;
   }
@@ -12,4 +15,5 @@ define(function () {
   };
 
   return Command;
+
 });

@@ -1,4 +1,7 @@
 define(function () {
+
+  'use strict';
+
   function Editable(el) {
     if (!(this instanceof Editable)) return new Editable(el);
     this.el = el;
@@ -116,4 +119,5 @@ define(function () {
   };
 
   return Editable;
+
 });

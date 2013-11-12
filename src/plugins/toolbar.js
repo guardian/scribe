@@ -1,4 +1,7 @@
 define([ '../api/command' ], function (Command) {
+
+  'use strict';
+
   return function (toolbars) {
     return function (editable) {
       Array.prototype.forEach.call(toolbars, function (toolbar) {
@@ -35,4 +38,5 @@ define([ '../api/command' ], function (Command) {
       });
     };
   };
+
 });
