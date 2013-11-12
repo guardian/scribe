@@ -5,3 +5,4 @@
 * Chrome: Add H1, <enter>, creates `div`
 
 # Known Issues
+* Anyone can script an element into the editor. Sanitize only happens on paste. Problem?

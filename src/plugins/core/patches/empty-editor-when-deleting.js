@@ -85,6 +85,9 @@ define(function () {
              * and it is easy to recover from.
              */
             var firstChild = editor.el.firstChild;
+            /**
+             * TODO: should this include block elements other than H2?
+             */
             if (firstChild.nodeName === 'H2') {
               var pNode = document.createElement('p');
               pNode.innerHTML = firstChild.innerHTML;
