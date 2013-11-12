@@ -102,6 +102,20 @@ require({
   editable.commands.h1 = h1Command;
 
   /**
+   * Command: bold
+   */
+
+  var boldCommand = new Command('bold');
+
+  boldCommand.queryState = function () {
+    return getContaining(function (node) {
+      return node.nodeName === 'B' || node.nodeName === 'STRONG';
+    });
+  };
+
+  editable.commands.bold = boldCommand;
+
+  /**
    * Plugins
    */
 
