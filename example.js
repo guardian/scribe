@@ -71,7 +71,7 @@ require({
   };
 
   linkPromptCommand.queryState = function () {
-    return getContaining(function (node) {
+    return !! getContaining(function (node) {
       return node.nodeName === 'A';
     });
   };
@@ -94,7 +94,7 @@ require({
   };
 
   h1Command.queryState = function () {
-    return getContaining(function (node) {
+    return !! getContaining(function (node) {
       return node.nodeName === 'H1';
     });
   };
@@ -108,7 +108,7 @@ require({
   var boldCommand = new Command('bold');
 
   boldCommand.queryState = function () {
-    return getContaining(function (node) {
+    return !! getContaining(function (node) {
       return node.nodeName === 'B' || node.nodeName === 'STRONG';
     });
   };
