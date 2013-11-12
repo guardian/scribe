@@ -2,6 +2,12 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
 
   'use strict';
 
+  return function (config) {
+    return function (editable) {
+      return new Sanitize(editable, config);
+    };
+  };
+
   /**
    * Initializes Sanitize with `editable`.
    *
@@ -116,30 +122,14 @@ define([ 'html-janitor' ], function (HTMLJanitor) {
   }
 
   Sanitize.prototype.clean = function (data) {
-    var editable = this.editable;
-
-    // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-
     return this.janitor.clean(data);
   };
 
   Sanitize.prototype.insert = function (data) {
-    sanitizedData = this.clean(data);
+    var sanitizedData = this.clean(data);
 
     // Mercury.Regions.Full#execCommand
     document.execCommand('insertHTML', false, sanitizedData);
-  };
-
-  /**
-   * Expose Sanitize wrapper for plugin support
-   */
-
-  return function (config) {
-    return function (editable) {
-      return new Sanitize(editable, config);
-    };
   };
 
 });

@@ -84,7 +84,6 @@ define(function () {
              * to give the editor focus every time this needs to be done?
              */
             // editor.html('<p><br></p>');
-            var selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(contentRange);
 
@@ -100,6 +99,6 @@ define(function () {
         }
       }
 
-    }
-  }
-})
+    };
+  };
+});

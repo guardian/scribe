@@ -38,7 +38,7 @@ define([
   };
 
 
-  Editable.prototype.text = function (text) {
+  Editable.prototype.text = function () {
     return this.el.textContent.trim();
   };
 

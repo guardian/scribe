@@ -1,0 +1,9 @@
+{
+  "browser": true,
+  "laxbreak": true, // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
+  "node": true,
+  "predef": ["define"],
+  "quotmark": "single",
+  "undef": true, // Prohibits the use of explicitly undeclared variables
+  "unused": true
+}
