@@ -103,7 +103,7 @@ define(function () {
 
   // Should this accept a node instead of HTML?
   Editable.prototype.html = function (html) {
-    if (typeof(html) !== 'undefined') {
+    if (typeof html !== 'undefined') {
       this.el.innerHTML = html;
     }
 
