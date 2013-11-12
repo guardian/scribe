@@ -75,18 +75,30 @@ define(function () {
               ! selection.isCollapsed && isRangeAllContent(getRange())) {
             event.preventDefault();
 
+            /**
+             * Chrome: With content "<h1>1</h1><p>2</p>", the `insertHTML` command
+             * below will insert it *into* the `<h1>` element, instead of replacing it.
+             * Even though we ask to select all the content in the editor.
+             * As per: http://jsbin.com/unuJENI/1/edit?html,js,output
+             *
+             * This fix slightly confuses the behaviour of undo, but no content is lost
+             * and it is easy to recover from.
+             */
+            var firstChild = editor.el.firstChild;
+            if (firstChild.nodeName === 'H1') {
+              var pNode = document.createElement('p');
+              pNode.innerHTML = firstChild.innerHTML;
+              editor.el.insertBefore(pNode, firstChild);
+              firstChild.remove();
+            }
+
             var contentRange = document.createRange();
             contentRange.selectNodeContents(editor.el);
 
-            /**
-             * TODO: Doing things this way means we don't break the browser's undo manager.
-             * However, would this work if the editor didn't have focus? Can we afford
-             * to give the editor focus every time this needs to be done?
-             */
-            // editor.html('<p><br></p>');
             selection.removeAllRanges();
             selection.addRange(contentRange);
 
+            // Doing things this way means we don't break the browser's undo manager.
             document.execCommand('insertHTML', false, '<p><br></p>');
 
             var node = editor.el.querySelector('p');
