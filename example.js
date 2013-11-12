@@ -107,6 +107,41 @@ require({
 
   var boldCommand = new Command('bold');
 
+  boldCommand.execute = function () {
+    var h1Node = getContaining(function (node) {
+      return node.nodeName === 'H1';
+    });
+
+    if (!! h1Node) {
+      var strongNode;
+      if (this.queryState() === false) {
+        // TODO: use internal API for getting range
+        var selection = window.getSelection();
+        var range = selection.getRangeAt(0);
+
+        var node = range.commonAncestorContainer;
+        strongNode = document.createElement('strong');
+
+        // TODO: create wrap function
+        node.parentNode.insertBefore(strongNode, node);
+        strongNode.appendChild(node);
+      } else {
+        strongNode = getContaining(function (node) {
+          return node.nodeName === 'B' || node.nodeName === 'STRONG';
+        });
+
+        // Remove the containing strongNode
+        // TODO: create unwrap function?
+        while (strongNode.childNodes.length > 0) {
+          h1Node.insertBefore(strongNode.childNodes[0], strongNode);
+        }
+        h1Node.removeChild(strongNode);
+      }
+    } else {
+      Command.prototype.execute.apply(this, arguments);
+    }
+  };
+
   boldCommand.queryState = function () {
     return !! getContaining(function (node) {
       return node.nodeName === 'B' || node.nodeName === 'STRONG';

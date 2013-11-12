@@ -21,6 +21,8 @@ define([ '../api/command' ], function (Command) {
           editable.el.addEventListener('mouseup', updateUi);
           // We also want to update the UI whenever the content changes. This
           // could be when one of the toolbar buttons is actioned.
+          // TODO: The `input` event does not trigger when we manipulate the content
+          // ourselves. Maybe commands should fire events when they are activated.
           editable.el.addEventListener('input', updateUi);
 
           function updateUi() {
