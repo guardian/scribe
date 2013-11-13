@@ -7,8 +7,8 @@ define([
 
   'use strict';
 
-  api.SimpleCommand = function (nodeName) {
-    api.Command.call(this, Array.prototype.slice.call(arguments, 1));
+  api.SimpleCommand = function (nodeName, commandName) {
+    api.Command.call(this, commandName);
 
     this.nodeName = nodeName;
   };
