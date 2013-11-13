@@ -6,16 +6,18 @@ require({
   }
 }, [
   'editable',
+  'plugins/blockquote-command',
+  'plugins/heading-command',
+  'plugins/link-prompt-command',
   'plugins/sanitizer',
-  'plugins/toolbar',
-  'api',
-  'api/command',
-  'api/range'
+  'plugins/toolbar'
 ], function (
   Editable,
+  blockquoteCommand,
+  headingCommand,
+  linkPromptCommand,
   sanitizer,
-  toolbar,
-  api
+  toolbar
 ) {
 
   'use strict';
@@ -60,80 +62,12 @@ require({
   }
 
   /**
-   * Command: Link prompt
-   */
-
-  var linkPromptCommand = new api.Command('createLink');
-
-  linkPromptCommand.execute = function () {
-    var range = new api.Range();
-    var anchorNode = range.getContaining(function (node) {
-      return node.nodeName === 'A';
-    });
-    var initialUrl = anchorNode ? anchorNode.href : 'http://';
-    var url = window.prompt('Enter a URL.', initialUrl);
-    api.Command.prototype.execute.call(this, url);
-  };
-
-  linkPromptCommand.queryState = function () {
-    var range = new api.Range();
-    return !! range.getContaining(function (node) {
-      return node.nodeName === 'A';
-    });
-  };
-
-  editable.commands.linkPrompt = linkPromptCommand;
-
-  /**
-   * Command: H2
-   */
-
-  var h2Command = new api.Command('formatBlock');
-
-  h2Command.execute = function () {
-    if (this.queryState()) {
-      api.Command.prototype.execute.call(this, '<p>');
-    } else {
-      api.Command.prototype.execute.call(this, '<h2>');
-    }
-  };
-
-  h2Command.queryState = function () {
-    var range = new api.Range();
-    return !! range.getContaining(function (node) {
-      return node.nodeName === 'H2';
-    });
-  };
-
-  editable.commands.h2 = h2Command;
-
-  /**
-   * Command: Blockquote
-   */
-
-  var blockquoteCommand = new api.Command('formatBlock');
-
-  blockquoteCommand.execute = function () {
-    if (this.queryState()) {
-      api.Command.prototype.execute.call(this, '<p>');
-    } else {
-      api.Command.prototype.execute.call(this, '<blockquote>');
-    }
-  };
-
-  blockquoteCommand.queryState = function () {
-    var range = new api.Range();
-    return !! range.getContaining(function (node) {
-      return node.nodeName === 'BLOCKQUOTE';
-    });
-  };
-
-  editable.commands.blockquote = blockquoteCommand;
-
-  /**
    * Plugins
    */
 
+  editable.use(blockquoteCommand());
+  editable.use(headingCommand(2));
+  editable.use(linkPromptCommand());
   editable.use(toolbar(document.querySelectorAll('.toolbar')));
   editable.use(sanitizer({
     tags: {
