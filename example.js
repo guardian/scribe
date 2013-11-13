@@ -72,7 +72,6 @@ require({
     });
     var initialUrl = anchorNode ? anchorNode.href : 'http://';
     var url = window.prompt('Enter a URL.', initialUrl);
-    // Call the super
     api.Command.prototype.execute.call(this, url);
   };
 
@@ -92,7 +91,6 @@ require({
   var h2Command = new api.Command('formatBlock');
 
   h2Command.execute = function () {
-    // Call the super
     if (this.queryState()) {
       api.Command.prototype.execute.call(this, '<p>');
     } else {
