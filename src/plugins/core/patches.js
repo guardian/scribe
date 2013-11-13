@@ -1,7 +1,9 @@
 define([
+  './patches/bold-command',
   './patches/empty-editor-when-deleting',
   './patches/root-paragraph-element'
 ], function (
+  boldCommand,
   emptyEditorWhenDeleting,
   rootParagraphElement
 ) {
@@ -9,6 +11,7 @@ define([
   'use strict';
 
   return {
+    boldCommand: boldCommand,
     emptyEditorWhenDeleting: emptyEditorWhenDeleting,
     rootParagraphElement: rootParagraphElement
   };

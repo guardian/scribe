@@ -14,6 +14,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
+    this.use(patches.boldCommand());
     this.use(patches.emptyEditorWhenDeleting());
     this.use(patches.rootParagraphElement());
   }
