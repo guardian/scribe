@@ -1,6 +1,11 @@
 editor
 ======
 
+# Browser Inconsistencies
+* "`insertHTML`": http://jsbin.com/unuJENI/5/edit?html,js,output
+* "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
+* "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
+
 ## Patches
 * `emptyEditorWhenDeleting`: This patch makes it impossible to delete the root
   P element. If this was allowed then the editor would begin to create DIV
