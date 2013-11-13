@@ -1,7 +1,6 @@
 define([
   '../api',
-  '../api/command',
-  '../api/range'
+  '../api/simple-command'
 ], function (
   api
 ) {
@@ -10,24 +9,18 @@ define([
 
   return function (level) {
     return function (editable) {
-      var headingCommand = new api.Command('formatBlock');
-      var headingTag = '<h' + level + '>';
-      var headingNodeName = 'H' + level;
+      var tag = '<h' + level + '>';
+      var nodeName = 'H' + level;
       var commandName = 'h' + level;
+
+      var headingCommand = new api.SimpleCommand(nodeName, 'formatBlock');
 
       headingCommand.execute = function () {
         if (this.queryState()) {
           api.Command.prototype.execute.call(this, '<p>');
         } else {
-          api.Command.prototype.execute.call(this, headingTag);
+          api.Command.prototype.execute.call(this, tag);
         }
-      };
-
-      headingCommand.queryState = function () {
-        var range = new api.Range();
-        return !! range.getContaining(function (node) {
-          return node.nodeName === headingNodeName;
-        });
       };
 
       editable.commands[commandName] = headingCommand;

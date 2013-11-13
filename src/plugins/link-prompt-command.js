@@ -1,7 +1,7 @@
 define([
   '../api',
-  '../api/command',
-  '../api/range'
+  '../api/range',
+  '../api/simple-command'
 ], function (
   api
 ) {
@@ -10,23 +10,18 @@ define([
 
   return function () {
     return function (editable) {
-      var linkPromptCommand = new api.Command('createLink');
+      var nodeName = 'A';
+
+      var linkPromptCommand = new api.SimpleCommand(nodeName, 'createLink');
 
       linkPromptCommand.execute = function () {
         var range = new api.Range();
         var anchorNode = range.getContaining(function (node) {
-          return node.nodeName === 'A';
+          return node.nodeName === nodeName;
         });
         var initialUrl = anchorNode ? anchorNode.href : 'http://';
         var url = window.prompt('Enter a URL.', initialUrl);
         api.Command.prototype.execute.call(this, url);
-      };
-
-      linkPromptCommand.queryState = function () {
-        var range = new api.Range();
-        return !! range.getContaining(function (node) {
-          return node.nodeName === 'A';
-        });
       };
 
       editable.commands.linkPrompt = linkPromptCommand;

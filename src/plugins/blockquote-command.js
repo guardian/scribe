@@ -1,7 +1,6 @@
 define([
   '../api',
-  '../api/command',
-  '../api/range'
+  '../api/simple-command'
 ], function (
   api
 ) {
@@ -10,7 +9,7 @@ define([
 
   return function () {
     return function (editable) {
-      var blockquoteCommand = new api.Command('formatBlock');
+      var blockquoteCommand = new api.SimpleCommand('BLOCKQUOTE', 'formatBlock');
 
       blockquoteCommand.execute = function () {
         if (this.queryState()) {
@@ -18,13 +17,6 @@ define([
         } else {
           api.Command.prototype.execute.call(this, '<blockquote>');
         }
-      };
-
-      blockquoteCommand.queryState = function () {
-        var range = new api.Range();
-        return !! range.getContaining(function (node) {
-          return node.nodeName === 'BLOCKQUOTE';
-        });
       };
 
       editable.commands.blockquote = blockquoteCommand;
