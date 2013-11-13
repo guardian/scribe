@@ -1,5 +1,6 @@
 {
   "browser": true,
+  "eqeqeq": true, // ===
   "laxbreak": true, // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.
   "node": true,
   "predef": ["define"],
