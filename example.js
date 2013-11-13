@@ -8,12 +8,14 @@ require({
   'editable',
   'plugins/sanitizer',
   'plugins/toolbar',
-  'api/command'
+  'api',
+  'api/command',
+  'api/range'
 ], function (
   Editable,
   sanitizer,
   toolbar,
-  Command
+  api
 ) {
 
   'use strict';
@@ -61,20 +63,22 @@ require({
    * Command: Link prompt
    */
 
-  var linkPromptCommand = new Command('createLink');
+  var linkPromptCommand = new api.Command('createLink');
 
   linkPromptCommand.execute = function () {
-    var anchorNode = getContaining(function (node) {
+    var range = new api.Range();
+    var anchorNode = range.getContaining(function (node) {
       return node.nodeName === 'A';
     });
     var initialUrl = anchorNode ? anchorNode.href : 'http://';
     var url = window.prompt('Enter a URL.', initialUrl);
     // Call the super
-    Command.prototype.execute.call(this, url);
+    api.Command.prototype.execute.call(this, url);
   };
 
   linkPromptCommand.queryState = function () {
-    return !! getContaining(function (node) {
+    var range = new api.Range();
+    return !! range.getContaining(function (node) {
       return node.nodeName === 'A';
     });
   };
@@ -85,19 +89,20 @@ require({
    * Command: H2
    */
 
-  var h2Command = new Command('formatBlock');
+  var h2Command = new api.Command('formatBlock');
 
   h2Command.execute = function () {
     // Call the super
     if (this.queryState()) {
-      Command.prototype.execute.call(this, '<p>');
+      api.Command.prototype.execute.call(this, '<p>');
     } else {
-      Command.prototype.execute.call(this, '<h2>');
+      api.Command.prototype.execute.call(this, '<h2>');
     }
   };
 
   h2Command.queryState = function () {
-    return !! getContaining(function (node) {
+    var range = new api.Range();
+    return !! range.getContaining(function (node) {
       return node.nodeName === 'H2';
     });
   };
@@ -108,73 +113,24 @@ require({
    * Command: Blockquote
    */
 
-  var blockquoteCommand = new Command('formatBlock');
+  var blockquoteCommand = new api.Command('formatBlock');
 
   blockquoteCommand.execute = function () {
-    // Call the super
     if (this.queryState()) {
-      Command.prototype.execute.call(this, '<p>');
+      api.Command.prototype.execute.call(this, '<p>');
     } else {
-      Command.prototype.execute.call(this, '<blockquote>');
+      api.Command.prototype.execute.call(this, '<blockquote>');
     }
   };
 
   blockquoteCommand.queryState = function () {
-    return !! getContaining(function (node) {
+    var range = new api.Range();
+    return !! range.getContaining(function (node) {
       return node.nodeName === 'BLOCKQUOTE';
     });
   };
 
   editable.commands.blockquote = blockquoteCommand;
-
-  /**
-   * Command: bold
-   */
-
-  var boldCommand = new Command('bold');
-
-  boldCommand.execute = function () {
-    var h2Node = getContaining(function (node) {
-      return node.nodeName === 'H2';
-    });
-
-    if (!! h2Node) {
-      var strongNode;
-      if (this.queryState() === false) {
-        // TODO: use internal API for getting range
-        var selection = window.getSelection();
-        var range = selection.getRangeAt(0);
-
-        var node = range.commonAncestorContainer;
-        strongNode = document.createElement('strong');
-
-        // TODO: create wrap function
-        node.parentNode.insertBefore(strongNode, node);
-        strongNode.appendChild(node);
-      } else {
-        strongNode = getContaining(function (node) {
-          return node.nodeName === 'B' || node.nodeName === 'STRONG';
-        });
-
-        // Remove the containing strongNode
-        // TODO: create unwrap function?
-        while (strongNode.childNodes.length > 0) {
-          h2Node.insertBefore(strongNode.childNodes[0], strongNode);
-        }
-        h2Node.removeChild(strongNode);
-      }
-    } else {
-      Command.prototype.execute.apply(this, arguments);
-    }
-  };
-
-  boldCommand.queryState = function () {
-    return !! getContaining(function (node) {
-      return node.nodeName === 'B' || node.nodeName === 'STRONG';
-    });
-  };
-
-  editable.commands.bold = boldCommand;
 
   /**
    * Plugins
@@ -196,25 +152,4 @@ require({
       h2: []
     }
   }));
-
-  /**
-   * Shared functions, move into API?
-   */
-
-  function getContaining(nodeFilter) {
-    // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    return getAncestor(range.commonAncestorContainer, nodeFilter);
-  }
-
-  function getAncestor(node, nodeFilter) {
-    // TODO: use do instead?
-    while (node && node.nodeName !== 'body') {
-      if (nodeFilter(node)) {
-        return node;
-      }
-      node = node.parentNode;
-    }
-  }
 });

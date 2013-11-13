@@ -1,4 +1,9 @@
-define([ '../api/command' ], function (Command) {
+define([
+  '../api',
+  '../api/command'
+], function (
+  api
+) {
 
   'use strict';
 
@@ -9,7 +14,7 @@ define([ '../api/command' ], function (Command) {
 
         Array.prototype.forEach.call(buttons, function (button) {
           // Look for a predefined command, otherwise define one now.
-          var command = editable.commands[button.dataset.commandName] || new Command(button.dataset.commandName);
+          var command = editable.commands[button.dataset.commandName] || new api.Command(button.dataset.commandName);
 
           button.addEventListener('click', function () {
             command.execute();
