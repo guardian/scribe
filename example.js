@@ -68,7 +68,6 @@ require({
   editable.use(blockquoteCommand());
   editable.use(headingCommand(2));
   editable.use(linkPromptCommand());
-  editable.use(toolbar(document.querySelectorAll('.toolbar')));
   editable.use(sanitizer({
     tags: {
       p: [],
@@ -84,4 +83,5 @@ require({
       h2: []
     }
   }));
+  editable.use(toolbar(document.querySelectorAll('.toolbar')));
 });
