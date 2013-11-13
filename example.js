@@ -15,6 +15,9 @@ require({
   toolbar,
   Command
 ) {
+
+  'use strict';
+
   var editable = new Editable(document.querySelector('.editor'));
 
   editable.el.addEventListener('input', updateHTML);
