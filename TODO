@@ -14,6 +14,3 @@
 
 # To Investigate
 * Add H, tranform into UL
-
-# Won't Fix
-* When first child is a block element, undo lies.

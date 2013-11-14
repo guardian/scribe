@@ -2,9 +2,10 @@ editor
 ======
 
 # Browser Inconsistencies
-* "`insertHTML`": http://jsbin.com/unuJENI/5/edit?html,js,output
+* "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
+* "`outdent`": http://jsbin.com/okAYaHa/1/edit?html,js,output
 
 ## Patches
 * `emptyEditorWhenDeleting`: This patch makes it impossible to delete the root
@@ -14,5 +15,8 @@ editor
   carriage return creates a P.
 
 ## Plugins
+* `blockquoteCommand`: Adds a command for blockquotes.
+* `headingCommand`: Adds a command for headings.
+* `linkPromptCommand`: Adds a command for creating links, including a basic prompt.
 * `sanitizer`: Adds the ability to sanitize content when it is pasted into the
   editor, adhering to a whitelist of allowed tags and attributes.
