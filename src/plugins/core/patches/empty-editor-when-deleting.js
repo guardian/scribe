@@ -76,24 +76,13 @@ define(function () {
             event.preventDefault();
 
             /**
-             * Chrome: With content "<h1>1</h1><p>2</p>", the `insertHTML` command
-             * below will insert it *into* the `<h1>` element, instead of replacing it.
-             * Even though we ask to select all the content in the editor.
-             * As per: http://jsbin.com/unuJENI/1/edit?html,js,output
+             * Chrome: Even with everything selected, in Chrome `insertHTML` does
+             * not replace the whole selection.
+             * As per: http://jsbin.com/elicInov/2/edit?html,js,output
              *
-             * This fix slightly confuses the behaviour of undo, but no content is lost
-             * and it is easy to recover from.
+             * Chrome: The first delete will only remove the contents of the
+             * blockquote. Deleting twice works but adds more to the undo stack.
              */
-            var firstChild = editor.el.firstChild;
-            /**
-             * TODO: should this include block elements other than H2?
-             */
-            if (firstChild.nodeName === 'H2') {
-              var pNode = document.createElement('p');
-              pNode.innerHTML = firstChild.innerHTML;
-              editor.el.insertBefore(pNode, firstChild);
-              firstChild.remove();
-            }
 
             var contentRange = document.createRange();
             contentRange.selectNodeContents(editor.el);
@@ -101,7 +90,11 @@ define(function () {
             selection.removeAllRanges();
             selection.addRange(contentRange);
 
-            // Doing things this way means we don't break the browser's undo manager.
+            // Doing it this way means we don't break undo.
+
+            // TODO: write polyfill for `insertHTML` to do this for us.
+            document.execCommand('delete');
+            document.execCommand('delete');
             document.execCommand('insertHTML', false, '<p><br></p>');
 
             var node = editor.el.querySelector('p');
