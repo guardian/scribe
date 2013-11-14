@@ -15,9 +15,9 @@ define(function () {
    */
 
   return function emptyEditorWhenDeleting() {
-    return function (editor) {
+    return function (editable) {
 
-      editor.el.addEventListener('keydown', handleKeydown.bind(editor));
+      editable.el.addEventListener('keydown', handleKeydown.bind(editable));
 
       /**
        * Get the current range.
@@ -51,7 +51,7 @@ define(function () {
         var serialisedSelection = serialiseRangeToHTML(range);
 
         var contentRange = new window.Range();
-        contentRange.selectNodeContents(editor.el);
+        contentRange.selectNodeContents(editable.el);
 
         var serialisedContent = serialiseRangeToHTML(contentRange);
 
@@ -71,7 +71,7 @@ define(function () {
            *
            * This branch need not run in Chrome upon the second condition, but it does, for now.
            */
-          if (selection.isCollapsed && editor.text() === '' ||
+          if (selection.isCollapsed && editable.text() === '' ||
               ! selection.isCollapsed && isRangeAllContent(getRange())) {
             event.preventDefault();
 
@@ -85,7 +85,7 @@ define(function () {
              */
 
             var contentRange = document.createRange();
-            contentRange.selectNodeContents(editor.el);
+            contentRange.selectNodeContents(editable.el);
 
             selection.removeAllRanges();
             selection.addRange(contentRange);
@@ -97,7 +97,7 @@ define(function () {
             document.execCommand('delete');
             document.execCommand('insertHTML', false, '<p><br></p>');
 
-            var node = editor.el.querySelector('p');
+            var node = editable.el.querySelector('p');
             var range = getRange();
             range.setStart(node, 0);
             range.setEnd(node, 0);
