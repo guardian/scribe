@@ -1,16 +1,11 @@
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
-* emptyEditorWhenDeleting: When first child is a block element, emptying the
-  editor fails (see comments in patch).
 
 # Outstanding Patches
 * Chrome: Add H1, <enter> = Creates DIV
-* Chrome: Add two Ps, <select all>, transform to BLOCKQUOTE = Ps are converted
-  to BRs (#formatBlock)
+* Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
 * Possible to have B and STRONG
 * Adding bold to a H2 does not update toolbar
-* Chrome: Unable to remove BLOCKQUOTE when first child (emptyEditorWhenDeleting)
-* Firefox: Unable to remove BLOCKQUOTE (#formatBlock)
 
 # To Investigate
 * Add H, tranform into UL
