@@ -9,13 +9,13 @@ define([
 
   return function () {
     return function (editable) {
-      var blockquoteCommand = new api.SimpleCommand('BLOCKQUOTE', 'formatBlock');
+      var blockquoteCommand = new api.SimpleCommand('BLOCKQUOTE', 'blockquote');
 
       blockquoteCommand.execute = function () {
         if (this.queryState()) {
-          api.Command.prototype.execute.call(this, '<p>');
+          document.execCommand('outdent');
         } else {
-          api.Command.prototype.execute.call(this, '<blockquote>');
+          document.execCommand('indent');
         }
       };
 
