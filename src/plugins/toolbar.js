@@ -18,6 +18,8 @@ define([
 
           button.addEventListener('click', function () {
             command.execute();
+            // Chrome focuses the editor automatically. Firefox does not.
+            editable.el.focus();
           });
 
           // Keep the state of toolbar buttons in sync with the current selection.
