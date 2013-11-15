@@ -13,6 +13,10 @@ define([
       var nodeName = 'H' + level;
       var commandName = 'h' + level;
 
+      /**
+       * Chrome: the `heading` command doesn't work. Supported by Firefox only.
+       */
+
       var headingCommand = new api.SimpleCommand(nodeName, 'formatBlock');
 
       headingCommand.execute = function () {
