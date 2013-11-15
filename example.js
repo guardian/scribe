@@ -10,14 +10,17 @@ require({
   'plugins/heading-command',
   'plugins/link-prompt-command',
   'plugins/sanitizer',
-  'plugins/toolbar'
+  'plugins/toolbar',
+  'api',
+  'api/command'
 ], function (
   Editable,
   blockquoteCommand,
   headingCommand,
   linkPromptCommand,
   sanitizer,
-  toolbar
+  toolbar,
+  api
 ) {
 
   'use strict';
@@ -84,4 +87,48 @@ require({
     }
   }));
   editable.use(toolbar(document.querySelectorAll('.toolbar')));
+
+  /**
+   * Keyboard shortcuts
+   *
+   * TODO: should this be defined *with* the command instead? If we did that,
+   * how do we separate the core patches we have for commands (i.e. bold) from
+   * stuff that is configurable. Also, currently we rely on native commands,
+   * so things like italic are not defined.
+   */
+
+  function findCommand(commandName) {
+    return editable.commands[commandName] || new api.Command(commandName);
+  }
+
+  document.addEventListener('keydown', function (event) {
+    var command;
+    if (event.metaKey && event.keyCode === 66) { // b
+      command = findCommand('bold');
+    } else if (event.metaKey && event.keyCode === 73) { // i
+      command = findCommand('italic');
+    } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
+      command = findCommand('strikethrough');
+    } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
+      command = findCommand('removeFormat');
+    } else if (event.metaKey && ! event.shiftKey && event.keyCode === 75) { // k
+      command = findCommand('linkPrompt');
+    } else if (event.metaKey && event.shiftKey && event.keyCode === 75) { // k
+      command = findCommand('unlink');
+    } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
+      command = findCommand('insertUnorderedList');
+    } else if (event.altKey && event.shiftKey && event.keyCode === 78) { // n
+      command = findCommand('insertOrderedList');
+    } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
+      command = findCommand('blockquote');
+    } else if (event.metaKey && event.keyCode === 50) { // 2
+      command = findCommand('h2');
+    }
+
+    if (command) {
+      event.preventDefault();
+
+      command.execute();
+    }
+  });
 });
