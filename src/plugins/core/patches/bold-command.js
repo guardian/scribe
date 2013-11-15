@@ -17,7 +17,7 @@ define([
           return node.nodeName === 'H2';
         });
 
-        if (!! h2Node) {
+        if (! h2Node) {
           api.Command.prototype.execute.apply(this, arguments);
         } else {
           /**
