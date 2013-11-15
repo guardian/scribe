@@ -1,11 +1,13 @@
 define([
   './patches/bold-command',
   './patches/empty-editor-when-deleting',
-  './patches/root-paragraph-element'
+  './patches/root-paragraph-element',
+  './patches/undo-command'
 ], function (
   boldCommand,
   emptyEditorWhenDeleting,
-  rootParagraphElement
+  rootParagraphElement,
+  undoCommand
 ) {
 
   'use strict';
@@ -13,7 +15,8 @@ define([
   return {
     boldCommand: boldCommand,
     emptyEditorWhenDeleting: emptyEditorWhenDeleting,
-    rootParagraphElement: rootParagraphElement
+    rootParagraphElement: rootParagraphElement,
+    undoCommand: undoCommand
   };
 
 });

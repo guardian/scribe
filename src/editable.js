@@ -1,9 +1,11 @@
 define([
+  'plugins/core/formatters',
   'plugins/core/patches',
-  'plugins/core/formatters'
+  'plugins/core/undo-manager'
 ], function (
+  formatters,
   patches,
-  formatters
+  undoManager
 ) {
 
   'use strict';
@@ -17,8 +19,11 @@ define([
     this.use(patches.boldCommand());
     this.use(patches.emptyEditorWhenDeleting());
     this.use(patches.rootParagraphElement());
+    // TODO: pair with undoManager?
+    this.use(patches.undoCommand());
 
     this.use(formatters());
+    this.use(undoManager());
   }
 
   // For plugins
