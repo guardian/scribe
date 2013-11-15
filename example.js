@@ -131,4 +131,58 @@ require({
       command.execute();
     }
   });
+
+  /**
+   * Rename nodes
+   */
+
+  editable.formatters.push(function (html) {
+    var config = {
+      b: 'strong'
+    };
+
+    var sandboxNode = document.createElement('div');
+    sandboxNode.innerHTML = html;
+
+    renameNodes(sandboxNode);
+
+    return sandboxNode.innerHTML;
+
+    function renameNodes(parentNode) {
+      var treeWalker = createTreeWalker(parentNode);
+      var node = treeWalker.firstChild();
+      if (!node) { return; }
+
+      do {
+        var lowerCaseNodeName = node.nodeName.toLowerCase();
+
+        // Ignore text nodes and nodes that have already been transformed
+        if (node.nodeType === 3 || node._transformed) {
+          continue;
+        }
+
+        var transformNodeName = config[lowerCaseNodeName];
+        if (transformNodeName) {
+          var transformNode = document.createElement(transformNodeName);
+          transformNode.innerHTML = node.innerHTML;
+          parentNode.insertBefore(transformNode, node);
+          // TODO: remove on node directly?
+          parentNode.removeChild(node);
+
+          renameNodes(parentNode);
+          break;
+        }
+
+        // Sanitize children
+        renameNodes(node);
+
+        // Mark node as transformed so it's ignored in future runs
+        node._transformed = true;
+      } while (node = treeWalker.nextSibling());
+    }
+
+    function createTreeWalker(node) {
+      return document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+    }
+  });
 });
