@@ -1,9 +1,7 @@
 define([
-  'html-janitor',
-  '../api/get-event-clipboard-data'
+  'html-janitor'
 ], function (
-  HTMLJanitor,
-  getEventClipboardData
+  HTMLJanitor
 ) {
 
   'use strict';
@@ -24,19 +22,7 @@ define([
   function sanitizer(editable, config) {
     var janitor = new HTMLJanitor(config);
 
-    // We need to sanitize when the user pastes data in.
-    editable.el.addEventListener('paste', function (event) {
-      getEventClipboardData(editable, event).then(function (data) {
-        editable.el.focus();
-        sanitizeAndInsert(data);
-      });
-    });
-
-    function sanitizeAndInsert(data) {
-      var sanitizedData = janitor.clean(data);
-
-      document.execCommand('insertHTML', false, sanitizedData);
-    }
+    editable.formatters.push(janitor.clean.bind(janitor));
   }
 
 });

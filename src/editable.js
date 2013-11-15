@@ -1,7 +1,9 @@
 define([
   'plugins/core/patches',
+  'plugins/core/formatters'
 ], function (
-  patches
+  patches,
+  formatters
 ) {
 
   'use strict';
@@ -15,6 +17,8 @@ define([
     this.use(patches.boldCommand());
     this.use(patches.emptyEditorWhenDeleting());
     this.use(patches.rootParagraphElement());
+
+    this.use(formatters());
   }
 
   // For plugins
