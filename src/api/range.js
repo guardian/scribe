@@ -11,7 +11,9 @@ define([
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
 
+    // TODO: subclass it
     this.commonAncestorContainer = range.commonAncestorContainer;
+    this.collapsed = range.collapsed;
   };
 
   api.Range.prototype.getContaining = function (nodeFilter) {
