@@ -18,6 +18,12 @@ define([
         });
 
         if (!! h2Node) {
+          api.Command.prototype.execute.apply(this, arguments);
+        } else {
+          /**
+           * TODO: because we manipulate the DOM directly, these will not be
+           * added to the undo stack.
+           */
           var strongNode;
           if (this.queryState() === false) {
             var node = range.commonAncestorContainer;
@@ -38,8 +44,6 @@ define([
             }
             h2Node.removeChild(strongNode);
           }
-        } else {
-          api.Command.prototype.execute.apply(this, arguments);
         }
       };
 
