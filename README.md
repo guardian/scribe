@@ -6,6 +6,7 @@ editor
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
 * "`outdent`": http://jsbin.com/okAYaHa/1/edit?html,js,output
+* "`indent`": http://jsbin.com/oDOriyU/1/edit?html,js,output
 
 ## Patches
 * `emptyEditorWhenDeleting`: This patch makes it impossible to delete the root

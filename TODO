@@ -2,10 +2,14 @@
 * Remove event listeners, emit unbind to plugins so that can too
 
 # Outstanding Patches
-* Chrome: Add H1, <enter> = Creates DIV
 * Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
 * Possible to have B and STRONG
 * Adding bold to a H2 does not update toolbar
+* Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps
 
 # To Investigate
 * Add H, tranform into UL
+
+# Fixed
+* Chrome: Add H1, <enter> = Creates DIV
+* Chrome: Add empty LI, <enter> = Creates DIV
