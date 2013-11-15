@@ -25,14 +25,7 @@ define([
            * added to the undo stack.
            */
           var strongNode;
-          if (this.queryState() === false) {
-            var node = range.commonAncestorContainer;
-            strongNode = document.createElement('strong');
-
-            // TODO: create wrap function
-            node.parentNode.insertBefore(strongNode, node);
-            strongNode.appendChild(node);
-          } else {
+          if (this.queryState()) {
             strongNode = range.getContaining(function (node) {
               return node.nodeName === 'B' || node.nodeName === 'STRONG';
             });
@@ -43,6 +36,13 @@ define([
               h2Node.insertBefore(strongNode.childNodes[0], strongNode);
             }
             h2Node.removeChild(strongNode);
+          } else {
+            var node = range.commonAncestorContainer;
+            strongNode = document.createElement('strong');
+
+            // TODO: create wrap function
+            node.parentNode.insertBefore(strongNode, node);
+            strongNode.appendChild(node);
           }
         }
       };
