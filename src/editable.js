@@ -24,6 +24,7 @@ define([
     // TODO: pair with undoManager?
     this.use(patches.undoCommand());
     this.use(patches.indentCommand());
+    this.use(patches.insertListCommands());
 
     this.use(formatters());
 
