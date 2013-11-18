@@ -1,7 +1,7 @@
 editor
 ======
 
-# Browser Inconsistencies
+## Browser Inconsistencies
 * "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
