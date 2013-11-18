@@ -14,6 +14,8 @@ editor
 * `emptyEditorWhenDeleting`: This patch makes it impossible to delete the root
   P element. If this was allowed then the editor would begin to create DIV
   elements for each carriage return.
+* `indentCommand`: Prevent Chrome from inserting BLOCKQUOTEs inside of Ps.
+* `insertListcommands`: Prevent Chrome from inserting lists (UL/OL) inside of Ps.
 * `rootParagraphElement`: Sets the default content of the editor so that each
   carriage return creates a P.
 
