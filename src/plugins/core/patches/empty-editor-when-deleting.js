@@ -1,4 +1,9 @@
-define(function () {
+define([
+  '../../../api',
+  '../../../api/selection',
+], function (
+  api
+) {
 
   'use strict';
 
@@ -18,15 +23,6 @@ define(function () {
     return function (editable) {
 
       editable.el.addEventListener('keydown', handleKeydown.bind(editable));
-
-      /**
-       * Get the current range.
-       * @return {Range}
-       */
-      function getRange() {
-        var selection = window.getSelection();
-        return selection.getRangeAt(0);
-      }
 
       /**
        * Serialise a range into a HTML string.
@@ -61,7 +57,7 @@ define(function () {
       function handleKeydown(event) {
         // Delete or backspace
         if (event.keyCode === 8 || event.keyCode === 46) {
-          var selection = window.getSelection();
+          var selection = new api.Selection();
 
           /**
            * The second condition in this statement is only relevant for Firefox.
@@ -71,8 +67,9 @@ define(function () {
            *
            * This branch need not run in Chrome upon the second condition, but it does, for now.
            */
-          if (selection.isCollapsed && editable.text() === '' ||
-              ! selection.isCollapsed && isRangeAllContent(getRange())) {
+
+          if (selection.selection.isCollapsed && editable.text() === '' ||
+              ! selection.selection.isCollapsed && isRangeAllContent(selection.range)) {
             event.preventDefault();
 
             /**
@@ -87,8 +84,8 @@ define(function () {
             var contentRange = document.createRange();
             contentRange.selectNodeContents(editable.el);
 
-            selection.removeAllRanges();
-            selection.addRange(contentRange);
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(contentRange);
 
             // Doing it this way means we don't break undo.
 
@@ -98,11 +95,12 @@ define(function () {
             document.execCommand('insertHTML', false, '<p><br></p>');
 
             var node = editable.el.querySelector('p');
-            var range = getRange();
-            range.setStart(node, 0);
-            range.setEnd(node, 0);
-            selection.removeAllRanges();
-            selection.addRange(range);
+
+            // TODO: review
+            selection.range.setStart(node, 0);
+            selection.range.setEnd(node, 0);
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(selection.range);
           }
         }
       }

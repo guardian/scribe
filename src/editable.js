@@ -1,11 +1,12 @@
 define([
-  'plugins/core/formatters',
-  'plugins/core/patches',
-  'plugins/core/undo-manager'
+  './plugins/core/formatters',
+  './plugins/core/patches',
+  './api',
+  './api/undo-manager'
 ], function (
   formatters,
   patches,
-  undoManager
+  api
 ) {
 
   'use strict';
@@ -23,7 +24,12 @@ define([
     this.use(patches.undoCommand());
 
     this.use(formatters());
-    this.use(undoManager());
+
+    this.undoManager = new api.UndoManager();
+
+    this.el.addEventListener('input', function () {
+      this.undoManager.push(this.getHTML());
+    }.bind(this), false);
   }
 
   // For plugins
@@ -34,15 +40,20 @@ define([
   };
 
 
-  // Should this accept a node instead of HTML?
-  Editable.prototype.html = function (html) {
-    if (html) {
-      this.el.innerHTML = html;
-    }
+  Editable.prototype.getHTML = function () {
+    var selection = new api.Selection();
 
-    return this.el.innerHTML;
+    selection.placeMarkers();
+    var html = this.el.innerHTML;
+    selection.removeMarkers(this.el);
+
+    return html;
   };
 
+  Editable.prototype.setHTML = function (html) {
+    this.undoManager.push(this.getHTML());
+    this.el.innerHTML = html;
+  };
 
   Editable.prototype.text = function () {
     return this.el.textContent.trim();

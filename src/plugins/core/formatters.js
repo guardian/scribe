@@ -1,4 +1,9 @@
-define(function () {
+define([
+  '../../api',
+  '../../api/selection'
+], function (
+  api
+) {
 
   'use strict';
 
@@ -47,41 +52,11 @@ define(function () {
            * no other way to manipulate content on paste.
            * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
            */
-          // TODO: use internal API for getting range
-          var selection = window.getSelection();
-          var range = selection.getRangeAt(0);
-          var startMarker;
-          var endMarker;
 
-          /**
-           * Mercury.Regions.Full.Selection#placeMarker
-           */
-          (function () {
-            // TODO: why?
-            if (!range) {
-              return;
-            }
+          var selection = new api.Selection();
 
-            startMarker = document.createElement('em');
-            startMarker.classList.add('editor-marker');
-            endMarker = document.createElement('em');
-            endMarker.classList.add('editor-marker');
-
-            // put a single marker (the end)
-            var rangeEnd = range.cloneRange();
-            rangeEnd.collapse(false);
-            rangeEnd.insertNode(endMarker);
-
-            if (!range.collapsed) {
-              // put a start marker
-              var rangeStart = range.cloneRange();
-              rangeStart.collapse(false);
-              rangeStart.insertNode(startMarker);
-            }
-
-            selection.removeAllRanges();
-            selection.addRange(range);
-          })();
+          // Store the caret position
+          selection.placeMarkers();
 
           var bin = document.createElement('div');
           document.body.appendChild(bin);
@@ -92,28 +67,8 @@ define(function () {
             data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
 
-            /**
-             * Mercury.Regions.Full.Selection#selectMarker
-             */
-            (function () {
-              var markers = editable.el.querySelectorAll('em.editor-marker');
-              if (!markers.length) {
-                return;
-              }
-
-              var range = window.document.createRange();
-              range.setStartBefore(markers[0]);
-              if (markers.length >= 2) {
-                range.setEndBefore(markers[1]);
-              }
-
-              Array.prototype.forEach.call(markers, function (marker) {
-                marker.parentNode.removeChild(marker);
-              });
-
-              selection.removeAllRanges();
-              selection.addRange(range);
-            })();
+            // Restore the caret position
+            selection.selectMarkers(editable.el);
 
             formatAndInsert(data);
           }, 1);

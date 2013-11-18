@@ -1,6 +1,7 @@
 define([
   '../../../api',
-  '../../../api/command'
+  '../../../api/command',
+  '../../../api/selection'
 ], function (
   api
 ) {
@@ -12,8 +13,8 @@ define([
       var boldCommand = new api.Command('bold');
 
       boldCommand.execute = function () {
-        var range = new api.Range();
-        var h2Node = range.getContaining(function (node) {
+        var selection = new api.Selection();
+        var h2Node = selection.getContaining(function (node) {
           return node.nodeName === 'H2';
         });
 
@@ -26,7 +27,7 @@ define([
            */
           var strongNode;
           if (this.queryState()) {
-            strongNode = range.getContaining(function (node) {
+            strongNode = selection.getContaining(function (node) {
               return node.nodeName === 'B' || node.nodeName === 'STRONG';
             });
 
@@ -37,7 +38,7 @@ define([
             }
             h2Node.removeChild(strongNode);
           } else {
-            var node = range.commonAncestorContainer;
+            var node = selection.commonAncestorContainer;
             strongNode = document.createElement('strong');
 
             // TODO: create wrap function
@@ -48,8 +49,8 @@ define([
       };
 
       boldCommand.queryState = function () {
-        var range = new api.Range();
-        return !! range.getContaining(function (node) {
+        var selection = new api.Selection();
+        return !! selection.getContaining(function (node) {
           return node.nodeName === 'B' || node.nodeName === 'STRONG';
         });
       };

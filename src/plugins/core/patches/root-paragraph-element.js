@@ -1,4 +1,9 @@
-define(['../../../api', '../../../api/range'], function (api) {
+define([
+  '../../../api',
+  '../../../api/selection'
+], function (
+  api
+) {
 
   'use strict';
 
@@ -9,7 +14,9 @@ define(['../../../api', '../../../api/range'], function (api) {
        * browsers(?) will position the caret outside of the P when the editor is
        * focused.
        */
-      editable.html('<p><br></p>');
+       // Do not use `setHTML` method because we don't want to add to the
+       // undo stack in this case.
+      editable.el.innerHTML = '<p><br></p>';
 
       // TODO: move into separate patch
 
@@ -21,7 +28,7 @@ define(['../../../api', '../../../api/range'], function (api) {
       editable.el.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
 
-          var range = new api.Range();
+          var range = new api.Selection().range;
 
           if (range.collapsed) {
             if (range.commonAncestorContainer.nodeName === 'LI'

@@ -1,6 +1,6 @@
 define([
   '../api',
-  '../api/range',
+  '../api/selection',
   '../api/simple-command'
 ], function (
   api
@@ -15,8 +15,8 @@ define([
       var linkPromptCommand = new api.SimpleCommand(nodeName, 'createLink');
 
       linkPromptCommand.execute = function () {
-        var range = new api.Range();
-        var anchorNode = range.getContaining(function (node) {
+        var selection = new api.Selection();
+        var anchorNode = selection.getContaining(function (node) {
           return node.nodeName === nodeName;
         });
         var initialUrl = anchorNode ? anchorNode.href : 'http://';
