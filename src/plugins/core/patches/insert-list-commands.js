@@ -15,7 +15,7 @@ define([
 
         /**
          * Chrome: If we apply the insertOrderedList command on an empty P, the
-         * OL will be nested inside the P.
+         * OL/UL will be nested inside the P.
          * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
          */
         var selection = new api.Selection();
