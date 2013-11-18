@@ -71,36 +71,8 @@ define([
           if (selection.selection.isCollapsed && editable.text() === '' ||
               ! selection.selection.isCollapsed && isRangeAllContent(selection.range)) {
             event.preventDefault();
-
-            /**
-             * Chrome: Even with everything selected, in Chrome `insertHTML` does
-             * not replace the whole selection.
-             * As per: http://jsbin.com/elicInov/2/edit?html,js,output
-             *
-             * Chrome: The first delete will only remove the contents of the
-             * blockquote. Deleting twice works but adds more to the undo stack.
-             */
-
-            var contentRange = document.createRange();
-            contentRange.selectNodeContents(editable.el);
-
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(contentRange);
-
-            // Doing it this way means we don't break undo.
-
-            // TODO: write polyfill for `insertHTML` to do this for us.
-            document.execCommand('delete');
-            document.execCommand('delete');
-            document.execCommand('insertHTML', false, '<p><br></p>');
-
-            var node = editable.el.querySelector('p');
-
-            // TODO: review
-            selection.range.setStart(node, 0);
-            selection.range.setEnd(node, 0);
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(selection.range);
+            editable.setHTML('<p><em class="editor-marker"></em><br /></p>');
+            selection.selectMarkers(editable.el);
           }
         }
       }

@@ -10,7 +10,7 @@ define([
 
   return function () {
     return function (editable) {
-      var boldCommand = new api.Command('bold');
+      var boldCommand = new api.Command(editable, 'bold');
 
       boldCommand.execute = function () {
         var selection = new api.Selection();

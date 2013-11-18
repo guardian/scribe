@@ -17,7 +17,7 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new api.SimpleCommand(nodeName, 'formatBlock');
+      var headingCommand = new api.SimpleCommand(editable, 'formatBlock', nodeName);
 
       headingCommand.execute = function () {
         if (this.queryState()) {

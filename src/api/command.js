@@ -6,12 +6,13 @@ define([
 
   'use strict';
 
-  api.Command = function (commandName) {
+  api.Command = function (editable, commandName) {
+    this.editable = editable;
     this.commandName = commandName;
   };
 
   api.Command.prototype.execute = function (value) {
-    document.execCommand(this.commandName, false, value || null);
+    this.editable.execCommand(this.commandName, value);
   };
 
   api.Command.prototype.queryState = function () {

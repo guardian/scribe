@@ -14,6 +14,7 @@ define([
   function Editable(el) {
     this.el = el;
     this.commands = {};
+    this.patchedCommands = {};
 
     this.el.setAttribute('contenteditable', true);
 
@@ -22,6 +23,7 @@ define([
     this.use(patches.rootParagraphElement());
     // TODO: pair with undoManager?
     this.use(patches.undoCommand());
+    this.use(patches.indentCommand());
 
     this.use(formatters());
 
@@ -57,6 +59,15 @@ define([
 
   Editable.prototype.text = function () {
     return this.el.textContent.trim();
+  };
+
+  Editable.prototype.execCommand = function (commandName, value) {
+    var patchedCommand = this.patchedCommands[commandName];
+    if (patchedCommand) {
+      patchedCommand(value);
+    } else {
+      document.execCommand(commandName, false, value || null);
+    }
   };
 
   return Editable;

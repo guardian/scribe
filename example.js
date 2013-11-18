@@ -98,7 +98,7 @@ require({
    */
 
   function findCommand(commandName) {
-    return editable.commands[commandName] || new api.Command(commandName);
+    return editable.commands[commandName] || new api.Command(editable, commandName);
   }
 
   document.addEventListener('keydown', function (event) {

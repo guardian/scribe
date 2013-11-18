@@ -7,6 +7,8 @@ define([
 
   'use strict';
 
+  var INVISIBLE_CHAR = '\uFEFF';
+
   return function () {
     return function (editable) {
       /**

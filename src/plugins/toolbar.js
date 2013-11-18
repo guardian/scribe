@@ -14,7 +14,7 @@ define([
 
         Array.prototype.forEach.call(buttons, function (button) {
           // Look for a predefined command, otherwise define one now.
-          var command = editable.commands[button.dataset.commandName] || new api.Command(button.dataset.commandName);
+          var command = editable.commands[button.dataset.commandName] || new api.Command(editable, button.dataset.commandName);
 
           button.addEventListener('click', function () {
             command.execute();

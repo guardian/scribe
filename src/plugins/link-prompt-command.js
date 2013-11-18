@@ -12,7 +12,7 @@ define([
     return function (editable) {
       var nodeName = 'A';
 
-      var linkPromptCommand = new api.SimpleCommand(nodeName, 'createLink');
+      var linkPromptCommand = new api.SimpleCommand(editable, 'createLink', nodeName);
 
       linkPromptCommand.execute = function () {
         var selection = new api.Selection();

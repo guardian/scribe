@@ -8,8 +8,8 @@ define([
 
   'use strict';
 
-  api.SimpleCommand = function (nodeName, commandName) {
-    api.Command.call(this, commandName);
+  api.SimpleCommand = function (editable, commandName, nodeName) {
+    api.Command.call(this, editable, commandName);
 
     this.nodeName = nodeName;
   };

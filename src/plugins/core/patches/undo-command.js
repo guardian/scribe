@@ -9,7 +9,7 @@ define([
 
   return function () {
     return function (editable) {
-      var undoCommand = new api.Command('undo');
+      var undoCommand = new api.Command(editable, 'undo');
 
       undoCommand.execute = function () {
         restoreUndoItem(editable.undoManager.undo());
@@ -17,7 +17,7 @@ define([
 
       editable.commands.undo = undoCommand;
 
-      var redoCommand = new api.Command('redo');
+      var redoCommand = new api.Command(editable, 'redo');
 
       redoCommand.execute = function () {
         restoreUndoItem(editable.undoManager.redo());
