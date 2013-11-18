@@ -23,31 +23,56 @@ define([
       // TODO: move into separate patch
 
       /**
-       * Chrome: press <enter> in a block element goes into DIV mode.
-       * TODO: create isolated cases
+       * Chrome: press <enter> in a H2 / an empty LI creates DIV mode.
        */
 
       editable.el.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
 
-          var range = new api.Selection().range;
+          var selection = new api.Selection();
+          var range = selection.range;
 
           if (range.collapsed) {
             if (range.commonAncestorContainer.nodeName === 'LI'
               && range.commonAncestorContainer.innerHTML === '<br>') {
               /**
-               * We must not prevent the default event behaviour because this
-               * would lead to the LI not being deleted. This does have the side
-               * effect of creating an empty DIV.
+               * LIs
                */
-              setTimeout(function () {
-                document.execCommand('insertHTML', null, '<p><br></p>');
-              }, 0);
-            } else if (range.commonAncestorContainer instanceof window.Text
-              && range.commonAncestorContainer.parentNode.nodeName === 'H2') {
-              // TODO: other block elements?
+
               event.preventDefault();
-              document.execCommand('insertHTML', null, '<p><br></p>');
+
+              var pNode = document.createElement('p');
+              var textNode = document.createTextNode(INVISIBLE_CHAR);
+              pNode.appendChild(textNode);
+              editable.el.insertBefore(pNode, range.commonAncestorContainer.nextSibling);
+              range.commonAncestorContainer.remove();
+
+              range.setStart(textNode);
+              range.setEnd(textNode);
+
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(range);
+
+            } else if (range.commonAncestorContainer instanceof window.Text
+              && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
+              /**
+               * Heading elements
+               */
+
+              event.preventDefault();
+
+              var pNode = document.createElement('p');
+              var textNode = document.createTextNode(INVISIBLE_CHAR);
+              pNode.appendChild(textNode);
+              editable.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
+
+              // Re-apply range
+              range.setStart(textNode);
+              range.setEnd(textNode);
+
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(range);
+
             }
           }
         }
