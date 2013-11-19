@@ -1,6 +1,6 @@
 define([
   '../../../api',
-  '../../../api/command'
+  '../../../api/selection'
 ], function (
   api
 ) {
@@ -9,21 +9,27 @@ define([
 
   return function () {
     return function (editable) {
-      var undoCommand = new api.Command(editable, 'undo');
+      editable.patchedCommands.undo = undoCommand;
+      editable.patchedCommands.redo = redoCommand;
 
-      undoCommand.execute = function () {
+      editable.el.addEventListener('keydown', function (event) {
+        if (event.metaKey && event.keyCode === 90) {
+          event.preventDefault();
+          if (event.shiftKey) {
+            editable.execCommand('redo');
+          } else {
+            editable.execCommand('undo');
+          }
+        }
+      });
+
+      function undoCommand() {
         restoreUndoItem(editable.undoManager.undo());
-      };
+      }
 
-      editable.commands.undo = undoCommand;
-
-      var redoCommand = new api.Command(editable, 'redo');
-
-      redoCommand.execute = function () {
+      function redoCommand() {
         restoreUndoItem(editable.undoManager.redo());
-      };
-
-      editable.commands.redo = redoCommand;
+      }
 
       function restoreUndoItem(item) {
         editable.el.innerHTML = item;
