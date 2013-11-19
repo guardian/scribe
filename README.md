@@ -5,7 +5,9 @@ editor
 * "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
-* "`outdent`": http://jsbin.com/okAYaHa/1/edit?html,js,output
+* "`outdent`":
+  - http://jsbin.com/okAYaHa/1/edit?html,js,output
+  - http://jsbin.com/IfaRaFO/1/edit?html,js,output
 * "`insertOrderedList`/`insertOrderedList`": http://jsbin.com/eFiRedUc/1/edit?html,js,output
 * "`indent`":
   - BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output

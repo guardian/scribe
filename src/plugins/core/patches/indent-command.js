@@ -16,7 +16,7 @@ define([
         /**
          * Chrome: If we apply the indent command on an empty P, the
          * BLOCKQUOTE will be nested inside the P.
-         * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
+         * As per: http://jsbin.com/oDOriyU/3/edit?html,js,output
          */
         var selection = new api.Selection();
         var range = selection.range;

@@ -3,10 +3,10 @@
 
 # Outstanding Patches
 * Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
-* Possible to have B and STRONG
+* Chrome and Firefox: Bold command uses B node instead of STRONG
 * Adding bold to a H2 does not update toolbar
 * Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps
-* Chrome: Add a UL/OL, apply blockquote = nested UL/Ols (infinite)
+* Chrome: Add a UL/OL, apply blockquote = nested UL/OLs (infinite)
   - User can recover by using backspace.
 
 # To Investigate
