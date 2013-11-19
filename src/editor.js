@@ -67,7 +67,7 @@ define([
   };
 
   Editor.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || new api.Command(this, commandName);
+    return this.commands[commandName] || this.patchedCommands[commandName] || new api.Command(this, commandName);
   };
 
   return Editor;
