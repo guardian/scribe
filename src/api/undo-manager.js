@@ -10,11 +10,7 @@ define([
   api.UndoManager = function () {
     this.position = 0;
 
-    this.stack = [{
-      value: 0,
-      selectionStart: 0,
-      selectionEnd: 0
-    }];
+    this.stack = [''];
   };
 
   api.UndoManager.prototype.push = function (item) {
