@@ -19,6 +19,9 @@ define([
 
       InsertListCommandPatch.prototype.execute = function (value) {
         if (this.queryState()) {
+          /**
+           * When the list is unapplied, ensure that we enter a P element.
+           */
           var selection = new api.Selection();
           var range = selection.range;
 
