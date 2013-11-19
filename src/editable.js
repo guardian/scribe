@@ -32,7 +32,7 @@ define([
     this.undoManager = new api.UndoManager();
 
     this.el.addEventListener('input', function () {
-      this.undoManager.push(this.getHTML());
+      this.pushHistory();
     }.bind(this), false);
   }
 
@@ -55,7 +55,7 @@ define([
   };
 
   Editable.prototype.setHTML = function (html) {
-    this.undoManager.push(this.getHTML());
+    this.pushHistory();
     this.el.innerHTML = html;
   };
 
@@ -70,6 +70,10 @@ define([
     } else {
       document.execCommand(commandName, false, value || null);
     }
+  };
+
+  Editable.prototype.pushHistory = function () {
+    this.undoManager.push(this.getHTML());
   };
 
   return Editable;
