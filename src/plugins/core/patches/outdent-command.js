@@ -19,26 +19,47 @@ define([
          * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
          */
         var selection = new api.Selection();
+        var range = selection.range;
 
-        var pNode = selection.getContaining(function (node) {
-          return node.nodeName === 'P';
-        });
+        if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
+          var blockquoteNode = range.commonAncestorContainer;
 
-        if (pNode) {
-          var blockquoteNode = selection.getContaining(function (node) {
-            return node.nodeName === 'BLOCKQUOTE';
-          });
-
+          // Insert a copy of the selection before the BLOCKQUOTE, and then
+          // restore the selection on the copy.
           selection.placeMarkers();
-
-          editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
-
+          // We want to copy the selected nodes *with* the markers
+          selection.selectMarkers(editor.el, true);
+          var selectedNodes = range.cloneContents();
+          blockquoteNode.parentNode.insertBefore(selectedNodes, blockquoteNode);
+          range.deleteContents();
           selection.selectMarkers(editor.el);
 
-          editor.pushHistory();
-        }
+          // Delete the BLOCKQUOTE if it's empty
+          if (blockquoteNode.innerText === '') {
+            blockquoteNode.remove();
+          }
 
-        api.CommandPatch.prototype.execute.call(this, value);
+          editor.pushHistory();
+        } else {
+          // TODO: does not work if used in the middle of a blockquote.
+          var pNode = selection.getContaining(function (node) {
+            return node.nodeName === 'P';
+          });
+
+          if (pNode) {
+            var blockquoteNode = selection.getContaining(function (node) {
+              return node.nodeName === 'BLOCKQUOTE';
+            });
+
+            selection.placeMarkers();
+            editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
+            selection.selectMarkers(editor.el);
+
+            editor.pushHistory();
+          }
+
+          api.CommandPatch.prototype.execute.call(this, value);
+        }
       };
 
       editor.patchedCommands.outdent = outdentCommand;

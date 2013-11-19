@@ -2,7 +2,6 @@
 * Remove event listeners, emit unbind to plugins so that can too
 
 # Outstanding Patches
-* Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
 * Chrome and Firefox: Bold command uses B node instead of STRONG
 * Adding bold to a H2 does not update toolbar
 * Chrome: Add a UL/OL, apply blockquote = nested UL/OLs (infinite)
@@ -18,3 +17,5 @@
 * Chrome: Add UL = Nests UL inside of P
 * Chrome: Add OL = Nests OL inside of P
 * Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps
+  - Breaks when blockquote is unapplied on middle paragraph element.
+* Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps

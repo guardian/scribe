@@ -51,7 +51,7 @@ define([
   };
 
   // TODO: use range for editorNode?
-  api.Selection.prototype.selectMarkers = function (editorNode) {
+  api.Selection.prototype.selectMarkers = function (editorNode, keepMarkers) {
     var markers = this.getMarkers(editorNode);
     if (!markers.length) {
       return;
@@ -62,7 +62,9 @@ define([
       this.range.setEndAfter(markers[1]);
     }
 
-    this.removeMarkers(editorNode);
+    if (! keepMarkers) {
+      this.removeMarkers(editorNode);
+    }
 
     this.selection.removeAllRanges();
     this.selection.addRange(this.range);
