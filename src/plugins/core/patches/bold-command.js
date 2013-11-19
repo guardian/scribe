@@ -47,6 +47,8 @@ define([
             node.parentNode.insertBefore(strongNode, node);
             strongNode.appendChild(node);
           }
+
+          editor.pushHistory();
         }
       };
 

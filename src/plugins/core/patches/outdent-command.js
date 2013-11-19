@@ -38,8 +38,6 @@ define([
           if (blockquoteNode.innerText === '') {
             blockquoteNode.remove();
           }
-
-          editor.pushHistory();
         } else {
           // TODO: does not work if used in the middle of a blockquote.
           var pNode = selection.getContaining(function (node) {
@@ -54,12 +52,12 @@ define([
             selection.placeMarkers();
             editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
             selection.selectMarkers(editor.el);
-
-            editor.pushHistory();
           }
 
           api.CommandPatch.prototype.execute.call(this, value);
         }
+
+        editor.pushHistory();
       };
 
       editor.patchedCommands.outdent = outdentCommand;
