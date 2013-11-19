@@ -23,7 +23,8 @@ define([
       // TODO: move into separate patch
 
       /**
-       * Chrome: press <enter> in a H2 / an empty LI creates DIV mode.
+       * All browsers will put us into <div> mode when we remove formatting of a
+       * heading or list element.
        */
 
       editor.el.addEventListener('keydown', function (event) {
