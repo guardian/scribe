@@ -47,8 +47,8 @@ define([
               editable.el.insertBefore(pNode, range.commonAncestorContainer.nextSibling);
               range.commonAncestorContainer.remove();
 
-              range.setStart(textNode);
-              range.setEnd(textNode);
+              range.setStart(textNode, 0);
+              range.setEnd(textNode, 0);
 
               selection.selection.removeAllRanges();
               selection.selection.addRange(range);
@@ -67,8 +67,8 @@ define([
               editable.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
 
               // Re-apply range
-              range.setStart(textNode);
-              range.setEnd(textNode);
+              range.setStart(textNode, 0);
+              range.setEnd(textNode, 0);
 
               selection.selection.removeAllRanges();
               selection.selection.addRange(range);

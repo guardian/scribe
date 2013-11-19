@@ -26,8 +26,8 @@ define([
 
           range.insertNode(textNode);
 
-          range.setStart(textNode);
-          range.setEnd(textNode);
+          range.setStart(textNode, 0);
+          range.setEnd(textNode, 0);
 
           selection.selection.removeAllRanges();
           selection.selection.addRange(range);
