@@ -15,7 +15,7 @@ define([
       boldCommand.execute = function () {
         var selection = new api.Selection();
         var h2Node = selection.getContaining(function (node) {
-          return node.nodeName === 'H2';
+          return (/^(H[1-6])$/).test(node.nodeName);
         });
 
         if (! h2Node) {
