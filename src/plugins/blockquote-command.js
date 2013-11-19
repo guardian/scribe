@@ -14,7 +14,7 @@ define([
 
       blockquoteCommand.execute = function () {
         if (this.queryState()) {
-          document.execCommand('outdent');
+          editable.execCommand('outdent');
         } else {
           editable.execCommand('indent');
         }
