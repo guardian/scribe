@@ -13,6 +13,7 @@
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV
 * Chrome: Add empty LI, <enter> = Creates DIV
+* Chrome: Add LI, unapply list = Creates DIV
 * Chrome: Add BLOCKQUOTE = Nests BLOCKQUOTE inside of P
 * Chrome: Add UL = Nests UL inside of P
 * Chrome: Add OL = Nests OL inside of P

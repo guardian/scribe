@@ -35,23 +35,20 @@ define([
           if (range.collapsed) {
             if (range.commonAncestorContainer.nodeName === 'LI'
               && range.commonAncestorContainer.innerHTML === '<br>') {
+              // TODO: test innerText instead?
               /**
                * LIs
                */
 
               event.preventDefault();
 
-              var pNode = document.createElement('p');
-              var textNode = document.createTextNode(INVISIBLE_CHAR);
-              pNode.appendChild(textNode);
-              editor.el.insertBefore(pNode, range.commonAncestorContainer.nextSibling);
-              range.commonAncestorContainer.remove();
+              var listNode = selection.getContaining(function (node) {
+                return node.nodeName === 'UL' || node.nodeName === 'OL';
+              });
 
-              range.setStart(textNode, 0);
-              range.setEnd(textNode, 0);
+              var command = editor.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
 
-              selection.selection.removeAllRanges();
-              selection.selection.addRange(range);
+              command.execute();
 
             } else if (range.commonAncestorContainer instanceof window.Text
               && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
