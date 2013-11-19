@@ -59,7 +59,7 @@ define([
 
     this.range.setStartBefore(markers[0]);
     if (markers.length >= 2) {
-      this.range.setEndBefore(markers[1]);
+      this.range.setEndAfter(markers[1]);
     }
 
     this.removeMarkers(editorNode);
