@@ -9,6 +9,7 @@
 
 # To Investigate
 * Add H, tranform into UL
+* Buttons do not update the instance they are clicked. You have to start typing.
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV
