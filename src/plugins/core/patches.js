@@ -5,7 +5,7 @@ define([
   './patches/insert-list-commands',
   './patches/outdent-command',
   './patches/root-paragraph-element',
-  './patches/undo-command'
+  './patches/undo-manager-commands'
 ], function (
   boldCommand,
   emptyEditorWhenDeleting,
@@ -13,7 +13,7 @@ define([
   insertListCommands,
   outdentCommand,
   rootParagraphElement,
-  undoCommand
+  undoManagerCommands
 ) {
 
   'use strict';
@@ -25,7 +25,7 @@ define([
     insertListCommands: insertListCommands,
     outdentCommand: outdentCommand,
     rootParagraphElement: rootParagraphElement,
-    undoCommand: undoCommand
+    undoManagerCommand: undoManagerCommands
   };
 
 });
