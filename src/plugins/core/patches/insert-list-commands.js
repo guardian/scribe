@@ -56,7 +56,6 @@ define([
            * OL/UL will be nested inside the P.
            * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
            */
-          // TODO: remove empty P
 
           var selection = new api.Selection();
           var range = selection.range;
@@ -73,6 +72,7 @@ define([
               selection.placeMarkers();
               editor.el.insertBefore(listNode, listParentNode.nextElementSibling);
               selection.selectMarkers(editor.el);
+              listParentNode.remove();
 
               editor.pushHistory();
             }
