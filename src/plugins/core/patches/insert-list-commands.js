@@ -41,6 +41,10 @@ define([
           editor.el.insertBefore(pNode, listNode.nextElementSibling);
           listItemNode.remove();
 
+          if (listNode.innerHTML === '') {
+            listNode.remove();
+          }
+
           selection.selectMarkers(editor.el);
 
           editor.pushHistory();
