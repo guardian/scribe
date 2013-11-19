@@ -34,24 +34,7 @@ define([
           var range = selection.range;
 
           if (range.collapsed) {
-            if (range.commonAncestorContainer.nodeName === 'LI'
-              && range.commonAncestorContainer.innerHTML === '<br>') {
-              // TODO: test innerText instead?
-              /**
-               * LIs
-               */
-
-              event.preventDefault();
-
-              var listNode = selection.getContaining(function (node) {
-                return node.nodeName === 'UL' || node.nodeName === 'OL';
-              });
-
-              var command = editor.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
-
-              command.execute();
-
-            } else if (range.commonAncestorContainer instanceof window.Text
+            if (range.commonAncestorContainer instanceof window.Text
               && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
               /**
                * Heading elements
