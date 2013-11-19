@@ -12,7 +12,7 @@ editor
   - Chrome nests list inside of P: http://jsbin.com/eFiRedUc/1/edit?html,js,output
   - http://jsbin.com/abOLUNU/1/edit?html,js,output
 * "`indent`":
-  - BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
+  - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
   - ULs: http://jsbin.com/ORikUPa/3/edit?html,js,output
 
 ## Patches
