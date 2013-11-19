@@ -20,11 +20,10 @@ define([
 
     this.use(patches.boldCommand());
     this.use(patches.emptyEditorWhenDeleting());
-    this.use(patches.rootParagraphElement());
-    // TODO: pair with undoManager?
     this.use(patches.indentCommand());
     this.use(patches.insertListCommands());
     this.use(patches.outdentCommand());
+    this.use(patches.rootParagraphElement());
     this.use(patches.undoManagerCommands());
 
     this.use(formatters());

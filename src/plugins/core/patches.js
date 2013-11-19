@@ -25,7 +25,7 @@ define([
     insertListCommands: insertListCommands,
     outdentCommand: outdentCommand,
     rootParagraphElement: rootParagraphElement,
-    undoManagerCommand: undoManagerCommands
+    undoManagerCommands: undoManagerCommands
   };
 
 });
