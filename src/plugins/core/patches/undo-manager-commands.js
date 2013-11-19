@@ -13,13 +13,21 @@ define([
       var undoCommand = new api.CommandPatch('undo');
 
       undoCommand.execute = function () {
-        restoreUndoItem(editor.undoManager.undo());
+        var undoItem = editor.undoManager.undo();
+
+        if (typeof undoItem !== 'undefined') {
+          restoreUndoItem(undoItem);
+        }
       };
 
       var redoCommand = new api.CommandPatch('redo');
 
       redoCommand.execute = function () {
-        restoreUndoItem(editor.undoManager.redo());
+        var undoItem = editor.undoManager.redo();
+
+        if (typeof undoItem !== 'undefined') {
+          restoreUndoItem(undoItem);
+        }
       };
 
       editor.patchedCommands.undo = undoCommand;
