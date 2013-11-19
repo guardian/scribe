@@ -9,7 +9,7 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
       function insertListCommand(value) {
         document.execCommand('insertOrderedList', false, value);
 
@@ -30,14 +30,14 @@ define([
           // If list is within a text block then split that block
           if (/^(H[1-6]|P|ADDRESS|PRE)$/.test(listParentNode.nodeName)) {
             selection.placeMarkers();
-            editable.el.insertBefore(listNode, listParentNode.nextElementSibling);
-            selection.selectMarkers(editable.el);
+            editor.el.insertBefore(listNode, listParentNode.nextElementSibling);
+            selection.selectMarkers(editor.el);
           }
         }
       }
 
-      editable.patchedCommands.insertOrderedList = insertListCommand;
-      editable.patchedCommands.insertUnorderedList = insertListCommand;
+      editor.patchedCommands.insertOrderedList = insertListCommand;
+      editor.patchedCommands.insertUnorderedList = insertListCommand;
     };
   };
 

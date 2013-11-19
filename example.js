@@ -5,7 +5,7 @@ require({
     'q': '../bower_components/q/q'
   }
 }, [
-  'editable',
+  'editor',
   'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/link-prompt-command',
@@ -14,7 +14,7 @@ require({
   'api',
   'api/command'
 ], function (
-  Editable,
+  Editor,
   blockquoteCommand,
   headingCommand,
   linkPromptCommand,
@@ -25,12 +25,12 @@ require({
 
   'use strict';
 
-  var editable = new Editable(document.querySelector('.editor'));
+  var editor = new Editor(document.querySelector('.editor'));
 
-  editable.el.addEventListener('input', updateHTML);
+  editor.el.addEventListener('input', updateHTML);
 
   function updateHTML() {
-    document.querySelector('.editor-html').textContent = editable.el.innerHTML;
+    document.querySelector('.editor-html').textContent = editor.el.innerHTML;
   }
 
   /**
@@ -38,8 +38,8 @@ require({
    */
 
   // Unfortunately, there is no `selectionchange` event.
-  editable.el.addEventListener('keyup', showOrHideInlineToolbar);
-  editable.el.addEventListener('mouseup', showOrHideInlineToolbar);
+  editor.el.addEventListener('keyup', showOrHideInlineToolbar);
+  editor.el.addEventListener('mouseup', showOrHideInlineToolbar);
 
   var tooltip = document.createElement('div');
   // Lazily copy the existing toolbar, insert it dynamically
@@ -68,10 +68,10 @@ require({
    * Plugins
    */
 
-  editable.use(blockquoteCommand());
-  editable.use(headingCommand(2));
-  editable.use(linkPromptCommand());
-  editable.use(sanitizer({
+  editor.use(blockquoteCommand());
+  editor.use(headingCommand(2));
+  editor.use(linkPromptCommand());
+  editor.use(sanitizer({
     tags: {
       p: [],
       b: [],
@@ -86,7 +86,7 @@ require({
       h2: []
     }
   }));
-  editable.use(toolbar(document.querySelectorAll('.toolbar')));
+  editor.use(toolbar(document.querySelectorAll('.toolbar')));
 
   /**
    * Keyboard shortcuts
@@ -98,7 +98,7 @@ require({
    */
 
   function findCommand(commandName) {
-    return editable.commands[commandName] || new api.Command(editable, commandName);
+    return editor.commands[commandName] || new api.Command(editor, commandName);
   }
 
   document.addEventListener('keydown', function (event) {
@@ -136,7 +136,7 @@ require({
    * Rename nodes
    */
 
-  editable.formatters.push(function (html) {
+  editor.formatters.push(function (html) {
     var config = {
       b: 'strong'
     };

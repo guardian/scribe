@@ -11,7 +11,7 @@ define([
 
   'use strict';
 
-  function Editable(el) {
+  function Editor(el) {
     this.el = el;
     this.commands = {};
     this.patchedCommands = {};
@@ -37,13 +37,13 @@ define([
 
   // For plugins
   // TODO: tap combinator?
-  Editable.prototype.use = function (fn) {
+  Editor.prototype.use = function (fn) {
     fn(this);
     return this;
   };
 
 
-  Editable.prototype.getHTML = function () {
+  Editor.prototype.getHTML = function () {
     var selection = new api.Selection();
 
     selection.placeMarkers();
@@ -53,16 +53,16 @@ define([
     return html;
   };
 
-  Editable.prototype.setHTML = function (html) {
+  Editor.prototype.setHTML = function (html) {
     this.pushHistory();
     this.el.innerHTML = html;
   };
 
-  Editable.prototype.text = function () {
+  Editor.prototype.text = function () {
     return this.el.textContent.trim();
   };
 
-  Editable.prototype.execCommand = function (commandName, value) {
+  Editor.prototype.execCommand = function (commandName, value) {
     var patchedCommand = this.patchedCommands[commandName];
     if (patchedCommand) {
       patchedCommand(value);
@@ -71,10 +71,10 @@ define([
     }
   };
 
-  Editable.prototype.pushHistory = function () {
+  Editor.prototype.pushHistory = function () {
     this.undoManager.push(this.getHTML());
   };
 
-  return Editable;
+  return Editor;
 
 });

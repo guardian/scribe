@@ -20,9 +20,9 @@ define([
    */
 
   return function emptyEditorWhenDeleting() {
-    return function (editable) {
+    return function (editor) {
 
-      editable.el.addEventListener('keydown', handleKeydown.bind(editable));
+      editor.el.addEventListener('keydown', handleKeydown.bind(editor));
 
       /**
        * Serialise a range into a HTML string.
@@ -47,7 +47,7 @@ define([
         var serialisedSelection = serialiseRangeToHTML(range);
 
         var contentRange = new window.Range();
-        contentRange.selectNodeContents(editable.el);
+        contentRange.selectNodeContents(editor.el);
 
         var serialisedContent = serialiseRangeToHTML(contentRange);
 
@@ -68,11 +68,11 @@ define([
            * This branch need not run in Chrome upon the second condition, but it does, for now.
            */
 
-          if (selection.selection.isCollapsed && editable.text() === '' ||
+          if (selection.selection.isCollapsed && editor.text() === '' ||
               ! selection.selection.isCollapsed && isRangeAllContent(selection.range)) {
             event.preventDefault();
-            editable.setHTML('<p><em class="editor-marker"></em><br /></p>');
-            selection.selectMarkers(editable.el);
+            editor.setHTML('<p><em class="editor-marker"></em><br /></p>');
+            selection.selectMarkers(editor.el);
           }
         }
       }

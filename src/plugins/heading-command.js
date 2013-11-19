@@ -8,7 +8,7 @@ define([
   'use strict';
 
   return function (level) {
-    return function (editable) {
+    return function (editor) {
       var tag = '<h' + level + '>';
       var nodeName = 'H' + level;
       var commandName = 'h' + level;
@@ -17,7 +17,7 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new api.SimpleCommand(editable, 'formatBlock', nodeName);
+      var headingCommand = new api.SimpleCommand(editor, 'formatBlock', nodeName);
 
       headingCommand.execute = function () {
         if (this.queryState()) {
@@ -27,7 +27,7 @@ define([
         }
       };
 
-      editable.commands[commandName] = headingCommand;
+      editor.commands[commandName] = headingCommand;
     };
   };
 

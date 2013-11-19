@@ -11,7 +11,7 @@ define([
   var INVISIBLE_CHAR = '\uFEFF';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
       function indentCommand(value) {
         /**
          * Chrome: If we apply the indent command on an empty P, the
@@ -32,13 +32,13 @@ define([
           selection.selection.removeAllRanges();
           selection.selection.addRange(range);
 
-          editable.pushHistory();
+          editor.pushHistory();
         }
 
         document.execCommand('indent', false, value);
       }
 
-      editable.patchedCommands.indent = indentCommand;
+      editor.patchedCommands.indent = indentCommand;
     };
   };
 

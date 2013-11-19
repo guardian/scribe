@@ -9,7 +9,7 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
       function outdentCommand(value) {
         /**
          * Chrome: If we apply the outdent command on a P, the contents of the P
@@ -29,17 +29,17 @@ define([
 
           selection.placeMarkers();
 
-          editable.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
+          editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
 
-          selection.selectMarkers(editable.el);
+          selection.selectMarkers(editor.el);
 
-          editable.pushHistory();
+          editor.pushHistory();
         }
 
         document.execCommand('outdent', false, value);
       }
 
-      editable.patchedCommands.outdent = outdentCommand;
+      editor.patchedCommands.outdent = outdentCommand;
     };
   };
 

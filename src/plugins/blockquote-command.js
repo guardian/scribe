@@ -9,18 +9,18 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
-      var blockquoteCommand = new api.SimpleCommand(editable, 'blockquote', 'BLOCKQUOTE');
+    return function (editor) {
+      var blockquoteCommand = new api.SimpleCommand(editor, 'blockquote', 'BLOCKQUOTE');
 
       blockquoteCommand.execute = function () {
         if (this.queryState()) {
-          editable.execCommand('outdent');
+          editor.execCommand('outdent');
         } else {
-          editable.execCommand('indent');
+          editor.execCommand('indent');
         }
       };
 
-      editable.commands.blockquote = blockquoteCommand;
+      editor.commands.blockquote = blockquoteCommand;
     };
   };
 

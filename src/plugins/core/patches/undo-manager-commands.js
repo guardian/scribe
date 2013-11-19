@@ -8,35 +8,35 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
-      editable.patchedCommands.undo = undoCommand;
-      editable.patchedCommands.redo = redoCommand;
+    return function (editor) {
+      editor.patchedCommands.undo = undoCommand;
+      editor.patchedCommands.redo = redoCommand;
 
-      editable.el.addEventListener('keydown', function (event) {
+      editor.el.addEventListener('keydown', function (event) {
         if (event.metaKey && event.keyCode === 90) {
           event.preventDefault();
           if (event.shiftKey) {
-            editable.execCommand('redo');
+            editor.execCommand('redo');
           } else {
-            editable.execCommand('undo');
+            editor.execCommand('undo');
           }
         }
       });
 
       function undoCommand() {
-        restoreUndoItem(editable.undoManager.undo());
+        restoreUndoItem(editor.undoManager.undo());
       }
 
       function redoCommand() {
-        restoreUndoItem(editable.undoManager.redo());
+        restoreUndoItem(editor.undoManager.redo());
       }
 
       function restoreUndoItem(item) {
-        editable.el.innerHTML = item;
+        editor.el.innerHTML = item;
 
         // Restore the selection
         var selection = new api.Selection();
-        selection.selectMarkers(editable.el);
+        selection.selectMarkers(editor.el);
       }
     };
   };

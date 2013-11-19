@@ -9,10 +9,10 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
       var nodeName = 'A';
 
-      var linkPromptCommand = new api.SimpleCommand(editable, 'createLink', nodeName);
+      var linkPromptCommand = new api.SimpleCommand(editor, 'createLink', nodeName);
 
       linkPromptCommand.execute = function () {
         var selection = new api.Selection();
@@ -24,7 +24,7 @@ define([
         api.Command.prototype.execute.call(this, url);
       };
 
-      editable.commands.linkPrompt = linkPromptCommand;
+      editor.commands.linkPrompt = linkPromptCommand;
     };
   };
 

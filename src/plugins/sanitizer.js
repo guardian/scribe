@@ -7,22 +7,22 @@ define([
   'use strict';
 
   return function (config) {
-    return function (editable) {
-      return sanitizer(editable, config);
+    return function (editor) {
+      return sanitizer(editor, config);
     };
   };
 
   /**
-   * Initializes sanitizer plugin on Editable instance.
+   * Initializes sanitizer plugin on Editor instance.
    *
-   * @param {Editable} editable
+   * @param {Editor} editor
    * @param {Object} config For configuring the janitor
    * @return {self}
    */
-  function sanitizer(editable, config) {
+  function sanitizer(editor, config) {
     var janitor = new HTMLJanitor(config);
 
-    editable.formatters.push(janitor.clean.bind(janitor));
+    editor.formatters.push(janitor.clean.bind(janitor));
   }
 
 });

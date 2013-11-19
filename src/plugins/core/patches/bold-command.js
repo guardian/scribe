@@ -9,8 +9,8 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
-      var boldCommand = new api.Command(editable, 'bold');
+    return function (editor) {
+      var boldCommand = new api.Command(editor, 'bold');
 
       boldCommand.execute = function () {
         var selection = new api.Selection();
@@ -55,7 +55,7 @@ define([
         });
       };
 
-      editable.commands.bold = boldCommand;
+      editor.commands.bold = boldCommand;
     };
   };
 

@@ -8,11 +8,11 @@ define([
   'use strict';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
 
-      editable.formatters = [];
+      editor.formatters = [];
 
-      editable.el.addEventListener('paste', handlePaste);
+      editor.el.addEventListener('paste', handlePaste);
 
       /**
        * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
@@ -21,7 +21,7 @@ define([
 
       /**
        * Format the clipboard data on paste.
-       * @param  {Editable} editable The instance to polyfill.
+       * @param  {Editor} editor The instance to polyfill.
        * @param  {Event} event
        * @return {Q.Promise}
        */
@@ -68,7 +68,7 @@ define([
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
-            selection.selectMarkers(editable.el);
+            selection.selectMarkers(editor.el);
 
             formatAndInsert(data);
           }, 1);
@@ -76,7 +76,7 @@ define([
       }
 
       function formatAndInsert(html) {
-        var formattedHTML = editable.formatters.reduce(function (formattedData, formatter) {
+        var formattedHTML = editor.formatters.reduce(function (formattedData, formatter) {
           return formatter(formattedData);
         }, html);
 

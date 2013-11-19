@@ -10,7 +10,7 @@ define([
   var INVISIBLE_CHAR = '\uFEFF';
 
   return function () {
-    return function (editable) {
+    return function (editor) {
       /**
        * We have to begin with the following HTML, because otherwise some
        * browsers(?) will position the caret outside of the P when the editor is
@@ -18,7 +18,7 @@ define([
        */
        // Do not use `setHTML` method because we don't want to add to the
        // undo stack in this case.
-      editable.el.innerHTML = '<p><br></p>';
+      editor.el.innerHTML = '<p><br></p>';
 
       // TODO: move into separate patch
 
@@ -26,7 +26,7 @@ define([
        * Chrome: press <enter> in a H2 / an empty LI creates DIV mode.
        */
 
-      editable.el.addEventListener('keydown', function (event) {
+      editor.el.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
 
           var selection = new api.Selection();
@@ -44,7 +44,7 @@ define([
               var pNode = document.createElement('p');
               var textNode = document.createTextNode(INVISIBLE_CHAR);
               pNode.appendChild(textNode);
-              editable.el.insertBefore(pNode, range.commonAncestorContainer.nextSibling);
+              editor.el.insertBefore(pNode, range.commonAncestorContainer.nextSibling);
               range.commonAncestorContainer.remove();
 
               range.setStart(textNode, 0);
@@ -64,7 +64,7 @@ define([
               var pNode = document.createElement('p');
               var textNode = document.createTextNode(INVISIBLE_CHAR);
               pNode.appendChild(textNode);
-              editable.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
+              editor.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
 
               // Re-apply range
               range.setStart(textNode, 0);
