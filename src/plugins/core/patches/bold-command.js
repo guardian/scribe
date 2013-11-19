@@ -38,7 +38,8 @@ define([
             }
             h2Node.removeChild(strongNode);
           } else {
-            var node = selection.commonAncestorContainer;
+            // Wrap in STRONG
+            var node = selection.range.commonAncestorContainer;
             strongNode = document.createElement('strong');
 
             // TODO: create wrap function
