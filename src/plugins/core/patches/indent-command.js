@@ -1,5 +1,6 @@
 define([
   '../../../api',
+  '../../../api/command-patch',
   '../../../api/selection'
 ], function (
   api
@@ -11,7 +12,9 @@ define([
 
   return function () {
     return function (editor) {
-      function indentCommand(value) {
+      var indentCommand = new api.CommandPatch('indent');
+
+      indentCommand.execute = function (value) {
         /**
          * Chrome: If we apply the indent command on an empty P, the
          * BLOCKQUOTE will be nested inside the P.
@@ -34,8 +37,8 @@ define([
           editor.pushHistory();
         }
 
-        document.execCommand('indent', false, value);
-      }
+        api.CommandPatch.prototype.execute.call(this, value);
+      };
 
       editor.patchedCommands.indent = indentCommand;
     };

@@ -1,5 +1,6 @@
 define([
   '../../../api',
+  '../../../api/command-patch',
   '../../../api/selection'
 ], function (
   api
@@ -9,7 +10,9 @@ define([
 
   return function () {
     return function (editor) {
-      function outdentCommand(value) {
+      var outdentCommand = new api.CommandPatch('outdent');
+
+      outdentCommand.execute = function (value) {
         /**
          * Chrome: If we apply the outdent command on a P, the contents of the P
          * will be outdented instead of the whole P element.
@@ -35,8 +38,8 @@ define([
           editor.pushHistory();
         }
 
-        document.execCommand('outdent', false, value);
-      }
+        api.CommandPatch.prototype.execute.call(this, value);
+      };
 
       editor.patchedCommands.outdent = outdentCommand;
     };

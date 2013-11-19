@@ -13,11 +13,13 @@ define([
       var blockquoteCommand = new api.SimpleCommand(editor, 'blockquote', 'BLOCKQUOTE');
 
       blockquoteCommand.execute = function () {
+        var command;
         if (this.queryState()) {
-          editor.execCommand('outdent');
+          command = editor.getCommand('outdent');
         } else {
-          editor.execCommand('indent');
+          command = editor.getCommand('indent');
         }
+        command.execute();
       };
 
       editor.commands.blockquote = blockquoteCommand;

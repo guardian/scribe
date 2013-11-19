@@ -10,8 +10,15 @@ define([
 
   return function () {
     return function (editor) {
-      function insertListCommand(value) {
-        document.execCommand('insertOrderedList', false, value);
+      var InsertListCommandPatch = function (commandName) {
+        api.CommandPatch.call(this, commandName);
+      };
+
+      InsertListCommandPatch.prototype = Object.create(api.CommandPatch.prototype);
+      InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
+
+      InsertListCommandPatch.prototype.execute = function (value) {
+        api.CommandPatch.prototype.execute.call(this, value);
 
         /**
          * Chrome: If we apply the insertOrderedList command on an empty P, the
@@ -34,10 +41,10 @@ define([
             selection.selectMarkers(editor.el);
           }
         }
-      }
+      };
 
-      editor.patchedCommands.insertOrderedList = insertListCommand;
-      editor.patchedCommands.insertUnorderedList = insertListCommand;
+      editor.patchedCommands.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
+      editor.patchedCommands.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
     };
   };
 

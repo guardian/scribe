@@ -1,5 +1,6 @@
 define([
   '../../../api',
+  '../../../api/command-patch',
   '../../../api/selection'
 ], function (
   api
@@ -9,27 +10,28 @@ define([
 
   return function () {
     return function (editor) {
+      var undoCommand = new api.CommandPatch('undo');
+
+      undoCommand.execute = function () {
+        restoreUndoItem(editor.undoManager.undo());
+      };
+
+      var redoCommand = new api.CommandPatch('redo');
+
+      redoCommand.execute = function () {
+        restoreUndoItem(editor.undoManager.redo());
+      };
+
       editor.patchedCommands.undo = undoCommand;
       editor.patchedCommands.redo = redoCommand;
 
       editor.el.addEventListener('keydown', function (event) {
         if (event.metaKey && event.keyCode === 90) {
           event.preventDefault();
-          if (event.shiftKey) {
-            editor.execCommand('redo');
-          } else {
-            editor.execCommand('undo');
-          }
+          var command = event.shiftKey ? redoCommand : undoCommand;
+          command.execute();
         }
       });
-
-      function undoCommand() {
-        restoreUndoItem(editor.undoManager.undo());
-      }
-
-      function redoCommand() {
-        restoreUndoItem(editor.undoManager.redo());
-      }
 
       function restoreUndoItem(item) {
         editor.el.innerHTML = item;

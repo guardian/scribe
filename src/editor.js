@@ -62,17 +62,12 @@ define([
     return this.el.textContent.trim();
   };
 
-  Editor.prototype.execCommand = function (commandName, value) {
-    var patchedCommand = this.patchedCommands[commandName];
-    if (patchedCommand) {
-      patchedCommand(value);
-    } else {
-      document.execCommand(commandName, false, value || null);
-    }
-  };
-
   Editor.prototype.pushHistory = function () {
     this.undoManager.push(this.getHTML());
+  };
+
+  Editor.prototype.getCommand = function (commandName) {
+    return this.commands[commandName] || new api.Command(this, commandName);
   };
 
   return Editor;

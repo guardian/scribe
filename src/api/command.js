@@ -9,14 +9,23 @@ define([
   api.Command = function (editor, commandName) {
     this.editor = editor;
     this.commandName = commandName;
+    this.patchedCommand = this.editor.patchedCommands[this.commandName];
   };
 
   api.Command.prototype.execute = function (value) {
-    this.editor.execCommand(this.commandName, value);
+    if (this.patchedCommand) {
+      this.patchedCommand.execute(value);
+    } else {
+      document.execCommand(this.commandName, false, value || null);
+    }
   };
 
   api.Command.prototype.queryState = function () {
-    return document.queryCommandState(this.commandName);
+    if (this.patchedCommand) {
+      return this.patchedCommand.queryState();
+    } else {
+      return document.queryCommandState(this.commandName);
+    }
   };
 
   return api;
