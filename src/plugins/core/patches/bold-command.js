@@ -27,6 +27,7 @@ define([
            */
           var strongNode;
           if (this.queryState()) {
+            // Unwrap STRONG
             strongNode = selection.getContaining(function (node) {
               return node.nodeName === 'B' || node.nodeName === 'STRONG';
             });
