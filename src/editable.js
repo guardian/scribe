@@ -25,6 +25,7 @@ define([
     this.use(patches.undoCommand());
     this.use(patches.indentCommand());
     this.use(patches.insertListCommands());
+    this.use(patches.outdentCommand());
 
     this.use(formatters());
 

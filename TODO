@@ -5,7 +5,6 @@
 * Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
 * Chrome and Firefox: Bold command uses B node instead of STRONG
 * Adding bold to a H2 does not update toolbar
-* Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps
 * Chrome: Add a UL/OL, apply blockquote = nested UL/OLs (infinite)
   - User can recover by using backspace.
 
@@ -18,3 +17,4 @@
 * Chrome: Add BLOCKQUOTE = Nests BLOCKQUOTE inside of P
 * Chrome: Add UL = Nests UL inside of P
 * Chrome: Add OL = Nests OL inside of P
+* Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps

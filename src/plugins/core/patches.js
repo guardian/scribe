@@ -3,6 +3,7 @@ define([
   './patches/empty-editor-when-deleting',
   './patches/indent-command',
   './patches/insert-list-commands',
+  './patches/outdent-command',
   './patches/root-paragraph-element',
   './patches/undo-command'
 ], function (
@@ -10,6 +11,7 @@ define([
   emptyEditorWhenDeleting,
   indentCommand,
   insertListCommands,
+  outdentCommand,
   rootParagraphElement,
   undoCommand
 ) {
@@ -21,6 +23,7 @@ define([
     emptyEditorWhenDeleting: emptyEditorWhenDeleting,
     indentCommand: indentCommand,
     insertListCommands: insertListCommands,
+    outdentCommand: outdentCommand,
     rootParagraphElement: rootParagraphElement,
     undoCommand: undoCommand
   };
