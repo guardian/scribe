@@ -32,6 +32,8 @@ define([
           editable.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
 
           selection.selectMarkers(editable.el);
+
+          editable.pushHistory();
         }
 
         document.execCommand('outdent', false, value);

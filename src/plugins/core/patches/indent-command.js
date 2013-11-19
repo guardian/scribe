@@ -31,6 +31,8 @@ define([
 
           selection.selection.removeAllRanges();
           selection.selection.addRange(range);
+
+          editable.pushHistory();
         }
 
         document.execCommand('indent', false, value);
