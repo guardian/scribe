@@ -1,6 +1,6 @@
 define([
   '../../../api',
-  '../../../api/command',
+  '../../../api/command-patch',
   '../../../api/selection'
 ], function (
   api
@@ -10,7 +10,7 @@ define([
 
   return function () {
     return function (editor) {
-      var boldCommand = new api.Command(editor, 'bold');
+      var boldCommand = new api.CommandPatch('bold');
 
       boldCommand.execute = function () {
         var selection = new api.Selection();
@@ -55,7 +55,7 @@ define([
         });
       };
 
-      editor.commands.bold = boldCommand;
+      editor.patchedCommands.bold = boldCommand;
     };
   };
 
