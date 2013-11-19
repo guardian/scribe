@@ -31,7 +31,7 @@ define([
     if (!this.range.collapsed) {
       // Start marker
       var rangeStart = this.range.cloneRange();
-      rangeStart.collapse(false);
+      rangeStart.collapse(true);
       rangeStart.insertNode(startMarker);
     }
 
