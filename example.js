@@ -77,6 +77,7 @@ require({
   editor.use(sanitizer({
     tags: {
       p: [],
+      br: [],
       b: [],
       strong: [],
       i: [],
