@@ -72,7 +72,7 @@ define([
 
           selection.selectMarkers(editor.el);
 
-          editor.pushHistory();
+          editor.trigger('content-change');
         } else {
           api.CommandPatch.prototype.execute.call(this, value);
 
@@ -99,7 +99,7 @@ define([
               selection.selectMarkers(editor.el);
               listParentNode.remove();
 
-              editor.pushHistory();
+              editor.trigger('content-change');
             }
           }
         }

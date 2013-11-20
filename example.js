@@ -1,7 +1,13 @@
 require({
   baseUrl: './src',
   paths: {
+    'event-emitter': '../bower_components/eventEmitter/EventEmitter',
     'html-janitor': '../bower_components/html-janitor/src/html-janitor'
+  },
+  shim: {
+    'event-emitter': {
+      exports: 'EventEmitter'
+    }
   }
 }, [
   'editor',
@@ -28,7 +34,7 @@ require({
 
   var editor = new Editor(document.querySelector('.editor'));
 
-  editor.el.addEventListener('input', updateHTML);
+  editor.on('content-change', updateHTML);
 
   function updateHTML() {
     document.querySelector('.editor-html').textContent = editor.el.innerHTML;

@@ -25,7 +25,7 @@ define([
             }
             aNode.remove();
 
-            editor.pushHistory();
+            editor.trigger('content-change');
           }
         } else {
           api.Command.prototype.execute.apply(this, arguments);

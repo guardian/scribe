@@ -19,5 +19,6 @@
   },
   "dependencies": {
     "q": "~0.9.7",
+    "eventEmitter": "~4.2.6"
   }
 }

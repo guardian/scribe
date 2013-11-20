@@ -1,9 +1,11 @@
 define([
+  'event-emitter',
   './plugins/core/formatters',
   './plugins/core/patches',
   './api',
   './api/undo-manager'
 ], function (
+  EventEmitter,
   formatters,
   patches,
   api
@@ -30,10 +32,16 @@ define([
 
     this.undoManager = new api.UndoManager();
 
-    this.el.addEventListener('input', function () {
+    this.on('content-change', function () {
       this.pushHistory();
+    });
+
+    this.el.addEventListener('input', function () {
+      this.trigger('content-change');
     }.bind(this), false);
   }
+
+  Editor.prototype = Object.create(EventEmitter.prototype);
 
   // For plugins
   // TODO: tap combinator?

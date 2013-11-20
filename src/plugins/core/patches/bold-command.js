@@ -48,7 +48,7 @@ define([
             strongNode.appendChild(node);
           }
 
-          editor.pushHistory();
+          editor.trigger('content-change');
         }
       };
 

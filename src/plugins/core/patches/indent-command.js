@@ -33,8 +33,6 @@ define([
 
           selection.selection.removeAllRanges();
           selection.selection.addRange(range);
-
-          editor.pushHistory();
         }
 
         api.CommandPatch.prototype.execute.call(this, value);
@@ -50,6 +48,8 @@ define([
           return node.nodeName === 'BLOCKQUOTE';
         });
         blockquoteNode.removeAttribute('style');
+
+        editor.trigger('content-change');
       };
 
       editor.patchedCommands.indent = indentCommand;
