@@ -45,7 +45,6 @@ define([
            * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
            */
 
-          // TODO: does not work if used in the middle of a blockquote.
           var pNode = selection.getContaining(function (node) {
             return node.nodeName === 'P';
           });
@@ -55,9 +54,31 @@ define([
               return node.nodeName === 'BLOCKQUOTE';
             });
 
+            /**
+             * If we are not at the start of end of a BLOCKQUOTE, we have to
+             * split the node and insert the P in the middle.
+             */
+
+            var nextSiblingNodes = (new api.Node(pNode)).nextAll();
+
+            if (nextSiblingNodes.length) {
+              var newContainerNode = document.createElement(blockquoteNode.nodeName);
+
+              nextSiblingNodes.forEach(function (siblingNode) {
+                newContainerNode.appendChild(siblingNode);
+              });
+
+              blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
+            }
+
             selection.placeMarkers();
             editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
             selection.selectMarkers(editor.el);
+
+            // If the BLOCKQUOTE is now empty, clean it up.
+            if (blockquoteNode.innerHTML === '') {
+              blockquoteNode.remove();
+            }
           }
 
           api.CommandPatch.prototype.execute.call(this, value);
