@@ -6,6 +6,10 @@ define([
   api
 ) {
 
+  /**
+   * Adds a command for using BLOCKQUOTEs.
+   */
+
   'use strict';
 
   return function () {

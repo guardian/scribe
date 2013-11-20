@@ -5,6 +5,10 @@ define([
   api
 ) {
 
+  /**
+   * This plugin adds a command for headings.
+   */
+
   'use strict';
 
   return function (level) {

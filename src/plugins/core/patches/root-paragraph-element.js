@@ -1,9 +1,9 @@
-define([
-  '../../../api',
-  '../../../api/selection'
-], function (
-  api
-) {
+define(function () {
+
+  /**
+   * Sets the default content of the editor so that each carriage return creates
+   * a P.
+   */
 
   'use strict';
 

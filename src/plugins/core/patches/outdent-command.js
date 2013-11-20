@@ -6,6 +6,10 @@ define([
   api
 ) {
 
+  /**
+   * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
+   */
+
   'use strict';
 
   return function () {
@@ -40,8 +44,8 @@ define([
           }
         } else {
           /**
-           * Chrome: If we apply the outdent command on a P, the contents of the P
-           * will be outdented instead of the whole P element.
+           * Chrome: If we apply the outdent command on a P, the contents of the
+           * P will be outdented instead of the whole P element.
            * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
            */
 

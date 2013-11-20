@@ -6,6 +6,11 @@ define([
   api
 ) {
 
+  /**
+   * Prevent Chrome from inserting BLOCKQUOTEs inside of Ps, and also from
+   * adding a redundant `style` attribute to the created BLOCKQUOTE.
+   */
+
   'use strict';
 
   var INVISIBLE_CHAR = '\uFEFF';

@@ -7,6 +7,12 @@ define([
   api
 ) {
 
+  /**
+   * Prevent Chrome from inserting lists (UL/OL) inside of Ps. Also patches
+   * behaviour of unapplying a list so that a P is always created, although this
+   * should probably be moved.
+   */
+
   'use strict';
 
   return function () {

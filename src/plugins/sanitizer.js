@@ -4,6 +4,11 @@ define([
   HTMLJanitor
 ) {
 
+  /**
+   * This plugin adds the ability to sanitize content when it is pasted into the
+   * editor, adhering to a whitelist of allowed tags and attributes.
+   */
+
   'use strict';
 
   return function (config) {

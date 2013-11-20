@@ -6,6 +6,10 @@ define([
   api
 ) {
 
+  /**
+   * This plugin adds a command for creating links, including a basic prompt.
+   */
+
   'use strict';
 
   return function () {
