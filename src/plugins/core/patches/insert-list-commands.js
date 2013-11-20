@@ -51,7 +51,7 @@ define([
           var pNode = document.createElement('p');
           pNode.innerHTML = listItemNode.innerHTML;
 
-          editor.el.insertBefore(pNode, listNode.nextElementSibling);
+          listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
           listItemNode.remove();
 
           if (listNode.innerHTML === '') {
@@ -83,7 +83,7 @@ define([
             // If list is within a text block then split that block
             if (listParentNode && /^(H[1-6]|P|ADDRESS|PRE)$/.test(listParentNode.nodeName)) {
               selection.placeMarkers();
-              editor.el.insertBefore(listNode, listParentNode.nextElementSibling);
+              listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
               selection.selectMarkers(editor.el);
               listParentNode.remove();
 
