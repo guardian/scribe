@@ -12,20 +12,12 @@ define([
 
       editor.formatters = [];
 
-      editor.el.addEventListener('paste', handlePaste);
-
       /**
        * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
        * I also don't like how it has the authority to perform `event.preventDefault`.
        */
 
-      /**
-       * Format the clipboard data on paste.
-       * @param  {Editor} editor The instance to polyfill.
-       * @param  {Event} event
-       * @return {Q.Promise}
-       */
-      function handlePaste(event) {
+      editor.el.addEventListener('paste', function handlePaste(event) {
         /**
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
@@ -73,7 +65,7 @@ define([
             formatAndInsert(data);
           }, 1);
         }
-      }
+      });
 
       function formatAndInsert(html) {
         var formattedHTML = editor.formatters.reduce(function (formattedData, formatter) {

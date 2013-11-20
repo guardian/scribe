@@ -2,12 +2,16 @@ define([
   'event-emitter',
   './plugins/core/formatters',
   './plugins/core/patches',
+  './plugins/core/root-paragraph-element',
+  './plugins/core/undo-manager-commands',
   './api',
   './api/undo-manager'
 ], function (
   EventEmitter,
   formatters,
   patches,
+  rootParagraphElement,
+  undoManagerCommands,
   api
 ) {
 
@@ -20,15 +24,17 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.use(patches.boldCommand());
-    this.use(patches.emptyEditorWhenDeleting());
-    this.use(patches.indentCommand());
-    this.use(patches.insertListCommands());
-    this.use(patches.outdentCommand());
-    this.use(patches.rootParagraphElement());
-    this.use(patches.undoManagerCommands());
-
+    // Core
     this.use(formatters());
+    this.use(rootParagraphElement());
+    this.use(undoManagerCommands());
+
+    // Patches
+    this.use(patches.commands.bold());
+    this.use(patches.commands.indent());
+    this.use(patches.commands.insertList());
+    this.use(patches.commands.outdent());
+    this.use(patches.emptyEditorWhenDeleting());
 
     this.undoManager = new api.UndoManager();
 

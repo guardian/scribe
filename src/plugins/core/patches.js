@@ -1,31 +1,27 @@
 define([
-  './patches/bold-command',
-  './patches/empty-editor-when-deleting',
-  './patches/indent-command',
-  './patches/insert-list-commands',
-  './patches/outdent-command',
-  './patches/root-paragraph-element',
-  './patches/undo-manager-commands'
+  './patches/commands/bold',
+  './patches/commands/indent',
+  './patches/commands/insert-list',
+  './patches/commands/outdent',
+  './patches/empty-editor-when-deleting'
 ], function (
   boldCommand,
-  emptyEditorWhenDeleting,
   indentCommand,
   insertListCommands,
   outdentCommand,
-  rootParagraphElement,
-  undoManagerCommands
+  emptyEditorWhenDeleting
 ) {
 
   'use strict';
 
   return {
-    boldCommand: boldCommand,
-    emptyEditorWhenDeleting: emptyEditorWhenDeleting,
-    indentCommand: indentCommand,
-    insertListCommands: insertListCommands,
-    outdentCommand: outdentCommand,
-    rootParagraphElement: rootParagraphElement,
-    undoManagerCommands: undoManagerCommands
+    commands: {
+      bold: boldCommand,
+      indent: indentCommand,
+      insertList: insertListCommands,
+      outdent: outdentCommand
+    },
+    emptyEditorWhenDeleting: emptyEditorWhenDeleting
   };
 
 });
