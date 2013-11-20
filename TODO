@@ -2,6 +2,7 @@
 * Remove event listeners, emit unbind to plugins so that can too
 
 # Outstanding Patches
+* Chrome: Add BLOCKQUOTE = Has `style` attribute
 * Chrome and Firefox: Bold command uses B node instead of STRONG
 * Adding bold to a H2 does not update toolbar
 * Chrome: Add a UL/OL, apply blockquote = nested UL/OLs (infinite)
