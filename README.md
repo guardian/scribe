@@ -14,6 +14,7 @@ editor
 * "`indent`":
   - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
   - Chrome nests ULs inside of ULs: http://jsbin.com/ORikUPa/3/edit?html,js,output
+  - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
 
 ## Patches
 * `emptyEditorWhenDeleting`: This patch makes it impossible to delete the root

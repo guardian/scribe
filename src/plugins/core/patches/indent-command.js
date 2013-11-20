@@ -38,6 +38,18 @@ define([
         }
 
         api.CommandPatch.prototype.execute.call(this, value);
+
+        /**
+         * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
+         * As per: http://jsbin.com/AkasOzu/1/edit?html,js,output
+         */
+
+        // Renew the selection
+        selection = new api.Selection();
+        var blockquoteNode = selection.getContaining(function (node) {
+          return node.nodeName === 'BLOCKQUOTE';
+        });
+        blockquoteNode.removeAttribute('style');
       };
 
       editor.patchedCommands.indent = indentCommand;
