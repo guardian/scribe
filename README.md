@@ -6,8 +6,8 @@ editor
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
 * "`outdent`":
-  - http://jsbin.com/okAYaHa/1/edit?html,js,output
-  - http://jsbin.com/IfaRaFO/1/edit?html,js,output
+  - Chrome removes BLOCKQUOTE content formatting: http://jsbin.com/okAYaHa/1/edit?html,js,output
+  - Chrome removes collapsed selection formatting: http://jsbin.com/IfaRaFO/1/edit?html,js,output
 * "`insertOrderedList`/`insertOrderedList`":
   - Chrome nests list inside of P: http://jsbin.com/eFiRedUc/1/edit?html,js,output
   - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output

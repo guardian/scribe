@@ -13,15 +13,15 @@ define([
       var outdentCommand = new api.CommandPatch('outdent');
 
       outdentCommand.execute = function (value) {
-        /**
-         * Chrome: If we apply the outdent command on a P, the contents of the P
-         * will be outdented instead of the whole P element.
-         * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
-         */
         var selection = new api.Selection();
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
+          /**
+           * Chrome: Applying the outdent command when a whole BLOCKQUOTE is
+           * selected removes the formatting of its contents.
+           * As per: http://jsbin.com/okAYaHa/1/edit?html,js,output
+           */
           var blockquoteNode = range.commonAncestorContainer;
 
           // Insert a copy of the selection before the BLOCKQUOTE, and then
@@ -39,6 +39,12 @@ define([
             blockquoteNode.remove();
           }
         } else {
+          /**
+           * Chrome: If we apply the outdent command on a P, the contents of the P
+           * will be outdented instead of the whole P element.
+           * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
+           */
+
           // TODO: does not work if used in the middle of a blockquote.
           var pNode = selection.getContaining(function (node) {
             return node.nodeName === 'P';
