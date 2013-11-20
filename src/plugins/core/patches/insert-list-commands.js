@@ -1,5 +1,6 @@
 define([
   '../../../api',
+  '../../../api/node',
   '../../../api/selection',
   '../../../api/simple-command'
 ], function (
@@ -34,6 +35,18 @@ define([
           var listItemNode = selection.getContaining(function (node) {
             return node.nodeName === 'LI';
           });
+
+          var nextListItemNodes = (new api.Node(listItemNode)).nextAll();
+
+          if (nextListItemNodes.length) {
+            var newListNode = document.createElement(listNode.nodeName);
+
+            nextListItemNodes.forEach(function (listItemNode) {
+              newListNode.appendChild(listItemNode);
+            });
+
+            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
+          }
 
           var pNode = document.createElement('p');
           pNode.innerHTML = listItemNode.innerHTML;

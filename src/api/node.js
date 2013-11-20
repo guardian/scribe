@@ -20,6 +20,15 @@ define([
     }
   };
 
+  api.Node.prototype.nextAll = function () {
+    var all = [];
+    var el = this.node;
+    while (el = el.nextElementSibling) {
+      all.push(el);
+    }
+    return all;
+  };
+
   return api;
 
 });
