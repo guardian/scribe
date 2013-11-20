@@ -22,6 +22,8 @@ define([
         if (this.queryState()) {
           /**
            * When the list is unapplied, ensure that we enter a P element.
+           * TODO: should this be a feature instead of a patch? It is not really
+           * a browser inconsistency and the user might have disabled root P.
            */
           var selection = new api.Selection();
           var range = selection.range;
