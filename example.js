@@ -8,6 +8,7 @@ require({
   'editor',
   'plugins/blockquote-command',
   'plugins/heading-command',
+  'plugins/intelligent-unlink-command',
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
@@ -17,6 +18,7 @@ require({
   Editor,
   blockquoteCommand,
   headingCommand,
+  intelligentUnlinkCommand,
   linkPromptCommand,
   sanitizer,
   toolbar,
@@ -70,6 +72,7 @@ require({
 
   editor.use(blockquoteCommand());
   editor.use(headingCommand(2));
+  editor.use(intelligentUnlinkCommand());
   editor.use(linkPromptCommand());
   editor.use(sanitizer({
     tags: {
