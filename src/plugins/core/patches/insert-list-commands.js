@@ -37,8 +37,8 @@ define([
           });
 
           /**
-           * If we are not at the start of end of a list, we have to split
-           * the list and insert the paragraph where the list item was.
+           * If we are not at the start of end of a UL/OL, we have to
+           * split the node and insert the P in the middle.
            */
 
           var nextListItemNodes = (new api.Node(listItemNode)).nextAll();
