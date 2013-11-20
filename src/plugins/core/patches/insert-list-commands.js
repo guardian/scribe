@@ -30,11 +30,14 @@ define([
             return node.nodeName === 'OL' || node.nodeName === 'UL';
           });
 
-          selection.placeMarkers();
-
           var listItemNode = selection.getContaining(function (node) {
             return node.nodeName === 'LI';
           });
+
+          /**
+           * If we are not at the start of end of a list, we have to split
+           * the list and insert the paragraph where the list item was.
+           */
 
           var nextListItemNodes = (new api.Node(listItemNode)).nextAll();
 
@@ -48,12 +51,19 @@ define([
             listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
           }
 
+          /**
+           * Insert a paragraph in place of the list item.
+           */
+
+          selection.placeMarkers();
+
           var pNode = document.createElement('p');
           pNode.innerHTML = listItemNode.innerHTML;
 
           listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
           listItemNode.remove();
 
+          // If the list is now empty, clean it up.
           if (listNode.innerHTML === '') {
             listNode.remove();
           }
