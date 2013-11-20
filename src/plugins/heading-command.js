@@ -28,6 +28,49 @@ define([
       };
 
       editor.commands[commandName] = headingCommand;
+
+      /**
+       * Handle keyboard navigation (i.e. when the user does a carriage return
+       * inside a heading).
+       */
+
+      var INVISIBLE_CHAR = '\uFEFF';
+
+      // FIXME: currently this plugin has to be used multiple times, once for
+      // each heading level, which means we are binding this event multiple
+      // times.
+
+      editor.el.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) {
+
+          var selection = new api.Selection();
+          var range = selection.range;
+
+          if (range.collapsed) {
+            if (range.commonAncestorContainer instanceof window.Text
+              && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
+              /**
+               * Heading elements
+               */
+
+              event.preventDefault();
+
+              var pNode = document.createElement('p');
+              var textNode = document.createTextNode(INVISIBLE_CHAR);
+              pNode.appendChild(textNode);
+              editor.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
+
+              // Re-apply range
+              range.setStart(textNode, 0);
+              range.setEnd(textNode, 0);
+
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(range);
+
+            }
+          }
+        }
+      });
     };
   };
 
