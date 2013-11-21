@@ -109,43 +109,43 @@ define([
             }
           }
         }
-
-        /**
-         * Handle keyboard navigation (i.e. when the user does a carriage
-         * return on the last, empty list item).
-         */
-
-        editor.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) {
-
-            var selection = new api.Selection();
-            var range = selection.range;
-
-            if (range.collapsed) {
-              if (range.commonAncestorContainer.nodeName === 'LI'
-                && range.commonAncestorContainer.innerHTML === '<br>') {
-                // TODO: test innerText instead?
-                /**
-                 * LIs
-                 */
-
-                event.preventDefault();
-
-                var listNode = selection.getContaining(function (node) {
-                  return node.nodeName === 'UL' || node.nodeName === 'OL';
-                });
-
-                var command = editor.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
-
-                command.execute();
-              }
-            }
-          }
-        });
       };
 
       editor.patchedCommands.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
       editor.patchedCommands.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
+
+      /**
+       * Handle keyboard navigation (i.e. when the user does a carriage
+       * return on the last, empty list item).
+       */
+
+      editor.el.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) {
+
+          var selection = new api.Selection();
+          var range = selection.range;
+
+          if (range.collapsed) {
+            if (range.commonAncestorContainer.nodeName === 'LI'
+              && range.commonAncestorContainer.innerHTML === '<br>') {
+              // TODO: test innerText instead?
+              /**
+               * LIs
+               */
+
+              event.preventDefault();
+
+              var listNode = selection.getContaining(function (node) {
+                return node.nodeName === 'UL' || node.nodeName === 'OL';
+              });
+
+              var command = editor.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
+
+              command.execute();
+            }
+          }
+        }
+      });
     };
   };
 
