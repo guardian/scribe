@@ -34,7 +34,8 @@ define([
             }
             aNode.remove();
 
-            editor.trigger('content-change');
+            editor.pushHistory();
+            editor.trigger('content-changed');
           }
         } else {
           api.Command.prototype.execute.apply(this, arguments);

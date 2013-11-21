@@ -1,16 +1,16 @@
 define([
   'event-emitter',
+  './initializers/root-paragraph-element',
   './plugins/core/formatters',
   './plugins/core/patches',
-  './plugins/core/root-paragraph-element',
   './plugins/core/undo-manager-commands',
   './api',
   './api/undo-manager'
 ], function (
   EventEmitter,
+  rootParagraphElement,
   formatters,
   patches,
-  rootParagraphElement,
   undoManagerCommands,
   api
 ) {
@@ -21,12 +21,21 @@ define([
     this.el = el;
     this.commands = {};
     this.patchedCommands = {};
+    this.initializers = [];
 
-    this.el.setAttribute('contenteditable', true);
+    this.undoManager = new api.UndoManager();
+
+    this.el.addEventListener('input', function () {
+      this.pushHistory();
+      this.trigger('content-changed');
+    }.bind(this), false);
+
+    /**
+     * Plugins
+     */
 
     // Core
     this.use(formatters());
-    this.use(rootParagraphElement());
     this.use(undoManagerCommands());
 
     // Patches
@@ -36,39 +45,47 @@ define([
     this.use(patches.commands.outdent());
     this.use(patches.emptyEditorWhenDeleting());
 
-    this.undoManager = new api.UndoManager();
-
-    this.on('content-change', function () {
-      this.pushHistory();
-    });
-
-    this.el.addEventListener('input', function () {
-      this.trigger('content-change');
-    }.bind(this), false);
+    this.addInitializer(rootParagraphElement());
   }
 
   Editor.prototype = Object.create(EventEmitter.prototype);
 
+  Editor.prototype.initialize = function () {
+    this.el.setAttribute('contenteditable', true);
+
+    this.initializers.forEach(function (initializer) {
+      initializer(this);
+    }, this);
+  };
+
   // For plugins
   // TODO: tap combinator?
-  Editor.prototype.use = function (fn) {
-    fn(this);
+  Editor.prototype.use = function (configurePlugin) {
+    configurePlugin(this);
     return this;
   };
 
+  Editor.prototype.addInitializer = function (initializer) {
+    this.initializers.push(initializer);
+    return this;
+  };
 
   Editor.prototype.getHTML = function () {
     var selection = new api.Selection();
 
-    selection.placeMarkers();
-    var html = this.el.innerHTML;
-    selection.removeMarkers(this.el);
+    var html;
+    if (selection.range) {
+      selection.placeMarkers();
+      html = this.el.innerHTML;
+      selection.removeMarkers(this.el);
+    } else {
+      html = this.el.innerHTML;
+    }
 
     return html;
   };
 
   Editor.prototype.setHTML = function (html) {
-    this.pushHistory();
     this.el.innerHTML = html;
   };
 
@@ -82,6 +99,16 @@ define([
 
   Editor.prototype.getCommand = function (commandName) {
     return this.commands[commandName] || this.patchedCommands[commandName] || new api.Command(this, commandName);
+  };
+
+  Editor.prototype.restoreFromHistory = function (historyItem) {
+    this.setHTML(historyItem);
+
+    // Restore the selection
+    var selection = new api.Selection();
+    selection.selectMarkers(this.el);
+
+    this.trigger('content-changed');
   };
 
   return Editor;

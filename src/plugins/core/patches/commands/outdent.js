@@ -88,7 +88,8 @@ define([
           api.CommandPatch.prototype.execute.call(this, value);
         }
 
-        editor.trigger('content-change');
+        editor.pushHistory();
+        editor.trigger('content-changed');
       };
 
       editor.patchedCommands.outdent = outdentCommand;

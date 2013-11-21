@@ -78,7 +78,8 @@ define([
 
           selection.selectMarkers(editor.el);
 
-          editor.trigger('content-change');
+          editor.pushHistory();
+          editor.trigger('content-changed');
         } else {
           api.CommandPatch.prototype.execute.call(this, value);
 
@@ -105,7 +106,8 @@ define([
               selection.selectMarkers(editor.el);
               listParentNode.remove();
 
-              editor.trigger('content-change');
+              editor.pushHistory();
+              editor.trigger('content-changed');
             }
           }
         }

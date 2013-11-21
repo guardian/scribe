@@ -10,7 +10,7 @@ define([
   api.UndoManager = function () {
     this.position = 0;
 
-    this.stack = [''];
+    this.stack = [];
   };
 
   api.UndoManager.prototype.push = function (item) {

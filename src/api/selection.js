@@ -9,7 +9,10 @@ define([
 
   api.Selection = function () {
     this.selection = window.getSelection();
-    this.range = this.selection.getRangeAt(0);
+
+    if (this.selection.rangeCount) {
+      this.range = this.selection.getRangeAt(0);
+    }
   };
 
   api.Selection.prototype.getContaining = function (nodeFilter) {

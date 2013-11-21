@@ -13,20 +13,20 @@ define([
       var undoCommand = new api.CommandPatch('undo');
 
       undoCommand.execute = function () {
-        var undoItem = editor.undoManager.undo();
+        var historyItem = editor.undoManager.undo();
 
-        if (typeof undoItem !== 'undefined') {
-          restoreUndoItem(undoItem);
+        if (typeof historyItem !== 'undefined') {
+          editor.restoreFromHistory(historyItem);
         }
       };
 
       var redoCommand = new api.CommandPatch('redo');
 
       redoCommand.execute = function () {
-        var undoItem = editor.undoManager.redo();
+        var historyItem = editor.undoManager.redo();
 
-        if (typeof undoItem !== 'undefined') {
-          restoreUndoItem(undoItem);
+        if (typeof historyItem !== 'undefined') {
+          editor.restoreFromHistory(historyItem);
         }
       };
 
@@ -40,14 +40,6 @@ define([
           command.execute();
         }
       });
-
-      function restoreUndoItem(item) {
-        editor.el.innerHTML = item;
-
-        // Restore the selection
-        var selection = new api.Selection();
-        selection.selectMarkers(editor.el);
-      }
     };
   };
 

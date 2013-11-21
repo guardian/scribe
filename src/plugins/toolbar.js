@@ -30,13 +30,17 @@ define([
           // could be when one of the toolbar buttons is actioned.
           // TODO: The `input` event does not trigger when we manipulate the content
           // ourselves. Maybe commands should fire events when they are activated.
-          editor.on('content-change', updateUi);
+          editor.on('content-changed', updateUi);
 
           function updateUi() {
-            if (command.queryState()) {
-              button.classList.add('active');
-            } else {
-              button.classList.remove('active');
+            var selection = new api.Selection();
+
+            if (selection.range) {
+              if (command.queryState()) {
+                button.classList.add('active');
+              } else {
+                button.classList.remove('active');
+              }
             }
           }
         });

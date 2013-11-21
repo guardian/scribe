@@ -48,7 +48,8 @@ define([
             strongNode.appendChild(node);
           }
 
-          editor.trigger('content-change');
+          editor.pushHistory();
+          editor.trigger('content-changed');
         }
       };
 

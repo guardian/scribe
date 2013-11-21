@@ -34,7 +34,7 @@ require({
 
   var editor = new Editor(document.querySelector('.editor'));
 
-  editor.on('content-change', updateHTML);
+  editor.on('content-changed', updateHTML);
 
   function updateHTML() {
     document.querySelector('.editor-html').textContent = editor.el.innerHTML;
@@ -194,4 +194,7 @@ require({
       return document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
     }
   });
+
+  // Finally…
+  editor.initialize();
 });

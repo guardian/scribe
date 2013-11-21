@@ -54,7 +54,8 @@ define([
         });
         blockquoteNode.removeAttribute('style');
 
-        editor.trigger('content-change');
+        editor.pushHistory();
+        editor.trigger('content-changed');
       };
 
       editor.patchedCommands.indent = indentCommand;

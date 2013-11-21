@@ -36,11 +36,14 @@ define([
            * This branch need not run in Chrome upon the second condition, but it does, for now.
            */
 
-          if (selection.selection.isCollapsed && editor.text() === '' ||
-              ! selection.selection.isCollapsed && isRangeAllContent(selection.range)) {
+          var collapsedSelection = selection.selection.isCollapsed;
+          var allContentSelected = isRangeAllContent(selection.range);
+
+          if ((collapsedSelection && editor.text() === '') || (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
-            editor.setHTML('<p><em class="editor-marker"></em><br /></p>');
-            selection.selectMarkers(editor.el);
+            editor.setHTML('<p><br></p>');
+            editor.pushHistory();
+            editor.trigger('content-changed');
           }
         }
       });

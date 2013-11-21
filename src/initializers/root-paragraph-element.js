@@ -13,10 +13,13 @@ define(function () {
        * We have to begin with the following HTML, because otherwise some
        * browsers(?) will position the caret outside of the P when the editor is
        * focused.
+       *
+       * We also have to define a marker because otherwise the selection will
+       * not be restored when we undo.
        */
-       // Do not use `setHTML` method because we don't want to add to the
-       // undo stack in this case.
-      editor.el.innerHTML = '<p><br></p>';
+      editor.setHTML('<p><em class="editor-marker"></em><br></p>');
+      editor.pushHistory();
+      editor.trigger('content-changed');
     };
   };
 
