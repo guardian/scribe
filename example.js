@@ -193,5 +193,9 @@ require({
     function createTreeWalker(node) {
       return document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
     }
+
   });
+
+  // Finally…
+  editor.initialize();
 });

@@ -46,15 +46,17 @@ define([
     this.use(patches.emptyEditorWhenDeleting());
 
     this.addInitializer(rootParagraphElement());
+  }
 
+  Editor.prototype = Object.create(EventEmitter.prototype);
+
+  Editor.prototype.initialize = function () {
     this.el.setAttribute('contenteditable', true);
 
     this.initializers.forEach(function (initializer) {
       initializer(this);
     }, this);
-  }
-
-  Editor.prototype = Object.create(EventEmitter.prototype);
+  };
 
   // For plugins
   // TODO: tap combinator?
