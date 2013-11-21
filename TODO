@@ -8,8 +8,15 @@
   - User can recover by using backspace.
 
 # To Investigate
-* Add H, tranform into UL
 * Buttons do not update the instance they are clicked. You have to start typing.
+
+# Known Bugs
+* Chrome: Add BLOCKQUOTE, add list, unapply blockquote = Creates BLOCKQUOTE
+  without P.
+* Chrome: Insert list with at least 2 list items, <select all>, <backspace> =
+  Creates two orphan list items
+  - This is caused by Selection.placeMarkers adding a redundant text node after
+    the inserted end marker.
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV
