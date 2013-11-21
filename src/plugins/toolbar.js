@@ -45,7 +45,7 @@ define([
                   button.classList.remove('active');
                 }
               } else {
-                button.setAttribute('disabled');
+                button.setAttribute('disabled', 'disabled');
               }
             }
           }
