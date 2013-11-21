@@ -38,8 +38,6 @@ define([
        * inside a heading).
        */
 
-      var INVISIBLE_CHAR = '\uFEFF';
-
       // FIXME: currently this plugin has to be used multiple times, once for
       // each heading level, which means we are binding this event multiple
       // times.
