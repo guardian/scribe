@@ -1,5 +1,6 @@
 define([
   '../api',
+  '../api/selection',
   '../api/simple-command'
 ], function (
   api
@@ -29,6 +30,19 @@ define([
         } else {
           api.Command.prototype.execute.call(this, tag);
         }
+      };
+
+      /**
+       * Executing a heading command inside a list element corrupts the markup.
+       * Disabling for now.
+       */
+      headingCommand.queryEnabled = function () {
+        var selection = new api.Selection();
+        var listNode = selection.getContaining(function (node) {
+          return node.nodeName === 'OL' || node.nodeName === 'UL';
+        });
+
+        return ! listNode;
       };
 
       editor.commands[commandName] = headingCommand;
