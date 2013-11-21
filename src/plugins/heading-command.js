@@ -33,7 +33,7 @@ define([
       };
 
       /**
-       * Executing a heading command inside a list element corrupts the markup.
+       * All: Executing a heading command inside a list element corrupts the markup.
        * Disabling for now.
        */
       headingCommand.queryEnabled = function () {
