@@ -44,7 +44,7 @@ define([
       // each heading level, which means we are binding this event multiple
       // times.
 
-      editor.el.addEventListener('keydown', function (event) {
+      editor.el.addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
 
           var selection = new api.Selection();
@@ -53,24 +53,11 @@ define([
           if (range.collapsed) {
             if (range.commonAncestorContainer instanceof window.Text
               && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
-              /**
-               * Heading elements
-               */
-
-              event.preventDefault();
-
-              var pNode = document.createElement('p');
-              var textNode = document.createTextNode(INVISIBLE_CHAR);
-              pNode.appendChild(textNode);
-              editor.el.insertBefore(pNode, range.commonAncestorContainer.nextElementSibling);
-
-              // Re-apply range
-              range.setStart(textNode, 0);
-              range.setEnd(textNode, 0);
-
-              selection.selection.removeAllRanges();
-              selection.selection.addRange(range);
-
+              // Wait for the native behaivour to occur, and then apply the
+              // command. We assume this will be in the next tick.
+              setTimeout(function () {
+                api.Command.prototype.execute.call(headingCommand, '<p>');
+              }, 0);
             }
           }
         }
