@@ -137,7 +137,9 @@ require({
     if (command) {
       event.preventDefault();
 
-      command.execute();
+      if (command.queryEnabled()) {
+        command.execute();
+      }
     }
   });
 
