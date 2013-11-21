@@ -28,6 +28,14 @@ define([
     }
   };
 
+  api.Command.prototype.queryEnabled = function () {
+    if (this.patchedCommand) {
+      return this.patchedCommand.queryEnabled();
+    } else {
+      return document.queryCommandEnabled(this.commandName);
+    }
+  };
+
   return api;
 
 });

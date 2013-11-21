@@ -18,6 +18,10 @@ define([
     return document.queryCommandState(this.commandName);
   };
 
+  api.CommandPatch.prototype.queryEnabled = function () {
+    return document.queryCommandEnabled(this.commandName);
+  };
+
   return api;
 
 });

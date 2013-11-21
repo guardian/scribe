@@ -36,10 +36,16 @@ define([
             var selection = new api.Selection();
 
             if (selection.range) {
-              if (command.queryState()) {
-                button.classList.add('active');
+              if (command.queryEnabled()) {
+                button.removeAttribute('disabled');
+
+                if (command.queryState()) {
+                  button.classList.add('active');
+                } else {
+                  button.classList.remove('active');
+                }
               } else {
-                button.classList.remove('active');
+                button.setAttribute('disabled');
               }
             }
           }

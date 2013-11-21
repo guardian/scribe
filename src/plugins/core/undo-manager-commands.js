@@ -20,6 +20,10 @@ define([
         }
       };
 
+      undoCommand.queryEnabled = function () {
+        return editor.undoManager.position > 0;
+      };
+
       var redoCommand = new api.CommandPatch('redo');
 
       redoCommand.execute = function () {
@@ -28,6 +32,10 @@ define([
         if (typeof historyItem !== 'undefined') {
           editor.restoreFromHistory(historyItem);
         }
+      };
+
+      redoCommand.queryEnabled = function () {
+        return editor.undoManager.position < editor.undoManager.stack.length - 1;
       };
 
       editor.patchedCommands.undo = undoCommand;
