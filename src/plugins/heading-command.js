@@ -42,7 +42,7 @@ define([
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return ! listNode;
+        return api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! listNode;
       };
 
       editor.commands[commandName] = headingCommand;
