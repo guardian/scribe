@@ -26,6 +26,16 @@ define([
         command.execute();
       };
 
+      blockquoteCommand.queryEnabled = function () {
+        var command;
+        if (this.queryState()) {
+          command = editor.getCommand('outdent');
+        } else {
+          command = editor.getCommand('indent');
+        }
+        return command.queryEnabled();
+      };
+
       editor.commands.blockquote = blockquoteCommand;
     };
   };
