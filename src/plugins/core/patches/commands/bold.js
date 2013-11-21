@@ -29,7 +29,7 @@ define([
           if (this.queryState()) {
             // Unwrap STRONG
             strongNode = selection.getContaining(function (node) {
-              return node.nodeName === 'B' || node.nodeName === 'STRONG';
+              return node.nodeName === 'B';
             });
 
             // Remove the containing strongNode
@@ -41,7 +41,7 @@ define([
           } else {
             // Wrap in STRONG
             var node = selection.range.commonAncestorContainer;
-            strongNode = document.createElement('strong');
+            strongNode = document.createElement('b');
 
             // TODO: create wrap function
             node.parentNode.insertBefore(strongNode, node);
@@ -53,12 +53,8 @@ define([
         }
       };
 
-      boldCommand.queryState = function () {
-        var selection = new api.Selection();
-        return !! selection.getContaining(function (node) {
-          return node.nodeName === 'B' || node.nodeName === 'STRONG';
-        });
-      };
+      // FIXME: we can't use STRONGs because this would mean we have to
+      // re-implement the `queryState` command, which would be difficult…
 
       editor.patchedCommands.bold = boldCommand;
     };
