@@ -1,5 +1,6 @@
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
+* Config for nesting elements
 
 # Outstanding Patches
 * Chrome and Firefox: Bold command uses B node instead of STRONG
