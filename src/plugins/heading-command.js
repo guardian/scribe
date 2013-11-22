@@ -68,15 +68,21 @@ define([
             return (/^(H[1-6])$/).test(node.nodeName);
           });
 
+          /**
+           * If we are at the end of the heading, insert a P. Otherwise handle
+           * natively.
+           */
           if (headingNode && range.collapsed) {
             var contentToEndRange = range.cloneRange();
             contentToEndRange.setEndAfter(headingNode, 0);
 
+            // Get the content from the range to the end of the heading
             var contentToEndFragment = contentToEndRange.cloneContents();
 
             if (contentToEndFragment.firstChild.innerText === '') {
               event.preventDefault();
 
+              // Default P
               var pNode = document.createElement('p');
               var textNode = document.createTextNode(INVISIBLE_CHAR);
               pNode.appendChild(textNode);
