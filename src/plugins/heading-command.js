@@ -56,8 +56,6 @@ define([
       // each heading level, which means we are binding this event multiple
       // times.
 
-      var INVISIBLE_CHAR = '\uFEFF';
-
       editor.el.addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
 
@@ -83,17 +81,22 @@ define([
               event.preventDefault();
 
               // Default P
+              // TODO: Abstract somewhere
               var pNode = document.createElement('p');
-              var textNode = document.createTextNode(INVISIBLE_CHAR);
-              pNode.appendChild(textNode);
+              var brNode = document.createElement('br');
+              pNode.appendChild(brNode);
+
               headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
 
               // Re-apply range
-              range.setStart(textNode, 0);
-              range.setEnd(textNode, 0);
+              range.setStart(pNode, 0);
+              range.setEnd(pNode, 0);
 
               selection.selection.removeAllRanges();
               selection.selection.addRange(range);
+
+              editor.pushHistory();
+              editor.trigger('content-changed');
             }
           }
         }
