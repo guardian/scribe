@@ -56,32 +56,38 @@ define([
       // each heading level, which means we are binding this event multiple
       // times.
 
+      var INVISIBLE_CHAR = '\uFEFF';
+
       editor.el.addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
 
           var selection = new api.Selection();
           var range = selection.range;
 
-          if (range.collapsed) {
-            if (range.commonAncestorContainer instanceof window.Text
-              && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
-              setTimeout(function () {
-                // FIXME: by doing this we create an invalid history item
-                // (created by the input event).
-                api.Command.prototype.execute.call(headingCommand, '<p>');
+          var headingNode = selection.getContaining(function (node) {
+            return (/^(H[1-6])$/).test(node.nodeName);
+          });
 
-                var selection = new api.Selection();
-                var range = selection.range;
+          if (headingNode && range.collapsed) {
+            var contentToEndRange = range.cloneRange();
+            contentToEndRange.setEndAfter(headingNode, 0);
 
-                var oprhanH1Node = range.commonAncestorContainer.parentNode.nextElementSibling;
+            var contentToEndFragment = contentToEndRange.cloneContents();
 
-                if (oprhanH1Node) {
-                  oprhanH1Node.remove();
-                }
+            if (contentToEndFragment.firstChild.innerText === '') {
+              event.preventDefault();
 
-                editor.pushHistory();
-                editor.trigger('content-changed');
-              }, 0);
+              var pNode = document.createElement('p');
+              var textNode = document.createTextNode(INVISIBLE_CHAR);
+              pNode.appendChild(textNode);
+              headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+
+              // Re-apply range
+              range.setStart(textNode, 0);
+              range.setEnd(textNode, 0);
+
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(range);
             }
           }
         }
