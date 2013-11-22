@@ -55,6 +55,7 @@ define([
           bin.setAttribute('contenteditable', true);
           bin.focus();
 
+          // Wait for the paste to happen (next loop?)
           setTimeout(function () {
             data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
