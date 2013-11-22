@@ -18,7 +18,6 @@
     "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.1.0"
   },
   "dependencies": {
-    "q": "~0.9.7",
     "eventEmitter": "~4.2.6"
   }
 }
