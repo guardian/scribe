@@ -1,6 +1,7 @@
 define([
   '../api',
-  '../api/command'
+  '../api/command',
+  '../api/selection'
 ], function (
   api
 ) {
@@ -39,6 +40,17 @@ define([
           }
         } else {
           api.Command.prototype.execute.apply(this, arguments);
+        }
+      };
+
+      unlinkCommand.queryEnabled = function () {
+        var selection = new api.Selection();
+        if (selection.selection.isCollapsed) {
+          return !! selection.getContaining(function (node) {
+            return node.nodeName === 'A';
+          });
+        } else {
+          return api.Command.prototype.queryEnabled.apply(this, arguments);
         }
       };
 
