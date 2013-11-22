@@ -17,6 +17,8 @@
   Creates two orphan list items
   - This is caused by Selection.placeMarkers adding a redundant text node after
     the inserted end marker.
+* Bold is disabled when heading is selected, but not when a heading is the child
+  of the range (instead of a container).
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV
