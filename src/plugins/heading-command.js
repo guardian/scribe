@@ -65,10 +65,22 @@ define([
           if (range.collapsed) {
             if (range.commonAncestorContainer instanceof window.Text
               && /^(H[1-6])$/.test(range.commonAncestorContainer.parentNode.nodeName)) {
-              // Wait for the native behaivour to occur, and then apply the
-              // command. We assume this will be in the next tick.
               setTimeout(function () {
+                // FIXME: by doing this we create an invalid history item
+                // (created by the input event).
                 api.Command.prototype.execute.call(headingCommand, '<p>');
+
+                var selection = new api.Selection();
+                var range = selection.range;
+
+                var oprhanH1Node = range.commonAncestorContainer.parentNode.nextElementSibling;
+
+                if (oprhanH1Node) {
+                  oprhanH1Node.remove();
+                }
+
+                editor.pushHistory();
+                editor.trigger('content-changed');
               }, 0);
             }
           }
