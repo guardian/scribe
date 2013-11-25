@@ -14,10 +14,10 @@
     "tests"
   ],
   "devDependencies": {
-    "requirejs": "~2.1.9",
-    "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.1.0"
+    "requirejs": "~2.1.9"
   },
   "dependencies": {
-    "eventEmitter": "~4.2.6"
+    "eventEmitter": "~4.2.6",
+    "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.1.0"
   }
 }
