@@ -82,6 +82,7 @@ define([
         selection.range.deleteContents();
         selection.range.insertNode(textNode);
 
+        editor.pushHistory();
         editor.trigger('content-changed');
 
         return textNode;
