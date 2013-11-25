@@ -71,7 +71,7 @@ define([
         // them with the stricly equality operator.
         var serialisedSelection = serialiseRangeToHTML(range);
 
-        var contentRange = new window.Range();
+        var contentRange = document.createRange();
         contentRange.selectNodeContents(editor.el);
 
         var serialisedContent = serialiseRangeToHTML(contentRange);
