@@ -1,8 +1,8 @@
 define([
   '../../../../api',
+  '../../../../api/command-patch',
   '../../../../api/node',
   '../../../../api/selection',
-  '../../../../api/simple-command'
 ], function (
   api
 ) {
