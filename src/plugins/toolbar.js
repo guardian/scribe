@@ -1,8 +1,7 @@
 define([
-  '../api',
   '../api/selection'
 ], function (
-  api
+  Selection
 ) {
 
   'use strict';
@@ -33,7 +32,7 @@ define([
           editor.on('content-changed', updateUi);
 
           function updateUi() {
-            var selection = new api.Selection();
+            var selection = new Selection();
 
             if (selection.range) {
               if (command.queryEnabled()) {

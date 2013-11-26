@@ -1,29 +1,29 @@
 define([
-  '../api',
   './command',
   './selection'
 ], function (
-  api
+  Command,
+  Selection
 ) {
 
   'use strict';
 
-  api.SimpleCommand = function (editor, commandName, nodeName) {
-    api.Command.call(this, editor, commandName);
+  function SimpleCommand(editor, commandName, nodeName) {
+    Command.call(this, editor, commandName);
 
     this.nodeName = nodeName;
-  };
+  }
 
-  api.SimpleCommand.prototype = Object.create(api.Command.prototype);
-  api.SimpleCommand.prototype.constructor = api.SimpleCommand;
+  SimpleCommand.prototype = Object.create(Command.prototype);
+  SimpleCommand.prototype.constructor = SimpleCommand;
 
-  api.SimpleCommand.prototype.queryState = function () {
-    var selection = new api.Selection();
+  SimpleCommand.prototype.queryState = function () {
+    var selection = new Selection();
     return !! selection.getContaining(function (node) {
       return node.nodeName === this.nodeName;
     }.bind(this));
   };
 
-  return api;
+  return SimpleCommand;
 
 });

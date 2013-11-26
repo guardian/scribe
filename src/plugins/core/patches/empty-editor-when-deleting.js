@@ -1,8 +1,7 @@
 define([
-  '../../../api',
-  '../../../api/selection',
+  '../../../api/selection'
 ], function (
-  api
+  Selection
 ) {
 
   /**
@@ -25,7 +24,7 @@ define([
       editor.el.addEventListener('keydown', function handleKeydown(event) {
         // Delete or backspace
         if (event.keyCode === 8 || event.keyCode === 46) {
-          var selection = new api.Selection();
+          var selection = new Selection();
 
           /**
            * The second condition in this statement is only relevant for Firefox.

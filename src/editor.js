@@ -4,7 +4,8 @@ define([
   './plugins/core/formatters',
   './plugins/core/patches',
   './plugins/core/undo-manager-commands',
-  './api',
+  './api/command',
+  './api/selection',
   './api/undo-manager'
 ], function (
   EventEmitter,
@@ -12,7 +13,9 @@ define([
   formatters,
   patches,
   undoManagerCommands,
-  api
+  Command,
+  Selection,
+  UndoManager
 ) {
 
   'use strict';
@@ -23,7 +26,7 @@ define([
     this.patchedCommands = {};
     this.initializers = [];
 
-    this.undoManager = new api.UndoManager();
+    this.undoManager = new UndoManager();
 
     this.el.addEventListener('input', function () {
       this.pushHistory();
@@ -71,7 +74,7 @@ define([
   };
 
   Editor.prototype.getHTML = function () {
-    var selection = new api.Selection();
+    var selection = new Selection();
 
     var html;
     if (selection.range) {
@@ -98,14 +101,14 @@ define([
   };
 
   Editor.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || this.patchedCommands[commandName] || new api.Command(this, commandName);
+    return this.commands[commandName] || this.patchedCommands[commandName] || new Command(this, commandName);
   };
 
   Editor.prototype.restoreFromHistory = function (historyItem) {
     this.setHTML(historyItem);
 
     // Restore the selection
-    var selection = new api.Selection();
+    var selection = new Selection();
     selection.selectMarkers(this.el);
 
     this.trigger('content-changed');

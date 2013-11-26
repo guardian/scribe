@@ -1,16 +1,12 @@
-define([
-  '../api'
-], function (
-  api
-) {
+define(function () {
 
   'use strict';
 
-  api.Node = function (node) {
+  function Node(node) {
     this.node = node;
-  };
+  }
 
-  api.Node.prototype.getAncestor = function (nodeFilter) {
+  Node.prototype.getAncestor = function (nodeFilter) {
     // TODO: use do instead?
     while (this.node && this.node.nodeName !== 'body') {
       if (nodeFilter(this.node)) {
@@ -20,7 +16,7 @@ define([
     }
   };
 
-  api.Node.prototype.nextAll = function () {
+  Node.prototype.nextAll = function () {
     var all = [];
     var el = this.node;
     while (el = el.nextElementSibling) {
@@ -29,6 +25,6 @@ define([
     return all;
   };
 
-  return api;
+  return Node;
 
 });

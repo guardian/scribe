@@ -17,7 +17,6 @@ require({
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
-  'api',
   'api/command'
 ], function (
   Editor,
@@ -27,7 +26,7 @@ require({
   linkPromptCommand,
   sanitizer,
   toolbar,
-  api
+  Command
 ) {
 
   'use strict';
@@ -107,7 +106,7 @@ require({
    */
 
   function findCommand(commandName) {
-    return editor.commands[commandName] || new api.Command(editor, commandName);
+    return editor.commands[commandName] || new Command(editor, commandName);
   }
 
   document.addEventListener('keydown', function (event) {

@@ -1,8 +1,7 @@
 define([
-  '../api',
   '../api/selection'
 ], function (
-  api
+  Selection
 ) {
 
   /**
@@ -27,7 +26,7 @@ define([
       editor.pushHistory();
       editor.trigger('content-changed');
 
-      var selection = new api.Selection();
+      var selection = new Selection();
       selection.removeMarkers(editor.el);
     };
   };

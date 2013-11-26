@@ -1,15 +1,14 @@
 define([
-  '../../api',
-  '../../api/command-patch',
+  '../../api/command-patch'
 ], function (
-  api
+  CommandPatch
 ) {
 
   'use strict';
 
   return function () {
     return function (editor) {
-      var undoCommand = new api.CommandPatch('undo');
+      var undoCommand = new CommandPatch('undo');
 
       undoCommand.execute = function () {
         var historyItem = editor.undoManager.undo();
@@ -23,7 +22,7 @@ define([
         return editor.undoManager.position > 0;
       };
 
-      var redoCommand = new api.CommandPatch('redo');
+      var redoCommand = new CommandPatch('redo');
 
       redoCommand.execute = function () {
         var historyItem = editor.undoManager.redo();

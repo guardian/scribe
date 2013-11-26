@@ -1,9 +1,9 @@
 define([
-  '../api',
   '../api/command',
   '../api/selection'
 ], function (
-  api
+  Command,
+  Selection
 ) {
 
   /**
@@ -15,10 +15,10 @@ define([
 
   return function () {
     return function (editor) {
-      var unlinkCommand = new api.Command(editor, 'unlink');
+      var unlinkCommand = new Command(editor, 'unlink');
 
       unlinkCommand.execute = function () {
-        var selection = new api.Selection();
+        var selection = new Selection();
 
         if (selection.selection.isCollapsed) {
           /**
@@ -39,18 +39,18 @@ define([
             editor.trigger('content-changed');
           }
         } else {
-          api.Command.prototype.execute.apply(this, arguments);
+          Command.prototype.execute.apply(this, arguments);
         }
       };
 
       unlinkCommand.queryEnabled = function () {
-        var selection = new api.Selection();
+        var selection = new Selection();
         if (selection.selection.isCollapsed) {
           return !! selection.getContaining(function (node) {
             return node.nodeName === 'A';
           });
         } else {
-          return api.Command.prototype.queryEnabled.apply(this, arguments);
+          return Command.prototype.queryEnabled.apply(this, arguments);
         }
       };
 

@@ -1,10 +1,11 @@
 define([
-  '../../../../api',
   '../../../../api/command-patch',
   '../../../../api/node',
-  '../../../../api/selection',
+  '../../../../api/selection'
 ], function (
-  api
+  CommandPatch,
+  Node,
+  Selection
 ) {
 
   /**
@@ -18,10 +19,10 @@ define([
   return function () {
     return function (editor) {
       var InsertListCommandPatch = function (commandName) {
-        api.CommandPatch.call(this, commandName);
+        CommandPatch.call(this, commandName);
       };
 
-      InsertListCommandPatch.prototype = Object.create(api.CommandPatch.prototype);
+      InsertListCommandPatch.prototype = Object.create(CommandPatch.prototype);
       InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
 
       InsertListCommandPatch.prototype.execute = function (value) {
@@ -31,7 +32,7 @@ define([
            * TODO: should this be a feature instead of a patch? It is not really
            * a browser inconsistency and the user might have disabled root P.
            */
-          var selection = new api.Selection();
+          var selection = new Selection();
           var range = selection.range;
 
           var listNode = selection.getContaining(function (node) {
@@ -47,7 +48,7 @@ define([
            * split the node and insert the P in the middle.
            */
 
-          var nextListItemNodes = (new api.Node(listItemNode)).nextAll();
+          var nextListItemNodes = (new Node(listItemNode)).nextAll();
 
           if (nextListItemNodes.length) {
             var newListNode = document.createElement(listNode.nodeName);
@@ -81,7 +82,7 @@ define([
           editor.pushHistory();
           editor.trigger('content-changed');
         } else {
-          api.CommandPatch.prototype.execute.call(this, value);
+          CommandPatch.prototype.execute.call(this, value);
 
           /**
            * Chrome: If we apply the insertOrderedList command on an empty P, the
@@ -89,7 +90,7 @@ define([
            * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
            */
 
-          var selection = new api.Selection();
+          var selection = new Selection();
           var range = selection.range;
 
           var listNode = selection.getContaining(function (node) {
@@ -124,7 +125,7 @@ define([
       editor.el.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
 
-          var selection = new api.Selection();
+          var selection = new Selection();
           var range = selection.range;
 
           if (range.collapsed) {

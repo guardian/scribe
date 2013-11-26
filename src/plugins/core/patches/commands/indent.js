@@ -1,9 +1,9 @@
 define([
-  '../../../../api',
   '../../../../api/command-patch',
   '../../../../api/selection'
 ], function (
-  api
+  CommandPatch,
+  Selection
 ) {
 
   /**
@@ -17,7 +17,7 @@ define([
 
   return function () {
     return function (editor) {
-      var indentCommand = new api.CommandPatch('indent');
+      var indentCommand = new CommandPatch('indent');
 
       indentCommand.execute = function (value) {
         /**
@@ -25,7 +25,7 @@ define([
          * BLOCKQUOTE will be nested inside the P.
          * As per: http://jsbin.com/oDOriyU/3/edit?html,js,output
          */
-        var selection = new api.Selection();
+        var selection = new Selection();
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'P') {
@@ -40,7 +40,7 @@ define([
           selection.selection.addRange(range);
         }
 
-        api.CommandPatch.prototype.execute.call(this, value);
+        CommandPatch.prototype.execute.call(this, value);
 
         /**
          * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
@@ -48,7 +48,7 @@ define([
          */
 
         // Renew the selection
-        selection = new api.Selection();
+        selection = new Selection();
         var blockquoteNode = selection.getContaining(function (node) {
           return node.nodeName === 'BLOCKQUOTE';
         });

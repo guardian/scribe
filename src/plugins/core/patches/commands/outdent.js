@@ -1,10 +1,11 @@
 define([
-  '../../../../api',
   '../../../../api/command-patch',
   '../../../../api/node',
   '../../../../api/selection'
 ], function (
-  api
+  CommandPatch,
+  Node,
+  Selection
 ) {
 
   /**
@@ -15,10 +16,10 @@ define([
 
   return function () {
     return function (editor) {
-      var outdentCommand = new api.CommandPatch('outdent');
+      var outdentCommand = new CommandPatch('outdent');
 
       outdentCommand.execute = function (value) {
-        var selection = new api.Selection();
+        var selection = new Selection();
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
@@ -64,7 +65,7 @@ define([
              * split the node and insert the P in the middle.
              */
 
-            var nextSiblingNodes = (new api.Node(pNode)).nextAll();
+            var nextSiblingNodes = (new Node(pNode)).nextAll();
 
             if (nextSiblingNodes.length) {
               var newContainerNode = document.createElement(blockquoteNode.nodeName);
@@ -86,7 +87,7 @@ define([
             }
           }
 
-          api.CommandPatch.prototype.execute.call(this, value);
+          CommandPatch.prototype.execute.call(this, value);
         }
 
         editor.pushHistory();
