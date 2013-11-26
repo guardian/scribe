@@ -1,6 +1,5 @@
 define([
   '../api',
-  '../api/selection',
   '../api/simple-command'
 ], function (
   api
