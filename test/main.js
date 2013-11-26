@@ -22,19 +22,84 @@ editor.getInnerHTML = function () {
   return editorOutput.getText();
 };
 
-/* global it, after */
+function given() {
+  arguments[0] = 'given ' + arguments[0];
+  describe.apply(null, arguments);
+}
+
+function when() {
+  arguments[0] = 'when ' + arguments[0];
+  describe.apply(null, arguments);
+}
+
+/* global it, after, afterEach, before, beforeEach */
 
 after(function (done) {
+  // FIXME: Quit fails when there was an error from the WebDriver
   driver.quit().then(function () {
     done();
   });
 });
 
-it('should insert the text inside of a P element', function (done) {
-  editor.sendKeys('1');
+afterEach(function (done) {
+  // FIXME: why does this not work?
+  // var clearText = new webdriver.ActionSequence(driver)
+  //   .click(editor)
+  //   .keyDown(webdriver.Key.COMMAND)
+  //   .sendKeys('a')
+  //   .keyUp(webdriver.Key.COMMAND)
+  //   .sendKeys(webdriver.Key.DELETE)
+  //   .perform();
 
-  editor.getInnerHTML().then(function (innerHTML) {
-    expect(innerHTML).to.equal('<p>1</p>');
-    done();
+  var clearText = new webdriver.ActionSequence(driver)
+    .click(editor)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .perform();
+
+  clearText.then(function () {
+    editor.getInnerHTML().then(function (innerHTML) {
+      done();
+    });
+  });
+});
+
+when('the user presses 1', function () {
+  beforeEach(function () {
+    editor.sendKeys('1');
+  });
+
+  it('should insert the text inside of a P element', function (done) {
+    editor.getInnerHTML().then(function (innerHTML) {
+      expect(innerHTML).to.equal('<p>1</p>');
+      done();
+    });
+  });
+
+  when('the user presses enter', function () {
+    beforeEach(function () {
+      editor.sendKeys(webdriver.Key.ENTER);
+    });
+
+    it('should insert another P element', function (done) {
+      editor.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('<p>1</p><p><br></p>');
+        done();
+      });
+    });
+
+    when('the user types', function () {
+      beforeEach(function () {
+        editor.sendKeys('2');
+      });
+
+      it('should insert characters inside of the P element', function (done) {
+        editor.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+          done();
+        });
+      });
+    });
   });
 });
