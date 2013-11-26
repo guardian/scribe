@@ -1,7 +1,6 @@
 define([
   '../../api',
   '../../api/command-patch',
-  '../../api/selection'
 ], function (
   api
 ) {
