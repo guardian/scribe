@@ -1,4 +1,9 @@
-define(function () {
+define([
+  '../api',
+  '../api/selection'
+], function (
+  api
+) {
 
   /**
    * Sets the default content of the editor so that each carriage return creates
@@ -18,8 +23,12 @@ define(function () {
        * not be restored when we undo.
        */
       editor.setHTML('<p><em class="editor-marker"></em><br></p>');
+
       editor.pushHistory();
       editor.trigger('content-changed');
+
+      var selection = new api.Selection();
+      selection.removeMarkers(editor.el);
     };
   };
 
