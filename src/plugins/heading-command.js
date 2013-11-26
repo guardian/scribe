@@ -1,11 +1,7 @@
 define([
-  '../api/command',
-  '../api/command-patch',
   '../api/selection',
   '../api/simple-command'
 ], function (
-  Command,
-  CommandPatch,
   Selection,
   SimpleCommand
 ) {
@@ -30,9 +26,9 @@ define([
 
       headingCommand.execute = function () {
         if (this.queryState()) {
-          Command.prototype.execute.call(this, '<p>');
+          SimpleCommand.prototype.execute.call(this, '<p>');
         } else {
-          Command.prototype.execute.call(this, tag);
+          SimpleCommand.prototype.execute.call(this, tag);
         }
       };
 
@@ -46,7 +42,7 @@ define([
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! listNode;
+        return SimpleCommand.prototype.queryEnabled.apply(this, arguments) && ! listNode;
       };
 
       editor.commands[commandName] = headingCommand;

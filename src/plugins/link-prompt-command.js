@@ -1,9 +1,7 @@
 define([
-  '../api/command',
   '../api/selection',
   '../api/simple-command'
 ], function (
-  Command,
   Selection,
   SimpleCommand
 ) {
@@ -27,7 +25,7 @@ define([
         });
         var initialUrl = anchorNode ? anchorNode.href : 'http://';
         var url = window.prompt('Enter a URL.', initialUrl);
-        Command.prototype.execute.call(this, url);
+        SimpleCommand.prototype.execute.call(this, url);
       };
 
       editor.commands.linkPrompt = linkPromptCommand;
