@@ -50,6 +50,9 @@ define([
 
           var quoteText = replaceSelectedRangeWith(curlyChar);
           placeCaretAfter(quoteText);
+
+          editor.pushHistory();
+          editor.trigger('content-changed');
         }
       }
 
@@ -81,9 +84,6 @@ define([
         var selection = new api.Selection();
         selection.range.deleteContents();
         selection.range.insertNode(textNode);
-
-        editor.pushHistory();
-        editor.trigger('content-changed');
 
         return textNode;
       }
