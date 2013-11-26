@@ -1,5 +1,6 @@
 define([
-  '../api'
+  '../api',
+  '../api/selection'
 ], function (
   api
 ) {
