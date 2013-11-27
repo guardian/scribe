@@ -94,7 +94,9 @@ require({
       h2: []
     }
   }));
-  editor.use(toolbar(document.querySelectorAll('.toolbar')));
+  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
+    editor.use(toolbar(toolbarNode));
+  });
 
   /**
    * Keyboard shortcuts

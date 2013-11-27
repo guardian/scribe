@@ -6,10 +6,10 @@ define([
 
   'use strict';
 
-  return function (toolbars) {
+  return function (toolbarNode) {
     return function (editor) {
-      Array.prototype.forEach.call(toolbars, function (toolbar) {
-        var buttons = toolbar.querySelectorAll('button');
+      editor.addInitializer(function () {
+        var buttons = toolbarNode.querySelectorAll('button');
 
         Array.prototype.forEach.call(buttons, function (button) {
           // Look for a predefined command, otherwise define one now.
