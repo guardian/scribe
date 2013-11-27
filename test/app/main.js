@@ -10,9 +10,11 @@ require({
     }
   }
 }, [
-  'editor'
+  'editor',
+  'plugins/toolbar'
 ], function (
-  Editor
+  Editor,
+  toolbar
 ) {
 
   'use strict';
@@ -24,6 +26,8 @@ require({
   function updateHTML() {
     document.querySelector('.editor-html').textContent = editor.el.innerHTML;
   }
+
+  editor.use(toolbar(document.querySelectorAll('.toolbar')));
 
   editor.initialize();
 

@@ -103,3 +103,17 @@ when('the user types', function () {
     });
   });
 });
+
+when('the user clicks the bold button in the toolbar and then types', function () {
+  beforeEach(function () {
+    driver.findElement(webdriver.By.id('bold-button')).click();
+    editor.sendKeys('1');
+  });
+
+  it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
+    editor.getInnerHTML().then(function (innerHTML) {
+      expect(innerHTML).to.equal('<p><b>1</b></p>');
+      done();
+    });
+  });
+});
