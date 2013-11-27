@@ -10,7 +10,7 @@ define([
        * keyboard navigation inside a heading to ensure a P element is created.
        */
       if (editor.options.paragraphs) {
-        editor.el.addEventListener('keypress', function (event) {
+        editor.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) {
 
             var selection = new Selection();
