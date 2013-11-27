@@ -28,7 +28,8 @@ define([
         var curlyChar;
 
         // If previous char is real content, close quote; else, open
-        var currentChar = keys[event.keyCode];
+        // TODO: annoying Chrome/Firefox
+        var currentChar = keys[event.keyCode || event.charCode];
         if (currentChar === '"') {
           if (wordBeforeSelectedRange()) {
             curlyChar = closeDoubleCurly;
