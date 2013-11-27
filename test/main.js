@@ -173,6 +173,7 @@ given('an editor with the curly quotes plugin', function () {
 
       it('should insert an opening curly double quote instead', function (done) {
         editor.getInnerHTML().then(function (innerHTML) {
+          // FIXME: failing, inserts nbsp!
           expect(innerHTML).to.equal('<p>Hello “</p>');
           done();
         });
