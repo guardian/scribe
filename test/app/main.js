@@ -11,10 +11,12 @@ require({
   }
 }, [
   'editor',
-  'plugins/toolbar'
+  'plugins/toolbar',
+  'plugins/smart-list'
 ], function (
   Editor,
-  toolbar
+  toolbar,
+  smartList
 ) {
 
   'use strict';
@@ -28,6 +30,7 @@ require({
   }
 
   editor.use(toolbar(document.querySelectorAll('.toolbar')));
+  editor.use(smartList());
 
   editor.initialize();
 
