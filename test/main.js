@@ -2,7 +2,8 @@ var expect = require('chai').expect;
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 
-var server = new SeleniumServer('/Users/Oliver/Downloads/selenium-server-standalone-2.35.0.jar', {
+// Note: you need to run from the root of the project
+var server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
   port: 4444
 });
 
