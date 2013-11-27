@@ -6,5 +6,9 @@
     "chai": "~1.8.1",
     "mocha": "~1.14.0",
     "selenium-webdriver": "~2.37.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec",
+    "test-dev": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec --watch"
   }
 }
