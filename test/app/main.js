@@ -11,10 +11,12 @@ require({
   }
 }, [
   'editor',
-  'plugins/toolbar'
+  'plugins/toolbar',
+  'plugins/curly-quotes'
 ], function (
   Editor,
-  toolbar
+  toolbar,
+  curlyQuotes
 ) {
 
   'use strict';
@@ -28,6 +30,7 @@ require({
   }
 
   editor.use(toolbar(document.querySelectorAll('.toolbar')));
+  editor.use(curlyQuotes());
 
   editor.initialize();
 
