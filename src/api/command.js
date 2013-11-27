@@ -1,18 +1,14 @@
-define([
-  '../api'
-], function (
-  api
-) {
+define(function () {
 
   'use strict';
 
-  api.Command = function (editor, commandName) {
+  function Command(editor, commandName) {
     this.editor = editor;
     this.commandName = commandName;
     this.patchedCommand = this.editor.patchedCommands[this.commandName];
-  };
+  }
 
-  api.Command.prototype.execute = function (value) {
+  Command.prototype.execute = function (value) {
     if (this.patchedCommand) {
       this.patchedCommand.execute(value);
     } else {
@@ -20,7 +16,7 @@ define([
     }
   };
 
-  api.Command.prototype.queryState = function () {
+  Command.prototype.queryState = function () {
     if (this.patchedCommand) {
       return this.patchedCommand.queryState();
     } else {
@@ -28,7 +24,7 @@ define([
     }
   };
 
-  api.Command.prototype.queryEnabled = function () {
+  Command.prototype.queryEnabled = function () {
     if (this.patchedCommand) {
       return this.patchedCommand.queryEnabled();
     } else {
@@ -36,6 +32,6 @@ define([
     }
   };
 
-  return api;
+  return Command;
 
 });

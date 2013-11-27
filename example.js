@@ -18,7 +18,6 @@ require({
   'plugins/sanitizer',
   'plugins/toolbar',
   'plugins/curly-quotes',
-  'api',
   'api/command'
 ], function (
   Editor,
@@ -29,7 +28,7 @@ require({
   sanitizer,
   toolbar,
   curlyQuotes,
-  api
+  Command
 ) {
 
   'use strict';
@@ -97,7 +96,9 @@ require({
       h2: []
     }
   }));
-  editor.use(toolbar(document.querySelectorAll('.toolbar')));
+  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
+    editor.use(toolbar(toolbarNode));
+  });
   editor.use(curlyQuotes());
 
   /**
@@ -110,7 +111,7 @@ require({
    */
 
   function findCommand(commandName) {
-    return editor.commands[commandName] || new api.Command(editor, commandName);
+    return editor.commands[commandName] || new Command(editor, commandName);
   }
 
   document.addEventListener('keydown', function (event) {

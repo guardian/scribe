@@ -1,26 +1,25 @@
 define([
-  '../api',
   './node'
 ], function (
-  api
+  Node
 ) {
 
   'use strict';
 
-  api.Selection = function () {
+  function Selection() {
     this.selection = window.getSelection();
 
     if (this.selection.rangeCount) {
       this.range = this.selection.getRangeAt(0);
     }
-  };
+  }
 
-  api.Selection.prototype.getContaining = function (nodeFilter) {
-    var node = new api.Node(this.range.commonAncestorContainer);
+  Selection.prototype.getContaining = function (nodeFilter) {
+    var node = new Node(this.range.commonAncestorContainer);
     return node.getAncestor(nodeFilter);
   };
 
-  api.Selection.prototype.placeMarkers = function () {
+  Selection.prototype.placeMarkers = function () {
     var startMarker = document.createElement('em');
     startMarker.classList.add('editor-marker');
     var endMarker = document.createElement('em');
@@ -42,11 +41,11 @@ define([
     this.selection.addRange(this.range);
   };
 
-  api.Selection.prototype.getMarkers = function (editorNode) {
+  Selection.prototype.getMarkers = function (editorNode) {
     return editorNode.querySelectorAll('em.editor-marker');
   };
 
-  api.Selection.prototype.removeMarkers = function (editorNode) {
+  Selection.prototype.removeMarkers = function (editorNode) {
     var markers = this.getMarkers(editorNode);
     Array.prototype.forEach.call(markers, function (marker) {
       marker.parentNode.removeChild(marker);
@@ -54,7 +53,7 @@ define([
   };
 
   // TODO: use range for editorNode?
-  api.Selection.prototype.selectMarkers = function (editorNode, keepMarkers) {
+  Selection.prototype.selectMarkers = function (editorNode, keepMarkers) {
     var markers = this.getMarkers(editorNode);
     if (!markers.length) {
       return;
@@ -73,6 +72,6 @@ define([
     this.selection.addRange(this.range);
   };
 
-  return api;
+  return Selection;
 
 });

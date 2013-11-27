@@ -1,27 +1,23 @@
-define([
-  '../api'
-], function (
-  api
-) {
+define(function () {
 
   'use strict';
 
-  api.CommandPatch = function (commandName) {
+  function CommandPatch(commandName) {
     this.commandName = commandName;
-  };
+  }
 
-  api.CommandPatch.prototype.execute = function (value) {
+  CommandPatch.prototype.execute = function (value) {
     document.execCommand(this.commandName, false, value || null);
   };
 
-  api.CommandPatch.prototype.queryState = function () {
+  CommandPatch.prototype.queryState = function () {
     return document.queryCommandState(this.commandName);
   };
 
-  api.CommandPatch.prototype.queryEnabled = function () {
+  CommandPatch.prototype.queryEnabled = function () {
     return document.queryCommandEnabled(this.commandName);
   };
 
-  return api;
+  return CommandPatch;
 
 });

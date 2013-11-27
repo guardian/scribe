@@ -1,9 +1,9 @@
 define([
-  '../api',
   '../api/selection',
   '../api/simple-command'
 ], function (
-  api
+  Selection,
+  SimpleCommand
 ) {
 
   /**
@@ -22,13 +22,13 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new api.SimpleCommand(editor, 'formatBlock', nodeName);
+      var headingCommand = new SimpleCommand(editor, 'formatBlock', nodeName);
 
       headingCommand.execute = function () {
         if (this.queryState()) {
-          api.Command.prototype.execute.call(this, '<p>');
+          SimpleCommand.prototype.execute.call(this, '<p>');
         } else {
-          api.Command.prototype.execute.call(this, tag);
+          SimpleCommand.prototype.execute.call(this, tag);
         }
       };
 
@@ -37,12 +37,12 @@ define([
        * Disabling for now.
        */
       headingCommand.queryEnabled = function () {
-        var selection = new api.Selection();
+        var selection = new Selection();
         var listNode = selection.getContaining(function (node) {
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! listNode;
+        return SimpleCommand.prototype.queryEnabled.apply(this, arguments) && ! listNode;
       };
 
       editor.commands[commandName] = headingCommand;
@@ -59,7 +59,7 @@ define([
       editor.el.addEventListener('keypress', function (event) {
         if (event.keyCode === 13) {
 
-          var selection = new api.Selection();
+          var selection = new Selection();
           var range = selection.range;
 
           var headingNode = selection.getContaining(function (node) {

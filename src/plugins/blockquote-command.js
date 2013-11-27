@@ -1,9 +1,7 @@
 define([
-  '../api',
-  '../api/selection',
   '../api/simple-command'
 ], function (
-  api
+  SimpleCommand
 ) {
 
   /**
@@ -14,7 +12,7 @@ define([
 
   return function () {
     return function (editor) {
-      var blockquoteCommand = new api.SimpleCommand(editor, 'blockquote', 'BLOCKQUOTE');
+      var blockquoteCommand = new SimpleCommand(editor, 'blockquote', 'BLOCKQUOTE');
 
       blockquoteCommand.execute = function () {
         var command = editor.getCommand(this.queryState() ? 'outdent' : 'indent');
