@@ -150,7 +150,7 @@ when('the user clicks the bold button in the toolbar and then types', function (
   });
 });
 
-given('an editor with the smart lists plugin', function () {
+describe('smart lists plugin', function () {
 
   var unorderedPrefixes = ['* ', '- ', '• '];
   unorderedPrefixes.forEach(function(prefix) {
