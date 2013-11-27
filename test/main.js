@@ -65,7 +65,7 @@ afterEach(function (done) {
   });
 });
 
-when('the user presses 1', function () {
+when('the user types', function () {
   beforeEach(function () {
     editor.sendKeys('1');
   });
