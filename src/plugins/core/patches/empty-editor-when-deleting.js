@@ -21,31 +21,33 @@ define([
   return function emptyEditorWhenDeleting() {
     return function (editor) {
 
-      editor.el.addEventListener('keydown', function handleKeydown(event) {
-        // Delete or backspace
-        if (event.keyCode === 8 || event.keyCode === 46) {
-          var selection = new Selection();
+      if (editor.options.paragraphs) {
+        editor.el.addEventListener('keydown', function handleKeydown(event) {
+          // Delete or backspace
+          if (event.keyCode === 8 || event.keyCode === 46) {
+            var selection = new Selection();
 
-          /**
-           * The second condition in this statement is only relevant for Firefox.
-           * In Firefox, erasing the range created by ‘Select All’ will leave the
-           * editor in a pristine state. We polyfill this behaviour to match that of
-           * Chrome: that is, to default to a paragraph element.
-           *
-           * This branch need not run in Chrome upon the second condition, but it does, for now.
-           */
+            /**
+             * The second condition in this statement is only relevant for Firefox.
+             * In Firefox, erasing the range created by ‘Select All’ will leave the
+             * editor in a pristine state. We polyfill this behaviour to match that of
+             * Chrome: that is, to default to a paragraph element.
+             *
+             * This branch need not run in Chrome upon the second condition, but it does, for now.
+             */
 
-          var collapsedSelection = selection.selection.isCollapsed;
-          var allContentSelected = isRangeAllContent(selection.range);
+            var collapsedSelection = selection.selection.isCollapsed;
+            var allContentSelected = isRangeAllContent(selection.range);
 
-          if ((collapsedSelection && editor.text() === '') || (! collapsedSelection && allContentSelected)) {
-            event.preventDefault();
-            editor.setHTML('<p><br></p>');
-            editor.pushHistory();
-            editor.trigger('content-changed');
+            if ((collapsedSelection && editor.text() === '') || (! collapsedSelection && allContentSelected)) {
+              event.preventDefault();
+              editor.setHTML('<p><br></p>');
+              editor.pushHistory();
+              editor.trigger('content-changed');
+            }
           }
-        }
-      });
+        });
+      }
 
       /**
        * Serialise a range into a HTML string.

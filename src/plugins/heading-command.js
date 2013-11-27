@@ -46,61 +46,6 @@ define([
       };
 
       editor.commands[commandName] = headingCommand;
-
-      /**
-       * Handle keyboard navigation (i.e. when the user does a carriage return
-       * inside a heading).
-       */
-
-      // FIXME: currently this plugin has to be used multiple times, once for
-      // each heading level, which means we are binding this event multiple
-      // times.
-
-      editor.el.addEventListener('keypress', function (event) {
-        if (event.keyCode === 13) {
-
-          var selection = new Selection();
-          var range = selection.range;
-
-          var headingNode = selection.getContaining(function (node) {
-            return (/^(H[1-6])$/).test(node.nodeName);
-          });
-
-          /**
-           * If we are at the end of the heading, insert a P. Otherwise handle
-           * natively.
-           */
-          if (headingNode && range.collapsed) {
-            var contentToEndRange = range.cloneRange();
-            contentToEndRange.setEndAfter(headingNode, 0);
-
-            // Get the content from the range to the end of the heading
-            var contentToEndFragment = contentToEndRange.cloneContents();
-
-            if (contentToEndFragment.firstChild.innerText === '') {
-              event.preventDefault();
-
-              // Default P
-              // TODO: Abstract somewhere
-              var pNode = document.createElement('p');
-              var brNode = document.createElement('br');
-              pNode.appendChild(brNode);
-
-              headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
-
-              // Re-apply range
-              range.setStart(pNode, 0);
-              range.setEnd(pNode, 0);
-
-              selection.selection.removeAllRanges();
-              selection.selection.addRange(range);
-
-              editor.pushHistory();
-              editor.trigger('content-changed');
-            }
-          }
-        }
-      });
     };
   };
 
