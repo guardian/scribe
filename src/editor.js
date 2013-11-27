@@ -4,6 +4,7 @@ define([
   './plugins/core/commands',
   './plugins/core/formatters',
   './plugins/core/patches',
+  './plugins/core/shame',
   './api/command',
   './api/selection',
   './api/undo-manager'
@@ -13,6 +14,7 @@ define([
   commands,
   formatters,
   patches,
+  shame,
   Command,
   Selection,
   UndoManager
@@ -50,6 +52,8 @@ define([
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
     this.use(patches.emptyEditorWhenDeleting());
+
+    this.use(shame());
 
 
     if (this.options.paragraphs) {

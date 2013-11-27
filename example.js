@@ -199,6 +199,8 @@ require({
 
   });
 
+  editor.setHTML('<p>Hello, World!</p>');
+
   // Finally…
   editor.initialize();
 });
