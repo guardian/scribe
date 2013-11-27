@@ -125,9 +125,9 @@ when('the user clicks the bold button in the toolbar and then types', function (
   });
 });
 
-given('an editor with the curly quotes plugin', function () {
+describe('an editor with the curly quotes plugin', function () {
 
-  when('at the beginning of a line', function () {
+  given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
       beforeEach(function () {
         editor.sendKeys('"');
@@ -142,7 +142,7 @@ given('an editor with the curly quotes plugin', function () {
     });
   });
 
-  when('at the end of a word', function () {
+  given('the caret is at the end of a word', function () {
     beforeEach(function () {
       editor.sendKeys('Hello');
     });
@@ -161,7 +161,7 @@ given('an editor with the curly quotes plugin', function () {
     });
   });
 
-  when('after the end of a word', function () {
+  given('the caret is after the end of a word', function () {
     beforeEach(function () {
       editor.sendKeys('Hello '); // Note the space!
     });
