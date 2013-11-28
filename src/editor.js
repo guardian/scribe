@@ -89,6 +89,11 @@ define([
           }
         }
       }.bind(this));
+
+      if (this.getHTML() === '') {
+        this.pushHistory();
+        this.trigger('content-changed');
+      }
     }
 
     this.use(commands.insertList());
