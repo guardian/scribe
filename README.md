@@ -3,6 +3,7 @@ editor
 
 ## List of `contenteditable` Browser Inconsistencies
 Playground: http://jsbin.com/INESUJI/2/edit?html,js,output
+* "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output

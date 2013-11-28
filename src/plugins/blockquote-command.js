@@ -21,7 +21,7 @@ define([
 
       blockquoteCommand.queryEnabled = function () {
         var command = editor.getCommand(this.queryState() ? 'outdent' : 'indent');
-        return command.queryEnabled();
+        return editor.options.paragraphs && command.queryEnabled();
       };
 
       editor.commands.blockquote = blockquoteCommand;

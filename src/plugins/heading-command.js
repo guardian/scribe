@@ -42,7 +42,8 @@ define([
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return SimpleCommand.prototype.queryEnabled.apply(this, arguments) && ! listNode;
+        return SimpleCommand.prototype.queryEnabled.apply(this, arguments)
+          && editor.options.paragraphs && ! listNode;
       };
 
       editor.commands[commandName] = headingCommand;

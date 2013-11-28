@@ -11,6 +11,7 @@ require({
   }
 }, [
   'editor',
+  'api/selection',
   'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
@@ -21,6 +22,7 @@ require({
   'api/command'
 ], function (
   Editor,
+  Selection,
   blockquoteCommand,
   headingCommand,
   intelligentUnlinkCommand,
@@ -201,8 +203,6 @@ require({
     }
 
   });
-
-  editor.setHTML('<p>Hello, World!</p>');
 
   // Finally…
   editor.initialize();

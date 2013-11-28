@@ -79,10 +79,12 @@ define([
         }
       };
 
-      if (editor.options.paragraphs) {
-        editor.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
-        editor.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
-      }
+      InsertListCommand.prototype.queryEnabled = function () {
+        return Command.prototype.queryEnabled.call(this) && editor.options.paragraphs;
+      };
+
+      editor.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
+      editor.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
     };
   };
 

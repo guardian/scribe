@@ -29,6 +29,8 @@ define([
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'P') {
+          // FIXME: this text node is left behind. Tidy it up somehow,
+          // or don't use it at all.
           var textNode = document.createTextNode(INVISIBLE_CHAR);
 
           range.insertNode(textNode);
