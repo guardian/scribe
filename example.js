@@ -17,6 +17,7 @@ require({
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
+  'plugins/smart-list',
   'plugins/curly-quotes',
   'api/command'
 ], function (
@@ -27,6 +28,7 @@ require({
   linkPromptCommand,
   sanitizer,
   toolbar,
+  smartList,
   curlyQuotes,
   Command
 ) {
@@ -99,6 +101,7 @@ require({
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
     editor.use(toolbar(toolbarNode));
   });
+  editor.use(smartList());
   editor.use(curlyQuotes());
 
   /**

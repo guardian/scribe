@@ -12,6 +12,7 @@ server.start();
 var driver = new webdriver.Builder()
   .usingServer(server.address())
   .withCapabilities(webdriver.Capabilities.chrome())
+  // .withCapabilities(webdriver.Capabilities.firefox())
   .build();
 
 driver.get('http://localhost:8080/test/app/index.html');
@@ -35,6 +36,18 @@ function when() {
 
 /* global it, after, afterEach, before, beforeEach */
 
+/* TODO
+ * - create editor dynamically for each context (e.g. pristine, with a plugin, etc)
+ * - sanitize clearText to call editor methods (e.g. editor.clear() via executeScript?)
+ * - rethink getInnerHTML in the light of being able to access the
+ *   editor instance; is it better to use editor.getHTML, or how do we
+ *   ensure 'content-changed' was triggered?
+ * - simplify boilerplate by abstracting common test operations, e.g.
+ *     when(type('hello'), function() {
+ *       editorShouldContain('<p>hello</p>');
+ *     });
+ */
+
 after(function (done) {
   // FIXME: Quit fails when there was an error from the WebDriver
   driver.quit().then(function () {
@@ -54,6 +67,18 @@ afterEach(function (done) {
 
   var clearText = new webdriver.ActionSequence(driver)
     .click(editor)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
     .sendKeys(webdriver.Key.DELETE)
     .sendKeys(webdriver.Key.DELETE)
     .sendKeys(webdriver.Key.DELETE)
@@ -125,7 +150,133 @@ when('the user clicks the bold button in the toolbar and then types', function (
   });
 });
 
-describe('an editor with the curly quotes plugin', function () {
+describe('smart lists plugin', function () {
+
+  var unorderedPrefixes = ['* ', '- ', '• '];
+  unorderedPrefixes.forEach(function(prefix) {
+
+    when('the user types "' +prefix+ '"', function () {
+      beforeEach(function () {
+        editor.sendKeys(prefix);
+      });
+
+      it('should create an unordered list', function (done) {
+        editor.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<ul><li><br></li></ul>');
+          done();
+        });
+      });
+
+      when('the user types', function () {
+        beforeEach(function () {
+          editor.sendKeys('abc');
+        });
+
+        it('should insert the typed characters inside of the LI element', function (done) {
+          editor.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<ul><li>abc</li></ul>');
+            done();
+          });
+        });
+
+        when('the user presses ENTER', function () {
+          beforeEach(function () {
+            editor.sendKeys(webdriver.Key.ENTER);
+          });
+
+          it('should create a new LI element', function (done) {
+            editor.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<ul><li>abc</li><li><br></li></ul>');
+              done();
+            });
+          });
+
+          when('the user types', function () {
+            beforeEach(function () {
+              editor.sendKeys('def');
+            });
+
+            it('should insert the typed characters inside the new LI element', function (done) {
+              editor.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.equal('<ul><li>abc</li><li>def</li></ul>');
+                done();
+              });
+            });
+          });
+
+          when('the user presses ENTER', function () {
+            beforeEach(function () {
+              editor.sendKeys(webdriver.Key.ENTER);
+            });
+
+            it('should end the list and start a new P', function (done) {
+              editor.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.equal('<ul><li>abc</li></ul><p><br></p>');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+
+    given('some content on the line', function () {
+      beforeEach(function () {
+        editor.sendKeys('hello');
+      });
+
+      when('the user types "' +prefix+ '"', function () {
+        beforeEach(function () {
+          editor.sendKeys(prefix);
+        });
+
+        it('should write these characters and not create a list', function (done) {
+          editor.getInnerHTML().then(function (innerHTML) {
+            var prefixNbsp = prefix.replace(' ', '&nbsp;');
+            expect(innerHTML).to.equal('<p>hello' +prefixNbsp+ '</p>');
+            done();
+          });
+        });
+      });
+
+      when('the user goes to the start of the line and types "' +prefix+ '"', function () {
+        beforeEach(function () {
+          editor.sendKeys(webdriver.Key.LEFT);
+          editor.sendKeys(webdriver.Key.LEFT);
+          editor.sendKeys(webdriver.Key.LEFT);
+          editor.sendKeys(webdriver.Key.LEFT);
+          editor.sendKeys(webdriver.Key.LEFT);
+          editor.sendKeys(prefix);
+        });
+
+        it('should create an unordered list containing the words on the line', function (done) {
+          editor.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<ul><li>hello<br></li></ul>');
+            done();
+          });
+        });
+      });
+    });
+
+  });
+
+  // TODO: reuse steps above for ordered lists?
+
+  when('the user types "1. "', function () {
+    beforeEach(function () {
+      editor.sendKeys('1. ');
+    });
+
+    it('should create an ordered list', function (done) {
+      editor.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('<ol><li><br></li></ol>');
+        done();
+      });
+    });
+  });
+});
+
+describe('curly quotes plugin', function () {
 
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {

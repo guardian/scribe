@@ -12,10 +12,12 @@ require({
 }, [
   'editor',
   'plugins/toolbar',
+  'plugins/smart-list',
   'plugins/curly-quotes'
 ], function (
   Editor,
   toolbar,
+  smartList,
   curlyQuotes
 ) {
 
@@ -30,6 +32,7 @@ require({
   }
 
   editor.use(toolbar(document.querySelectorAll('.toolbar')));
+  editor.use(smartList());
   editor.use(curlyQuotes());
 
   editor.initialize();
