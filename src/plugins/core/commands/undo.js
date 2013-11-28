@@ -25,7 +25,7 @@ define([
       editor.patchedCommands.undo = undoCommand;
 
       editor.el.addEventListener('keydown', function (event) {
-        if (event.metaKey && event.keyCode === 90) {
+        if (! event.shiftKey && event.metaKey && event.keyCode === 90) {
           event.preventDefault();
           undoCommand.execute();
         }
