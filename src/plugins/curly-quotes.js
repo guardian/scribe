@@ -89,7 +89,7 @@ define([
       }
 
       function placeCaretAfter(node) {
-        var rangeAfter = document.createRange();
+        var rangeAfter = new window.Range();
         rangeAfter.setStartAfter(node);
         rangeAfter.setEndAfter(node);
 
