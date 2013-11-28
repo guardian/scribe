@@ -13,21 +13,25 @@ define([
 
   return function () {
     return function (editor) {
-      /**
-       * We have to begin with the following HTML, because otherwise some
-       * browsers(?) will position the caret outside of the P when the editor is
-       * focused.
-       *
-       * We also have to define a marker because otherwise the selection will
-       * not be restored when we undo.
-       */
-      editor.setHTML('<p><em class="editor-marker"></em><br></p>');
+      // The content might have already been set, in which case we don't want
+      // to apply.
+      if (editor.getHTML() === '') {
+        /**
+         * We have to begin with the following HTML, because otherwise some
+         * browsers(?) will position the caret outside of the P when the editor is
+         * focused.
+         *
+         * We also have to define a marker because otherwise the selection will
+         * not be restored when we undo.
+         */
+        editor.setHTML('<p><em class="editor-marker"></em><br></p>');
 
-      editor.pushHistory();
-      editor.trigger('content-changed');
+        editor.pushHistory();
+        editor.trigger('content-changed');
 
-      var selection = new Selection();
-      selection.removeMarkers(editor.el);
+        var selection = new Selection();
+        selection.removeMarkers(editor.el);
+      }
     };
   };
 

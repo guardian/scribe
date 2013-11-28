@@ -1,14 +1,14 @@
 define([
-  '../../api/command-patch'
+  '../../../api/command'
 ], function (
-  CommandPatch
+  Command
 ) {
 
   'use strict';
 
   return function () {
     return function (editor) {
-      var undoCommand = new CommandPatch('undo');
+      var undoCommand = new Command(editor, 'undo');
 
       undoCommand.execute = function () {
         var historyItem = editor.undoManager.undo();
@@ -22,28 +22,12 @@ define([
         return editor.undoManager.position > 0;
       };
 
-      var redoCommand = new CommandPatch('redo');
-
-      redoCommand.execute = function () {
-        var historyItem = editor.undoManager.redo();
-
-        if (typeof historyItem !== 'undefined') {
-          editor.restoreFromHistory(historyItem);
-        }
-      };
-
-      redoCommand.queryEnabled = function () {
-        return editor.undoManager.position < editor.undoManager.stack.length - 1;
-      };
-
       editor.patchedCommands.undo = undoCommand;
-      editor.patchedCommands.redo = redoCommand;
 
       editor.el.addEventListener('keydown', function (event) {
         if (event.metaKey && event.keyCode === 90) {
           event.preventDefault();
-          var command = event.shiftKey ? redoCommand : undoCommand;
-          command.execute();
+          undoCommand.execute();
         }
       });
     };

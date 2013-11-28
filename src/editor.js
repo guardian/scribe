@@ -1,18 +1,20 @@
 define([
   'event-emitter',
   './initializers/root-paragraph-element',
+  './plugins/core/commands',
   './plugins/core/formatters',
   './plugins/core/patches',
-  './plugins/core/undo-manager-commands',
+  './plugins/core/shame',
   './api/command',
   './api/selection',
   './api/undo-manager'
 ], function (
   EventEmitter,
   rootParagraphElement,
+  commands,
   formatters,
   patches,
-  undoManagerCommands,
+  shame,
   Command,
   Selection,
   UndoManager
@@ -20,9 +22,10 @@ define([
 
   'use strict';
 
-  function Editor(el) {
+  function Editor(el, options) {
     this.el = el;
     this.commands = {};
+    this.options = options || {};
     this.patchedCommands = {};
     this.initializers = [];
 
@@ -34,12 +37,14 @@ define([
     }.bind(this), false);
 
     /**
-     * Plugins
+     * Core Plugins
      */
 
-    // Core
+    this.use(commands.insertList());
+    this.use(commands.redo());
+    this.use(commands.undo());
+
     this.use(formatters());
-    this.use(undoManagerCommands());
 
     // Patches
     this.use(patches.commands.bold());
@@ -48,7 +53,12 @@ define([
     this.use(patches.commands.outdent());
     this.use(patches.emptyEditorWhenDeleting());
 
-    this.addInitializer(rootParagraphElement());
+    this.use(shame());
+
+
+    if (this.options.paragraphs) {
+      this.addInitializer(rootParagraphElement());
+    }
   }
 
   Editor.prototype = Object.create(EventEmitter.prototype);

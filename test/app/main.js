@@ -12,11 +12,13 @@ require({
 }, [
   'editor',
   'plugins/toolbar',
-  'plugins/smart-list'
+  'plugins/smart-list',
+  'plugins/curly-quotes'
 ], function (
   Editor,
   toolbar,
-  smartList
+  smartList,
+  curlyQuotes
 ) {
 
   'use strict';
@@ -31,6 +33,7 @@ require({
 
   editor.use(toolbar(document.querySelectorAll('.toolbar')));
   editor.use(smartList());
+  editor.use(curlyQuotes());
 
   editor.initialize();
 

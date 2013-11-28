@@ -18,6 +18,7 @@ require({
   'plugins/sanitizer',
   'plugins/toolbar',
   'plugins/smart-list',
+  'plugins/curly-quotes',
   'api/command'
 ], function (
   Editor,
@@ -28,12 +29,13 @@ require({
   sanitizer,
   toolbar,
   smartList,
+  curlyQuotes,
   Command
 ) {
 
   'use strict';
 
-  var editor = new Editor(document.querySelector('.editor'));
+  var editor = new Editor(document.querySelector('.editor'), { paragraphs: true });
 
   editor.on('content-changed', updateHTML);
 
@@ -100,6 +102,7 @@ require({
     editor.use(toolbar(toolbarNode));
   });
   editor.use(smartList());
+  editor.use(curlyQuotes());
 
   /**
    * Keyboard shortcuts
@@ -201,6 +204,8 @@ require({
     }
 
   });
+
+  editor.setHTML('<p>Hello, World!</p>');
 
   // Finally…
   editor.initialize();
