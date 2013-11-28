@@ -11,7 +11,7 @@ define([
        */
       if (editor.options.paragraphs) {
         editor.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) {
+          if (event.keyCode === 13) { // enter
 
             var selection = new Selection();
             var range = selection.range;
@@ -63,7 +63,7 @@ define([
        */
       if (editor.options.paragraphs) {
         editor.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) {
+          if (event.keyCode === 13) { // enter
 
             var selection = new Selection();
             var range = selection.range;
