@@ -57,6 +57,12 @@ afterEach(function (done) {
     .sendKeys(webdriver.Key.DELETE)
     .sendKeys(webdriver.Key.DELETE)
     .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
+    .sendKeys(webdriver.Key.DELETE)
     .perform();
 
   clearText.then(function () {
@@ -115,6 +121,63 @@ when('the user clicks the bold button in the toolbar and then types', function (
     editor.getInnerHTML().then(function (innerHTML) {
       expect(innerHTML).to.equal('<p><b>1</b></p>');
       done();
+    });
+  });
+});
+
+describe('an editor with the curly quotes plugin', function () {
+
+  given('the caret is at the beginning of a line', function () {
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        editor.sendKeys('"');
+      });
+
+      it('should insert an opening curly double quote instead', function (done) {
+        editor.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>“<br></p>');
+          done();
+        });
+      });
+    });
+  });
+
+  given('the caret is at the end of a word', function () {
+    beforeEach(function () {
+      editor.sendKeys('Hello');
+    });
+
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        editor.sendKeys('"');
+      });
+
+      it('should insert a closing curly double quote instead', function (done) {
+        editor.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>Hello”</p>');
+          done();
+        });
+      });
+    });
+  });
+
+  given('the caret is after the end of a word', function () {
+    beforeEach(function () {
+      editor.sendKeys('Hello '); // Note the space!
+    });
+
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        editor.sendKeys('"');
+      });
+
+      it('should insert an opening curly double quote instead', function (done) {
+        editor.getInnerHTML().then(function (innerHTML) {
+          // FIXME: failing, inserts nbsp!
+          expect(innerHTML).to.equal('<p>Hello “</p>');
+          done();
+        });
+      });
     });
   });
 });
