@@ -19,7 +19,7 @@ require({
 
   'use strict';
 
-  var editor = new Editor(document.querySelector('.editor'));
+  var editor = new Editor(document.querySelector('.editor'), { paragraphs: true });
 
   editor.on('content-changed', updateHTML);
 
