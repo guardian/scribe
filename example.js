@@ -17,6 +17,7 @@ require({
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
+  'plugins/curly-quotes',
   'api/command'
 ], function (
   Editor,
@@ -26,6 +27,7 @@ require({
   linkPromptCommand,
   sanitizer,
   toolbar,
+  curlyQuotes,
   Command
 ) {
 
@@ -97,6 +99,7 @@ require({
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
     editor.use(toolbar(toolbarNode));
   });
+  editor.use(curlyQuotes());
 
   /**
    * Keyboard shortcuts
