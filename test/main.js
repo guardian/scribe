@@ -326,7 +326,7 @@ describe('curly quotes plugin', function () {
       it('should insert an opening curly double quote instead', function (done) {
         scribe.getInnerHTML().then(function (innerHTML) {
           // FIXME: failing, inserts nbsp!
-          expect(innerHTML).to.equal('<p>Hello “</p>');
+          expect(innerHTML).to.equal('<p>Hello&nbsp;“</p>');
           done();
         });
       });
