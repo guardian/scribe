@@ -29,7 +29,7 @@ define([
   function Scribe(el, options) {
     this.el = el;
     this.commands = {};
-    this.options = defaults(options, {
+    this.options = defaults(options || {}, {
       allowBlockElements: true
     });
     this.patchedCommands = {};
