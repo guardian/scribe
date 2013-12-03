@@ -28,7 +28,7 @@ define([
       InsertListCommandPatch.prototype.execute = function (value) {
         CommandPatch.prototype.execute.call(this, value);
 
-        if (! this.queryState()) {
+        if (this.queryState()) {
           var selection = new Selection();
 
           var listNode = selection.getContaining(function (node) {
