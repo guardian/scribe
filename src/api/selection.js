@@ -21,9 +21,9 @@ define([
 
   Selection.prototype.placeMarkers = function () {
     var startMarker = document.createElement('em');
-    startMarker.classList.add('editor-marker');
+    startMarker.classList.add('scribe-marker');
     var endMarker = document.createElement('em');
-    endMarker.classList.add('editor-marker');
+    endMarker.classList.add('scribe-marker');
 
     // End marker
     var rangeEnd = this.range.cloneRange();
@@ -42,7 +42,7 @@ define([
   };
 
   Selection.prototype.getMarkers = function (editorNode) {
-    return editorNode.querySelectorAll('em.editor-marker');
+    return editorNode.querySelectorAll('em.scribe-marker');
   };
 
   Selection.prototype.removeMarkers = function (editorNode) {

@@ -10,12 +10,12 @@ require({
     }
   }
 }, [
-  'editor',
+  'scribe',
   'plugins/toolbar',
   'plugins/smart-list',
   'plugins/curly-quotes'
 ], function (
-  Editor,
+  Scribe,
   toolbar,
   smartList,
   curlyQuotes
@@ -23,18 +23,18 @@ require({
 
   'use strict';
 
-  var editor = new Editor(document.querySelector('.editor'));
+  var scribe = new Scribe(document.querySelector('.scribe'));
 
-  editor.on('content-changed', updateHTML);
+  scribe.on('content-changed', updateHTML);
 
   function updateHTML() {
-    document.querySelector('.editor-html').textContent = editor.el.innerHTML;
+    document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
   }
 
-  editor.use(toolbar(document.querySelectorAll('.toolbar')));
-  editor.use(smartList());
-  editor.use(curlyQuotes());
+  scribe.use(toolbar(document.querySelectorAll('.toolbar')));
+  scribe.use(smartList());
+  scribe.use(curlyQuotes());
 
-  editor.initialize();
+  scribe.initialize();
 
 });

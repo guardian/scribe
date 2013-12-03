@@ -6,28 +6,28 @@ define([
 
   /**
    * This plugin adds the ability to sanitize content when it is pasted into the
-   * editor, adhering to a whitelist of allowed tags and attributes.
+   * scribe, adhering to a whitelist of allowed tags and attributes.
    */
 
   'use strict';
 
   return function (config) {
-    return function (editor) {
-      return sanitizer(editor, config);
+    return function (scribe) {
+      return sanitizer(scribe, config);
     };
   };
 
   /**
-   * Initializes sanitizer plugin on Editor instance.
+   * Initializes sanitizer plugin on Scribe instance.
    *
-   * @param {Editor} editor
+   * @param {Scribe} scribe
    * @param {Object} config For configuring the janitor
    * @return {self}
    */
-  function sanitizer(editor, config) {
+  function sanitizer(scribe, config) {
     var janitor = new HTMLJanitor(config);
 
-    editor.formatters.push(janitor.clean.bind(janitor));
+    scribe.formatters.push(janitor.clean.bind(janitor));
   }
 
 });

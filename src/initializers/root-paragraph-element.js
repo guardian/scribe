@@ -5,32 +5,32 @@ define([
 ) {
 
   /**
-   * Sets the default content of the editor so that each carriage return creates
+   * Sets the default content of the scribe so that each carriage return creates
    * a P.
    */
 
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       // The content might have already been set, in which case we don't want
       // to apply.
-      if (editor.getHTML() === '') {
+      if (scribe.getHTML() === '') {
         /**
          * We have to begin with the following HTML, because otherwise some
-         * browsers(?) will position the caret outside of the P when the editor is
+         * browsers(?) will position the caret outside of the P when the scribe is
          * focused.
          *
          * We also have to define a marker because otherwise the selection will
          * not be restored when we undo.
          */
-        editor.setHTML('<p><em class="editor-marker"></em><br></p>');
+        scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-        editor.pushHistory();
-        editor.trigger('content-changed');
+        scribe.pushHistory();
+        scribe.trigger('content-changed');
 
         var selection = new Selection();
-        selection.removeMarkers(editor.el);
+        selection.removeMarkers(scribe.el);
       }
     };
   };

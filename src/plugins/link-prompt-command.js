@@ -13,10 +13,10 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       var nodeName = 'A';
 
-      var linkPromptCommand = new SimpleCommand(editor, 'createLink', nodeName);
+      var linkPromptCommand = new SimpleCommand(scribe, 'createLink', nodeName);
 
       linkPromptCommand.execute = function () {
         var selection = new Selection();
@@ -28,7 +28,7 @@ define([
         SimpleCommand.prototype.execute.call(this, url);
       };
 
-      editor.commands.linkPrompt = linkPromptCommand;
+      scribe.commands.linkPrompt = linkPromptCommand;
     };
   };
 

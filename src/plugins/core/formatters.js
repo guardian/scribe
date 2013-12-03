@@ -7,16 +7,16 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
 
-      editor.formatters = [];
+      scribe.formatters = [];
 
       /**
        * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
        * I also don't like how it has the authority to perform `event.preventDefault`.
        */
 
-      editor.el.addEventListener('paste', function handlePaste(event) {
+      scribe.el.addEventListener('paste', function handlePaste(event) {
         /**
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
@@ -36,7 +36,7 @@ define([
            *   - Save the text selection
            *   - Focus another, hidden textarea so we paste there
            *   - Copy the pasted content of said textarea
-           *   - Give focus back to the editor
+           *   - Give focus back to the scribe
            *   - Restore the text selection
            *
            * This is required because, without access to the Clipboard API, there is literally
@@ -60,7 +60,7 @@ define([
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
-            selection.selectMarkers(editor.el);
+            selection.selectMarkers(scribe.el);
 
             formatAndInsert(data);
           }, 1);
@@ -68,7 +68,7 @@ define([
       });
 
       function formatAndInsert(html) {
-        var formattedHTML = editor.formatters.reduce(function (formattedData, formatter) {
+        var formattedHTML = scribe.formatters.reduce(function (formattedData, formatter) {
           return formatter(formattedData);
         }, html);
 

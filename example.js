@@ -10,7 +10,7 @@ require({
     }
   }
 }, [
-  'editor',
+  'scribe',
   'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
@@ -21,7 +21,7 @@ require({
   'plugins/curly-quotes',
   'api/command'
 ], function (
-  Editor,
+  Scribe,
   blockquoteCommand,
   headingCommand,
   intelligentUnlinkCommand,
@@ -35,12 +35,12 @@ require({
 
   'use strict';
 
-  var editor = new Editor(document.querySelector('.editor'), { paragraphs: true });
+  var scribe = new Scribe(document.querySelector('.scribe'), { paragraphs: true });
 
-  editor.on('content-changed', updateHTML);
+  scribe.on('content-changed', updateHTML);
 
   function updateHTML() {
-    document.querySelector('.editor-html').textContent = editor.el.innerHTML;
+    document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
   }
 
   /**
@@ -48,8 +48,8 @@ require({
    */
 
   // Unfortunately, there is no `selectionchange` event.
-  editor.el.addEventListener('keyup', showOrHideInlineToolbar);
-  editor.el.addEventListener('mouseup', showOrHideInlineToolbar);
+  scribe.el.addEventListener('keyup', showOrHideInlineToolbar);
+  scribe.el.addEventListener('mouseup', showOrHideInlineToolbar);
 
   var tooltip = document.createElement('div');
   // Lazily copy the existing toolbar, insert it dynamically
@@ -78,11 +78,11 @@ require({
    * Plugins
    */
 
-  editor.use(blockquoteCommand());
-  editor.use(headingCommand(2));
-  editor.use(intelligentUnlinkCommand());
-  editor.use(linkPromptCommand());
-  editor.use(sanitizer({
+  scribe.use(blockquoteCommand());
+  scribe.use(headingCommand(2));
+  scribe.use(intelligentUnlinkCommand());
+  scribe.use(linkPromptCommand());
+  scribe.use(sanitizer({
     tags: {
       p: [],
       br: [],
@@ -99,10 +99,10 @@ require({
     }
   }));
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
-    editor.use(toolbar(toolbarNode));
+    scribe.use(toolbar(toolbarNode));
   });
-  editor.use(smartList());
-  editor.use(curlyQuotes());
+  scribe.use(smartList());
+  scribe.use(curlyQuotes());
 
   /**
    * Keyboard shortcuts
@@ -114,7 +114,7 @@ require({
    */
 
   function findCommand(commandName) {
-    return editor.commands[commandName] || new Command(editor, commandName);
+    return scribe.commands[commandName] || new Command(scribe, commandName);
   }
 
   document.addEventListener('keydown', function (event) {
@@ -154,7 +154,7 @@ require({
    * Rename nodes
    */
 
-  editor.formatters.push(function (html) {
+  scribe.formatters.push(function (html) {
     var config = {
       b: 'strong'
     };
@@ -205,8 +205,8 @@ require({
 
   });
 
-  editor.setHTML('<p>Hello, World!</p>');
+  scribe.setHTML('<p>Hello, World!</p>');
 
   // Finally…
-  editor.initialize();
+  scribe.initialize();
 });

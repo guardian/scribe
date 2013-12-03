@@ -50,7 +50,7 @@ define([
     }
 
 
-    return function (editor) {
+    return function (scribe) {
 
       var preLastChar, lastChar, currentChar;
 
@@ -86,17 +86,17 @@ define([
           // Ignore the typed character
           event.preventDefault();
 
-          editor.getCommand(listCommand).execute();
+          scribe.getCommand(listCommand).execute();
 
           // Clear "* "/etc from the list item
           removeSelectedTextNode();
 
-          editor.pushHistory();
-          editor.trigger('content-changed');
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
         }
       }
 
-      editor.el.addEventListener('keypress', input);
+      scribe.el.addEventListener('keypress', input);
     };
   };
 

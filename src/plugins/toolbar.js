@@ -7,29 +7,29 @@ define([
   'use strict';
 
   return function (toolbarNode) {
-    return function (editor) {
-      editor.addInitializer(function () {
+    return function (scribe) {
+      scribe.addInitializer(function () {
         var buttons = toolbarNode.querySelectorAll('button');
 
         Array.prototype.forEach.call(buttons, function (button) {
           // Look for a predefined command, otherwise define one now.
-          var command = editor.getCommand(button.dataset.commandName);
+          var command = scribe.getCommand(button.dataset.commandName);
 
           button.addEventListener('click', function () {
             command.execute();
-            // Chrome focuses the editor automatically. Firefox does not.
-            editor.el.focus();
+            // Chrome focuses the scribe automatically. Firefox does not.
+            scribe.el.focus();
           });
 
           // Keep the state of toolbar buttons in sync with the current selection.
           // Unfortunately, there is no `selectionchange` event.
-          editor.el.addEventListener('keyup', updateUi);
-          editor.el.addEventListener('mouseup', updateUi);
+          scribe.el.addEventListener('keyup', updateUi);
+          scribe.el.addEventListener('mouseup', updateUi);
           // We also want to update the UI whenever the content changes. This
           // could be when one of the toolbar buttons is actioned.
           // TODO: The `input` event does not trigger when we manipulate the content
           // ourselves. Maybe commands should fire events when they are activated.
-          editor.on('content-changed', updateUi);
+          scribe.on('content-changed', updateUi);
 
           function updateUi() {
             var selection = new Selection();

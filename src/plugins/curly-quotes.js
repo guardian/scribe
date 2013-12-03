@@ -21,8 +21,8 @@ define([
 
     var NON_BREAKING_SPACE = '\u00A0';
 
-    return function (editor) {
-      editor.el.addEventListener('keypress', input);
+    return function (scribe) {
+      scribe.el.addEventListener('keypress', input);
 
       function input(event) {
         var curlyChar;
@@ -51,8 +51,8 @@ define([
           var quoteText = replaceSelectedRangeWith(curlyChar);
           placeCaretAfter(quoteText);
 
-          editor.pushHistory();
-          editor.trigger('content-changed');
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
         }
       }
 

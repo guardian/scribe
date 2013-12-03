@@ -8,8 +8,8 @@ define([
 
   'use strict';
 
-  function SimpleCommand(editor, commandName, nodeName) {
-    Command.call(this, editor, commandName);
+  function SimpleCommand(scribe, commandName, nodeName) {
+    Command.call(this, scribe, commandName);
 
     this.nodeName = nodeName;
   }

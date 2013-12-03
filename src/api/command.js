@@ -2,10 +2,10 @@ define(function () {
 
   'use strict';
 
-  function Command(editor, commandName) {
-    this.editor = editor;
+  function Command(scribe, commandName) {
+    this.scribe = scribe;
     this.commandName = commandName;
-    this.patchedCommand = this.editor.patchedCommands[this.commandName];
+    this.patchedCommand = this.scribe.patchedCommands[this.commandName];
   }
 
   Command.prototype.execute = function (value) {

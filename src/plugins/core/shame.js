@@ -4,13 +4,13 @@ define([
   Selection
 ) {
   return function () {
-    return function (editor) {
+    return function (scribe) {
       /**
        * If the paragraphs option is set to true, we need to manually handle
        * keyboard navigation inside a heading to ensure a P element is created.
        */
-      if (editor.options.paragraphs) {
-        editor.el.addEventListener('keydown', function (event) {
+      if (scribe.options.paragraphs) {
+        scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) { // enter
 
             var selection = new Selection();
@@ -49,8 +49,8 @@ define([
                 selection.selection.removeAllRanges();
                 selection.selection.addRange(range);
 
-                editor.pushHistory();
-                editor.trigger('content-changed');
+                scribe.pushHistory();
+                scribe.trigger('content-changed');
               }
             }
           }
@@ -61,8 +61,8 @@ define([
        * If the paragraphs option is set to true, we need to manually handle
        * keyboard navigation inside list item nodes.
        */
-      if (editor.options.paragraphs) {
-        editor.el.addEventListener('keydown', function (event) {
+      if (scribe.options.paragraphs) {
+        scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) { // enter
 
             var selection = new Selection();
@@ -82,7 +82,7 @@ define([
                   return node.nodeName === 'UL' || node.nodeName === 'OL';
                 });
 
-                var command = editor.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
+                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
 
                 command.execute();
               }
