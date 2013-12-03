@@ -62,7 +62,7 @@ require({
     var selection = window.getSelection();
     var range = selection.getRangeAt(0);
 
-    if (range.commonAncestorContainer.textContent && ! selection.isCollapsed) {
+    if (range.commonAncestorContainer.textContent && ! selection.selection.isCollapsed) {
       var boundary = range.getClientRects()[0];
 
       tooltip.style.position = 'absolute';
