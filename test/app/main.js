@@ -8,7 +8,13 @@ require({
     'event-emitter': {
       exports: 'EventEmitter'
     }
-  }
+  },
+  packages: [
+    {
+      name: 'lodash',
+      location: '../../bower_components/lodash-amd/modern'
+    }
+  ]
 }, [
   'scribe',
   'plugins/toolbar',
@@ -31,7 +37,7 @@ require({
     document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
   }
 
-  scribe.use(toolbar(document.querySelectorAll('.toolbar')));
+  scribe.use(toolbar(document.querySelector('.toolbar')));
   scribe.use(smartList());
   scribe.use(curlyQuotes());
 
