@@ -138,6 +138,7 @@ when('the user types', function () {
 
 when('the user clicks the bold button in the toolbar and then types', function () {
   beforeEach(function () {
+    scribe.click();
     driver.findElement(webdriver.By.id('bold-button')).click();
     scribe.sendKeys('1');
   });
