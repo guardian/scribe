@@ -209,6 +209,9 @@ require({
 
   scribe.setHTML('<p>Hello, World!</p>');
 
+  scribe.pushHistory();
+  scribe.trigger('content-changed');
+
   // Finally…
   scribe.initialize();
 });
