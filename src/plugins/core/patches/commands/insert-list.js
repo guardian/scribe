@@ -9,9 +9,9 @@ define([
 ) {
 
   /**
-   * Prevent Chrome from inserting lists (UL/OL) inside of Ps. Also patches
-   * behaviour of unapplying a list so that a P is always created, although this
-   * should probably be moved.
+   * Chrome: If we apply the insertOrderedList command on an empty P, the
+   * OL/UL will be nested inside the P.
+   * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
    */
 
   'use strict';
@@ -29,12 +29,6 @@ define([
         CommandPatch.prototype.execute.call(this, value);
 
         if (! this.queryState()) {
-          /**
-           * Chrome: If we apply the insertOrderedList command on an empty P, the
-           * OL/UL will be nested inside the P.
-           * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
-           */
-
           var selection = new Selection();
 
           var listNode = selection.getContaining(function (node) {
