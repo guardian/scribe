@@ -21,36 +21,34 @@ define([
   return function emptyEditorWhenDeleting() {
     return function (scribe) {
 
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function handleKeydown(event) {
-          // Delete or backspace
-          if (event.keyCode === 8 || event.keyCode === 46) {
-            var selection = new Selection();
+      scribe.el.addEventListener('keydown', function handleKeydown(event) {
+        // Delete or backspace
+        if (event.keyCode === 8 || event.keyCode === 46) {
+          var selection = new Selection();
 
-            /**
-             * The second condition in this statement is only relevant for Firefox.
-             * In Firefox, erasing the range created by ‘Select All’ will leave the
-             * scribe in a pristine state. We polyfill this behaviour to match that of
-             * Chrome: that is, to default to a paragraph element.
-             *
-             * This branch need not run in Chrome upon the second condition, but it does, for now.
-             */
+          /**
+           * The second condition in this statement is only relevant for Firefox.
+           * In Firefox, erasing the range created by ‘Select All’ will leave the
+           * scribe in a pristine state. We polyfill this behaviour to match that of
+           * Chrome: that is, to default to a paragraph element.
+           *
+           * This branch need not run in Chrome upon the second condition, but it does, for now.
+           */
 
-            var collapsedSelection = selection.selection.isCollapsed;
-            var allContentSelected = isRangeAllContent(selection.range);
+          var collapsedSelection = selection.selection.isCollapsed;
+          var allContentSelected = isRangeAllContent(selection.range);
 
-            if ((collapsedSelection && scribe.text() === '') || (! collapsedSelection && allContentSelected)) {
-              event.preventDefault();
-              scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
+          if ((collapsedSelection && scribe.text() === '') || (! collapsedSelection && allContentSelected)) {
+            event.preventDefault();
+            scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-              selection.selectMarkers(scribe.el);
+            selection.selectMarkers(scribe.el);
 
-              scribe.pushHistory();
-              scribe.trigger('content-changed');
-            }
+            scribe.pushHistory();
+            scribe.trigger('content-changed');
           }
-        });
-      }
+        }
+      });
 
       /**
        * Serialise a range into a HTML string.

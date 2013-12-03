@@ -62,7 +62,9 @@ define([
     this.use(patches.commands.indent());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
-    this.use(patches.emptyWhenDeleting());
+    if (this.allowsBlockElements()) {
+      this.use(patches.emptyWhenDeleting());
+    }
 
     this.use(shame());
   }
