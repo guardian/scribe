@@ -61,8 +61,8 @@ require({
 
   function showOrHideInlineToolbar() {
     // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
+    var selection = new Selection();
+    var range = selection.range;
 
     if (range.commonAncestorContainer.textContent && ! selection.isCollapsed) {
       var boundary = range.getClientRects()[0];
