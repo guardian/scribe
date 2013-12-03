@@ -22,7 +22,7 @@ define([
 
   'use strict';
 
-  function Editor(el, options) {
+  function Scribe(el, options) {
     this.el = el;
     this.commands = {};
     this.options = options || {};
@@ -112,9 +112,9 @@ define([
     this.use(shame());
   }
 
-  Editor.prototype = Object.create(EventEmitter.prototype);
+  Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  Editor.prototype.initialize = function () {
+  Scribe.prototype.initialize = function () {
     this.el.setAttribute('contenteditable', true);
 
     this.initializers.forEach(function (initializer) {
@@ -124,17 +124,17 @@ define([
 
   // For plugins
   // TODO: tap combinator?
-  Editor.prototype.use = function (configurePlugin) {
+  Scribe.prototype.use = function (configurePlugin) {
     configurePlugin(this);
     return this;
   };
 
-  Editor.prototype.addInitializer = function (initializer) {
+  Scribe.prototype.addInitializer = function (initializer) {
     this.initializers.push(initializer);
     return this;
   };
 
-  Editor.prototype.getHTML = function () {
+  Scribe.prototype.getHTML = function () {
     var selection = new Selection();
 
     var html;
@@ -149,23 +149,23 @@ define([
     return html;
   };
 
-  Editor.prototype.setHTML = function (html) {
+  Scribe.prototype.setHTML = function (html) {
     this.el.innerHTML = html;
   };
 
-  Editor.prototype.text = function () {
+  Scribe.prototype.text = function () {
     return this.el.textContent.trim();
   };
 
-  Editor.prototype.pushHistory = function () {
+  Scribe.prototype.pushHistory = function () {
     this.undoManager.push(this.getHTML());
   };
 
-  Editor.prototype.getCommand = function (commandName) {
+  Scribe.prototype.getCommand = function (commandName) {
     return this.commands[commandName] || this.patchedCommands[commandName] || new Command(this, commandName);
   };
 
-  Editor.prototype.restoreFromHistory = function (historyItem) {
+  Scribe.prototype.restoreFromHistory = function (historyItem) {
     this.setHTML(historyItem);
 
     // Restore the selection
@@ -175,6 +175,6 @@ define([
     this.trigger('content-changed');
   };
 
-  return Editor;
+  return Scribe;
 
 });

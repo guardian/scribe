@@ -3,7 +3,7 @@ define([
   './patches/commands/indent',
   './patches/commands/insert-list',
   './patches/commands/outdent',
-  './patches/empty-editor-when-deleting'
+  './patches/empty-when-deleting'
 ], function (
   boldCommand,
   indentCommand,

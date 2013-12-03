@@ -16,7 +16,7 @@ define([
   var INVISIBLE_CHAR = '\uFEFF';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       var indentCommand = new CommandPatch('indent');
 
       indentCommand.execute = function (value) {
@@ -56,11 +56,11 @@ define([
         });
         blockquoteNode.removeAttribute('style');
 
-        editor.pushHistory();
-        editor.trigger('content-changed');
+        scribe.pushHistory();
+        scribe.trigger('content-changed');
       };
 
-      editor.patchedCommands.indent = indentCommand;
+      scribe.patchedCommands.indent = indentCommand;
     };
   };
 

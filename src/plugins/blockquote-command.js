@@ -11,20 +11,20 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
-      var blockquoteCommand = new SimpleCommand(editor, 'blockquote', 'BLOCKQUOTE');
+    return function (scribe) {
+      var blockquoteCommand = new SimpleCommand(scribe, 'blockquote', 'BLOCKQUOTE');
 
       blockquoteCommand.execute = function () {
-        var command = editor.getCommand(this.queryState() ? 'outdent' : 'indent');
+        var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
         command.execute();
       };
 
       blockquoteCommand.queryEnabled = function () {
-        var command = editor.getCommand(this.queryState() ? 'outdent' : 'indent');
-        return editor.options.paragraphs && command.queryEnabled();
+        var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
+        return scribe.options.paragraphs && command.queryEnabled();
       };
 
-      editor.commands.blockquote = blockquoteCommand;
+      scribe.commands.blockquote = blockquoteCommand;
     };
   };
 

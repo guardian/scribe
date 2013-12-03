@@ -7,24 +7,24 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
-      var undoCommand = new Command(editor, 'undo');
+    return function (scribe) {
+      var undoCommand = new Command(scribe, 'undo');
 
       undoCommand.execute = function () {
-        var historyItem = editor.undoManager.undo();
+        var historyItem = scribe.undoManager.undo();
 
         if (typeof historyItem !== 'undefined') {
-          editor.restoreFromHistory(historyItem);
+          scribe.restoreFromHistory(historyItem);
         }
       };
 
       undoCommand.queryEnabled = function () {
-        return editor.undoManager.position > 0;
+        return scribe.undoManager.position > 0;
       };
 
-      editor.patchedCommands.undo = undoCommand;
+      scribe.patchedCommands.undo = undoCommand;
 
-      editor.el.addEventListener('keydown', function (event) {
+      scribe.el.addEventListener('keydown', function (event) {
         if (! event.shiftKey && event.metaKey && event.keyCode === 90) {
           event.preventDefault();
           undoCommand.execute();

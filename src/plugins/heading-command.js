@@ -13,7 +13,7 @@ define([
   'use strict';
 
   return function (level) {
-    return function (editor) {
+    return function (scribe) {
       var tag = '<h' + level + '>';
       var nodeName = 'H' + level;
       var commandName = 'h' + level;
@@ -22,7 +22,7 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new SimpleCommand(editor, 'formatBlock', nodeName);
+      var headingCommand = new SimpleCommand(scribe, 'formatBlock', nodeName);
 
       headingCommand.execute = function () {
         if (this.queryState()) {
@@ -43,10 +43,10 @@ define([
         });
 
         return SimpleCommand.prototype.queryEnabled.apply(this, arguments)
-          && editor.options.paragraphs && ! listNode;
+          && scribe.options.paragraphs && ! listNode;
       };
 
-      editor.commands[commandName] = headingCommand;
+      scribe.commands[commandName] = headingCommand;
     };
   };
 

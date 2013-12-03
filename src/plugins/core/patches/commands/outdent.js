@@ -15,7 +15,7 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       var outdentCommand = new CommandPatch('outdent');
 
       outdentCommand.execute = function (value) {
@@ -34,11 +34,11 @@ define([
           // restore the selection on the copy.
           selection.placeMarkers();
           // We want to copy the selected nodes *with* the markers
-          selection.selectMarkers(editor.el, true);
+          selection.selectMarkers(scribe.el, true);
           var selectedNodes = range.cloneContents();
           blockquoteNode.parentNode.insertBefore(selectedNodes, blockquoteNode);
           range.deleteContents();
-          selection.selectMarkers(editor.el);
+          selection.selectMarkers(scribe.el);
 
           // Delete the BLOCKQUOTE if it's empty
           if (blockquoteNode.innerText === '') {
@@ -78,8 +78,8 @@ define([
             }
 
             selection.placeMarkers();
-            editor.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
-            selection.selectMarkers(editor.el);
+            scribe.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
+            selection.selectMarkers(scribe.el);
 
             // If the BLOCKQUOTE is now empty, clean it up.
             if (blockquoteNode.innerHTML === '') {
@@ -90,11 +90,11 @@ define([
           CommandPatch.prototype.execute.call(this, value);
         }
 
-        editor.pushHistory();
-        editor.trigger('content-changed');
+        scribe.pushHistory();
+        scribe.trigger('content-changed');
       };
 
-      editor.patchedCommands.outdent = outdentCommand;
+      scribe.patchedCommands.outdent = outdentCommand;
     };
   };
 

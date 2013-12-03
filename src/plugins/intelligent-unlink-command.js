@@ -14,8 +14,8 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
-      var unlinkCommand = new Command(editor, 'unlink');
+    return function (scribe) {
+      var unlinkCommand = new Command(scribe, 'unlink');
 
       unlinkCommand.execute = function () {
         var selection = new Selection();
@@ -35,8 +35,8 @@ define([
             }
             aNode.remove();
 
-            editor.pushHistory();
-            editor.trigger('content-changed');
+            scribe.pushHistory();
+            scribe.trigger('content-changed');
           }
         } else {
           Command.prototype.execute.apply(this, arguments);
@@ -54,7 +54,7 @@ define([
         }
       };
 
-      editor.commands.unlink = unlinkCommand;
+      scribe.commands.unlink = unlinkCommand;
     };
   };
 

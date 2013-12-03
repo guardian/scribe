@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Editor</title>
+    <title>Scribe</title>
   </head>
   <style>
     * {
@@ -20,7 +20,7 @@
       border-style: inset;
     }
 
-    .editor {
+    .scribe {
       height: 370px;
       overflow: auto;
       margin-bottom: 1em;
@@ -28,7 +28,7 @@
       padding: 0.5em;
     }
 
-    .editor-html {
+    .scribe-html {
       width: 100%;
       font-family: monospace;
       border: 1px solid hsl(0, 0%, 80%);
@@ -40,7 +40,7 @@
     }
   </style>
   <body>
-    <h1>Editor</h1>
+    <h1>Scribe</h1>
     <div class="toolbar">
       <button data-command-name="bold">Bold</button>
       <button data-command-name="italic">Italic</button>
@@ -55,9 +55,9 @@
       <button data-command-name="undo">Undo</button>
       <button data-command-name="redo">Redo</button>
     </div>
-    <div class="editor"></div>
+    <div class="scribe"></div>
     <h2>Output</h2>
-    <textarea class="editor-html" rows="15"></textarea>
+    <textarea class="scribe-html" rows="15"></textarea>
     <script src="bower_components/requirejs/require.js" data-main="./example"></script>
   </body>
 </html>

@@ -17,7 +17,7 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       var InsertListCommandPatch = function (commandName) {
         CommandPatch.call(this, commandName);
       };
@@ -48,18 +48,18 @@ define([
             if (listParentNode && /^(H[1-6]|P|ADDRESS|PRE)$/.test(listParentNode.nodeName)) {
               selection.placeMarkers();
               listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
-              selection.selectMarkers(editor.el);
+              selection.selectMarkers(scribe.el);
               listParentNode.remove();
 
-              editor.pushHistory();
-              editor.trigger('content-changed');
+              scribe.pushHistory();
+              scribe.trigger('content-changed');
             }
           }
         }
       };
 
-      editor.patchedCommands.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
-      editor.patchedCommands.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
+      scribe.patchedCommands.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
+      scribe.patchedCommands.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
     };
   };
 

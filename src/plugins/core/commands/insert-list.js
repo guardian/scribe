@@ -16,9 +16,9 @@ define([
   'use strict';
 
   return function () {
-    return function (editor) {
+    return function (scribe) {
       var InsertListCommand = function (commandName) {
-        Command.call(this, editor, commandName);
+        Command.call(this, scribe, commandName);
       };
 
       InsertListCommand.prototype = Object.create(Command.prototype);
@@ -70,21 +70,21 @@ define([
             listNode.remove();
           }
 
-          selection.selectMarkers(editor.el);
+          selection.selectMarkers(scribe.el);
 
-          editor.pushHistory();
-          editor.trigger('content-changed');
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
         } else {
           Command.prototype.execute.call(this, value);
         }
       };
 
       InsertListCommand.prototype.queryEnabled = function () {
-        return Command.prototype.queryEnabled.call(this) && editor.options.paragraphs;
+        return Command.prototype.queryEnabled.call(this) && scribe.options.paragraphs;
       };
 
-      editor.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
-      editor.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
+      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
+      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
     };
   };
 
