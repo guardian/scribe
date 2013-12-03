@@ -19,7 +19,7 @@ define([
       };
 
       undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 0;
+        return scribe.undoManager.position > 1;
       };
 
       scribe.patchedCommands.undo = undoCommand;

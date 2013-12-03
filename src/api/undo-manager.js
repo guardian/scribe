@@ -17,7 +17,7 @@ define([
   };
 
   UndoManager.prototype.undo = function () {
-    if (this.position > 0) {
+    if (this.position > 1) {
       return this.stack[--this.position];
     }
   };
