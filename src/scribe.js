@@ -55,10 +55,6 @@ define([
       this.addInitializer(insertBrOnReturn());
     }
 
-    this.use(commands.insertList());
-    this.use(commands.redo());
-    this.use(commands.undo());
-
     this.use(formatters());
 
     // Patches
@@ -69,6 +65,10 @@ define([
     if (this.allowsBlockElements()) {
       this.use(patches.emptyWhenDeleting());
     }
+
+    this.use(commands.insertList());
+    this.use(commands.redo());
+    this.use(commands.undo());
 
     this.use(shame());
   }
