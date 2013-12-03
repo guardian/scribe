@@ -34,7 +34,7 @@ function when() {
   describe.apply(null, arguments);
 }
 
-/* global it, after, afterEach, before, beforeEach */
+/* global describe, it, after, afterEach, before, beforeEach */
 
 /* TODO
  * - create scribe dynamically for each context (e.g. pristine, with a plugin, etc)
@@ -91,7 +91,7 @@ afterEach(function (done) {
     .perform();
 
   clearText.then(function () {
-    scribe.getInnerHTML().then(function (innerHTML) {
+    scribe.getInnerHTML().then(function () {
       done();
     });
   });
