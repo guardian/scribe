@@ -121,17 +121,17 @@ require({
 
   document.addEventListener('keydown', function (event) {
     var command;
-    if (event.metaKey && event.keyCode === 66) { // b
+    if ((event.metaKey || event.ctrlKey) && event.keyCode === 66) { // b
       command = findCommand('bold');
-    } else if (event.metaKey && event.keyCode === 73) { // i
+    } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 73) { // i
       command = findCommand('italic');
     } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
       command = findCommand('strikethrough');
     } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
       command = findCommand('removeFormat');
-    } else if (event.metaKey && ! event.shiftKey && event.keyCode === 75) { // k
+    } else if ((event.metaKey || event.ctrlKey) && ! event.shiftKey && event.keyCode === 75) { // k
       command = findCommand('linkPrompt');
-    } else if (event.metaKey && event.shiftKey && event.keyCode === 75) { // k
+    } else if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.keyCode === 75) { // k
       command = findCommand('unlink');
     } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
       command = findCommand('insertUnorderedList');
@@ -139,7 +139,7 @@ require({
       command = findCommand('insertOrderedList');
     } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
       command = findCommand('blockquote');
-    } else if (event.metaKey && event.keyCode === 50) { // 2
+    } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 50) { // 2
       command = findCommand('h2');
     }
 

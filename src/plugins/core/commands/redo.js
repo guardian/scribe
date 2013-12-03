@@ -25,7 +25,7 @@ define([
       scribe.patchedCommands.redo = redoCommand;
 
       scribe.el.addEventListener('keydown', function (event) {
-        if (event.shiftKey && event.metaKey && event.keyCode === 90) {
+        if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
           event.preventDefault();
           redoCommand.execute();
         }
