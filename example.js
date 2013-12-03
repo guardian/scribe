@@ -121,7 +121,7 @@ require({
    * so things like italic are not defined.
    */
 
-  document.addEventListener('keydown', function (event) {
+  scribe.el.addEventListener('keydown', function (event) {
     var command;
     if ((event.metaKey || event.ctrlKey) && event.keyCode === 66) { // b
       command = scribe.getCommand('bold');
