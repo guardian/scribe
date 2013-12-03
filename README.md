@@ -1,4 +1,4 @@
-scribe
+Scribe
 ======
 
 ## List of `contenteditable` Browser Inconsistencies
