@@ -121,32 +121,28 @@ require({
    * so things like italic are not defined.
    */
 
-  function findCommand(commandName) {
-    return scribe.commands[commandName] || new Command(scribe, commandName);
-  }
-
   document.addEventListener('keydown', function (event) {
     var command;
     if ((event.metaKey || event.ctrlKey) && event.keyCode === 66) { // b
-      command = findCommand('bold');
+      command = scribe.getCommand('bold');
     } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 73) { // i
-      command = findCommand('italic');
+      command = scribe.getCommand('italic');
     } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
-      command = findCommand('strikethrough');
+      command = scribe.getCommand('strikethrough');
     } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
-      command = findCommand('removeFormat');
+      command = scribe.getCommand('removeFormat');
     } else if ((event.metaKey || event.ctrlKey) && ! event.shiftKey && event.keyCode === 75) { // k
-      command = findCommand('linkPrompt');
+      command = scribe.getCommand('linkPrompt');
     } else if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.keyCode === 75) { // k
-      command = findCommand('unlink');
+      command = scribe.getCommand('unlink');
     } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
-      command = findCommand('insertUnorderedList');
+      command = scribe.getCommand('insertUnorderedList');
     } else if (event.altKey && event.shiftKey && event.keyCode === 78) { // n
-      command = findCommand('insertOrderedList');
+      command = scribe.getCommand('insertOrderedList');
     } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
-      command = findCommand('blockquote');
+      command = scribe.getCommand('blockquote');
     } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 50) { // 2
-      command = findCommand('h2');
+      command = scribe.getCommand('h2');
     }
 
     if (command) {
