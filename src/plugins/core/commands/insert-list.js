@@ -80,7 +80,7 @@ define([
       };
 
       InsertListCommand.prototype.queryEnabled = function () {
-        return Command.prototype.queryEnabled.call(this) && scribe.options.paragraphs;
+        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
       };
 
       scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');

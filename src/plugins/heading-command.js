@@ -43,7 +43,7 @@ define([
         });
 
         return SimpleCommand.prototype.queryEnabled.apply(this, arguments)
-          && scribe.options.paragraphs && ! listNode;
+          && scribe.allowsBlockElements() && ! listNode;
       };
 
       scribe.commands[commandName] = headingCommand;

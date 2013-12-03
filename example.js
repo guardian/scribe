@@ -37,7 +37,7 @@ require({
 
   'use strict';
 
-  var scribe = new Scribe(document.querySelector('.scribe'), { paragraphs: true });
+  var scribe = new Scribe(document.querySelector('.scribe'), { allowBlockElements: true });
 
   scribe.on('content-changed', updateHTML);
 

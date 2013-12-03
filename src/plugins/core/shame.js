@@ -9,7 +9,7 @@ define([
        * If the paragraphs option is set to true, we need to manually handle
        * keyboard navigation inside a heading to ensure a P element is created.
        */
-      if (scribe.options.paragraphs) {
+      if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) { // enter
 
@@ -61,7 +61,7 @@ define([
        * If the paragraphs option is set to true, we need to manually handle
        * keyboard navigation inside list item nodes.
        */
-      if (scribe.options.paragraphs) {
+      if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) { // enter
 

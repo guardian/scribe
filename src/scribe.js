@@ -43,7 +43,7 @@ define([
      */
 
     // FIXME: event order matters
-    if (this.options.paragraphs) {
+    if (this.allowsBlockElements()) {
       // P mode
       this.addInitializer(rootParagraphElement());
     } else {
@@ -128,6 +128,11 @@ define([
     selection.selectMarkers(this.el);
 
     this.trigger('content-changed');
+  };
+
+  // This will most likely be moved to another object eventually
+  Scribe.prototype.allowsBlockElements = function () {
+    return this.options.allowBlockElements;
   };
 
   return Scribe;

@@ -21,7 +21,7 @@ define([
   return function emptyEditorWhenDeleting() {
     return function (scribe) {
 
-      if (scribe.options.paragraphs) {
+      if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keydown', function handleKeydown(event) {
           // Delete or backspace
           if (event.keyCode === 8 || event.keyCode === 46) {
