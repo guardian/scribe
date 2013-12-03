@@ -8,7 +8,8 @@ define([
   './plugins/core/shame',
   './api/command',
   './api/selection',
-  './api/undo-manager'
+  './api/undo-manager',
+  'lodash/objects/defaults'
 ], function (
   EventEmitter,
   rootParagraphElement,
@@ -19,7 +20,8 @@ define([
   shame,
   Command,
   Selection,
-  UndoManager
+  UndoManager,
+  defaults
 ) {
 
   'use strict';
@@ -27,7 +29,9 @@ define([
   function Scribe(el, options) {
     this.el = el;
     this.commands = {};
-    this.options = options || {};
+    this.options = defaults(options, {
+      allowBlockElements: true
+    });
     this.patchedCommands = {};
     this.initializers = [];
 
