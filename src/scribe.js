@@ -1,6 +1,7 @@
 define([
   'event-emitter',
   './initializers/root-paragraph-element',
+  './initializers/insert-br-on-return',
   './plugins/core/commands',
   './plugins/core/formatters',
   './plugins/core/patches',
@@ -11,6 +12,7 @@ define([
 ], function (
   EventEmitter,
   rootParagraphElement,
+  insertBrOnReturn,
   commands,
   formatters,
   patches,
@@ -41,59 +43,12 @@ define([
      */
 
     // FIXME: event order matters
-    // TODO: figure out a better way to organise all of this stuff
     if (this.options.paragraphs) {
       // P mode
       this.addInitializer(rootParagraphElement());
     } else {
       // BR mode
-      /**
-       * Firefox has a `insertBrOnReturn` command, but this is not a part of
-       * any standard. One day we might have an `insertLineBreak` command,
-       * proposed by this spec:
-       * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
-       * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
-       */
-      this.el.addEventListener('keydown', function (event) {
-        if (event.keyCode === 13) { // enter
-          var selection = new Selection();
-          var range = selection.range;
-
-          var blockNode = selection.getContaining(function (node) {
-            return node.nodeName === 'LI' || (/^(H[1-6])$/).test(node.nodeName);
-          });
-
-          if (! blockNode) {
-            event.preventDefault();
-            // The first <br> is the line break, the second <br> is simply
-            // where the caret will go (and replace).
-            var brNode = document.createElement('br');
-            var caretBrNode = document.createElement('br');
-
-            range.insertNode(brNode);
-            // After inserting the BR into the range is no longer collapsed, so
-            // we have to collapse it again.
-            range.collapse();
-            range.insertNode(caretBrNode);
-
-            var newRange = new window.Range();
-
-            newRange.setStartAfter(caretBrNode, 0);
-            newRange.setEndAfter(caretBrNode, 0);
-
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(newRange);
-
-            this.pushHistory();
-            this.trigger('content-changed');
-          }
-        }
-      }.bind(this));
-
-      if (this.getHTML() === '') {
-        this.pushHistory();
-        this.trigger('content-changed');
-      }
+      this.addInitializer(insertBrOnReturn());
     }
 
     this.use(commands.insertList());
