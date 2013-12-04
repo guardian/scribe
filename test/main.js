@@ -142,7 +142,7 @@ describe('P mode', function () {
       });
     });
 
-    when('the user presses enter', function () {
+    when('the user presses ENTER', function () {
       beforeEach(function (done) {
         scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
           done();
@@ -163,7 +163,7 @@ describe('P mode', function () {
           });
         });
 
-        it('should insert characters inside of the P element', function (done) {
+        it('should insert the typed characters inside of the P element', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<p>1</p><p>2</p>');
             done();
@@ -205,7 +205,7 @@ describe('BR mode', function () {
       });
     });
 
-    when('the user presses enter', function () {
+    when('the user presses ENTER', function () {
       beforeEach(function (done) {
         scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
           done();
