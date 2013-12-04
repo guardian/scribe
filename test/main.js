@@ -68,11 +68,12 @@ function initializeScribe(options) {
  *     });
  */
 
+var server;
 var driver;
 
 before(function (done) {
   // Note: you need to run from the root of the project
-  var server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
+  server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
     port: 4444
   });
 
@@ -92,6 +93,8 @@ before(function (done) {
 after(function (done) {
   // FIXME: Quit fails when there was an error from the WebDriver
   driver.quit().then(function () {
+    return server.stop();
+  }).then(function () {
     done();
   });
 });
