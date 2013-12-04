@@ -162,30 +162,32 @@ when('the user types', function () {
   });
 });
 
-when('the user clicks the bold button in the toolbar and then types', function () {
-  beforeEach(function (done) {
-    driver.executeScript(function () {
-      require(['plugins/toolbar'], function (toolbar) {
-        window.scribe.use(toolbar(document.querySelector('.toolbar')));
-        window.scribe.initialize();
+describe('toolbar', function () {
+  when('the user clicks the bold button in the toolbar and then types', function () {
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        require(['plugins/toolbar'], function (toolbar) {
+          window.scribe.use(toolbar(document.querySelector('.toolbar')));
+          window.scribe.initialize();
+        });
+      }).then(function () {
+        done();
       });
-    }).then(function () {
-      done();
     });
-  });
 
-  beforeEach(function (done) {
-    scribe.click();
-    driver.findElement(webdriver.By.id('bold-button')).click();
-    scribe.sendKeys('1').then(function () {
-      done();
+    beforeEach(function (done) {
+      scribe.click();
+      driver.findElement(webdriver.By.id('bold-button')).click();
+      scribe.sendKeys('1').then(function () {
+        done();
+      });
     });
-  });
 
-  it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
-    scribe.getInnerHTML().then(function (innerHTML) {
-      expect(innerHTML).to.equal('<p><b>1</b></p>');
-      done();
+    it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
+      scribe.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('<p><b>1</b></p>');
+        done();
+      });
     });
   });
 });
