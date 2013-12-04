@@ -15,14 +15,6 @@ var driver = new webdriver.Builder()
   // .withCapabilities(webdriver.Capabilities.firefox())
   .build();
 
-driver.get('http://localhost:8080/test/app/index.html');
-
-var scribe = driver.findElement(webdriver.By.id('scribe'));
-var editorOutput = driver.findElement(webdriver.By.id('scribe-output'));
-
-scribe.getInnerHTML = function () {
-  return editorOutput.getText();
-};
 
 function given() {
   arguments[0] = 'given ' + arguments[0];
@@ -48,9 +40,37 @@ function when() {
  *     });
  */
 
+ before(function (done) {
+   driver.get('http://localhost:8080/test/app/index.html').then(function () {
+     done();
+   });
+ });
+
 after(function (done) {
-  // FIXME: Quit fails when there was an error from the WebDriver
-  driver.quit().then(function () {
+ // FIXME: Quit fails when there was an error from the WebDriver
+ driver.quit().then(function () {
+   done();
+ });
+});
+
+var scribe;
+var editorOutput;
+
+beforeEach(function (done) {
+  driver.wait(function () {
+    return driver.executeScript('return document.readyState').then(function (returnValue) {
+      return returnValue === 'complete';
+    });
+  }).then(function () {
+    scribe = driver.findElement(webdriver.By.id('scribe'));
+    editorOutput = driver.findElement(webdriver.By.id('scribe-output'));
+
+    scribe.getInnerHTML = function () {
+      return editorOutput.getText();
+    };
+
+    scribe.click();
+
     done();
   });
 });
@@ -94,6 +114,12 @@ afterEach(function (done) {
     scribe.getInnerHTML().then(function () {
       done();
     });
+  });
+});
+
+afterEach(function (done) {
+  driver.navigate().refresh().then(function () {
+    done();
   });
 });
 
