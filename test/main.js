@@ -113,21 +113,21 @@ afterEach(function (done) {
 });
 
 describe('P mode', function () {
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
+
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      window.scribe.initialize();
+    }).then(function () {
+      done();
+    });
+  });
+
   when('the user types', function () {
-
-    beforeEach(function (done) {
-      initializeScribe().then(function () {
-        done();
-      });
-    });
-
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        window.scribe.initialize();
-      }).then(function () {
-        done();
-      });
-    });
 
     beforeEach(function (done) {
       scribeNode.sendKeys('1').then(function () {
@@ -176,21 +176,22 @@ describe('P mode', function () {
 });
 
 describe('BR mode', function () {
+
+  beforeEach(function (done) {
+    initializeScribe({ allowBlockElements: false }).then(function () {
+      done();
+    });
+  });
+
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      window.scribe.initialize();
+    }).then(function () {
+      done();
+    });
+  });
+
   when('the user types', function () {
-
-    beforeEach(function (done) {
-      initializeScribe({ allowBlockElements: false }).then(function () {
-        done();
-      });
-    });
-
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        window.scribe.initialize();
-      }).then(function () {
-        done();
-      });
-    });
 
     beforeEach(function (done) {
       scribeNode.sendKeys('1').then(function () {
