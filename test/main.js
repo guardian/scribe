@@ -57,8 +57,6 @@ function initializeScribe(options) {
 }
 
 /* TODO
- * - create scribe dynamically for each context (e.g. pristine, with a plugin, etc)
- * - sanitize clearText to call scribe methods (e.g. scribeNode.clear() via executeScript?)
  * - rethink getInnerHTML in the light of being able to access the
  *   scribe instance; is it better to use scribeNode.getHTML, or how do we
  *   ensure 'content-changed' was triggered?
