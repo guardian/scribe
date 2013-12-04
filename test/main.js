@@ -2,20 +2,6 @@ var expect = require('chai').expect;
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 
-// Note: you need to run from the root of the project
-var server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
-  port: 4444
-});
-
-server.start();
-
-var driver = new webdriver.Builder()
-  .usingServer(server.address())
-  .withCapabilities(webdriver.Capabilities.chrome())
-  // .withCapabilities(webdriver.Capabilities.firefox())
-  .build();
-
-
 function given() {
   var args = Object.create(arguments);
   args[0] = 'given ' + args[0];
@@ -42,11 +28,26 @@ function when() {
  *     });
  */
 
- before(function (done) {
-   driver.get('http://localhost:8080/test/app/index.html').then(function () {
-     done();
-   });
- });
+var driver;
+
+before(function (done) {
+  // Note: you need to run from the root of the project
+  var server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
+    port: 4444
+  });
+
+  server.start().then(function () {
+    driver = new webdriver.Builder()
+      .usingServer(server.address())
+      // TODO: firefox
+      .withCapabilities(webdriver.Capabilities.chrome())
+      .build();
+
+    driver.get('http://localhost:8080/test/app/index.html').then(function () {
+      done();
+    });
+  });
+});
 
 after(function (done) {
   // FIXME: Quit fails when there was an error from the WebDriver
