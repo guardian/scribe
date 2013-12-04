@@ -163,17 +163,18 @@ when('the user types', function () {
 });
 
 describe('toolbar', function () {
-  when('the user clicks the bold button in the toolbar and then types', function () {
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        require(['plugins/toolbar'], function (toolbar) {
-          window.scribe.use(toolbar(document.querySelector('.toolbar')));
-          window.scribe.initialize();
-        });
-      }).then(function () {
-        done();
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      require(['plugins/toolbar'], function (toolbar) {
+        window.scribe.use(toolbar(document.querySelector('.toolbar')));
+        window.scribe.initialize();
       });
+    }).then(function () {
+      done();
     });
+  });
+
+  when('the user clicks the bold button in the toolbar and then types', function () {
 
     beforeEach(function (done) {
       scribe.click();
