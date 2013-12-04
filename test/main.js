@@ -191,46 +191,49 @@ describe('BR mode', function () {
     });
   });
 
-  when('the user types', function () {
+  given('no content', function () {
 
-    beforeEach(function (done) {
-      scribeNode.sendKeys('1').then(function () {
-        done();
-      });
-    });
+    when('the user types', function () {
 
-    it('should insert the typed characters', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('1');
-        done();
-      });
-    });
-
-    when('the user presses ENTER', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+        scribeNode.sendKeys('1').then(function () {
           done();
         });
       });
 
-      it('should insert two BR elements', function (done) {
+      it('should insert the typed characters', function (done) {
         scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('1<br><br>');
+          expect(innerHTML).to.equal('1');
           done();
         });
       });
 
-      when('the user types', function () {
+      when('the user presses ENTER', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys('2').then(function () {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
             done();
           });
         });
 
-        it('should replace the second BR element with the typed characters', function (done) {
+        it('should insert two BR elements', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br>2');
+            expect(innerHTML).to.equal('1<br><br>');
             done();
+          });
+        });
+
+        when('the user types', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys('2').then(function () {
+              done();
+            });
+          });
+
+          it('should replace the second BR element with the typed characters', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('1<br>2');
+              done();
+            });
           });
         });
       });
