@@ -191,6 +191,59 @@ describe('BR mode', function () {
     });
   });
 
+  given('content of "1<br>2"', function () {
+
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        window.scribe.setHTML('1<br>2');
+
+        window.scribe.pushHistory();
+        window.scribe.trigger('content-changed');
+      }).then(function () {
+        done();
+      });
+    });
+
+    when('the user places their caret at the end of a line', function () {
+      beforeEach(function (done) {
+        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
+          done();
+        });
+      });
+
+      when('the user presses ENTER', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+            done();
+          });
+        });
+
+        it.skip('should create a new line by inserting a BR element', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('1<br><br>2');
+            done();
+          });
+        });
+
+        when('the user types', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys('3').then(function () {
+              done();
+            });
+          });
+
+          it.skip('should insert the typed characters on the new line', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('1<br>3<br>2');
+              done();
+            });
+          });
+        });
+      });
+    });
+
+  });
+
   given('no content', function () {
 
     when('the user types', function () {
