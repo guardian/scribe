@@ -121,17 +121,19 @@ require({
 
   scribe.el.addEventListener('keydown', function (event) {
     var command;
-    if ((event.metaKey || event.ctrlKey) && event.keyCode === 66) { // b
+    var ctrlKey = event.metaKey || event.ctrlKey;
+
+    if (ctrlKey && event.keyCode === 66) { // b
       command = scribe.getCommand('bold');
-    } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 73) { // i
+    } else if (ctrlKey && event.keyCode === 73) { // i
       command = scribe.getCommand('italic');
     } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
       command = scribe.getCommand('strikethrough');
     } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
       command = scribe.getCommand('removeFormat');
-    } else if ((event.metaKey || event.ctrlKey) && ! event.shiftKey && event.keyCode === 75) { // k
+    } else if (ctrlKey && ! event.shiftKey && event.keyCode === 75) { // k
       command = scribe.getCommand('linkPrompt');
-    } else if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.keyCode === 75) { // k
+    } else if (ctrlKey && event.shiftKey && event.keyCode === 75) { // k
       command = scribe.getCommand('unlink');
     } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
       command = scribe.getCommand('insertUnorderedList');
@@ -139,7 +141,7 @@ require({
       command = scribe.getCommand('insertOrderedList');
     } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
       command = scribe.getCommand('blockquote');
-    } else if ((event.metaKey || event.ctrlKey) && event.keyCode === 50) { // 2
+    } else if (ctrlKey && event.keyCode === 50) { // 2
       command = scribe.getCommand('h2');
     }
 
