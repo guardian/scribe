@@ -221,7 +221,7 @@ describe('BR mode', function () {
           });
         });
 
-        it.skip('should create a new line by inserting a BR element', function (done) {
+        it('should create a new line by inserting a BR element', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('1<br><br>2');
             done();
@@ -235,7 +235,7 @@ describe('BR mode', function () {
             });
           });
 
-          it.skip('should insert the typed characters on the new line', function (done) {
+          it('should insert the typed characters on the new line', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('1<br>3<br>2');
               done();

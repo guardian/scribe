@@ -25,21 +25,32 @@ define([
 
           if (! blockNode) {
             event.preventDefault();
-            // The first <br> is the line break, the second <br> is simply
-            // where the caret will go (and replace).
             var brNode = document.createElement('br');
-            var caretBrNode = document.createElement('br');
 
             range.insertNode(brNode);
             // After inserting the BR into the range is no longer collapsed, so
             // we have to collapse it again.
             range.collapse();
-            range.insertNode(caretBrNode);
 
-            var newRange = new window.Range();
+            // If there is no right-hand side content, we have to insert an
+            // additional BR in order for the line break to appear. Not to worry
+            // as this is replaced as soon as the user begins typing.
+            var endNode;
+            if (! brNode.nextElementSibling) {
+              var caretBrNode = document.createElement('br');
+              endNode = caretBrNode;
+              range.insertNode(caretBrNode);
+            } else {
+              endNode = brNode;
+            }
 
-            newRange.setStartAfter(caretBrNode, 0);
-            newRange.setEndAfter(caretBrNode, 0);
+            // Set the selection to the end of whichever BR node we inserted
+            // last.
+
+            var newRange = range.cloneRange();
+
+            newRange.setStartAfter(endNode, 0);
+            newRange.setEndAfter(endNode, 0);
 
             selection.selection.removeAllRanges();
             selection.selection.addRange(newRange);
