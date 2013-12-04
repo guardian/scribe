@@ -66,15 +66,9 @@ beforeEach(function (done) {
 
   function setupTest() {
     require([
-      'scribe',
-      'plugins/toolbar',
-      'plugins/smart-list',
-      'plugins/curly-quotes'
+      'scribe'
     ], function (
-      Scribe,
-      toolbar,
-      smartList,
-      curlyQuotes
+      Scribe
     ) {
 
       'use strict';
@@ -87,12 +81,7 @@ beforeEach(function (done) {
         document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
       }
 
-      scribe.use(toolbar(document.querySelector('.toolbar')));
-      scribe.use(smartList());
-      scribe.use(curlyQuotes());
-
-      scribe.initialize();
-
+      window.scribe = scribe;
     });
   }
 });
@@ -110,51 +99,7 @@ beforeEach(function (done) {
       return editorOutput.getText();
     };
 
-    scribe.click();
-
     done();
-  });
-});
-
-afterEach(function (done) {
-  // FIXME: why does this not work?
-  // var clearText = new webdriver.ActionSequence(driver)
-  //   .click(scribe)
-  //   .keyDown(webdriver.Key.COMMAND)
-  //   .sendKeys('a')
-  //   .keyUp(webdriver.Key.COMMAND)
-  //   .sendKeys(webdriver.Key.DELETE)
-  //   .perform();
-
-  var clearText = new webdriver.ActionSequence(driver)
-    .click(scribe)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .sendKeys(webdriver.Key.DELETE)
-    .perform();
-
-  clearText.then(function () {
-    scribe.getInnerHTML().then(function () {
-      done();
-    });
   });
 });
 
@@ -165,8 +110,12 @@ afterEach(function (done) {
 });
 
 when('the user types', function () {
-  beforeEach(function () {
-    scribe.sendKeys('1');
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      window.scribe.initialize();
+    }).then(function () {
+      done();
+    });
   });
 
   beforeEach(function (done) {
@@ -215,6 +164,17 @@ when('the user types', function () {
 
 when('the user clicks the bold button in the toolbar and then types', function () {
   beforeEach(function (done) {
+    driver.executeScript(function () {
+      require(['plugins/toolbar'], function (toolbar) {
+        window.scribe.use(toolbar(document.querySelector('.toolbar')));
+        window.scribe.initialize();
+      });
+    }).then(function () {
+      done();
+    });
+  });
+
+  beforeEach(function (done) {
     scribe.click();
     driver.findElement(webdriver.By.id('bold-button')).click();
     scribe.sendKeys('1').then(function () {
@@ -231,6 +191,17 @@ when('the user clicks the bold button in the toolbar and then types', function (
 });
 
 describe('smart lists plugin', function () {
+
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      require(['plugins/smart-list'], function (smartList) {
+        window.scribe.use(smartList());
+        window.scribe.initialize();
+      });
+    }).then(function () {
+      done();
+    });
+  });
 
   var unorderedPrefixes = ['* ', '- ', '• '];
   unorderedPrefixes.forEach(function(prefix) {
@@ -380,6 +351,17 @@ describe('smart lists plugin', function () {
 });
 
 describe('curly quotes plugin', function () {
+
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      require(['plugins/curly-quotes'], function (curlyQuotes) {
+        window.scribe.use(curlyQuotes());
+        window.scribe.initialize();
+      });
+    }).then(function () {
+      done();
+    });
+  });
 
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
