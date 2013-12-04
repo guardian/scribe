@@ -346,8 +346,8 @@ describe('smart lists plugin', function () {
 
   beforeEach(function (done) {
     driver.executeScript(function () {
-      require(['plugins/smart-list'], function (smartList) {
-        window.scribe.use(smartList());
+      require(['plugins/smart-lists'], function (smartLists) {
+        window.scribe.use(smartLists());
         window.scribe.initialize();
       });
     }).then(function () {

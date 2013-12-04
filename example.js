@@ -24,7 +24,7 @@ require({
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
-  'plugins/smart-list',
+  'plugins/smart-lists',
   'plugins/curly-quotes'
 ], function (
   Scribe,
@@ -35,7 +35,7 @@ require({
   linkPromptCommand,
   sanitizer,
   toolbar,
-  smartList,
+  smartLists,
   curlyQuotes
 ) {
 
@@ -107,7 +107,7 @@ require({
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
     scribe.use(toolbar(toolbarNode));
   });
-  scribe.use(smartList());
+  scribe.use(smartLists());
   scribe.use(curlyQuotes());
 
   /**
