@@ -20,7 +20,7 @@ var scribeNode;
 var editorOutput;
 
 function initializeScribe(options) {
-  return driver.executeScript(setupTest).then(function () {
+  return driver.executeScript(setupTest, options).then(function () {
     // FIXME: why do we have to wait until after this script is executed
     // to get the node references? weird initialize error if we try to do
     // it before.
@@ -33,6 +33,8 @@ function initializeScribe(options) {
   });
 
   function setupTest() {
+    var options = arguments[0];
+
     require([
       'scribe'
     ], function (
@@ -41,7 +43,7 @@ function initializeScribe(options) {
 
       'use strict';
 
-      var scribe = new Scribe(document.querySelector('.scribe'));
+      var scribe = new Scribe(document.querySelector('.scribe'), options);
 
       scribe.on('content-changed', updateHTML);
 
@@ -110,64 +112,130 @@ afterEach(function (done) {
   });
 });
 
-when('the user types', function () {
+describe('P mode', function () {
+  when('the user types', function () {
 
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
-  });
-
-  beforeEach(function (done) {
-    driver.executeScript(function () {
-      window.scribe.initialize();
-    }).then(function () {
-      done();
-    });
-  });
-
-  beforeEach(function (done) {
-    scribeNode.sendKeys('1').then(function () {
-      done();
-    });
-  });
-
-  it('should insert the text inside of a P element', function (done) {
-    scribeNode.getInnerHTML().then(function (innerHTML) {
-      expect(innerHTML).to.equal('<p>1</p>');
-      done();
-    });
-  });
-
-  when('the user presses enter', function () {
     beforeEach(function (done) {
-      scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+      initializeScribe().then(function () {
         done();
       });
     });
 
-    it('should insert another P element', function (done) {
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        window.scribe.initialize();
+      }).then(function () {
+        done();
+      });
+    });
+
+    beforeEach(function (done) {
+      scribeNode.sendKeys('1').then(function () {
+        done();
+      });
+    });
+
+    it('should insert the text inside of a P element', function (done) {
       scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<p>1</p><p><br></p>');
+        expect(innerHTML).to.equal('<p>1</p>');
         done();
       });
     });
 
-    when('the user types', function () {
+    when('the user presses enter', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys('2').then(function () {
+        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
           done();
         });
       });
 
-      it('should insert characters inside of the P element', function (done) {
+      it('should insert another P element', function (done) {
         scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+          expect(innerHTML).to.equal('<p>1</p><p><br></p>');
           done();
+        });
+      });
+
+      when('the user types', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys('2').then(function () {
+            done();
+          });
+        });
+
+        it('should insert characters inside of the P element', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+            done();
+          });
         });
       });
     });
   });
+
+});
+
+describe('BR mode', function () {
+  when('the user types', function () {
+
+    beforeEach(function (done) {
+      initializeScribe({ allowBlockElements: false }).then(function () {
+        done();
+      });
+    });
+
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        window.scribe.initialize();
+      }).then(function () {
+        done();
+      });
+    });
+
+    beforeEach(function (done) {
+      scribeNode.sendKeys('1').then(function () {
+        done();
+      });
+    });
+
+    it('should insert the typed characters', function (done) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('1');
+        done();
+      });
+    });
+
+    when('the user presses enter', function () {
+      beforeEach(function (done) {
+        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+          done();
+        });
+      });
+
+      it('should insert two BR elements', function (done) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('1<br><br>');
+          done();
+        });
+      });
+
+      when('the user types', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys('2').then(function () {
+            done();
+          });
+        });
+
+        it('should replace the second BR element with the typed characters', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('1<br>2');
+            done();
+          });
+        });
+      });
+    });
+  });
+
 });
 
 describe('toolbar', function () {
