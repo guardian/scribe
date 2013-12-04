@@ -56,9 +56,6 @@ after(function (done) {
   });
 });
 
-var scribe;
-var editorOutput;
-
 beforeEach(function (done) {
   driver.executeScript(setupTest).then(function () {
     done();
@@ -85,6 +82,9 @@ beforeEach(function (done) {
     });
   }
 });
+
+var scribe;
+var editorOutput;
 
 beforeEach(function (done) {
   driver.wait(function () {
