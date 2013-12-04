@@ -49,10 +49,10 @@ function when() {
  });
 
 after(function (done) {
- // FIXME: Quit fails when there was an error from the WebDriver
- driver.quit().then(function () {
-   done();
- });
+  // FIXME: Quit fails when there was an error from the WebDriver
+  driver.quit().then(function () {
+    done();
+  });
 });
 
 var scribe;
