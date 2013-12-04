@@ -169,6 +169,12 @@ when('the user types', function () {
     scribe.sendKeys('1');
   });
 
+  beforeEach(function (done) {
+    scribe.sendKeys('1').then(function () {
+      done();
+    });
+  });
+
   it('should insert the text inside of a P element', function (done) {
     scribe.getInnerHTML().then(function (innerHTML) {
       expect(innerHTML).to.equal('<p>1</p>');
@@ -177,8 +183,10 @@ when('the user types', function () {
   });
 
   when('the user presses enter', function () {
-    beforeEach(function () {
-      scribe.sendKeys(webdriver.Key.ENTER);
+    beforeEach(function (done) {
+      scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+        done();
+      });
     });
 
     it('should insert another P element', function (done) {
@@ -189,8 +197,10 @@ when('the user types', function () {
     });
 
     when('the user types', function () {
-      beforeEach(function () {
-        scribe.sendKeys('2');
+      beforeEach(function (done) {
+        scribe.sendKeys('2').then(function () {
+          done();
+        });
       });
 
       it('should insert characters inside of the P element', function (done) {
@@ -204,10 +214,12 @@ when('the user types', function () {
 });
 
 when('the user clicks the bold button in the toolbar and then types', function () {
-  beforeEach(function () {
+  beforeEach(function (done) {
     scribe.click();
     driver.findElement(webdriver.By.id('bold-button')).click();
-    scribe.sendKeys('1');
+    scribe.sendKeys('1').then(function () {
+      done();
+    });
   });
 
   it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
@@ -224,8 +236,10 @@ describe('smart lists plugin', function () {
   unorderedPrefixes.forEach(function(prefix) {
 
     when('the user types "' +prefix+ '"', function () {
-      beforeEach(function () {
-        scribe.sendKeys(prefix);
+      beforeEach(function (done) {
+        scribe.sendKeys(prefix).then(function () {
+          done();
+        });
       });
 
       it('should create an unordered list', function (done) {
@@ -236,8 +250,10 @@ describe('smart lists plugin', function () {
       });
 
       when('the user types', function () {
-        beforeEach(function () {
-          scribe.sendKeys('abc');
+        beforeEach(function (done) {
+          scribe.sendKeys('abc').then(function () {
+            done();
+          });
         });
 
         it('should insert the typed characters inside of the LI element', function (done) {
@@ -248,8 +264,10 @@ describe('smart lists plugin', function () {
         });
 
         when('the user presses ENTER', function () {
-          beforeEach(function () {
-            scribe.sendKeys(webdriver.Key.ENTER);
+          beforeEach(function (done) {
+            scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+              done();
+            });
           });
 
           it('should create a new LI element', function (done) {
@@ -260,8 +278,10 @@ describe('smart lists plugin', function () {
           });
 
           when('the user types', function () {
-            beforeEach(function () {
-              scribe.sendKeys('def');
+            beforeEach(function (done) {
+              scribe.sendKeys('def').then(function () {
+                done();
+              });
             });
 
             it('should insert the typed characters inside the new LI element', function (done) {
@@ -273,8 +293,10 @@ describe('smart lists plugin', function () {
           });
 
           when('the user presses ENTER', function () {
-            beforeEach(function () {
-              scribe.sendKeys(webdriver.Key.ENTER);
+            beforeEach(function (done) {
+              scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+                done();
+              });
             });
 
             it('should end the list and start a new P', function (done) {
@@ -289,13 +311,17 @@ describe('smart lists plugin', function () {
     });
 
     given('some content on the line', function () {
-      beforeEach(function () {
-        scribe.sendKeys('hello');
+      beforeEach(function (done) {
+        scribe.sendKeys('hello').then(function () {
+          done();
+        });
       });
 
       when('the user types "' +prefix+ '"', function () {
-        beforeEach(function () {
-          scribe.sendKeys(prefix);
+        beforeEach(function (done) {
+          scribe.sendKeys(prefix).then(function () {
+            done();
+          });
         });
 
         it('should write these characters and not create a list', function (done) {
@@ -308,13 +334,20 @@ describe('smart lists plugin', function () {
       });
 
       when('the user goes to the start of the line and types "' +prefix+ '"', function () {
-        beforeEach(function () {
-          scribe.sendKeys(webdriver.Key.LEFT);
-          scribe.sendKeys(webdriver.Key.LEFT);
-          scribe.sendKeys(webdriver.Key.LEFT);
-          scribe.sendKeys(webdriver.Key.LEFT);
-          scribe.sendKeys(webdriver.Key.LEFT);
-          scribe.sendKeys(prefix);
+        beforeEach(function (done) {
+          var goToStart = new webdriver.ActionSequence(driver)
+            .click(scribe)
+            .sendKeys(webdriver.Key.LEFT)
+            .sendKeys(webdriver.Key.LEFT)
+            .sendKeys(webdriver.Key.LEFT)
+            .sendKeys(webdriver.Key.LEFT)
+            .sendKeys(webdriver.Key.LEFT)
+            .sendKeys(prefix)
+            .perform();
+
+          goToStart.then(function () {
+            done();
+          });
         });
 
         it('should create an unordered list containing the words on the line', function (done) {
@@ -331,8 +364,10 @@ describe('smart lists plugin', function () {
   // TODO: reuse steps above for ordered lists?
 
   when('the user types "1. "', function () {
-    beforeEach(function () {
-      scribe.sendKeys('1. ');
+    beforeEach(function (done) {
+      scribe.sendKeys('1. ').then(function () {
+        done();
+      });
     });
 
     it('should create an ordered list', function (done) {
@@ -348,8 +383,10 @@ describe('curly quotes plugin', function () {
 
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
-      beforeEach(function () {
-        scribe.sendKeys('"');
+      beforeEach(function (done) {
+        scribe.sendKeys('"').then(function () {
+          done();
+        });
       });
 
       it('should insert an opening curly double quote instead', function (done) {
@@ -362,13 +399,17 @@ describe('curly quotes plugin', function () {
   });
 
   given('the caret is at the end of a word', function () {
-    beforeEach(function () {
-      scribe.sendKeys('Hello');
+    beforeEach(function (done) {
+      scribe.sendKeys('Hello').then(function () {
+        done();
+      });
     });
 
     when('the user types ascii double quote', function () {
-      beforeEach(function () {
-        scribe.sendKeys('"');
+      beforeEach(function (done) {
+        scribe.sendKeys('"').then(function () {
+          done();
+        });
       });
 
       it('should insert a closing curly double quote instead', function (done) {
@@ -381,13 +422,17 @@ describe('curly quotes plugin', function () {
   });
 
   given('the caret is after the end of a word', function () {
-    beforeEach(function () {
-      scribe.sendKeys('Hello '); // Note the space!
+    beforeEach(function (done) {
+      scribe.sendKeys('Hello ').then(function () { // Note the space
+        done();
+      });
     });
 
     when('the user types ascii double quote', function () {
-      beforeEach(function () {
-        scribe.sendKeys('"');
+      beforeEach(function (done) {
+        scribe.sendKeys('"').then(function () {
+          done();
+        });
       });
 
       it('should insert an opening curly double quote instead', function (done) {
