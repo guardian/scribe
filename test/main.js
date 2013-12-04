@@ -2,6 +2,8 @@ var expect = require('chai').expect;
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 
+/* global describe, it, after, afterEach, before, beforeEach */
+
 function given() {
   var args = Object.create(arguments);
   args[0] = 'given ' + args[0];
@@ -14,13 +16,49 @@ function when() {
   describe.apply(null, args);
 }
 
-/* global describe, it, after, afterEach, before, beforeEach */
+var scribeNode;
+var editorOutput;
+
+function initializeScribe(options) {
+  return driver.executeScript(setupTest).then(function () {
+    // FIXME: why do we have to wait until after this script is executed
+    // to get the node references? weird initialize error if we try to do
+    // it before.
+    scribeNode = driver.findElement(webdriver.By.id('scribe'));
+    editorOutput = driver.findElement(webdriver.By.id('scribe-output'));
+
+    scribeNode.getInnerHTML = function () {
+      return editorOutput.getText();
+    };
+  });
+
+  function setupTest() {
+    require([
+      'scribe'
+    ], function (
+      Scribe
+    ) {
+
+      'use strict';
+
+      var scribe = new Scribe(document.querySelector('.scribe'));
+
+      scribe.on('content-changed', updateHTML);
+
+      function updateHTML() {
+        document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
+      }
+
+      window.scribe = scribe;
+    });
+  }
+}
 
 /* TODO
  * - create scribe dynamically for each context (e.g. pristine, with a plugin, etc)
- * - sanitize clearText to call scribe methods (e.g. scribe.clear() via executeScript?)
+ * - sanitize clearText to call scribe methods (e.g. scribeNode.clear() via executeScript?)
  * - rethink getInnerHTML in the light of being able to access the
- *   scribe instance; is it better to use scribe.getHTML, or how do we
+ *   scribe instance; is it better to use scribeNode.getHTML, or how do we
  *   ensure 'content-changed' was triggered?
  * - simplify boilerplate by abstracting common test operations, e.g.
  *     when(type('hello'), function() {
@@ -57,48 +95,11 @@ after(function (done) {
 });
 
 beforeEach(function (done) {
-  driver.executeScript(setupTest).then(function () {
-    done();
-  });
-
-  function setupTest() {
-    require([
-      'scribe'
-    ], function (
-      Scribe
-    ) {
-
-      'use strict';
-
-      var scribe = new Scribe(document.querySelector('.scribe'));
-
-      scribe.on('content-changed', updateHTML);
-
-      function updateHTML() {
-        document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
-      }
-
-      window.scribe = scribe;
-    });
-  }
-});
-
-var scribe;
-var editorOutput;
-
-beforeEach(function (done) {
   driver.wait(function () {
     return driver.executeScript('return document.readyState').then(function (returnValue) {
       return returnValue === 'complete';
     });
   }).then(function () {
-    scribe = driver.findElement(webdriver.By.id('scribe'));
-    editorOutput = driver.findElement(webdriver.By.id('scribe-output'));
-
-    scribe.getInnerHTML = function () {
-      return editorOutput.getText();
-    };
-
     done();
   });
 });
@@ -110,6 +111,13 @@ afterEach(function (done) {
 });
 
 when('the user types', function () {
+
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
+
   beforeEach(function (done) {
     driver.executeScript(function () {
       window.scribe.initialize();
@@ -119,13 +127,13 @@ when('the user types', function () {
   });
 
   beforeEach(function (done) {
-    scribe.sendKeys('1').then(function () {
+    scribeNode.sendKeys('1').then(function () {
       done();
     });
   });
 
   it('should insert the text inside of a P element', function (done) {
-    scribe.getInnerHTML().then(function (innerHTML) {
+    scribeNode.getInnerHTML().then(function (innerHTML) {
       expect(innerHTML).to.equal('<p>1</p>');
       done();
     });
@@ -133,13 +141,13 @@ when('the user types', function () {
 
   when('the user presses enter', function () {
     beforeEach(function (done) {
-      scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+      scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
         done();
       });
     });
 
     it('should insert another P element', function (done) {
-      scribe.getInnerHTML().then(function (innerHTML) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<p>1</p><p><br></p>');
         done();
       });
@@ -147,13 +155,13 @@ when('the user types', function () {
 
     when('the user types', function () {
       beforeEach(function (done) {
-        scribe.sendKeys('2').then(function () {
+        scribeNode.sendKeys('2').then(function () {
           done();
         });
       });
 
       it('should insert characters inside of the P element', function (done) {
-        scribe.getInnerHTML().then(function (innerHTML) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>1</p><p>2</p>');
           done();
         });
@@ -163,6 +171,13 @@ when('the user types', function () {
 });
 
 describe('toolbar', function () {
+
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
+
   beforeEach(function (done) {
     driver.executeScript(function () {
       require(['plugins/toolbar'], function (toolbar) {
@@ -177,23 +192,31 @@ describe('toolbar', function () {
   when('the user clicks the bold button in the toolbar and then types', function () {
 
     beforeEach(function (done) {
-      scribe.click();
+      scribeNode.click();
       driver.findElement(webdriver.By.id('bold-button')).click();
-      scribe.sendKeys('1').then(function () {
+      scribeNode.sendKeys('1').then(function () {
         done();
       });
     });
 
     it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
-      scribe.getInnerHTML().then(function (innerHTML) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<p><b>1</b></p>');
         done();
       });
     });
+
   });
+
 });
 
 describe('smart lists plugin', function () {
+
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
 
   beforeEach(function (done) {
     driver.executeScript(function () {
@@ -211,13 +234,13 @@ describe('smart lists plugin', function () {
 
     when('the user types "' +prefix+ '"', function () {
       beforeEach(function (done) {
-        scribe.sendKeys(prefix).then(function () {
+        scribeNode.sendKeys(prefix).then(function () {
           done();
         });
       });
 
       it('should create an unordered list', function (done) {
-        scribe.getInnerHTML().then(function (innerHTML) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<ul><li><br></li></ul>');
           done();
         });
@@ -225,13 +248,13 @@ describe('smart lists plugin', function () {
 
       when('the user types', function () {
         beforeEach(function (done) {
-          scribe.sendKeys('abc').then(function () {
+          scribeNode.sendKeys('abc').then(function () {
             done();
           });
         });
 
         it('should insert the typed characters inside of the LI element', function (done) {
-          scribe.getInnerHTML().then(function (innerHTML) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<ul><li>abc</li></ul>');
             done();
           });
@@ -239,13 +262,13 @@ describe('smart lists plugin', function () {
 
         when('the user presses ENTER', function () {
           beforeEach(function (done) {
-            scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+            scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
               done();
             });
           });
 
           it('should create a new LI element', function (done) {
-            scribe.getInnerHTML().then(function (innerHTML) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<ul><li>abc</li><li><br></li></ul>');
               done();
             });
@@ -253,13 +276,13 @@ describe('smart lists plugin', function () {
 
           when('the user types', function () {
             beforeEach(function (done) {
-              scribe.sendKeys('def').then(function () {
+              scribeNode.sendKeys('def').then(function () {
                 done();
               });
             });
 
             it('should insert the typed characters inside the new LI element', function (done) {
-              scribe.getInnerHTML().then(function (innerHTML) {
+              scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<ul><li>abc</li><li>def</li></ul>');
                 done();
               });
@@ -268,13 +291,13 @@ describe('smart lists plugin', function () {
 
           when('the user presses ENTER', function () {
             beforeEach(function (done) {
-              scribe.sendKeys(webdriver.Key.ENTER).then(function () {
+              scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
                 done();
               });
             });
 
             it('should end the list and start a new P', function (done) {
-              scribe.getInnerHTML().then(function (innerHTML) {
+              scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<ul><li>abc</li></ul><p><br></p>');
                 done();
               });
@@ -286,20 +309,20 @@ describe('smart lists plugin', function () {
 
     given('some content on the line', function () {
       beforeEach(function (done) {
-        scribe.sendKeys('hello').then(function () {
+        scribeNode.sendKeys('hello').then(function () {
           done();
         });
       });
 
       when('the user types "' +prefix+ '"', function () {
         beforeEach(function (done) {
-          scribe.sendKeys(prefix).then(function () {
+          scribeNode.sendKeys(prefix).then(function () {
             done();
           });
         });
 
         it('should write these characters and not create a list', function (done) {
-          scribe.getInnerHTML().then(function (innerHTML) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
             var prefixNbsp = prefix.replace(' ', '&nbsp;');
             expect(innerHTML).to.equal('<p>hello' +prefixNbsp+ '</p>');
             done();
@@ -310,7 +333,7 @@ describe('smart lists plugin', function () {
       when('the user goes to the start of the line and types "' +prefix+ '"', function () {
         beforeEach(function (done) {
           var goToStart = new webdriver.ActionSequence(driver)
-            .click(scribe)
+            .click(scribeNode)
             .sendKeys(webdriver.Key.LEFT)
             .sendKeys(webdriver.Key.LEFT)
             .sendKeys(webdriver.Key.LEFT)
@@ -325,7 +348,7 @@ describe('smart lists plugin', function () {
         });
 
         it('should create an unordered list containing the words on the line', function (done) {
-          scribe.getInnerHTML().then(function (innerHTML) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<ul><li>hello<br></li></ul>');
             done();
           });
@@ -339,21 +362,29 @@ describe('smart lists plugin', function () {
 
   when('the user types "1. "', function () {
     beforeEach(function (done) {
-      scribe.sendKeys('1. ').then(function () {
+      scribeNode.sendKeys('1. ').then(function () {
         done();
       });
     });
 
     it('should create an ordered list', function (done) {
-      scribe.getInnerHTML().then(function (innerHTML) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<ol><li><br></li></ol>');
         done();
       });
     });
+
   });
+
 });
 
 describe('curly quotes plugin', function () {
+
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
 
   beforeEach(function (done) {
     driver.executeScript(function () {
@@ -369,13 +400,13 @@ describe('curly quotes plugin', function () {
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
       beforeEach(function (done) {
-        scribe.sendKeys('"').then(function () {
+        scribeNode.sendKeys('"').then(function () {
           done();
         });
       });
 
       it('should insert an opening curly double quote instead', function (done) {
-        scribe.getInnerHTML().then(function (innerHTML) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>“<br></p>');
           done();
         });
@@ -385,20 +416,20 @@ describe('curly quotes plugin', function () {
 
   given('the caret is at the end of a word', function () {
     beforeEach(function (done) {
-      scribe.sendKeys('Hello').then(function () {
+      scribeNode.sendKeys('Hello').then(function () {
         done();
       });
     });
 
     when('the user types ascii double quote', function () {
       beforeEach(function (done) {
-        scribe.sendKeys('"').then(function () {
+        scribeNode.sendKeys('"').then(function () {
           done();
         });
       });
 
       it('should insert a closing curly double quote instead', function (done) {
-        scribe.getInnerHTML().then(function (innerHTML) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>Hello”</p>');
           done();
         });
@@ -408,25 +439,27 @@ describe('curly quotes plugin', function () {
 
   given('the caret is after the end of a word', function () {
     beforeEach(function (done) {
-      scribe.sendKeys('Hello ').then(function () { // Note the space
+      scribeNode.sendKeys('Hello ').then(function () { // Note the space
         done();
       });
     });
 
     when('the user types ascii double quote', function () {
       beforeEach(function (done) {
-        scribe.sendKeys('"').then(function () {
+        scribeNode.sendKeys('"').then(function () {
           done();
         });
       });
 
       it('should insert an opening curly double quote instead', function (done) {
-        scribe.getInnerHTML().then(function (innerHTML) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
           // FIXME: failing, inserts nbsp!
           expect(innerHTML).to.equal('<p>Hello “</p>');
           done();
         });
       });
     });
+
   });
+
 });
