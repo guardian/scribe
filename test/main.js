@@ -17,13 +17,15 @@ var driver = new webdriver.Builder()
 
 
 function given() {
-  arguments[0] = 'given ' + arguments[0];
-  describe.apply(null, arguments);
+  var args = Object.create(arguments);
+  args[0] = 'given ' + args[0];
+  describe.apply(null, args);
 }
 
 function when() {
-  arguments[0] = 'when ' + arguments[0];
-  describe.apply(null, arguments);
+  var args = Object.create(arguments);
+  args[0] = 'when ' + args[0];
+  describe.apply(null, args);
 }
 
 /* global describe, it, after, afterEach, before, beforeEach */
