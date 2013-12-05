@@ -33,7 +33,7 @@ define([
             while (aNode.childNodes.length > 0) {
               aNode.parentNode.insertBefore(aNode.childNodes[0], aNode);
             }
-            aNode.remove();
+            aNode.parentNode.removeChild(aNode);
 
             scribe.pushHistory();
             scribe.trigger('content-changed');

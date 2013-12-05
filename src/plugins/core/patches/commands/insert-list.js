@@ -43,7 +43,7 @@ define([
               selection.placeMarkers();
               listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
               selection.selectMarkers(scribe.el);
-              listParentNode.remove();
+              listParentNode.parentNode.removeChild(listParentNode);
 
               scribe.pushHistory();
               scribe.trigger('content-changed');

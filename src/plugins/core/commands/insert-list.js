@@ -63,11 +63,11 @@ define([
           pNode.innerHTML = listItemNode.innerHTML;
 
           listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-          listItemNode.remove();
+          listItemNode.parentNode.removeChild(listItemNode);
 
           // If the list is now empty, clean it up.
           if (listNode.innerHTML === '') {
-            listNode.remove();
+            listNode.parentNode.removeChild(listNode);
           }
 
           selection.selectMarkers(scribe.el);
