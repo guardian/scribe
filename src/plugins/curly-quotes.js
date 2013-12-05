@@ -29,7 +29,7 @@ define([
 
         // If previous char is real content, close quote; else, open
         // TODO: annoying Chrome/Firefox
-        var currentChar = keys[event.keyCode || event.charCode];
+        var currentChar = keys[event.charCode];
         if (currentChar === '"') {
           if (wordBeforeSelectedRange()) {
             curlyChar = closeDoubleCurly;

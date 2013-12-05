@@ -61,7 +61,7 @@ define([
         lastChar = currentChar;
         // FIXME: Chrome / FF, theoretically we should be using event.key?
         //        can we abstract this madness?
-        currentChar = keys[event.keyCode || event.charCode];
+        currentChar = keys[event.charCode];
 
         var selection = new Selection();
 
