@@ -281,6 +281,19 @@ describe('curly quotes plugin', function () {
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
       beforeEach(function () {
+        scribe.sendKeys(webdriver.Key.RIGHT);
+      });
+
+      it('should not insert any content', function (done) {
+        scribe.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p><br></p>');
+          done();
+        });
+      });
+    });
+
+    when('the user presses the Right key', function () {
+      beforeEach(function () {
         scribe.sendKeys('"');
       });
 
