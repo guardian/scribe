@@ -197,9 +197,6 @@ describe('BR mode', function () {
     beforeEach(function (done) {
       driver.executeScript(function () {
         window.scribe.setHTML('1<br>2');
-
-        window.scribe.pushHistory();
-        window.scribe.trigger('content-changed');
       }).then(function () {
         done();
       });

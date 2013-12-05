@@ -26,9 +26,6 @@ define([
          */
         scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-        scribe.pushHistory();
-        scribe.trigger('content-changed');
-
         var selection = new Selection();
         selection.removeMarkers(scribe.el);
       }

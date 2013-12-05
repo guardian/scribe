@@ -40,7 +40,7 @@ define([
 
           if ((collapsedSelection && scribe.text() === '') || (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
-            scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
+            scribe.el.innerHTML = '<p><em class="scribe-marker"></em><br></p>';
 
             selection.selectMarkers(scribe.el);
 

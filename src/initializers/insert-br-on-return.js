@@ -85,8 +85,6 @@ define([
         // TODO: also append when consumer sets the content manually.
         // TODO: hide when the user calls `getHTML`?
         scribe.setHTML('<br>');
-        scribe.pushHistory();
-        scribe.trigger('content-changed');
       }
     };
   };

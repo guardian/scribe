@@ -112,6 +112,9 @@ define([
 
   Scribe.prototype.setHTML = function (html) {
     this.el.innerHTML = html;
+
+    this.pushHistory();
+    this.trigger('content-changed');
   };
 
   Scribe.prototype.text = function () {
@@ -127,7 +130,7 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem);
+    this.el.innerHTML = historyItem;
 
     // Restore the selection
     var selection = new Selection();
