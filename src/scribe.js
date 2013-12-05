@@ -102,6 +102,10 @@ define([
     this.trigger('content-changed');
   };
 
+  Scribe.prototype.getHTML = function () {
+    return this.el.innerHTML;
+  };
+
   Scribe.prototype.text = function () {
     return this.el.textContent.trim();
   };

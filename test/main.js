@@ -48,7 +48,7 @@ function initializeScribe(options) {
       scribe.on('content-changed', updateHTML);
 
       function updateHTML() {
-        document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
+        document.querySelector('.scribe-html').textContent = scribe.getHTML();
       }
 
       window.scribe = scribe;
