@@ -3,18 +3,13 @@ require({
   paths: {
     'event-emitter': '../bower_components/eventEmitter/EventEmitter',
     'html-janitor': '../bower_components/html-janitor/src/html-janitor',
+    'lodash': '../bower_components/lodash-amd/modern'
   },
   shim: {
     'event-emitter': {
       exports: 'EventEmitter'
     }
-  },
-  packages: [
-    {
-      name: 'lodash',
-      location: '../bower_components/lodash-amd/modern'
-    }
-  ]
+  }
 }, [
   'scribe',
   'api/selection',
