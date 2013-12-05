@@ -523,21 +523,6 @@ describe('curly quotes plugin', function () {
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
-          done();
-        });
-      });
-
-      it('should not insert any content', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p><br></p>');
-          done();
-        });
-      });
-    });
-
-    when('the user presses the Right key', function () {
-      beforeEach(function (done) {
         scribeNode.sendKeys('"').then(function () {
           done();
         });
@@ -546,6 +531,21 @@ describe('curly quotes plugin', function () {
       it('should insert an opening curly double quote instead', function (done) {
         scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>“<br></p>');
+          done();
+        });
+      });
+    });
+
+    when('the user presses the Right key', function () {
+      beforeEach(function (done) {
+        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
+          done();
+        });
+      });
+
+      it('should not insert any content', function (done) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p><br></p>');
           done();
         });
       });

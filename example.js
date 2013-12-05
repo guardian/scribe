@@ -20,8 +20,7 @@ require({
   'plugins/sanitizer',
   'plugins/toolbar',
   'plugins/smart-lists',
-  'plugins/curly-quotes',
-  'api/selection'
+  'plugins/curly-quotes'
 ], function (
   Scribe,
   Selection,
@@ -32,8 +31,7 @@ require({
   sanitizer,
   toolbar,
   smartLists,
-  curlyQuotes,
-  Selection
+  curlyQuotes
 ) {
 
   'use strict';
