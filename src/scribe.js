@@ -9,7 +9,7 @@ define([
   './api/command',
   './api/selection',
   './api/undo-manager',
-  'lodash/objects/defaults'
+  'lodash-modern/objects/defaults'
 ], function (
   EventEmitter,
   rootParagraphElement,
