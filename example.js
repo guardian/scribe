@@ -204,7 +204,11 @@ require({
 
   });
 
-  scribe.setHTML('<p>Hello, World!</p>');
+  if (scribe.allowsBlockElements()) {
+    scribe.setHTML('<p>Hello, World!</p>');
+  } else {
+    scribe.setHTML('Hello, World!');
+  }
 
   // Finally…
   scribe.initialize();
