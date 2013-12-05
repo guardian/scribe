@@ -30,7 +30,9 @@ define([
             range.insertNode(brNode);
             // After inserting the BR into the range is no longer collapsed, so
             // we have to collapse it again.
-            range.collapse();
+            // TODO: Older versions of Firefox require this argument even though
+            // it is supposed to be optional. Proxy/polyfill?
+            range.collapse(false);
 
             // If there is no right-hand side content, we have to insert an
             // additional BR in order for the line break to appear. Not to worry
