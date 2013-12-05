@@ -97,9 +97,6 @@ define([
 
   Scribe.prototype.setHTML = function (html) {
     this.el.innerHTML = html;
-
-    this.pushHistory();
-    this.trigger('content-changed');
   };
 
   Scribe.prototype.getHTML = function () {
@@ -130,7 +127,7 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.el.innerHTML = historyItem;
+    this.setHTML(historyItem);
 
     // Restore the selection
     var selection = new Selection();
@@ -142,6 +139,13 @@ define([
   // This will most likely be moved to another object eventually
   Scribe.prototype.allowsBlockElements = function () {
     return this.options.allowBlockElements;
+  };
+
+  Scribe.prototype.setContent = function (content) {
+    this.setHTML(content);
+
+    this.pushHistory();
+    this.trigger('content-changed');
   };
 
   return Scribe;

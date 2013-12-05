@@ -205,9 +205,9 @@ require({
   });
 
   if (scribe.allowsBlockElements()) {
-    scribe.setHTML('<p>Hello, World!</p>');
+    scribe.setContent('<p>Hello, World!</p>');
   } else {
-    scribe.setHTML('Hello, World!');
+    scribe.setContent('Hello, World!');
   }
 
   // Finally…
