@@ -19,7 +19,8 @@ require({
   'plugins/toolbar',
   'plugins/smart-list',
   'plugins/curly-quotes',
-  'api/command'
+  'api/command',
+  'api/selection'
 ], function (
   Scribe,
   blockquoteCommand,
@@ -30,7 +31,8 @@ require({
   toolbar,
   smartList,
   curlyQuotes,
-  Command
+  Command,
+  Selection
 ) {
 
   'use strict';
@@ -59,8 +61,8 @@ require({
 
   function showOrHideInlineToolbar() {
     // TODO: use internal API for getting range
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
+    var selection = new Selection();
+    var range = selection.range;
 
     if (range.commonAncestorContainer.textContent && ! selection.selection.isCollapsed) {
       var boundary = range.getClientRects()[0];
