@@ -95,21 +95,6 @@ define([
     return this;
   };
 
-  Scribe.prototype.getHTML = function () {
-    var selection = new Selection();
-
-    var html;
-    if (selection.range) {
-      selection.placeMarkers();
-      html = this.el.innerHTML;
-      selection.removeMarkers(this.el);
-    } else {
-      html = this.el.innerHTML;
-    }
-
-    return html;
-  };
-
   Scribe.prototype.setHTML = function (html) {
     this.el.innerHTML = html;
 
@@ -122,7 +107,18 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    this.undoManager.push(this.getHTML());
+    var selection = new Selection();
+
+    var html;
+    if (selection.range) {
+      selection.placeMarkers();
+      html = this.el.innerHTML;
+      selection.removeMarkers(this.el);
+    } else {
+      html = this.el.innerHTML;
+    }
+
+    this.undoManager.push(html);
   };
 
   Scribe.prototype.getCommand = function (commandName) {
