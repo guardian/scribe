@@ -34,9 +34,26 @@ define([
             // it is supposed to be optional. Proxy/polyfill?
             range.collapse(false);
 
-            // If there is no right-hand side content, we have to insert an
-            // additional BR in order for the line break to appear. Not to worry
-            // as this is replaced as soon as the user begins typing.
+            /**
+             * Chrome: If there is no right-hand side content, inserting a BR
+             * will not appear to create a line break.
+             * Firefox: If there is no right-hand side content, inserting a BR
+             * will appear to create a weird "half-line break".
+             * Possible solution: Insert two BRs.
+             *
+             * ✓ Chrome: Inserting two BRs appears to create a line break.
+             * Typing will then delete the bogus BR element.
+             * Firefox: Inserting two BRs will create two line breaks.
+             * Possible solution: Only insert two BRs if there is no right-hand
+             * side content.
+             *
+             * If the user types on a line immediately after a BR element,
+             * Chrome will replace the BR element with the typed characters,
+             * whereas Firefox will not. Thus, to satisfy Firefox we have to
+             * insert a bogus BR element on initialization (see below).
+             */
+
+            // If there is not already a bogus BR element, insert one.
             var endNode;
             if (! brNode.nextElementSibling) {
               var caretBrNode = document.createElement('br');
@@ -64,6 +81,10 @@ define([
       }.bind(this));
 
       if (scribe.getHTML() === '') {
+        // Bogus BR element for Firefox — see explanation above.
+        // TODO: also append when consumer sets the content manually.
+        // TODO: hide when the user calls `getHTML`?
+        scribe.setHTML('<br>');
         scribe.pushHistory();
         scribe.trigger('content-changed');
       }
