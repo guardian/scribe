@@ -193,7 +193,6 @@ describe('BR mode', function () {
   });
 
   given('content of "1<br>2"', function () {
-
     beforeEach(function (done) {
       driver.executeScript(function () {
         window.scribe.setContent('1<br>2');
@@ -239,7 +238,6 @@ describe('BR mode', function () {
         });
       });
     });
-
   });
 
   given('content of "<i>1</i>', function () {
