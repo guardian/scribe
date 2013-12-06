@@ -54,6 +54,20 @@ define([
         }
       };
 
+      /**
+       * There is a bug where performing the link command on/inside an existing
+       * link will not remove the original A element. This can be fixed by for
+       * now we just disable this command if the user is inside of a link.
+       */
+      linkPromptCommand.queryEnabled = function () {
+        var selection = new Selection();
+        var anchorNode = selection.getContaining(function (node) {
+          return node.nodeName === nodeName;
+        });
+
+        return SimpleCommand.prototype.queryEnabled.call(this) && ! anchorNode;
+      };
+
       scribe.commands.linkPrompt = linkPromptCommand;
     };
   };
