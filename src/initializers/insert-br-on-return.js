@@ -53,15 +53,16 @@ define([
              * insert a bogus BR element on initialization (see below).
              */
 
+            var contentToEndRange = range.cloneRange();
+            contentToEndRange.setEndAfter(scribe.el.lastElementChild, 0);
+
+            // Get the content from the range to the end of the heading
+            var contentToEndFragment = contentToEndRange.cloneContents();
+
             // If there is not already a right hand side content we need to
             // insert a bogus BR element.
-            // This brittle if statement tests whether this is any right-hand
-            // side content. This is awkward because the caret could be
-            // inside if an inline element, i.e. a B.
-            // FIXME: find a better way to check for right-hand side content
             var endNode;
-            if ((brNode.parentNode === scribe.el && ! brNode.nextElementSibling)
-              || (brNode.parentNode !== scribe.el && ! brNode.parentNode.nextElementSibling)) {
+            if (! contentToEndFragment.childNodes.length) {
               var caretBrNode = document.createElement('br');
               endNode = caretBrNode;
               range.insertNode(caretBrNode);
