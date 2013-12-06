@@ -24,6 +24,8 @@
 * When applying the link command to an existing link, it does not clean up old
   A elements. This has been temporarily fixed by disabling the command when the
   selection contains an A element.
+* When executing the remove format command, sometimes the selected inline
+  elements remain. Related to the bug above (caused by inserting markers).
 * If Scribe.setContent is called without a reference to a marker, performing
   an undo to the original content will place the caret outside of the P element.
 
