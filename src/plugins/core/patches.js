@@ -9,7 +9,7 @@ define([
   indentCommand,
   insertListCommands,
   outdentCommand,
-  emptyEditorWhenDeleting
+  emptyWhenDeleting
 ) {
 
   'use strict';
@@ -21,7 +21,7 @@ define([
       insertList: insertListCommands,
       outdent: outdentCommand
     },
-    emptyEditorWhenDeleting: emptyEditorWhenDeleting
+    emptyWhenDeleting: emptyWhenDeleting
   };
 
 });

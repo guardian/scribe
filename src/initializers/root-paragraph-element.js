@@ -24,10 +24,7 @@ define([
          * We also have to define a marker because otherwise the selection will
          * not be restored when we undo.
          */
-        scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
-
-        scribe.pushHistory();
-        scribe.trigger('content-changed');
+        scribe.setContent('<p><em class="scribe-marker"></em><br></p>');
 
         var selection = new Selection();
         selection.removeMarkers(scribe.el);

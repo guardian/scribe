@@ -21,7 +21,7 @@ define([
 
       blockquoteCommand.queryEnabled = function () {
         var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
-        return command.queryEnabled();
+        return scribe.allowsBlockElements() && command.queryEnabled();
       };
 
       scribe.commands.blockquote = blockquoteCommand;

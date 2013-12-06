@@ -1,23 +1,27 @@
 define([
   'event-emitter',
   './initializers/root-paragraph-element',
+  './initializers/insert-br-on-return',
   './plugins/core/commands',
   './plugins/core/formatters',
   './plugins/core/patches',
   './plugins/core/shame',
   './api/command',
   './api/selection',
-  './api/undo-manager'
+  './api/undo-manager',
+  'lodash-modern/objects/defaults'
 ], function (
   EventEmitter,
   rootParagraphElement,
+  insertBrOnReturn,
   commands,
   formatters,
   patches,
   shame,
   Command,
   Selection,
-  UndoManager
+  UndoManager,
+  defaults
 ) {
 
   'use strict';
@@ -25,7 +29,9 @@ define([
   function Scribe(el, options) {
     this.el = el;
     this.commands = {};
-    this.options = options || {};
+    this.options = defaults(options || {}, {
+      allowBlockElements: true
+    });
     this.patchedCommands = {};
     this.initializers = [];
 
@@ -40,9 +46,14 @@ define([
      * Core Plugins
      */
 
-    this.use(commands.insertList());
-    this.use(commands.redo());
-    this.use(commands.undo());
+    // FIXME: event order matters
+    if (this.allowsBlockElements()) {
+      // P mode
+      this.addInitializer(rootParagraphElement());
+    } else {
+      // BR mode
+      this.addInitializer(insertBrOnReturn());
+    }
 
     this.use(formatters());
 
@@ -51,13 +62,15 @@ define([
     this.use(patches.commands.indent());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
-    this.use(patches.emptyEditorWhenDeleting());
+    if (this.allowsBlockElements()) {
+      this.use(patches.emptyWhenDeleting());
+    }
+
+    this.use(commands.insertList());
+    this.use(commands.redo());
+    this.use(commands.undo());
 
     this.use(shame());
-
-    if (this.options.paragraphs) {
-      this.addInitializer(rootParagraphElement());
-    }
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
@@ -82,7 +95,19 @@ define([
     return this;
   };
 
+  Scribe.prototype.setHTML = function (html) {
+    this.el.innerHTML = html;
+  };
+
   Scribe.prototype.getHTML = function () {
+    return this.el.innerHTML;
+  };
+
+  Scribe.prototype.text = function () {
+    return this.el.textContent.trim();
+  };
+
+  Scribe.prototype.pushHistory = function () {
     var selection = new Selection();
 
     var html;
@@ -94,19 +119,7 @@ define([
       html = this.el.innerHTML;
     }
 
-    return html;
-  };
-
-  Scribe.prototype.setHTML = function (html) {
-    this.el.innerHTML = html;
-  };
-
-  Scribe.prototype.text = function () {
-    return this.el.textContent.trim();
-  };
-
-  Scribe.prototype.pushHistory = function () {
-    this.undoManager.push(this.getHTML());
+    this.undoManager.push(html);
   };
 
   Scribe.prototype.getCommand = function (commandName) {
@@ -120,6 +133,18 @@ define([
     var selection = new Selection();
     selection.selectMarkers(this.el);
 
+    this.trigger('content-changed');
+  };
+
+  // This will most likely be moved to another object eventually
+  Scribe.prototype.allowsBlockElements = function () {
+    return this.options.allowBlockElements;
+  };
+
+  Scribe.prototype.setContent = function (content) {
+    this.setHTML(content);
+
+    this.pushHistory();
     this.trigger('content-changed');
   };
 

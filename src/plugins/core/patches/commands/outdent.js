@@ -42,7 +42,7 @@ define([
 
           // Delete the BLOCKQUOTE if it's empty
           if (blockquoteNode.innerText === '') {
-            blockquoteNode.remove();
+            blockquoteNode.parentNode.removeChild(blockquoteNode);
           }
         } else {
           /**
@@ -83,7 +83,7 @@ define([
 
             // If the BLOCKQUOTE is now empty, clean it up.
             if (blockquoteNode.innerHTML === '') {
-              blockquoteNode.remove();
+              blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
           }
 

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "eventEmitter": "~4.2.6",
-    "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.1.0"
+    "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#v0.1.0",
+    "lodash-amd": "~2.4.0"
   }
 }

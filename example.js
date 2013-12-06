@@ -2,7 +2,8 @@ require({
   baseUrl: './src',
   paths: {
     'event-emitter': '../bower_components/eventEmitter/EventEmitter',
-    'html-janitor': '../bower_components/html-janitor/src/html-janitor'
+    'html-janitor': '../bower_components/html-janitor/src/html-janitor',
+    'lodash-modern': '../bower_components/lodash-amd/modern'
   },
   shim: {
     'event-emitter': {
@@ -11,38 +12,36 @@ require({
   }
 }, [
   'scribe',
+  'api/selection',
   'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
   'plugins/link-prompt-command',
   'plugins/sanitizer',
   'plugins/toolbar',
-  'plugins/smart-list',
-  'plugins/curly-quotes',
-  'api/command',
-  'api/selection'
+  'plugins/smart-lists',
+  'plugins/curly-quotes'
 ], function (
   Scribe,
+  Selection,
   blockquoteCommand,
   headingCommand,
   intelligentUnlinkCommand,
   linkPromptCommand,
   sanitizer,
   toolbar,
-  smartList,
-  curlyQuotes,
-  Command,
-  Selection
+  smartLists,
+  curlyQuotes
 ) {
 
   'use strict';
 
-  var scribe = new Scribe(document.querySelector('.scribe'), { paragraphs: true });
+  var scribe = new Scribe(document.querySelector('.scribe'), { allowBlockElements: true });
 
   scribe.on('content-changed', updateHTML);
 
   function updateHTML() {
-    document.querySelector('.scribe-html').textContent = scribe.el.innerHTML;
+    document.querySelector('.scribe-html').textContent = scribe.getHTML();
   }
 
   /**
@@ -103,7 +102,7 @@ require({
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
     scribe.use(toolbar(toolbarNode));
   });
-  scribe.use(smartList());
+  scribe.use(smartLists());
   scribe.use(curlyQuotes());
 
   /**
@@ -115,19 +114,21 @@ require({
    * so things like italic are not defined.
    */
 
-  document.addEventListener('keydown', function (event) {
+  scribe.el.addEventListener('keydown', function (event) {
     var command;
-    if (event.metaKey && event.keyCode === 66) { // b
+    var ctrlKey = event.metaKey || event.ctrlKey;
+
+    if (ctrlKey && event.keyCode === 66) { // b
       command = scribe.getCommand('bold');
-    } else if (event.metaKey && event.keyCode === 73) { // i
+    } else if (ctrlKey && event.keyCode === 73) { // i
       command = scribe.getCommand('italic');
     } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
       command = scribe.getCommand('strikethrough');
     } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
       command = scribe.getCommand('removeFormat');
-    } else if (event.metaKey && ! event.shiftKey && event.keyCode === 75) { // k
+    } else if (ctrlKey && ! event.shiftKey && event.keyCode === 75) { // k
       command = scribe.getCommand('linkPrompt');
-    } else if (event.metaKey && event.shiftKey && event.keyCode === 75) { // k
+    } else if (ctrlKey && event.shiftKey && event.keyCode === 75) { // k
       command = scribe.getCommand('unlink');
     } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
       command = scribe.getCommand('insertUnorderedList');
@@ -135,7 +136,7 @@ require({
       command = scribe.getCommand('insertOrderedList');
     } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
       command = scribe.getCommand('blockquote');
-    } else if (event.metaKey && event.keyCode === 50) { // 2
+    } else if (ctrlKey && event.keyCode === 50) { // 2
       command = scribe.getCommand('h2');
     }
 
@@ -203,7 +204,11 @@ require({
 
   });
 
-  scribe.setHTML('<p>Hello, World!</p>');
+  if (scribe.allowsBlockElements()) {
+    scribe.setContent('<p>Hello, World!</p>');
+  } else {
+    scribe.setContent('Hello, World!');
+  }
 
   // Finally…
   scribe.initialize();

@@ -63,11 +63,11 @@ define([
           pNode.innerHTML = listItemNode.innerHTML;
 
           listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-          listItemNode.remove();
+          listItemNode.parentNode.removeChild(listItemNode);
 
           // If the list is now empty, clean it up.
           if (listNode.innerHTML === '') {
-            listNode.remove();
+            listNode.parentNode.removeChild(listNode);
           }
 
           selection.selectMarkers(scribe.el);
@@ -79,10 +79,12 @@ define([
         }
       };
 
-      if (scribe.options.paragraphs) {
-        scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
-        scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
-      }
+      InsertListCommand.prototype.queryEnabled = function () {
+        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
+      };
+
+      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
+      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
     };
   };
 

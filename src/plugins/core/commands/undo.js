@@ -19,13 +19,14 @@ define([
       };
 
       undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 0;
+        return scribe.undoManager.position > 1;
       };
 
       scribe.patchedCommands.undo = undoCommand;
 
       scribe.el.addEventListener('keydown', function (event) {
-        if (event.metaKey && event.keyCode === 90) {
+        // TODO: use lib to abstract meta/ctrl keys?
+        if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
           event.preventDefault();
           undoCommand.execute();
         }

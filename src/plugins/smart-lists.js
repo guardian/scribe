@@ -22,7 +22,7 @@ define([
       var selection = new Selection();
       var container = selection.range.commonAncestorContainer;
       if (container.nodeType === Node.TEXT_NODE) {
-        container.remove();
+        container.parentNode.removeChild(container);
       } else {
         throw new Error('Cannot empty non-text node!');
       }

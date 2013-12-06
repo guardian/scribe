@@ -20,6 +20,7 @@
     the inserted end marker.
 * Bold is disabled when heading is selected, but not when a heading is the child
   of the range (instead of a container).
+* An item is pushed to the undo manager every time an empty editor is emptied.
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV

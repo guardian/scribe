@@ -42,7 +42,8 @@ define([
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return SimpleCommand.prototype.queryEnabled.apply(this, arguments) && ! listNode;
+        return SimpleCommand.prototype.queryEnabled.apply(this, arguments)
+          && scribe.allowsBlockElements() && ! listNode;
       };
 
       scribe.commands[commandName] = headingCommand;
