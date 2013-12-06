@@ -29,27 +29,29 @@ define([
         // FIXME: I don't like how plugins like this do so much. Is there a way
         // to compose?
 
-        // Prepend href protocol if missing
-        // For emails we just look for a `@` symbol as it is easier.
-        if (! /^mailto\:/.test(link) && /@/.test(link)) {
-          var shouldPrefixEmail = window.confirm(
-            'The URL you entered appears to be an email address. ' +
-            'Do you want to add the required “mailto:” prefix?'
-          );
-          if (shouldPrefixEmail) {
-            link = 'mailto:' + link;
+        if (link) {
+          // Prepend href protocol if missing
+          // For emails we just look for a `@` symbol as it is easier.
+          if (! /^mailto\:/.test(link) && /@/.test(link)) {
+            var shouldPrefixEmail = window.confirm(
+              'The URL you entered appears to be an email address. ' +
+              'Do you want to add the required “mailto:” prefix?'
+            );
+            if (shouldPrefixEmail) {
+              link = 'mailto:' + link;
+            }
+          } else if (! /^https?\:\/\//.test(link)) {
+            var shouldPrefixLink = window.confirm(
+              'The URL you entered appears to be a link. ' +
+              'Do you want to add the required “http://” prefix?'
+            );
+            if (shouldPrefixLink) {
+              link = 'http://' + link;
+            }
           }
-        } else if (! /^https?\:\/\//.test(link)) {
-          var shouldPrefixLink = window.confirm(
-            'The URL you entered appears to be a link. ' +
-            'Do you want to add the required “http://” prefix?'
-          );
-          if (shouldPrefixLink) {
-            link = 'http://' + link;
-          }
-        }
 
-        SimpleCommand.prototype.execute.call(this, link);
+          SimpleCommand.prototype.execute.call(this, link);
+        }
       };
 
       scribe.commands.linkPrompt = linkPromptCommand;
