@@ -242,6 +242,39 @@ describe('BR mode', function () {
 
   });
 
+  given('content of "<i>1</i>', function () {
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        window.scribe.setContent('<i>1</i>');
+      }).then(function () {
+        done();
+      });
+    });
+
+    when('the user places their caret at the end of a line', function () {
+      beforeEach(function (done) {
+        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
+          done();
+        });
+      });
+
+      when('the user presses ENTER', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+            done();
+          });
+        });
+
+        it.skip('should insert a BR element after the content', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<i>1</i><br>');
+            done();
+          });
+        });
+      });
+    });
+  });
+
   given('no content', function () {
 
     when('the user types', function () {
