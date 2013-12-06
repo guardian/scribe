@@ -21,6 +21,11 @@
 * Bold is disabled when heading is selected, but not when a heading is the child
   of the range (instead of a container).
 * An item is pushed to the undo manager every time an empty editor is emptied.
+* When applying the link command to an existing link, it does not clean up old
+  A elements. This has been temporarily fixed by disabling the command when the
+  selection contains an A element.
+* If Scribe.setContent is called without a reference to a marker, performing
+  an undo to the original content will place the caret outside of the P element.
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV
