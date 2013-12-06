@@ -1,7 +1,7 @@
 {
   "name": "scribe",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.4",
   "devDependencies": {
     "chai": "~1.8.1",
     "mocha": "~1.14.0",
