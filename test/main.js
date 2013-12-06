@@ -326,7 +326,7 @@ describe('BR mode', function () {
 
 });
 
-describe('toolbar', function () {
+describe('commands', function () {
 
   beforeEach(function (done) {
     initializeScribe().then(function () {
@@ -336,34 +336,41 @@ describe('toolbar', function () {
 
   beforeEach(function (done) {
     driver.executeScript(function () {
-      require(['plugins/toolbar'], function (toolbar) {
-        window.scribe.use(toolbar(document.querySelector('.toolbar')));
-        window.scribe.initialize();
-      });
+      window.scribe.initialize();
     }).then(function () {
       done();
     });
   });
 
-  when('the user clicks the bold button in the toolbar and then types', function () {
-
+  describe('bold', function () {
     beforeEach(function (done) {
       scribeNode.click();
-      driver.findElement(webdriver.By.id('bold-button')).click();
-      scribeNode.sendKeys('1').then(function () {
+
+      driver.executeScript(function () {
+        var boldCommand = window.scribe.getCommand('bold');
+        boldCommand.execute();
+      }).then(function () {
         done();
       });
     });
 
-    it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<p><b>1</b></p>');
-        done();
+    given('an empty editor', function () {
+      when('the user types', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys('1').then(function () {
+            done();
+          });
+        });
+
+        it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<p><b>1</b></p>');
+            done();
+          });
+        });
       });
     });
-
   });
-
 });
 
 describe('smart lists plugin', function () {
