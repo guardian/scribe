@@ -341,29 +341,77 @@ describe('commands', function () {
   });
 
   describe('bold', function () {
-    beforeEach(function (done) {
-      scribeNode.click();
-
-      driver.executeScript(function () {
-        var boldCommand = window.scribe.getCommand('bold');
-        boldCommand.execute();
-      }).then(function () {
-        done();
-      });
-    });
-
     given('an empty editor', function () {
-      when('the user types', function () {
+      when('the command is executed', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys('1').then(function () {
+          scribeNode.click();
+
+          driver.executeScript(function () {
+            var boldCommand = window.scribe.getCommand('bold');
+            boldCommand.execute();
+          }).then(function () {
             done();
           });
         });
 
-        it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<p><b>1</b></p>');
+        when('the user types', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys('1').then(function () {
+              done();
+            });
+          });
+
+          it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p><b>1</b></p>');
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('removeFormat', function () {
+    given('content of "<i>1</i>"', function () {
+      beforeEach(function (done) {
+        driver.executeScript(function () {
+          window.scribe.setContent('<i>1</i>');
+        }).then(function () {
+          done();
+        });
+      });
+
+      when('all the content is selected', function () {
+        beforeEach(function (done) {
+          var selectAll = new webdriver.ActionSequence(driver)
+            .click(scribeNode)
+            .keyDown(webdriver.Key.SHIFT)
+            .sendKeys(webdriver.Key.RIGHT)
+            .perform();
+
+          selectAll.then(function () {
             done();
+          });
+        });
+
+        when('the command is executed', function () {
+          beforeEach(function (done) {
+            scribeNode.click();
+
+            driver.executeScript(function () {
+              var removeFormatCommand = window.scribe.getCommand('removeFormat');
+              removeFormatCommand.execute();
+            }).then(function () {
+              done();
+            });
+          });
+
+          it('should remove the formatting', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('1');
+              done();
+            });
           });
         });
       });
