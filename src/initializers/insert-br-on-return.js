@@ -53,9 +53,15 @@ define([
              * insert a bogus BR element on initialization (see below).
              */
 
-            // If there is not already a bogus BR element, insert one.
+            // If there is not already a right hand side content we need to
+            // insert a bogus BR element.
+            // This brittle if statement tests whether this is any right-hand
+            // side content. This is awkward because the caret could be
+            // inside if an inline element, i.e. a B.
+            // FIXME: find a better way to check for right-hand side content
             var endNode;
-            if (! brNode.nextElementSibling) {
+            if ((brNode.parentNode === scribe.el && ! brNode.nextElementSibling)
+              || (brNode.parentNode !== scribe.el && ! brNode.parentNode.nextElementSibling)) {
               var caretBrNode = document.createElement('br');
               endNode = caretBrNode;
               range.insertNode(caretBrNode);
