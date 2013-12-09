@@ -142,6 +142,13 @@ define([
   };
 
   Scribe.prototype.setContent = function (content) {
+    if (! this.allowsBlockElements()) {
+      // Bogus BR element for Firefox — see explanation in BR mode files.
+      // TODO: also append when consumer sets the content manually.
+      // TODO: hide when the user calls `getHTML`?
+      content = content + '<br>';
+    }
+
     this.setHTML(content);
 
     this.pushHistory();

@@ -201,6 +201,13 @@ describe('BR mode', function () {
       });
     });
 
+    it('should append a bogus BR to the content', function (done) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('1<br>2<br>');
+        done();
+      });
+    });
+
     when('the user places their caret at the end of a line', function () {
       beforeEach(function (done) {
         scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
@@ -217,7 +224,7 @@ describe('BR mode', function () {
 
         it('should create a new line by inserting a BR element', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br><br>2');
+            expect(innerHTML).to.equal('1<br><br>2<br>');
             done();
           });
         });
@@ -231,7 +238,7 @@ describe('BR mode', function () {
 
           it('should insert the typed characters on the new line', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('1<br>3<br>2');
+              expect(innerHTML).to.equal('1<br>3<br>2<br>');
               done();
             });
           });
@@ -274,9 +281,14 @@ describe('BR mode', function () {
   });
 
   given('no content', function () {
+    it('should append a bogus BR to the content', function (done) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('<br>');
+        done();
+      });
+    });
 
     when('the user types', function () {
-
       beforeEach(function (done) {
         scribeNode.sendKeys('1').then(function () {
           done();
