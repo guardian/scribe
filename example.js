@@ -20,7 +20,8 @@ require({
   'plugins/sanitizer',
   'plugins/toolbar',
   'plugins/smart-lists',
-  'plugins/curly-quotes'
+  'plugins/curly-quotes',
+  'plugins/keyboard-shortcuts'
 ], function (
   Scribe,
   Selection,
@@ -31,7 +32,8 @@ require({
   sanitizer,
   toolbar,
   smartLists,
-  curlyQuotes
+  curlyQuotes,
+  keyboardShortcuts
 ) {
 
   'use strict';
@@ -107,47 +109,24 @@ require({
 
   /**
    * Keyboard shortcuts
-   *
-   * TODO: should this be defined *with* the command instead? If we did that,
-   * how do we separate the core patches we have for commands (i.e. bold) from
-   * stuff that is configurable. Also, currently we rely on native commands,
-   * so things like italic are not defined.
    */
 
-  scribe.el.addEventListener('keydown', function (event) {
-    var command;
-    var ctrlKey = event.metaKey || event.ctrlKey;
+  var ctrlKey = function (event) { return event.metaKey || event.ctrlKey; };
 
-    if (ctrlKey && event.keyCode === 66) { // b
-      command = scribe.getCommand('bold');
-    } else if (ctrlKey && event.keyCode === 73) { // i
-      command = scribe.getCommand('italic');
-    } else if (event.altKey && event.shiftKey && event.keyCode === 83) { // s
-      command = scribe.getCommand('strikethrough');
-    } else if (event.altKey && event.shiftKey && event.keyCode === 65) { // a
-      command = scribe.getCommand('removeFormat');
-    } else if (ctrlKey && ! event.shiftKey && event.keyCode === 75) { // k
-      command = scribe.getCommand('linkPrompt');
-    } else if (ctrlKey && event.shiftKey && event.keyCode === 75) { // k
-      command = scribe.getCommand('unlink');
-    } else if (event.altKey && event.shiftKey && event.keyCode === 66) { // b
-      command = scribe.getCommand('insertUnorderedList');
-    } else if (event.altKey && event.shiftKey && event.keyCode === 78) { // n
-      command = scribe.getCommand('insertOrderedList');
-    } else if (event.altKey && event.shiftKey && event.keyCode === 87) { // w
-      command = scribe.getCommand('blockquote');
-    } else if (ctrlKey && event.keyCode === 50) { // 2
-      command = scribe.getCommand('h2');
-    }
-
-    if (command) {
-      event.preventDefault();
-
-      if (command.queryEnabled()) {
-        command.execute();
-      }
-    }
+  var commandsToKeyboardShortcutsMap = Object.freeze({
+    bold: function (event) { return event.metaKey && event.keyCode === 66; }, // b
+    italic: function (event) { return event.metaKey && event.keyCode === 73; }, // i
+    strikeThrough: function (event) { return event.altKey && event.shiftKey && event.keyCode === 83; }, // s
+    removeFormat: function (event) { return event.altKey && event.shiftKey && event.keyCode === 65; }, // a
+    linkPrompt: function (event) { return event.metaKey && ! event.shiftKey && event.keyCode === 75; }, // k
+    unlink: function (event) { return event.metaKey && event.shiftKey && event.keyCode === 75; }, // k,
+    insertUnorderedList: function (event) { return event.altKey && event.shiftKey && event.keyCode === 66; }, // b
+    insertOrderedList: function (event) { return event.altKey && event.shiftKey && event.keyCode === 78; }, // n
+    blockquote: function (event) { return event.altKey && event.shiftKey && event.keyCode === 87; }, // w
+    h2: function (event) { return ctrlKey(event) && event.keyCode === 50; }, // 2
   });
+
+  scribe.use(keyboardShortcuts(commandsToKeyboardShortcutsMap));
 
   /**
    * Rename nodes
