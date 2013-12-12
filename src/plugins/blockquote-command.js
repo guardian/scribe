@@ -32,7 +32,7 @@ define([
           return element.nodeName === 'BLOCKQUOTE';
         });
 
-        return scribe.allowsBlockElements() && blockquoteElement;
+        return scribe.allowsBlockElements() && !! blockquoteElement;
       };
 
       scribe.commands.blockquote = blockquoteCommand;
