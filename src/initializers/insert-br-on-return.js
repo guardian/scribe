@@ -87,7 +87,7 @@ define([
         }
       }.bind(this));
 
-      if (scribe.getHTML() === '') {
+      if (scribe.getHTML().trim() === '') {
         // Bogus BR element for Firefox — see explanation above.
         // TODO: also append when consumer sets the content manually.
         // TODO: hide when the user calls `getHTML`?
