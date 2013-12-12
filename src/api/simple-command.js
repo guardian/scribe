@@ -19,7 +19,7 @@ define([
 
   SimpleCommand.prototype.queryState = function () {
     var selection = new Selection();
-    return !! selection.getContaining(function (node) {
+    return Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
       return node.nodeName === this.nodeName;
     }.bind(this));
   };
