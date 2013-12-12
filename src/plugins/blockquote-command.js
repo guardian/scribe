@@ -1,7 +1,9 @@
 define([
-  '../api/simple-command'
+  '../api/simple-command',
+  '../api/selection'
 ], function (
-  SimpleCommand
+  SimpleCommand,
+  Selection
 ) {
 
   /**
@@ -21,7 +23,16 @@ define([
 
       blockquoteCommand.queryEnabled = function () {
         var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
-        return scribe.allowsBlockElements() && command.queryEnabled();
+        return command.queryEnabled();
+      };
+
+      blockquoteCommand.queryState = function () {
+        var selection = new Selection();
+        var blockquoteElement = selection.getContaining(function (element) {
+          return element.nodeName === 'BLOCKQUOTE';
+        });
+
+        return scribe.allowsBlockElements() && blockquoteElement;
       };
 
       scribe.commands.blockquote = blockquoteCommand;
