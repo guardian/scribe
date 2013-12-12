@@ -78,7 +78,7 @@ define([
             }
 
             selection.placeMarkers();
-            scribe.el.insertBefore(pNode, blockquoteNode.nextElementSibling);
+            blockquoteNode.parentNode.insertBefore(pNode, blockquoteNode.nextElementSibling);
             selection.selectMarkers(scribe.el);
 
             // If the BLOCKQUOTE is now empty, clean it up.
@@ -86,8 +86,6 @@ define([
               blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
           }
-
-          CommandPatch.prototype.execute.call(this, value);
         }
 
         scribe.pushHistory();
