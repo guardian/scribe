@@ -44,12 +44,14 @@ define([
       };
 
       quoteCommand.queryState = function () {
+        var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
+
         var selection = new Selection();
         var blockquoteElement = selection.getContaining(function (element) {
           return element.nodeName === 'BLOCKQUOTE';
         });
 
-        return blockquoteElement && blockquoteElement.classList.toString() === 'quote';
+        return command.queryState() && blockquoteElement && blockquoteElement.classList.toString() === 'quote';
       };
 
       scribe.commands.quote = quoteCommand;
