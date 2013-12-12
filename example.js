@@ -13,7 +13,7 @@ require({
 }, [
   'scribe',
   'api/selection',
-  'plugins/quote-command',
+  'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
   'plugins/link-prompt-command',
@@ -25,7 +25,7 @@ require({
 ], function (
   Scribe,
   Selection,
-  quoteCommand,
+  blockquoteCommand,
   headingCommand,
   intelligentUnlinkCommand,
   linkPromptCommand,
@@ -81,7 +81,7 @@ require({
    * Plugins
    */
 
-  scribe.use(quoteCommand());
+  scribe.use(blockquoteCommand());
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
