@@ -65,6 +65,10 @@ define([
         scribe.trigger('content-changed');
       };
 
+      indentCommand.queryEnabled = function () {
+        return scribe.allowsBlockElements() && CommandPatch.prototype.queryEnabled.call(this);
+      };
+
       scribe.patchedCommands.indent = indentCommand;
     };
   };
