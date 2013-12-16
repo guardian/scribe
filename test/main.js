@@ -174,6 +174,16 @@ describe('P mode', function () {
     });
   });
 
+  describe.skip('#getHTML()', function () {
+    it('should return an empty P element', function (done) {
+      driver.executeScript(function () {
+        return window.scribe.getHTML();
+      }).then(function (html) {
+        expect(html).to.equal('<p></p>');
+        done();
+      });
+    });
+  });
 });
 
 describe('BR mode', function () {
@@ -334,6 +344,16 @@ describe('BR mode', function () {
     });
   });
 
+  describe.skip('#getHTML()', function () {
+    it('should return an empty string', function (done) {
+      driver.executeScript(function () {
+        return window.scribe.getHTML();
+      }).then(function (html) {
+        expect(html).to.equal('');
+        done();
+      });
+    });
+  });
 });
 
 describe('commands', function () {
