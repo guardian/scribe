@@ -103,7 +103,7 @@ define([
     return this.el.innerHTML;
   };
 
-  Scribe.prototype.text = function () {
+  Scribe.prototype.getTextContent = function () {
     return this.el.textContent.trim();
   };
 
