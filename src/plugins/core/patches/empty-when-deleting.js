@@ -38,7 +38,7 @@ define([
           var collapsedSelection = selection.selection.isCollapsed;
           var allContentSelected = isRangeAllContent(selection.range);
 
-          if ((collapsedSelection && scribe.getTextContent() === '') || (! collapsedSelection && allContentSelected)) {
+          if ((collapsedSelection && scribe.getTextContent().trim() === '') || (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
             scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 

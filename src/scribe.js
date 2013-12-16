@@ -104,7 +104,7 @@ define([
   };
 
   Scribe.prototype.getTextContent = function () {
-    return this.el.textContent.trim();
+    return this.el.textContent;
   };
 
   Scribe.prototype.pushHistory = function () {
