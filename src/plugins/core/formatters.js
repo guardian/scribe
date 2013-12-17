@@ -9,7 +9,16 @@ define([
   return function () {
     return function (scribe) {
 
-      scribe.formatters = [];
+      scribe.formatter = {
+        formatters: [],
+        format: function (html) {
+          var formattedHTML = scribe.formatter.formatters.reduce(function (formattedData, formatter) {
+            return formatter(formattedData);
+          }, html);
+
+          return formattedHTML;
+        }
+      };
 
       /**
        * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
@@ -27,7 +36,7 @@ define([
           // TODO: what data should we be getting?
           data = event.clipboardData.getData('text/html') || event.clipboardData.getData('text/plain');
 
-          formatAndInsert(data);
+          document.execCommand('insertHTML', null, scribe.formatter.format(data));
         } else {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
@@ -62,18 +71,10 @@ define([
             // Restore the caret position
             selection.selectMarkers(scribe.el);
 
-            formatAndInsert(data);
+            document.execCommand('insertHTML', null, scribe.formatter.format(data));
           }, 1);
         }
       });
-
-      function formatAndInsert(html) {
-        var formattedHTML = scribe.formatters.reduce(function (formattedData, formatter) {
-          return formatter(formattedData);
-        }, html);
-
-        document.execCommand('insertHTML', null, formattedHTML);
-      }
 
     };
   };

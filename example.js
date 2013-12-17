@@ -132,7 +132,7 @@ require({
    * Rename nodes
    */
 
-  scribe.formatters.push(function (html) {
+  scribe.formatter.formatters.push(function (html) {
     var config = {
       b: 'strong'
     };
