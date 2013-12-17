@@ -149,7 +149,7 @@ define([
       content = content + '<br>';
     }
 
-    this.setHTML(content);
+    this.setHTML(this.formatter.format(content));
 
     this.pushHistory();
     this.trigger('content-changed');
