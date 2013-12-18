@@ -85,6 +85,8 @@ define([
             if (blockquoteNode.innerHTML === '') {
               blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
+          } else {
+            CommandPatch.prototype.execute.call(this);
           }
         }
 
