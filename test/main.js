@@ -106,6 +106,79 @@ afterEach(function (done) {
   });
 });
 
+describe('undo manager', function () {
+  beforeEach(function (done) {
+    initializeScribe().then(function () {
+      done();
+    });
+  });
+
+  beforeEach(function (done) {
+    driver.executeScript(function () {
+      window.scribe.initialize();
+    }).then(function () {
+      done();
+    });
+  });
+
+  given('content of "<p>1</p>"', function () {
+    beforeEach(function (done) {
+      driver.executeScript(function () {
+        window.scribe.setContent('<p>1</p>');
+      }).then(function () {
+        done();
+      });
+    });
+
+    when('the user focuses the editor', function () {
+      beforeEach(function (done) {
+        // Focus is given via clicking or tabbing to the element. When we
+        // programatically giving focus, the caret is inserted at the beginning.
+        // `scribeNode.click()` seems to place the caret at the end
+        driver.executeScript(function () {
+          window.scribe.el.focus();
+        }).then(function () {
+          done();
+        });
+      });
+
+      when('the user types', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys('2').then(function () {
+            done();
+          });
+        });
+
+        when('the undo command is executed', function () {
+          beforeEach(function (done) {
+            driver.executeScript(function () {
+              window.scribe.getCommand('undo').execute();
+            }).then(function () {
+              done();
+            });
+          });
+
+          it('should restore the caret and the content', function (done) {
+            driver.executeScript(function () {
+              // Insert a marker so we can see where the caret is
+              var selection = window.getSelection();
+              var range = selection.getRangeAt(0);
+              var marker = document.createElement('em');
+              marker.classList.add('scribe-marker');
+              range.insertNode(marker);
+            }).then(function () {
+              scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.equal('<p><em class="scribe-marker"></em>1</p>');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
 describe('P mode', function () {
   beforeEach(function (done) {
     initializeScribe().then(function () {
