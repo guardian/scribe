@@ -17,7 +17,6 @@ function when() {
 }
 
 var scribeNode;
-var editorOutput;
 
 function initializeScribe(options) {
   return driver.executeScript(setupTest, options).then(function () {
@@ -25,10 +24,11 @@ function initializeScribe(options) {
     // to get the node references? weird initialize error if we try to do
     // it before.
     scribeNode = driver.findElement(webdriver.By.id('scribe'));
-    editorOutput = driver.findElement(webdriver.By.id('scribe-output'));
 
     scribeNode.getInnerHTML = function () {
-      return editorOutput.getText();
+      return driver.executeScript(function () {
+        return window.scribe.getHTML();
+      });
     };
   });
 
@@ -43,15 +43,8 @@ function initializeScribe(options) {
 
       'use strict';
 
-      var scribe = new Scribe(document.querySelector('.scribe'), options);
+      window.scribe = new Scribe(document.querySelector('.scribe'), options);
 
-      scribe.on('content-changed', updateHTML);
-
-      function updateHTML() {
-        document.querySelector('.scribe-html').textContent = scribe.getHTML();
-      }
-
-      window.scribe = scribe;
     });
   }
 }
