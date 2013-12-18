@@ -49,20 +49,23 @@ define([
          * As per: http://jsbin.com/AkasOzu/1/edit?html,js,output
          */
 
-        // We want to erase the stack item that was previously added.
-        // TODO: transactions!
-        scribe.undoManager.stack.length = scribe.undoManager.position;
-        --scribe.undoManager.position;
-
         // Renew the selection
         selection = new Selection();
         var blockquoteNode = selection.getContaining(function (node) {
           return node.nodeName === 'BLOCKQUOTE';
         });
-        blockquoteNode.removeAttribute('style');
 
-        scribe.pushHistory();
-        scribe.trigger('content-changed');
+        if (blockquoteNode) {
+          // We want to erase the stack item that was previously added.
+          // TODO: transactions!
+          scribe.undoManager.stack.length = scribe.undoManager.position;
+          --scribe.undoManager.position;
+
+          blockquoteNode.removeAttribute('style');
+
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
+        }
       };
 
       indentCommand.queryEnabled = function () {
