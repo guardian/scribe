@@ -128,46 +128,48 @@ describe('P mode', function () {
     });
   });
 
-  when('the user types', function () {
+  given('no content', function () {
+    when('the user types', function () {
 
-    beforeEach(function (done) {
-      scribeNode.sendKeys('1').then(function () {
-        done();
-      });
-    });
-
-    it('should insert the text inside of a P element', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<p>1</p>');
-        done();
-      });
-    });
-
-    when('the user presses ENTER', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+        scribeNode.sendKeys('1').then(function () {
           done();
         });
       });
 
-      it('should insert another P element', function (done) {
+      it('should insert the text inside of a P element', function (done) {
         scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>1</p><p><br></p>');
+          expect(innerHTML).to.equal('<p>1</p>');
           done();
         });
       });
 
-      when('the user types', function () {
+      when('the user presses ENTER', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys('2').then(function () {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
             done();
           });
         });
 
-        it('should insert the typed characters inside of the P element', function (done) {
+        it('should insert another P element', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+            expect(innerHTML).to.equal('<p>1</p><p><br></p>');
             done();
+          });
+        });
+
+        when('the user types', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys('2').then(function () {
+              done();
+            });
+          });
+
+          it('should insert the typed characters inside of the P element', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+              done();
+            });
           });
         });
       });
