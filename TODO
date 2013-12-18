@@ -8,6 +8,7 @@
 * Chrome and Firefox: Bold command uses B node instead of STRONG
 * Chrome: Add a UL/OL, apply blockquote = nested UL/OLs (infinite)
   - User can recover by using backspace.
+* Chrome: Indenting/outdenting lists for nesting
 
 
 # To Investigate
