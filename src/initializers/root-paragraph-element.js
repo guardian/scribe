@@ -20,14 +20,8 @@ define([
          * We have to begin with the following HTML, because otherwise some
          * browsers(?) will position the caret outside of the P when the scribe is
          * focused.
-         *
-         * We also have to define a marker because otherwise the selection will
-         * not be restored when we undo.
          */
-        scribe.setContent('<p><em class="scribe-marker"></em><br></p>');
-
-        var selection = new Selection();
-        selection.removeMarkers(scribe.el);
+        scribe.setContent('<p><br></p>');
       }
     };
   };
