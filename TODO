@@ -17,8 +17,6 @@
 * Chrome: Add BLOCKQUOTE, add list, unapply blockquote = Creates BLOCKQUOTE
   without P.
 * An item is pushed to the undo manager every time an empty editor is emptied.
-* If Scribe.setContent is called without a reference to a marker, performing
-  an undo to the original content will place the caret outside of the P element.
 
 # Bugs caused by Selection.placeMarkers
 * Chrome: Insert list with at least 2 list items, <select all>, <backspace> =

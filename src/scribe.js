@@ -71,6 +71,18 @@ define([
     this.use(commands.undo());
 
     this.use(shame());
+
+    var pushHistoryOnFocus = function () {
+      // Tabbing into the editor doesn't create a range immediately, so we have to
+      // wait until the next event loop.
+      setTimeout(function () {
+        this.pushHistory();
+      }.bind(this), 0);
+
+      this.el.removeEventListener('focus', pushHistoryOnFocus);
+    }.bind(this);
+
+    this.el.addEventListener('focus', pushHistoryOnFocus);
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
@@ -151,7 +163,6 @@ define([
 
     this.setHTML(this.formatter.format(content));
 
-    this.pushHistory();
     this.trigger('content-changed');
   };
 
