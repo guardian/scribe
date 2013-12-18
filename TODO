@@ -1,6 +1,7 @@
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
 * Config for nesting elements
+* Transactions for commands and undo manager
 
 
 # Outstanding Patches
