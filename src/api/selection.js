@@ -11,6 +11,8 @@ define([
 
     if (this.selection.rangeCount) {
       this.range = this.selection.getRangeAt(0);
+    } else {
+      this.range = new window.Range();
     }
   }
 

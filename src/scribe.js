@@ -125,13 +125,9 @@ define([
     var selection = new Selection();
 
     var html;
-    if (selection.range) {
-      selection.placeMarkers();
-      html = this.el.innerHTML;
-      selection.removeMarkers(this.el);
-    } else {
-      html = this.el.innerHTML;
-    }
+    selection.placeMarkers();
+    html = this.el.innerHTML;
+    selection.removeMarkers(this.el);
 
     this.undoManager.push(html);
   };
