@@ -32,10 +32,7 @@ function initializeScribe(options) {
     };
   });
 
-  function setupTest() {
-    var options = arguments[0];
-    var done = arguments[1];
-
+  function setupTest(options, done) {
     require([
       'scribe'
     ], function (
