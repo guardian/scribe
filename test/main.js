@@ -236,6 +236,46 @@ describe('P mode', function () {
     });
   });
 
+  describe('lists', function () {
+    // The BR node denotes where the user will type.
+    given('content of "<ul><li><br></li></ul>"', function () {
+      beforeEach(function (done) {
+        driver.executeScript(function () {
+          window.scribe.setContent('<ul><li><br></li></ul>');
+        }).then(function () {
+          done();
+        });
+      });
+
+      when('the user focuses the editor', function () {
+        beforeEach(function (done) {
+          // Focus is given via clicking or tabbing to the element. When we
+          // programatically giving focus, the caret is inserted at the beginning.
+          // `scribeNode.click()` seems to place the caret at the end
+          driver.executeScript(function () {
+            window.scribe.el.focus();
+          }).then(function () {
+            done();
+          });
+        });
+
+        when('the user presses backspace', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
+              done();
+            });
+          });
+
+          it('should delete the list and insert an empty P element', function () {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p><br></p>');
+            });
+          });
+        });
+      });
+    });
+  });
+
   describe.skip('#getHTML()', function () {
     it('should return an empty P element', function (done) {
       driver.executeScript(function () {
