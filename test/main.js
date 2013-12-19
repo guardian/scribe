@@ -288,6 +288,77 @@ describe('P mode', function () {
         });
       });
     });
+
+    given('content of "' +
+      '<ul>' +
+        '<li>1</li>' +
+        '<li>|<br></li>' +
+        '<li>2</li>' +
+      '</ul>"',
+      function () {
+      beforeEach(function (done) {
+        driver.executeAsyncScript(function (done) {
+          require(['./api/selection'], function (Selection) {
+            window.scribe.setContent(
+              '<ul>' +
+                '<li>1</li>' +
+                '<li><em class="scribe-marker"></em><br></li>' +
+                '<li>2</li>' +
+              '</ul>'
+            );
+            var selection = new Selection();
+            selection.selectMarkers(window.scribe.el);
+            done();
+          });
+        }).then(function () {
+          done();
+        });
+      });
+
+      when('the user presses backspace', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
+            done();
+          });
+        });
+
+        it('should delete the list and insert an empty P element', function () {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal(
+              '<ul>' +
+                '<li>1</li>' +
+              '</ul>' +
+              '<p><br></p>' +
+              '<ul>' +
+                '<li>2</li>' +
+              '</ul>'
+            );
+          });
+        });
+      });
+
+      when('the user presses enter', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+            done();
+          });
+        });
+
+        it('should delete the list and insert an empty P element', function () {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal(
+              '<ul>' +
+                '<li>1</li>' +
+              '</ul>' +
+              '<p><br></p>' +
+              '<ul>' +
+                '<li>2</li>' +
+              '</ul>'
+            );
+          });
+        });
+      });
+    });
   });
 
   describe.skip('#getHTML()', function () {
