@@ -66,6 +66,7 @@ define([
       this.use(patches.emptyWhenDeleting());
     }
 
+    this.use(commands.indent());
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());

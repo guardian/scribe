@@ -68,21 +68,6 @@ define([
         }
       };
 
-      indentCommand.queryEnabled = function () {
-        /**
-         * FIXME: Chrome nests ULs inside of ULs
-         * Currently we just disable the command when the selection is inside of
-         * a list.
-         * As per: http://jsbin.com/ORikUPa/3/edit?html,js,output
-         */
-        var selection = new Selection();
-        var listElement = selection.getContaining(function (element) {
-          return element.nodeName === 'UL' || element.nodeName === 'OL';
-        });
-
-        return CommandPatch.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
-      };
-
       scribe.patchedCommands.indent = indentCommand;
     };
   };
