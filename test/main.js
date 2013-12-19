@@ -19,7 +19,7 @@ function when() {
 var scribeNode;
 
 function initializeScribe(options) {
-  return driver.executeScript(setupTest, options).then(function () {
+  return driver.executeAsyncScript(setupTest, options).then(function () {
     // FIXME: why do we have to wait until after this script is executed
     // to get the node references? weird initialize error if we try to do
     // it before.
@@ -34,6 +34,7 @@ function initializeScribe(options) {
 
   function setupTest() {
     var options = arguments[0];
+    var done = arguments[1];
 
     require([
       'scribe'
@@ -44,6 +45,8 @@ function initializeScribe(options) {
       'use strict';
 
       window.scribe = new Scribe(document.querySelector('.scribe'), options);
+
+      done();
 
     });
   }
@@ -74,6 +77,8 @@ before(function (done) {
       // TODO: firefox
       .withCapabilities(webdriver.Capabilities.chrome())
       .build();
+
+    driver.manage().timeouts().setScriptTimeout(2000);
 
     driver.get('http://localhost:8080/test/app/index.html').then(function () {
       done();
@@ -528,10 +533,11 @@ describe('smart lists plugin', function () {
   });
 
   beforeEach(function (done) {
-    driver.executeScript(function () {
+    driver.executeAsyncScript(function (done) {
       require(['plugins/smart-lists'], function (smartLists) {
         window.scribe.use(smartLists());
         window.scribe.initialize();
+        done();
       });
     }).then(function () {
       done();
@@ -696,10 +702,11 @@ describe('curly quotes plugin', function () {
   });
 
   beforeEach(function (done) {
-    driver.executeScript(function () {
+    driver.executeAsyncScript(function (done) {
       require(['plugins/curly-quotes'], function (curlyQuotes) {
         window.scribe.use(curlyQuotes());
         window.scribe.initialize();
+        done();
       });
     }).then(function () {
       done();
