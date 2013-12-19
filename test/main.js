@@ -23,7 +23,7 @@ function initializeScribe(options) {
     // FIXME: why do we have to wait until after this script is executed
     // to get the node references? weird initialize error if we try to do
     // it before.
-    scribeNode = driver.findElement(webdriver.By.id('scribe'));
+    scribeNode = driver.findElement(webdriver.By.className('scribe'));
 
     scribeNode.getInnerHTML = function () {
       return driver.executeScript(function () {
