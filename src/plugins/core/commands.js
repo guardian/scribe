@@ -1,9 +1,11 @@
 define([
   './commands/insert-list',
+  './commands/outdent',
   './commands/redo',
   './commands/undo'
 ], function (
   insertList,
+  outdent,
   redo,
   undo
 ) {
@@ -12,6 +14,7 @@ define([
 
   return {
     insertList: insertList,
+    outdent: outdent,
     redo: redo,
     undo: undo
   };

@@ -67,6 +67,7 @@ define([
     }
 
     this.use(commands.insertList());
+    this.use(commands.outdent());
     this.use(commands.redo());
     this.use(commands.undo());
 

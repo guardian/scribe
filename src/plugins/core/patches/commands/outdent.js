@@ -94,10 +94,6 @@ define([
         scribe.trigger('content-changed');
       };
 
-      outdentCommand.queryEnabled = function () {
-        return CommandPatch.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
-      };
-
       scribe.patchedCommands.outdent = outdentCommand;
     };
   };

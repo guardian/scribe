@@ -23,19 +23,7 @@ define([
 
       blockquoteCommand.queryEnabled = function () {
         var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
-
-        /**
-         * FIXME: Chrome nests ULs inside of ULs
-         * Currently we just disable the command when the selection is inside of
-         * a list.
-         * As per: http://jsbin.com/ORikUPa/3/edit?html,js,output
-         */
-        var selection = new Selection();
-        var listElement = selection.getContaining(function (element) {
-          return element.nodeName === 'UL' || element.nodeName === 'OL';
-        });
-
-        return command.queryEnabled() && ! listElement;
+        return command.queryEnabled();
       };
 
       blockquoteCommand.queryState = function () {
