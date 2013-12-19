@@ -117,6 +117,11 @@ define([
     return this.el.innerHTML;
   };
 
+  Scribe.prototype.getContent = function () {
+    // Remove bogus BR element for Firefox — see explanation in BR mode files.
+    return this.getHTML().replace(/<br>$/, '');
+  };
+
   Scribe.prototype.getTextContent = function () {
     return this.el.textContent;
   };
@@ -153,9 +158,7 @@ define([
 
   Scribe.prototype.setContent = function (content) {
     if (! this.allowsBlockElements()) {
-      // Bogus BR element for Firefox — see explanation in BR mode files.
-      // TODO: also append when consumer sets the content manually.
-      // TODO: hide when the user calls `getHTML`?
+      // Set bogus BR element for Firefox — see explanation in BR mode files.
       content = content + '<br>';
     }
 
