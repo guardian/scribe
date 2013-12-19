@@ -33,18 +33,10 @@ function initializeScribe(options) {
   });
 
   function setupTest(options, done) {
-    require([
-      'scribe'
-    ], function (
-      Scribe
-    ) {
-
+    require(['scribe'], function (Scribe) {
       'use strict';
-
       window.scribe = new Scribe(document.querySelector('.scribe'), options);
-
       done();
-
     });
   }
 }
