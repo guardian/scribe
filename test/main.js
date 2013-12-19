@@ -272,6 +272,20 @@ describe('P mode', function () {
             });
           });
         });
+
+        when('the user presses enter', function () {
+          beforeEach(function (done) {
+            scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+              done();
+            });
+          });
+
+          it('should delete the list and insert an empty P element', function () {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p><br></p>');
+            });
+          });
+        });
       });
     });
   });
