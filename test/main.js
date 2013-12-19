@@ -322,7 +322,7 @@ describe('P mode', function () {
           });
         });
 
-        it('should delete the list and insert an empty P element', function () {
+        it('should split the list into two and insert an empty P element in-between', function () {
           scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal(
               '<ul>' +
@@ -344,7 +344,7 @@ describe('P mode', function () {
           });
         });
 
-        it('should delete the list and insert an empty P element', function () {
+        it('should split the list into two and insert an empty P element in-between', function () {
           scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal(
               '<ul>' +
