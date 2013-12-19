@@ -63,15 +63,15 @@ define([
        */
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) { // enter
+          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
             var selection = new Selection();
             var range = selection.range;
 
             if (range.collapsed) {
+              // FIXME: confirm whether to use innerText or innerHTML
               if (range.commonAncestorContainer.nodeName === 'LI'
-                && range.commonAncestorContainer.innerHTML === '<br>') {
-                // TODO: test innerText instead?
+                && (range.commonAncestorContainer.innerText === '' || range.commonAncestorContainer.innerHTML === '<br>')) {
                 /**
                  * LIs
                  */
