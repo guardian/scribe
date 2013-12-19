@@ -95,7 +95,7 @@ define([
       };
 
       outdentCommand.queryEnabled = function () {
-        return scribe.allowsBlockElements() && CommandPatch.prototype.queryEnabled.call(this);
+        return CommandPatch.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
       };
 
       scribe.patchedCommands.outdent = outdentCommand;
