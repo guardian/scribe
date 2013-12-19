@@ -7,6 +7,7 @@
 # Outstanding Patches
 * Chrome and Firefox: Bold command uses B node instead of STRONG
 * Chrome: Indenting/outdenting lists for nesting
+* Chrome: appends span to LIs with inline styling for `line-height`: http://jsbin.com/OtemujAY/3/edit
 
 
 # Disabled Things Which Should Be Enabled

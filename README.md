@@ -13,6 +13,7 @@ Playground: http://jsbin.com/INESUJI/2/edit?html,js,output
 * "`insertOrderedList`/`insertOrderedList`":
   - Chrome nests list inside of P: http://jsbin.com/eFiRedUc/1/edit?html,js,output
   - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output
+  - Chrome appends span to LIs with inline styling for `line-height`: http://jsbin.com/OtemujAY/3/edit
 * "`indent`":
   - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
   - Chrome nests ULs inside of ULs: http://jsbin.com/ORikUPa/3/edit?html,js,output
