@@ -63,7 +63,7 @@ define([
        */
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13 || event.keyCode === 8) { // enter
+          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
             var selection = new Selection();
             var range = selection.range;
