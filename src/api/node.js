@@ -8,15 +8,18 @@ define(function () {
 
   Node.prototype.getAncestor = function (nodeFilter) {
     // TODO: use do instead?
-    // If it's a node, not a text node, and is not contenteditable
-    while (this.node
-           && (this.node.nodeType === 3
-               || (this.node.nodeType !== 3
-                   && ! this.node.attributes.getNamedItem('contenteditable')))) {
+    // TODO: don't change *this* node object when traversing!
+    while (this.node) {
       if (nodeFilter(this.node)) {
         return this.node;
       }
       this.node = this.node.parentNode;
+      // If it's a `contenteditable` then it's likely going to be the Scribe
+      // instance, so stop traversing there.
+      if (this.node && this.node.attributes && this.node.attributes.getNamedItem('contenteditable')) {
+        delete this.node;
+        return;
+      }
     }
   };
 
