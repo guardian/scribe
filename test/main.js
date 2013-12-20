@@ -116,55 +116,36 @@ describe('undo manager', function () {
   });
 
   given('content of "<p>1</p>"', function () {
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        window.scribe.setContent('<p>1</p>');
-      }).then(function () {
-        done();
-      });
-    });
+    setContent('<p>|1</p>');
 
-    when('the user focuses the editor', function () {
+    when('the user types', function () {
       beforeEach(function (done) {
-        // Focus is given via clicking or tabbing to the element. When we
-        // programatically giving focus, the caret is inserted at the beginning.
-        // `scribeNode.click()` seems to place the caret at the end
-        driver.executeScript(function () {
-          window.scribe.el.focus();
-        }).then(function () {
+        scribeNode.sendKeys('2').then(function () {
           done();
         });
       });
 
-      when('the user types', function () {
+      when('the undo command is executed', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys('2').then(function () {
+          driver.executeScript(function () {
+            window.scribe.getCommand('undo').execute();
+          }).then(function () {
             done();
           });
         });
 
-        when('the undo command is executed', function () {
-          beforeEach(function (done) {
-            driver.executeScript(function () {
-              window.scribe.getCommand('undo').execute();
-            }).then(function () {
+        it('should restore the caret and the content', function (done) {
+          driver.executeScript(function () {
+            // Insert a marker so we can see where the caret is
+            var selection = window.getSelection();
+            var range = selection.getRangeAt(0);
+            var marker = document.createElement('em');
+            marker.classList.add('scribe-marker');
+            range.insertNode(marker);
+          }).then(function () {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p><em class="scribe-marker"></em>1</p>');
               done();
-            });
-          });
-
-          it('should restore the caret and the content', function (done) {
-            driver.executeScript(function () {
-              // Insert a marker so we can see where the caret is
-              var selection = window.getSelection();
-              var range = selection.getRangeAt(0);
-              var marker = document.createElement('em');
-              marker.classList.add('scribe-marker');
-              range.insertNode(marker);
-            }).then(function () {
-              scribeNode.getInnerHTML().then(function (innerHTML) {
-                expect(innerHTML).to.equal('<p><em class="scribe-marker"></em>1</p>');
-                done();
-              });
             });
           });
         });
@@ -238,82 +219,53 @@ describe('P mode', function () {
 
   describe('lists', function () {
     // The BR node denotes where the user will type.
-    given('content of "<ul><li><br></li></ul>"', function () {
-      beforeEach(function (done) {
-        driver.executeScript(function () {
-          window.scribe.setContent('<ul><li><br></li></ul>');
-        }).then(function () {
-          done();
-        });
-      });
+    given('content of "<ul><li>|<br></li></ul>"', function () {
+      setContent('<ul><li>|<br></li></ul>');
 
-      when('the user focuses the editor', function () {
+      when('the user presses backspace', function () {
         beforeEach(function (done) {
-          // Focus is given via clicking or tabbing to the element. When we
-          // programatically giving focus, the caret is inserted at the beginning.
-          // `scribeNode.click()` seems to place the caret at the end
-          driver.executeScript(function () {
-            window.scribe.el.focus();
-          }).then(function () {
+          scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
             done();
           });
         });
 
-        when('the user presses backspace', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
-              done();
-            });
+        it('should delete the list and insert an empty P element', function () {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<p><br></p>');
           });
+        });
+      });
 
-          it('should delete the list and insert an empty P element', function () {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p><br></p>');
-            });
+      when('the user presses enter', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+            done();
           });
         });
 
-        when('the user presses enter', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-              done();
-            });
-          });
-
-          it('should delete the list and insert an empty P element', function () {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p><br></p>');
-            });
+        it('should delete the list and insert an empty P element', function () {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<p><br></p>');
           });
         });
       });
     });
 
     given('content of "' +
-      '<ul>' +
-        '<li>1</li>' +
-        '<li>|<br></li>' +
-        '<li>2</li>' +
-      '</ul>"',
+        '<ul>' +
+          '<li>1</li>' +
+          '<li>|<br></li>' +
+          '<li>2</li>' +
+        '</ul>' +
+      '"',
       function () {
-      beforeEach(function (done) {
-        driver.executeAsyncScript(function (done) {
-          require(['./api/selection'], function (Selection) {
-            window.scribe.setContent(
-              '<ul>' +
-                '<li>1</li>' +
-                '<li><em class="scribe-marker"></em><br></li>' +
-                '<li>2</li>' +
-              '</ul>'
-            );
-            var selection = new Selection();
-            selection.selectMarkers(window.scribe.el);
-            done();
-          });
-        }).then(function () {
-          done();
-        });
-      });
+      setContent(
+        '<ul>' +
+          '<li>1</li>' +
+          '<li>|<br></li>' +
+          '<li>2</li>' +
+        '</ul>'
+      );
 
       when('the user presses backspace', function () {
         beforeEach(function (done) {
@@ -908,3 +860,20 @@ describe('curly quotes plugin', function () {
   });
 
 });
+
+function setContent(html) {
+  beforeEach(function (done) {
+    driver.executeAsyncScript(function (html, done) {
+      require(['./api/selection'], function (Selection) {
+        window.scribe.setContent(html.replace('|', '<em class="scribe-marker"></em>'));
+        if (html.match('|').length) {
+          var selection = new Selection();
+          selection.selectMarkers(window.scribe.el);
+        }
+        done();
+      });
+    }, html).then(function () {
+      done();
+    });
+  });
+}
