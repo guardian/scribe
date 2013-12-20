@@ -1,16 +1,16 @@
 define([
-  '../../../api/selection',
-  '../../../api/simple-command'
+  '../../../api/command',
+  '../../../api/selection'
 ], function (
-  Selection,
-  SimpleCommand
+  Command,
+  Selection
 ) {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var outdentCommand = new SimpleCommand(scribe, 'outdent');
+      var outdentCommand = new Command(scribe, 'outdent');
 
       outdentCommand.queryEnabled = function () {
         /**
@@ -25,7 +25,7 @@ define([
         });
 
         // FIXME: define block element rule here?
-        return SimpleCommand.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
       };
 
       scribe.commands.outdent = outdentCommand;

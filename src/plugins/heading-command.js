@@ -1,9 +1,9 @@
 define([
-  '../api/selection',
-  '../api/simple-command'
+  '../api/command',
+  '../api/selection'
 ], function (
-  Selection,
-  SimpleCommand
+  Command,
+  Selection
 ) {
 
   /**
@@ -22,13 +22,13 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new SimpleCommand(scribe, 'formatBlock', nodeName);
+      var headingCommand = new Command(scribe, 'formatBlock');
 
       headingCommand.execute = function () {
         if (this.queryState()) {
-          SimpleCommand.prototype.execute.call(this, '<p>');
+          Command.prototype.execute.call(this, '<p>');
         } else {
-          SimpleCommand.prototype.execute.call(this, tag);
+          Command.prototype.execute.call(this, tag);
         }
       };
 
@@ -42,7 +42,7 @@ define([
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return SimpleCommand.prototype.queryEnabled.apply(this, arguments)
+        return Command.prototype.queryEnabled.apply(this, arguments)
           && scribe.allowsBlockElements() && ! listNode;
       };
 

@@ -1,16 +1,16 @@
 define([
-  '../../../api/selection',
-  '../../../api/simple-command'
+  '../../../api/command',
+  '../../../api/selection'
 ], function (
-  Selection,
-  SimpleCommand
+  Command,
+  Selection
 ) {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var indentCommand = new SimpleCommand(scribe, 'indent');
+      var indentCommand = new Command(scribe, 'indent');
 
       indentCommand.queryEnabled = function () {
         /**
@@ -24,7 +24,7 @@ define([
           return element.nodeName === 'UL' || element.nodeName === 'OL';
         });
 
-        return SimpleCommand.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
       };
 
       scribe.commands.indent = indentCommand;
