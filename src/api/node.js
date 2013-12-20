@@ -8,7 +8,11 @@ define(function () {
 
   Node.prototype.getAncestor = function (nodeFilter) {
     // TODO: use do instead?
-    while (this.node && this.node.nodeName !== 'body') {
+    // If it's a node, not a text node, and is not contenteditable
+    while (this.node
+           && (this.node.nodeType === 3
+               || (this.node.nodeType !== 3
+                   && ! this.node.attributes.getNamedItem('contenteditable')))) {
       if (nodeFilter(this.node)) {
         return this.node;
       }
