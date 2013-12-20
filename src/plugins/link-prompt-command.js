@@ -14,15 +14,13 @@ define([
 
   return function () {
     return function (scribe) {
-      var nodeName = 'A';
-
-      var linkPromptCommand = new SimpleCommand(scribe, 'createLink', nodeName);
+      var linkPromptCommand = new SimpleCommand(scribe, 'createLink', 'A');
 
       linkPromptCommand.execute = function () {
         var selection = new Selection();
         var anchorNode = selection.getContaining(function (node) {
-          return node.nodeName === nodeName;
-        });
+          return node.nodeName === this.nodeName;
+        }.bind(this));
         var initialLink = anchorNode ? anchorNode.href : 'http://';
         var link = window.prompt('Enter a link.', initialLink);
 
@@ -62,8 +60,8 @@ define([
       linkPromptCommand.queryEnabled = function () {
         var selection = new Selection();
         var anchorNode = selection.getContaining(function (node) {
-          return node.nodeName === nodeName;
-        });
+          return node.nodeName === this.nodeName;
+        }.bind(this));
 
         return SimpleCommand.prototype.queryEnabled.call(this) && ! anchorNode;
       };
