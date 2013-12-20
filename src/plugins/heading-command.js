@@ -32,6 +32,13 @@ define([
         }
       };
 
+      headingCommand.queryState = function () {
+        var selection = new Selection();
+        return !! selection.getContaining(function (node) {
+          return node.nodeName === nodeName;
+        });
+      };
+
       /**
        * All: Executing a heading command inside a list element corrupts the markup.
        * Disabling for now.
