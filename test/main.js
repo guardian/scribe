@@ -588,6 +588,65 @@ describe('commands', function () {
       });
     });
   });
+
+  // TODO: find a way to separate tests for browser patches from normal
+  // functionality.
+  describe('insertOrderedList', function () {
+    given('content of "<p>|1</p>"', function () {
+      setContent('<p>|1</p>');
+
+      when('the command is executed', function () {
+        beforeEach(function (done) {
+          scribeNode.click();
+
+          driver.executeScript(function () {
+            var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
+            removeFormatCommand.execute();
+          }).then(function () {
+            done();
+          });
+        });
+
+        it('should wrap the content in an ordered list', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
+            done();
+          });
+        });
+      });
+
+      // Browser bug: http://jsbin.com/OtemujAY/3/edit?html,css,js,output
+      when('a parent element has a custom CSS line height', function () {
+        beforeEach(function (done) {
+          driver.executeScript(function () {
+            document.body.style.lineHeight = 2;
+          }).then(function () {
+            done();
+          });
+        });
+
+        when('the command is executed', function () {
+          beforeEach(function (done) {
+            scribeNode.click();
+
+            driver.executeScript(function () {
+              var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
+              removeFormatCommand.execute();
+            }).then(function () {
+              done();
+            });
+          });
+
+          it('should wrap the content in an ordered list', function (done) {
+            scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
 });
 
 describe('smart lists plugin', function () {
