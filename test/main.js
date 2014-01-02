@@ -609,7 +609,7 @@ describe('commands', function () {
         });
       });
 
-      // Browser bug: http://jsbin.com/OtemujAY/3/edit?html,css,js,output
+      // FIXME: re-organise, this is a browser bug, not a feature
       when('a parent element has a custom CSS line height', function () {
         beforeEach(function (done) {
           driver.executeScript(function () {
@@ -631,6 +631,8 @@ describe('commands', function () {
             });
           });
 
+          // FIXME: Currently equals '<ol><li><span style="line-height: 2;">1</span><br></li></ol>'
+          // As per browser bug: http://jsbin.com/OtemujAY/3/edit?html,css,js,output
           it('should wrap the content in an ordered list', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
