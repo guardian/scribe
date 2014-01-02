@@ -23,3 +23,5 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 
 ### `Range.insertNode`
 * Chrome inserts a bogus text node: http://jsbin.com/ODapifEb/1/edit?js,console,output
+  - This in turn creates several bugs when perfoming commands on selections
+    that contain an empty text node (`removeFormat`, `unlink`)
