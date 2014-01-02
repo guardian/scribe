@@ -2,7 +2,7 @@ Scribe
 ======
 
 ## List of `contenteditable` Browser Inconsistencies
-Playground: http://jsbin.com/INESUJI/2/edit?html,js,output
+Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
