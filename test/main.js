@@ -115,7 +115,7 @@ describe('undo manager', function () {
     });
   });
 
-  given('content of "<p>1</p>"', function () {
+  given('content of "<p>|1</p>"', function () {
     setContent('<p>|1</p>');
 
     when('the user types', function () {
