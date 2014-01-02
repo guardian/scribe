@@ -24,8 +24,7 @@
 * An item is pushed to the undo manager every time an empty editor is emptied.
 * Applying the outdent command on a top level list item breaks P mode.
 
-
-# Bugs caused by Selection.placeMarkers
+## Bugs caused by Selection.placeMarkers
 * Chrome: Insert list with at least 2 list items, <select all>, <backspace> =
   Creates two orphan list items
   - This is caused by Selection.placeMarkers adding a redundant text node after
