@@ -313,12 +313,23 @@ describe('P mode', function () {
     });
   });
 
-  describe.skip('#getHTML()', function () {
+  describe('#getContent()', function () {
+    it('should return an empty P element', function (done) {
+      driver.executeScript(function () {
+        return window.scribe.getContent();
+      }).then(function (html) {
+        expect(html).to.equal('<p><br></p>');
+        done();
+      });
+    });
+  });
+
+  describe('#getHTML()', function () {
     it('should return an empty P element', function (done) {
       driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
-        expect(html).to.equal('<p></p>');
+        expect(html).to.equal('<p><br></p>');
         done();
       });
     });
@@ -326,7 +337,6 @@ describe('P mode', function () {
 });
 
 describe('BR mode', function () {
-
   beforeEach(function (done) {
     initializeScribe({ allowBlockElements: false }).then(function () {
       done();
@@ -483,12 +493,23 @@ describe('BR mode', function () {
     });
   });
 
-  describe.skip('#getHTML()', function () {
-    it('should return an empty string', function (done) {
+  describe('#getContent()', function () {
+    it('should return nothing', function (done) {
+      driver.executeScript(function () {
+        return window.scribe.getContent();
+      }).then(function (html) {
+        expect(html).to.equal('');
+        done();
+      });
+    });
+  });
+
+  describe('#getHTML()', function () {
+    it('should return nothing', function (done) {
       driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
-        expect(html).to.equal('');
+        expect(html).to.equal('<br>');
         done();
       });
     });
