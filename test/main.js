@@ -547,7 +547,7 @@ describe('commands', function () {
     given('content of "<i>1</i>"', function () {
       beforeEach(function (done) {
         driver.executeScript(function () {
-          window.scribe.setContent('<i>1</i>');
+          window.scribe.setContent('<p><i>1</i></p>');
         }).then(function () {
           done();
         });
@@ -580,7 +580,7 @@ describe('commands', function () {
 
           it('should remove the formatting', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('1');
+              expect(innerHTML).to.equal('<p>1</p>');
               done();
             });
           });
