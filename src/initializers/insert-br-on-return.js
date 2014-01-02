@@ -39,12 +39,13 @@ define([
              * will not appear to create a line break.
              * Firefox: If there is no right-hand side content, inserting a BR
              * will appear to create a weird "half-line break".
-             * Possible solution: Insert two BRs.
              *
+             * Possible solution: Insert two BRs.
              * ✓ Chrome: Inserting two BRs appears to create a line break.
              * Typing will then delete the bogus BR element.
              * Firefox: Inserting two BRs will create two line breaks.
-             * Possible solution: Only insert two BRs if there is no right-hand
+             *
+             * Solution: Only insert two BRs if there is no right-hand
              * side content.
              *
              * If the user types on a line immediately after a BR element,
