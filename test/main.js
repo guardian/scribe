@@ -557,8 +557,7 @@ describe('commands', function () {
           });
         });
 
-        // FIXME: Currently equals '<p>1<i></i></p>'
-        it.skip('should remove the formatting', function (done) {
+        it('should remove the formatting', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<p>1</p>');
             done();
