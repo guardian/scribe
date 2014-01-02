@@ -920,7 +920,7 @@ function setContent(html) {
   beforeEach(function (done) {
     driver.executeAsyncScript(function (html, done) {
       require(['./api/selection'], function (Selection) {
-        window.scribe.setContent(html.replace('|', '<em class="scribe-marker"></em>'));
+        window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
         if (html.match('|').length) {
           var selection = new Selection();
           selection.selectMarkers(window.scribe.el);
