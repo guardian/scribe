@@ -545,13 +545,7 @@ describe('commands', function () {
 
   describe('removeFormat', function () {
     given('content of "<p><i>1</i></p>"', function () {
-      beforeEach(function (done) {
-        driver.executeScript(function () {
-          window.scribe.setContent('<p><i>1</i></p>');
-        }).then(function () {
-          done();
-        });
-      });
+      setContent('<p><i>1</i></p>');
 
       when('all the content is selected', function () {
         beforeEach(function (done) {
