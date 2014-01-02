@@ -544,7 +544,7 @@ describe('commands', function () {
   });
 
   describe('removeFormat', function () {
-    given('content of "<i>1</i>"', function () {
+    given('content of "<p><i>1</i></p>"', function () {
       beforeEach(function (done) {
         driver.executeScript(function () {
           window.scribe.setContent('<p><i>1</i></p>');
