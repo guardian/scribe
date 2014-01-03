@@ -24,17 +24,6 @@
 * An item is pushed to the undo manager every time an empty editor is emptied.
 * Applying the outdent command on a top level list item breaks P mode.
 
-## Bugs caused by Selection.placeMarkers
-* Chrome: Insert list with at least 2 list items, <select all>, <backspace> =
-  Creates two orphan list items
-  - This is caused by Selection.placeMarkers adding a redundant text node after
-    the inserted end marker.
-* When applying the link command to an existing link, it does not clean up old
-  A elements. This has been temporarily fixed by disabling the command when the
-  selection contains an A element. (http://jsbin.com/AkasOzu/3/edit?html,js,console,output)
-* When executing the remove format command, sometimes the selected inline
-  elements remain. Related to the bug above (caused by inserting markers).
-
 
 # Fixed
 * Chrome: Add H1, <enter> = Creates DIV

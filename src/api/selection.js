@@ -32,11 +32,31 @@ define([
     rangeEnd.collapse(false);
     rangeEnd.insertNode(endMarker);
 
+    /**
+     * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
+     * element. We just remove it.
+     * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+     */
+    // TODO: abstract into polyfill for `Range.insertNode`
+    if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
+      endMarker.parentNode.removeChild(endMarker.nextSibling);
+    }
+
     if (!this.range.collapsed) {
       // Start marker
       var rangeStart = this.range.cloneRange();
       rangeStart.collapse(true);
       rangeStart.insertNode(startMarker);
+
+      /**
+       * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
+       * element. We just remove it.
+       * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+       */
+      // TODO: abstract into polyfill for `Range.insertNode`
+      if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
+        startMarker.parentNode.removeChild(startMarker.nextSibling);
+      }
     }
 
     this.selection.removeAllRanges();
