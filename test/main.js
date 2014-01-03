@@ -674,9 +674,7 @@ describe('commands', function () {
             });
           });
 
-          // FIXME: Currently equals '<ol><li><span style="line-height: 2;">1</span><br></li></ol>'
-          // As per browser bug: http://jsbin.com/OtemujAY/3/edit?html,css,js,output
-          it.skip('should wrap the content in an ordered list', function (done) {
+          it('should wrap the content in an ordered list', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
               done();

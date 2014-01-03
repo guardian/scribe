@@ -8,12 +8,6 @@ define([
   Selection
 ) {
 
-  /**
-   * Chrome: If we apply the insertOrderedList command on an empty block, the
-   * OL/UL will be nested inside the block.
-   * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
-   */
-
   'use strict';
 
   return function () {
@@ -29,6 +23,12 @@ define([
         CommandPatch.prototype.execute.call(this, value);
 
         if (this.queryState()) {
+          /**
+           * Chrome: If we apply the insertOrderedList command on an empty block, the
+           * OL/UL will be nested inside the block.
+           * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
+           */
+
           var selection = new Selection();
 
           var listNode = selection.getContaining(function (node) {
@@ -44,16 +44,36 @@ define([
               listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
               selection.selectMarkers(scribe.el);
               listParentNode.parentNode.removeChild(listParentNode);
-
-              // We want to erase the stack item that was previously added.
-              // TODO: transactions!
-              scribe.undoManager.stack.length = scribe.undoManager.position;
-              --scribe.undoManager.position;
-
-              scribe.pushHistory();
-              scribe.trigger('content-changed');
             }
           }
+
+          /**
+           * Chrome: If a parent node has a CSS `line-height` when we apply the
+           * insert(Un)OrderedList command, Chrome appends a SPAN to LIs with
+           * inline styling replicating that `line-height`.
+           * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
+           */
+
+          var treeWalker = document.createTreeWalker(listNode);
+
+          while (treeWalker.nextNode()) {
+            if (treeWalker.currentNode.nodeName === 'SPAN') {
+              // TODO: unwrap API
+              var spanElement = treeWalker.currentNode;
+              while (spanElement.childNodes.length > 0) {
+                spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
+              }
+              spanElement.parentNode.removeChild(spanElement);
+            }
+          }
+
+          // We want to erase the stack item that was previously added.
+          // TODO: transactions!
+          scribe.undoManager.stack.length = scribe.undoManager.position;
+          --scribe.undoManager.position;
+
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
         }
       };
 
