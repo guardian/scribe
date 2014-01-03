@@ -3,7 +3,25 @@ define([
 ], function (
   Selection
 ) {
+
   'use strict';
+
+  // TODO: abstract
+  function hasContent(rootNode) {
+    var treeWalker = document.createTreeWalker(rootNode);
+
+    var node;
+    while (node = treeWalker.nextNode()) {
+      if (node) {
+        // If the node is a non-empty element or has content
+        if (~['br'].indexOf(node.nodeName.toLowerCase()) || node.length > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   return function () {
     return function (scribe) {
@@ -25,6 +43,16 @@ define([
 
           if (! blockNode) {
             event.preventDefault();
+
+            /**
+             * Firefox: Delete the bogus BR as we insert another one later.
+             * We have to do this because otherwise the browser will believe
+             * there is content to the right of the selection.
+             */
+            if (scribe.el.lastChild.nodeName === 'BR') {
+              scribe.el.removeChild(scribe.el.lastChild);
+            }
+
             var brNode = document.createElement('br');
 
             range.insertNode(brNode);
@@ -55,29 +83,23 @@ define([
              */
 
             var contentToEndRange = range.cloneRange();
-            contentToEndRange.setEndAfter(scribe.el.lastElementChild, 0);
+            contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
 
             // Get the content from the range to the end of the heading
             var contentToEndFragment = contentToEndRange.cloneContents();
 
             // If there is not already a right hand side content we need to
             // insert a bogus BR element.
-            var endNode;
-            if (! contentToEndFragment.childNodes.length) {
-              var caretBrNode = document.createElement('br');
-              endNode = caretBrNode;
-              range.insertNode(caretBrNode);
-            } else {
-              endNode = brNode;
+            if (! hasContent(contentToEndFragment)) {
+              var bogusBrNode = document.createElement('br');
+              console.log(contentToEndFragment);
+              range.insertNode(bogusBrNode);
             }
-
-            // Set the selection to the end of whichever BR node we inserted
-            // last.
 
             var newRange = range.cloneRange();
 
-            newRange.setStartAfter(endNode, 0);
-            newRange.setEndAfter(endNode, 0);
+            newRange.setStartAfter(brNode, 0);
+            newRange.setEndAfter(brNode, 0);
 
             selection.selection.removeAllRanges();
             selection.selection.addRange(newRange);
