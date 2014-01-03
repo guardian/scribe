@@ -10,11 +10,10 @@ define([
   function hasContent(rootNode) {
     var treeWalker = document.createTreeWalker(rootNode);
 
-    var node;
-    while (node = treeWalker.nextNode()) {
-      if (node) {
+    while (treeWalker.nextNode()) {
+      if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
-        if (~['br'].indexOf(node.nodeName.toLowerCase()) || node.length > 0) {
+        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
           return true;
         }
       }
