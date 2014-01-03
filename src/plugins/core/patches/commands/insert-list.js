@@ -9,8 +9,8 @@ define([
 ) {
 
   /**
-   * Chrome: If we apply the insertOrderedList command on an empty P, the
-   * OL/UL will be nested inside the P.
+   * Chrome: If we apply the insertOrderedList command on an empty block, the
+   * OL/UL will be nested inside the block.
    * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
    */
 
