@@ -39,7 +39,7 @@ define([
             var listParentNode = listNode.parentNode;
 
             // If list is within a text block then split that block
-            if (listParentNode && /^(H[1-6]|P|ADDRESS|PRE)$/.test(listParentNode.nodeName)) {
+            if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
               selection.placeMarkers();
               listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
               selection.selectMarkers(scribe.el);
