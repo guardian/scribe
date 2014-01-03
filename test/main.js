@@ -628,6 +628,7 @@ describe('commands', function () {
 
   // TODO: find a way to separate tests for browser patches from normal
   // functionality.
+  // TODO: one suite for OLs and ULs or duplicates?
   describe('insertOrderedList', function () {
     given('content of "<p>|1</p>"', function () {
       setContent('<p>|1</p>');
