@@ -45,6 +45,11 @@ define([
               selection.selectMarkers(scribe.el);
               listParentNode.parentNode.removeChild(listParentNode);
 
+              // We want to erase the stack item that was previously added.
+              // TODO: transactions!
+              scribe.undoManager.stack.length = scribe.undoManager.position;
+              --scribe.undoManager.position;
+
               scribe.pushHistory();
               scribe.trigger('content-changed');
             }
