@@ -52,6 +52,10 @@ define([
            * insert(Un)OrderedList command, Chrome appends a SPAN to LIs with
            * inline styling replicating that `line-height`.
            * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
+           *
+           * FIXME: what if the user actually wants to use SPANs? This could
+           * cause conflicts.
+           * TODO: only remove top level SPAN in LI?
            */
 
           var treeWalker = document.createTreeWalker(listNode);
