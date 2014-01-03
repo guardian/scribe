@@ -12,7 +12,7 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * "`outdent`":
   - Chrome removes BLOCKQUOTE content formatting: http://jsbin.com/okAYaHa/1/edit?html,js,output
   - Chrome removes collapsed selection formatting: http://jsbin.com/IfaRaFO/1/edit?html,js,output
-* "`insertOrderedList`/`insertOrderedList`":
+* "`insertOrderedList`"/"`insertOrderedList`":
   - Chrome nests list inside of block elements: http://jsbin.com/eFiRedUc/1/edit?html,js,output
   - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output
   - Chrome appends SPAN to LIs with inline styling for `line-height`: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
