@@ -351,14 +351,51 @@ describe('BR mode', function () {
     });
   });
 
-  given('content of "1<br>2"', function () {
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        window.scribe.setContent('1<br>2');
-      }).then(function () {
+  // Without right-hand side content
+  given('content of "1|"', function () {
+    setContent('1|');
+
+    it('should append a bogus BR to the content', function (done) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('1<br>');
         done();
       });
     });
+
+    when('the user presses ENTER', function () {
+      beforeEach(function (done) {
+        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+          done();
+        });
+      });
+
+      it('should create a new line by inserting a BR element', function (done) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('1<br><br>');
+          done();
+        });
+      });
+
+      when('the user types', function () {
+        beforeEach(function (done) {
+          scribeNode.sendKeys(2).then(function () {
+            done();
+          });
+        });
+
+        it('should insert the typed characters on the new line', function (done) {
+          scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.equal('1<br>2');
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  // With right-hand side content
+  given('content of "1|<br>2"', function () {
+    setContent('1|<br>2');
 
     it('should append a bogus BR to the content', function (done) {
       scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -367,71 +404,72 @@ describe('BR mode', function () {
       });
     });
 
-    when('the user places their caret at the end of a line', function () {
+    when('the user presses ENTER', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
+        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
           done();
         });
       });
 
-      when('the user presses ENTER', function () {
+      it('should delete the bogus BR element and create a new line by inserting a BR element', function (done) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('1<br><br>2');
+          done();
+        });
+      });
+
+      when('the user types', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+          scribeNode.sendKeys(3).then(function () {
             done();
           });
         });
 
-        it('should create a new line by inserting a BR element', function (done) {
+        it('should insert the typed characters on the new line', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br><br>2<br>');
+            expect(innerHTML).to.equal('1<br>3<br>2');
             done();
-          });
-        });
-
-        when('the user types', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys('3').then(function () {
-              done();
-            });
-          });
-
-          it('should insert the typed characters on the new line', function (done) {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('1<br>3<br>2<br>');
-              done();
-            });
           });
         });
       });
     });
   });
 
-  given('content of "<i>1</i>', function () {
-    beforeEach(function (done) {
-      driver.executeScript(function () {
-        window.scribe.setContent('<i>1</i>');
-      }).then(function () {
+  // Inside an inline element
+  given('content of "<i>1|</i>', function () {
+    setContent('<i>1|</i>');
+
+    it('should append a bogus BR to the content', function (done) {
+      scribeNode.getInnerHTML().then(function (innerHTML) {
+        expect(innerHTML).to.equal('<i>1</i><br>');
         done();
       });
     });
 
-    when('the user places their caret at the end of a line', function () {
+    when('the user presses ENTER', function () {
       beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
+        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
           done();
         });
       });
 
-      when('the user presses ENTER', function () {
+      it('should delete the bogus BR element and create a new line by inserting a BR element', function (done) {
+        scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<i>1<br><br></i>');
+          done();
+        });
+      });
+
+      when('the user types', function () {
         beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
+          scribeNode.sendKeys(2).then(function () {
             done();
           });
         });
 
-        it.skip('should insert a BR element after the content', function (done) {
+        it('should insert the typed characters after the BR element', function (done) {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<i>1</i><br>');
+            expect(innerHTML).to.equal('<i>1<br>2</i>');
             done();
           });
         });
