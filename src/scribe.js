@@ -8,6 +8,7 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
+  './transaction-manager',
   './undo-manager'
 ], function (
   EventEmitter,
@@ -19,6 +20,7 @@ define([
   patches,
   shame,
   Api,
+  buildTransactionManager,
   UndoManager
 ) {
 
@@ -35,8 +37,9 @@ define([
 
     this.api = new Api(this);
 
+    var TransactionManager = buildTransactionManager(this);
     this.undoManager = new UndoManager();
-    this.transactionManager = new this.api.TransactionManager();
+    this.transactionManager = new TransactionManager();
 
     this.el.addEventListener('input', function () {
       this.transactionManager.start();

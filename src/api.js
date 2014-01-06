@@ -3,15 +3,13 @@ define([
   './api/command',
   './api/node',
   './api/selection',
-  './api/simple-command',
-  './api/transaction-manager'
+  './api/simple-command'
 ], function (
   buildCommandPatch,
   buildCommand,
   Node,
   buildSelection,
-  buildSimpleCommand,
-  buildTransactionManager
+  buildSimpleCommand
 ) {
 
   'use strict';
@@ -22,6 +20,5 @@ define([
     this.Node = Node;
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);
-    this.TransactionManager = buildTransactionManager(scribe);
   };
 });
