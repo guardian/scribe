@@ -30,6 +30,7 @@ define([
           });
 
           if (aNode) {
+            // TODO: unwrap API
             while (aNode.childNodes.length > 0) {
               aNode.parentNode.insertBefore(aNode.childNodes[0], aNode);
             }

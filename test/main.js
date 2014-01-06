@@ -628,6 +628,7 @@ describe('commands', function () {
 
   // TODO: find a way to separate tests for browser patches from normal
   // functionality.
+  // TODO: one suite for OLs and ULs or duplicates?
   describe('insertOrderedList', function () {
     given('content of "<p>|1</p>"', function () {
       setContent('<p>|1</p>');
@@ -674,9 +675,7 @@ describe('commands', function () {
             });
           });
 
-          // FIXME: Currently equals '<ol><li><span style="line-height: 2;">1</span><br></li></ol>'
-          // As per browser bug: http://jsbin.com/OtemujAY/3/edit?html,css,js,output
-          it.skip('should wrap the content in an ordered list', function (done) {
+          it('should wrap the content in an ordered list', function (done) {
             scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
               done();
