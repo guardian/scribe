@@ -5,6 +5,7 @@ define([
   './api/node',
   './api/selection',
   './api/simple-command',
+  './api/transaction-manager',
   './api/undo-manager'
 ], function (
   assign,
@@ -13,6 +14,7 @@ define([
   Node,
   buildSelection,
   buildSimpleCommand,
+  buildTransactionManager,
   UndoManager
 ) {
 
@@ -24,6 +26,7 @@ define([
     this.Node = Node;
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);
+    this.TransactionManager = buildTransactionManager(scribe);
     this.UndoManager = UndoManager;
   };
 });

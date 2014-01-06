@@ -12,7 +12,9 @@ define(function () {
       if (this.patch) {
         this.patch.execute(value);
       } else {
+        scribe.transactionManager.start();
         document.execCommand(this.commandName, false, value || null);
+        scribe.transactionManager.end();
       }
     };
 

@@ -40,10 +40,11 @@ define([
     this.api = new Api(this);
 
     this.undoManager = new this.api.UndoManager();
+    this.transactionManager = new this.api.TransactionManager();
 
     this.el.addEventListener('input', function () {
-      this.pushHistory();
-      this.trigger('content-changed');
+      this.transactionManager.start();
+      this.transactionManager.end();
     }.bind(this), false);
 
     /**

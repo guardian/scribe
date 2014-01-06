@@ -12,6 +12,8 @@ define(function () {
       var unlinkCommand = new scribe.api.Command('unlink');
 
       unlinkCommand.execute = function () {
+        scribe.transactionManager.start();
+
         var selection = new scribe.api.Selection();
 
         if (selection.selection.isCollapsed) {
@@ -33,6 +35,8 @@ define(function () {
         } else {
           scribe.api.Command.prototype.execute.apply(this, arguments);
         }
+
+        scribe.transactionManager.end();
       };
 
       unlinkCommand.queryEnabled = function () {

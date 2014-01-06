@@ -17,6 +17,8 @@ define(function () {
       InsertListCommand.prototype.constructor = InsertListCommand;
 
       InsertListCommand.prototype.execute = function (value) {
+        scribe.transactionManager.start();
+
         if (this.queryState()) {
 
           var selection = new scribe.api.Selection();
@@ -64,12 +66,11 @@ define(function () {
           }
 
           selection.selectMarkers(scribe.el);
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
         } else {
           scribe.api.Command.prototype.execute.call(this, value);
         }
+
+        scribe.transactionManager.end();
       };
 
       InsertListCommand.prototype.queryEnabled = function () {

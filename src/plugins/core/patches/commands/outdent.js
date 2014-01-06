@@ -11,6 +11,8 @@ define(function () {
       var outdentCommand = new scribe.api.CommandPatch('outdent');
 
       outdentCommand.execute = function () {
+        scribe.transactionManager.start();
+
         var selection = new scribe.api.Selection();
         var range = selection.range;
 
@@ -82,8 +84,7 @@ define(function () {
           }
         }
 
-        scribe.pushHistory();
-        scribe.trigger('content-changed');
+        scribe.transactionManager.end();
       };
 
       scribe.commandPatches.outdent = outdentCommand;

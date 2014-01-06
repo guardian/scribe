@@ -12,6 +12,8 @@ define(function () {
       InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
 
       InsertListCommandPatch.prototype.execute = function (value) {
+        scribe.transactionManager.start();
+
         scribe.api.CommandPatch.prototype.execute.call(this, value);
 
         if (this.queryState()) {
@@ -62,15 +64,9 @@ define(function () {
               spanElement.parentNode.removeChild(spanElement);
             }
           }
-
-          // We want to erase the stack item that was previously added.
-          // TODO: transactions!
-          scribe.undoManager.stack.length = scribe.undoManager.position;
-          --scribe.undoManager.position;
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
         }
+
+        scribe.transactionManager.end();
       };
 
       scribe.commandPatches.insertOrderedList = new InsertListCommandPatch('insertOrderedList');

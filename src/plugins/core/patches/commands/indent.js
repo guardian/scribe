@@ -14,6 +14,7 @@ define(function () {
       var indentCommand = new scribe.api.CommandPatch('indent');
 
       indentCommand.execute = function (value) {
+        scribe.transactionManager.start();
         /**
          * Chrome: If we apply the indent command on an empty P, the
          * BLOCKQUOTE will be nested inside the P.
@@ -50,16 +51,10 @@ define(function () {
         });
 
         if (blockquoteNode) {
-          // We want to erase the stack item that was previously added.
-          // TODO: transactions!
-          scribe.undoManager.stack.length = scribe.undoManager.position;
-          --scribe.undoManager.position;
-
           blockquoteNode.removeAttribute('style');
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
         }
+
+        scribe.transactionManager.end();
       };
 
       scribe.commandPatches.indent = indentCommand;
