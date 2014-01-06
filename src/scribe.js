@@ -134,9 +134,8 @@ define([
   Scribe.prototype.pushHistory = function () {
     var selection = new this.api.Selection();
 
-    var html;
     selection.placeMarkers();
-    html = this.el.innerHTML;
+    var html = this.el.innerHTML;
     selection.removeMarkers(this.el);
 
     this.undoManager.push(html);
