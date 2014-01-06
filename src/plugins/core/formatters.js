@@ -1,8 +1,4 @@
-define([
-  '../../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   'use strict';
 
@@ -53,7 +49,7 @@ define([
            * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
            */
 
-          var selection = new Selection();
+          var selection = new scribe.api.Selection();
 
           // Store the caret position
           selection.placeMarkers();

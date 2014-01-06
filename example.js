@@ -62,7 +62,7 @@ require({
 
   function showOrHideInlineToolbar() {
     // TODO: use internal API for getting range
-    var selection = new Selection();
+    var selection = new scribe.api.Selection();
     var range = selection.range;
 
     if (range.commonAncestorContainer.textContent && ! selection.selection.isCollapsed) {

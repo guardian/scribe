@@ -1,16 +1,10 @@
-define([
-  '../../../api/command',
-  '../../../api/selection'
-], function (
-  Command,
-  Selection
-) {
+define(function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var outdentCommand = new Command(scribe, 'outdent');
+      var outdentCommand = new scribe.api.Command('outdent');
 
       outdentCommand.queryEnabled = function () {
         /**
@@ -19,13 +13,13 @@ define([
          * Currently we just disable the command when the selection is inside of
          * a list.
          */
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var listElement = selection.getContaining(function (element) {
           return element.nodeName === 'UL' || element.nodeName === 'OL';
         });
 
         // FIXME: define block element rule here?
-        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
       };
 
       scribe.commands.outdent = outdentCommand;

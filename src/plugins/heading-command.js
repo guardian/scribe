@@ -1,10 +1,4 @@
-define([
-  '../api/command',
-  '../api/selection'
-], function (
-  Command,
-  Selection
-) {
+define(function () {
 
   /**
    * This plugin adds a command for headings.
@@ -22,18 +16,18 @@ define([
        * Chrome: the `heading` command doesn't work. Supported by Firefox only.
        */
 
-      var headingCommand = new Command(scribe, 'formatBlock');
+      var headingCommand = new scribe.api.Command('formatBlock');
 
       headingCommand.execute = function () {
         if (this.queryState()) {
-          Command.prototype.execute.call(this, '<p>');
+          scribe.api.Command.prototype.execute.call(this, '<p>');
         } else {
-          Command.prototype.execute.call(this, tag);
+          scribe.api.Command.prototype.execute.call(this, tag);
         }
       };
 
       headingCommand.queryState = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         return !! selection.getContaining(function (node) {
           return node.nodeName === nodeName;
         });
@@ -44,12 +38,12 @@ define([
        * Disabling for now.
        */
       headingCommand.queryEnabled = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var listNode = selection.getContaining(function (node) {
           return node.nodeName === 'OL' || node.nodeName === 'UL';
         });
 
-        return Command.prototype.queryEnabled.apply(this, arguments)
+        return scribe.api.Command.prototype.queryEnabled.apply(this, arguments)
           && scribe.allowsBlockElements() && ! listNode;
       };
 

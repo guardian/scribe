@@ -1,14 +1,10 @@
-define([
-  '../../../api/command'
-], function (
-  Command
-) {
+define(function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var redoCommand = new Command(scribe, 'redo');
+      var redoCommand = new scribe.api.Command('redo');
 
       redoCommand.execute = function () {
         var historyItem = scribe.undoManager.redo();

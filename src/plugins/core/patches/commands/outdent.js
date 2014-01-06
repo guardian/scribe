@@ -1,12 +1,4 @@
-define([
-  '../../../../api/command-patch',
-  '../../../../api/node',
-  '../../../../api/selection'
-], function (
-  CommandPatch,
-  Node,
-  Selection
-) {
+define(function () {
 
   /**
    * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
@@ -16,10 +8,10 @@ define([
 
   return function () {
     return function (scribe) {
-      var outdentCommand = new CommandPatch('outdent');
+      var outdentCommand = new scribe.api.CommandPatch('outdent');
 
       outdentCommand.execute = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
@@ -65,7 +57,7 @@ define([
              * split the node and insert the P in the middle.
              */
 
-            var nextSiblingNodes = (new Node(pNode)).nextAll();
+            var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
 
             if (nextSiblingNodes.length) {
               var newContainerNode = document.createElement(blockquoteNode.nodeName);
@@ -86,7 +78,7 @@ define([
               blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
           } else {
-            CommandPatch.prototype.execute.call(this);
+            scribe.api.CommandPatch.prototype.execute.call(this);
           }
         }
 

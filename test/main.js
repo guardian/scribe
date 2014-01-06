@@ -964,7 +964,7 @@ function setContent(html) {
       require(['./api/selection'], function (Selection) {
         window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
         if (html.match('|').length) {
-          var selection = new Selection();
+          var selection = new scribe.api.Selection();
           selection.selectMarkers(window.scribe.el);
         }
         done();

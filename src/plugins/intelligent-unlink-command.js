@@ -1,10 +1,4 @@
-define([
-  '../api/command',
-  '../api/selection'
-], function (
-  Command,
-  Selection
-) {
+define(function () {
 
   /**
    * This plugin modifies the `unlink` command so that, when the user's
@@ -15,10 +9,10 @@ define([
 
   return function () {
     return function (scribe) {
-      var unlinkCommand = new Command(scribe, 'unlink');
+      var unlinkCommand = new scribe.api.Command('unlink');
 
       unlinkCommand.execute = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
 
         if (selection.selection.isCollapsed) {
           /**
@@ -35,23 +29,20 @@ define([
               aNode.parentNode.insertBefore(aNode.childNodes[0], aNode);
             }
             aNode.parentNode.removeChild(aNode);
-
-            scribe.pushHistory();
-            scribe.trigger('content-changed');
           }
         } else {
-          Command.prototype.execute.apply(this, arguments);
+          scribe.api.Command.prototype.execute.apply(this, arguments);
         }
       };
 
       unlinkCommand.queryEnabled = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         if (selection.selection.isCollapsed) {
           return !! selection.getContaining(function (node) {
             return node.nodeName === 'A';
           });
         } else {
-          return Command.prototype.queryEnabled.apply(this, arguments);
+          return scribe.api.Command.prototype.queryEnabled.apply(this, arguments);
         }
       };
 

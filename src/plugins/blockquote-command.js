@@ -1,10 +1,4 @@
-define([
-  '../api/simple-command',
-  '../api/selection'
-], function (
-  SimpleCommand,
-  Selection
-) {
+define(function () {
 
   /**
    * Adds a command for using BLOCKQUOTEs.
@@ -14,7 +8,7 @@ define([
 
   return function () {
     return function (scribe) {
-      var blockquoteCommand = new SimpleCommand(scribe, 'blockquote', 'BLOCKQUOTE');
+      var blockquoteCommand = new scribe.api.SimpleCommand('blockquote', 'BLOCKQUOTE');
 
       blockquoteCommand.execute = function () {
         var command = scribe.getCommand(this.queryState() ? 'outdent' : 'indent');
@@ -27,7 +21,7 @@ define([
       };
 
       blockquoteCommand.queryState = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var blockquoteElement = selection.getContaining(function (element) {
           return element.nodeName === 'BLOCKQUOTE';
         });

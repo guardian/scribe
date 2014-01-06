@@ -1,8 +1,4 @@
-define([
-  '../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   'use strict';
 
@@ -17,16 +13,6 @@ define([
       // Bullet insertion keycode, most likely only working on OS X...
       8226:  '•'
     };
-
-    function removeSelectedTextNode() {
-      var selection = new Selection();
-      var container = selection.range.commonAncestorContainer;
-      if (container.nodeType === Node.TEXT_NODE) {
-        container.parentNode.removeChild(container);
-      } else {
-        throw new Error('Cannot empty non-text node!');
-      }
-    }
 
     function isUnorderedListChar(string) {
       return string === '*' || string === '-' || string === '•';
@@ -54,6 +40,16 @@ define([
 
       var preLastChar, lastChar, currentChar;
 
+      function removeSelectedTextNode() {
+        var selection = new scribe.api.Selection();
+        var container = selection.range.commonAncestorContainer;
+        if (container.nodeType === Node.TEXT_NODE) {
+          container.parentNode.removeChild(container);
+        } else {
+          throw new Error('Cannot empty non-text node!');
+        }
+      }
+
       function input(event) {
         var listCommand;
 
@@ -63,7 +59,7 @@ define([
         //        can we abstract this madness?
         currentChar = keys[event.charCode];
 
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
 
         // TODO: if a <p> with just this content
         var container = selection.range.commonAncestorContainer;

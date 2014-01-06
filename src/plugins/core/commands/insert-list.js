@@ -1,12 +1,4 @@
-define([
-  '../../../api/command',
-  '../../../api/node',
-  '../../../api/selection'
-], function (
-  Command,
-  Node,
-  Selection
-) {
+define(function () {
 
   /**
    * If the paragraphs option is set to true, then when the list is
@@ -18,15 +10,16 @@ define([
   return function () {
     return function (scribe) {
       var InsertListCommand = function (commandName) {
-        Command.call(this, scribe, commandName);
+        scribe.api.Command.call(this, commandName);
       };
 
-      InsertListCommand.prototype = Object.create(Command.prototype);
+      InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
       InsertListCommand.prototype.constructor = InsertListCommand;
 
       InsertListCommand.prototype.execute = function (value) {
         if (this.queryState()) {
-          var selection = new Selection();
+
+          var selection = new scribe.api.Selection();
 
           var listNode = selection.getContaining(function (node) {
             return node.nodeName === 'OL' || node.nodeName === 'UL';
@@ -41,7 +34,7 @@ define([
            * split the node and insert the P in the middle.
            */
 
-          var nextListItemNodes = (new Node(listItemNode)).nextAll();
+          var nextListItemNodes = (new scribe.api.Node(listItemNode)).nextAll();
 
           if (nextListItemNodes.length) {
             var newListNode = document.createElement(listNode.nodeName);
@@ -75,12 +68,12 @@ define([
           scribe.pushHistory();
           scribe.trigger('content-changed');
         } else {
-          Command.prototype.execute.call(this, value);
+          scribe.api.Command.prototype.execute.call(this, value);
         }
       };
 
       InsertListCommand.prototype.queryEnabled = function () {
-        return Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
       };
 
       scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');

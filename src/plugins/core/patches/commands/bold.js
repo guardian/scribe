@@ -1,28 +1,22 @@
-define([
-  '../../../../api/command-patch',
-  '../../../../api/selection'
-], function (
-  CommandPatch,
-  Selection
-) {
+define(function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var boldCommand = new CommandPatch('bold');
+      var boldCommand = new scribe.api.CommandPatch('bold');
 
       /**
        * Chrome: Executing the bold command inside a heading corrupts the markup.
        * Disabling for now.
        */
       boldCommand.queryEnabled = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var headingNode = selection.getContaining(function (node) {
           return (/^(H[1-6])$/).test(node.nodeName);
         });
 
-        return CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! headingNode;
+        return scribe.api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! headingNode;
       };
 
       // TODO: We can't use STRONGs because this would mean we have to
