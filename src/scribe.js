@@ -32,7 +32,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true
     });
-    this.patchedCommands = {};
+    this.commandPatches = {};
     this.initializers = [];
 
     this.undoManager = new UndoManager();
@@ -138,7 +138,7 @@ define([
   };
 
   Scribe.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || this.patchedCommands[commandName] || new Command(this, commandName);
+    return this.commands[commandName] || this.commandPatches[commandName] || new Command(this, commandName);
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {

@@ -94,7 +94,7 @@ define([
         scribe.trigger('content-changed');
       };
 
-      scribe.patchedCommands.outdent = outdentCommand;
+      scribe.commandPatches.outdent = outdentCommand;
     };
   };
 

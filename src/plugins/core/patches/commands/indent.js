@@ -68,7 +68,7 @@ define([
         }
       };
 
-      scribe.patchedCommands.indent = indentCommand;
+      scribe.commandPatches.indent = indentCommand;
     };
   };
 

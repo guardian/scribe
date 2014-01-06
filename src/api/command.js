@@ -5,28 +5,28 @@ define(function () {
   function Command(scribe, commandName) {
     this.scribe = scribe;
     this.commandName = commandName;
-    this.patchedCommand = this.scribe.patchedCommands[this.commandName];
+    this.patch = this.scribe.commandPatches[this.commandName];
   }
 
   Command.prototype.execute = function (value) {
-    if (this.patchedCommand) {
-      this.patchedCommand.execute(value);
+    if (this.patch) {
+      this.patch.execute(value);
     } else {
       document.execCommand(this.commandName, false, value || null);
     }
   };
 
   Command.prototype.queryState = function () {
-    if (this.patchedCommand) {
-      return this.patchedCommand.queryState();
+    if (this.patch) {
+      return this.patch.queryState();
     } else {
       return document.queryCommandState(this.commandName);
     }
   };
 
   Command.prototype.queryEnabled = function () {
-    if (this.patchedCommand) {
-      return this.patchedCommand.queryEnabled();
+    if (this.patch) {
+      return this.patch.queryEnabled();
     } else {
       return document.queryCommandEnabled(this.commandName);
     }

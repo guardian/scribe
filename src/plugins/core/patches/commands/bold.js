@@ -28,7 +28,7 @@ define([
       // TODO: We can't use STRONGs because this would mean we have to
       // re-implement the `queryState` command, which would be difficult.
 
-      scribe.patchedCommands.bold = boldCommand;
+      scribe.commandPatches.bold = boldCommand;
     };
   };
 

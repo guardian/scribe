@@ -81,8 +81,8 @@ define([
         }
       };
 
-      scribe.patchedCommands.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
-      scribe.patchedCommands.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
+      scribe.commandPatches.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
+      scribe.commandPatches.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
     };
   };
 
