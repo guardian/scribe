@@ -1,5 +1,4 @@
 define([
-  'lodash-modern/objects/assign',
   './api/command-patch',
   './api/command',
   './api/node',
@@ -8,7 +7,6 @@ define([
   './api/transaction-manager',
   './api/undo-manager'
 ], function (
-  assign,
   buildCommandPatch,
   buildCommand,
   Node,
