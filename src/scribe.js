@@ -8,6 +8,7 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
+  './undo-manager'
 ], function (
   EventEmitter,
   defaults,
@@ -17,7 +18,8 @@ define([
   formatters,
   patches,
   shame,
-  Api
+  Api,
+  UndoManager
 ) {
 
   'use strict';
@@ -33,7 +35,7 @@ define([
 
     this.api = new Api(this);
 
-    this.undoManager = new this.api.UndoManager();
+    this.undoManager = new UndoManager();
 
     this.el.addEventListener('input', function () {
       this.pushHistory();

@@ -4,8 +4,7 @@ define([
   './api/command',
   './api/node',
   './api/selection',
-  './api/simple-command',
-  './api/undo-manager'
+  './api/simple-command'
 ], function (
   assign,
   buildCommandPatch,
@@ -24,6 +23,5 @@ define([
     this.Node = Node;
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);
-    this.UndoManager = UndoManager;
   };
 });
