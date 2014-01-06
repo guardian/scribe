@@ -1,5 +1,6 @@
 define([
   'event-emitter',
+  'lodash-modern/objects/defaults',
   './initializers/root-paragraph-element',
   './initializers/insert-br-on-return',
   './plugins/core/commands',
@@ -7,17 +8,16 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
-  'lodash-modern/objects/defaults'
 ], function (
   EventEmitter,
+  defaults,
   rootParagraphElement,
   insertBrOnReturn,
   commands,
   formatters,
   patches,
   shame,
-  Api,
-  defaults
+  Api
 ) {
 
   'use strict';
