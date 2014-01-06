@@ -91,7 +91,6 @@ define([
             // insert a bogus BR element.
             if (! hasContent(contentToEndFragment)) {
               var bogusBrNode = document.createElement('br');
-              console.log(contentToEndFragment);
               range.insertNode(bogusBrNode);
             }
 
