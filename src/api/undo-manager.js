@@ -1,6 +1,4 @@
-define([
-  './selection'
-], function () {
+define(function () {
 
   'use strict';
 
