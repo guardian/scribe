@@ -18,7 +18,7 @@ define([
     return function (scribe) {
       var outdentCommand = new CommandPatch('outdent');
 
-      outdentCommand.execute = function (value) {
+      outdentCommand.execute = function () {
         var selection = new Selection();
         var range = selection.range;
 
