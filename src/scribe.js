@@ -132,13 +132,24 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var selection = new this.api.Selection();
+    var previousUndoItem = this.undoManager.stack[this.undoManager.stack.length - 1];
+    var previousContent = previousUndoItem && previousUndoItem
+      .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-    selection.placeMarkers();
-    var html = this.el.innerHTML;
-    selection.removeMarkers(this.el);
+    // We only want to push the history if the content actually changed.
+    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
+      var selection = new this.api.Selection();
 
-    this.undoManager.push(html);
+      selection.placeMarkers();
+      var html = this.el.innerHTML;
+      selection.removeMarkers(this.el);
+
+      this.undoManager.push(html);
+
+      return true;
+    } else {
+      return false;
+    }
   };
 
   Scribe.prototype.getCommand = function (commandName) {
