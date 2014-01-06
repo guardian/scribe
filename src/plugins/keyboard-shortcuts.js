@@ -1,8 +1,6 @@
 define([
-  '../api/selection',
   'lodash-modern/objects/findKey'
 ], function (
-  Selection,
   findKey
 ) {
 

@@ -1,26 +1,18 @@
-define([
-  '../../../../api/command-patch',
-  '../../../../api/node',
-  '../../../../api/selection'
-], function (
-  CommandPatch,
-  Node,
-  Selection
-) {
+define(function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
       var InsertListCommandPatch = function (commandName) {
-        CommandPatch.call(this, commandName);
+        scribe.api.CommandPatch.call(this, commandName);
       };
 
-      InsertListCommandPatch.prototype = Object.create(CommandPatch.prototype);
+      InsertListCommandPatch.prototype = Object.create(scribe.api.CommandPatch.prototype);
       InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
 
       InsertListCommandPatch.prototype.execute = function (value) {
-        CommandPatch.prototype.execute.call(this, value);
+        scribe.api.CommandPatch.prototype.execute.call(this, value);
 
         if (this.queryState()) {
           /**
@@ -29,7 +21,7 @@ define([
            * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
            */
 
-          var selection = new Selection();
+          var selection = new scribe.api.Selection();
 
           var listNode = selection.getContaining(function (node) {
             return node.nodeName === 'OL' || node.nodeName === 'UL';

@@ -1,8 +1,4 @@
-define([
-  '../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   'use strict';
 
@@ -32,7 +28,7 @@ define([
           scribe.on('content-changed', updateUi);
 
           function updateUi() {
-            var selection = new Selection();
+            var selection = new scribe.api.Selection();
 
             if (selection.range) {
               if (command.queryEnabled()) {

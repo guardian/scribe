@@ -1,8 +1,4 @@
-define([
-  '../../../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   /**
    * Chrome and Firefox: Upon pressing backspace inside of a P, the browser
@@ -24,7 +20,7 @@ define([
       scribe.el.addEventListener('keydown', function handleKeydown(event) {
         // Delete or backspace
         if (event.keyCode === 8 || event.keyCode === 46) {
-          var selection = new Selection();
+          var selection = new scribe.api.Selection();
 
           /**
            * The second condition in this statement is only relevant for Firefox.

@@ -1,8 +1,4 @@
-define([
-  '../../api/selection',
-], function (
-  Selection
-) {
+define(function () {
 
   'use strict';
 
@@ -16,7 +12,7 @@ define([
         scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13) { // enter
 
-            var selection = new Selection();
+            var selection = new scribe.api.Selection();
             var range = selection.range;
 
             var headingNode = selection.getContaining(function (node) {
@@ -68,7 +64,7 @@ define([
         scribe.el.addEventListener('keydown', function (event) {
           if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
-            var selection = new Selection();
+            var selection = new scribe.api.Selection();
             var range = selection.range;
 
             if (range.collapsed) {

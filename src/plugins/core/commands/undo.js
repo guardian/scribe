@@ -1,14 +1,10 @@
-define([
-  '../../../api/command'
-], function (
-  Command
-) {
+define(function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
-      var undoCommand = new Command(scribe, 'undo');
+      var undoCommand = new scribe.api.Command('undo');
 
       undoCommand.execute = function () {
         var historyItem = scribe.undoManager.undo();

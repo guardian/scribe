@@ -1,10 +1,4 @@
-define([
-  '../api/selection',
-  '../api/simple-command'
-], function (
-  Selection,
-  SimpleCommand
-) {
+define(function () {
 
   /**
    * This plugin adds a command for creating links, including a basic prompt.
@@ -14,10 +8,10 @@ define([
 
   return function () {
     return function (scribe) {
-      var linkPromptCommand = new SimpleCommand(scribe, 'createLink', 'A');
+      var linkPromptCommand = new scribe.api.SimpleCommand('createLink', 'A');
 
       linkPromptCommand.execute = function () {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var range = selection.range;
         var anchorNode = selection.getContaining(function (node) {
           return node.nodeName === this.nodeName;
@@ -55,7 +49,7 @@ define([
             }
           }
 
-          SimpleCommand.prototype.execute.call(this, link);
+          scribe.api.SimpleCommand.prototype.execute.call(this, link);
         }
       };
 

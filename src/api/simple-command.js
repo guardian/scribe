@@ -1,29 +1,25 @@
-define([
-  './command',
-  './selection'
-], function (
-  Command,
-  Selection
-) {
+define(function () {
 
   'use strict';
 
-  function SimpleCommand(scribe, commandName, nodeName) {
-    Command.call(this, scribe, commandName);
+  return function (api, scribe) {
+    function SimpleCommand(commandName, nodeName) {
+      scribe.api.Command.call(this, commandName);
 
-    this.nodeName = nodeName;
-  }
+      this.nodeName = nodeName;
+    }
 
-  SimpleCommand.prototype = Object.create(Command.prototype);
-  SimpleCommand.prototype.constructor = SimpleCommand;
+    SimpleCommand.prototype = Object.create(api.Command.prototype);
+    SimpleCommand.prototype.constructor = SimpleCommand;
 
-  SimpleCommand.prototype.queryState = function () {
-    var selection = new Selection();
-    return Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
-      return node.nodeName === this.nodeName;
-    }.bind(this));
+    SimpleCommand.prototype.queryState = function () {
+      var selection = new scribe.api.Selection();
+      return scribe.api.Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
+        return node.nodeName === this.nodeName;
+      }.bind(this));
+    };
+
+    return SimpleCommand;
   };
-
-  return SimpleCommand;
 
 });

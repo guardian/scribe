@@ -1,8 +1,4 @@
-define([
-  '../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   'use strict';
 
@@ -66,13 +62,13 @@ define([
       }
 
       function charBeforeSelectedRange() {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var context = selection.range.commonAncestorContainer.textContent;
         return context[selection.range.startOffset - 1];
       }
 
       function charAfterSelectedRange() {
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var context = selection.range.commonAncestorContainer.textContent;
         return context[selection.range.endOffset];
       }
@@ -81,7 +77,7 @@ define([
       function replaceSelectedRangeWith(text) {
         var textNode = document.createTextNode(text);
 
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         selection.range.deleteContents();
         selection.range.insertNode(textNode);
 
@@ -93,7 +89,7 @@ define([
         rangeAfter.setStartAfter(node);
         rangeAfter.setEndAfter(node);
 
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         selection.selection.removeAllRanges();
         selection.selection.addRange(rangeAfter);
       }

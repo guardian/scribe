@@ -1,27 +1,25 @@
 define([
   'event-emitter',
+  'lodash-modern/objects/defaults',
   './initializers/root-paragraph-element',
   './initializers/insert-br-on-return',
   './plugins/core/commands',
   './plugins/core/formatters',
   './plugins/core/patches',
   './plugins/core/shame',
-  './api/command',
-  './api/selection',
-  './api/undo-manager',
-  'lodash-modern/objects/defaults'
+  './api',
+  './undo-manager'
 ], function (
   EventEmitter,
+  defaults,
   rootParagraphElement,
   insertBrOnReturn,
   commands,
   formatters,
   patches,
   shame,
-  Command,
-  Selection,
-  UndoManager,
-  defaults
+  Api,
+  UndoManager
 ) {
 
   'use strict';
@@ -34,6 +32,8 @@ define([
     });
     this.commandPatches = {};
     this.initializers = [];
+
+    this.api = new Api(this);
 
     this.undoManager = new UndoManager();
 
@@ -127,7 +127,7 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var selection = new Selection();
+    var selection = new this.api.Selection();
 
     var html;
     selection.placeMarkers();
@@ -138,14 +138,14 @@ define([
   };
 
   Scribe.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || this.commandPatches[commandName] || new Command(this, commandName);
+    return this.commands[commandName] || this.commandPatches[commandName] || new this.api.Command(commandName);
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
     this.setHTML(historyItem);
 
     // Restore the selection
-    var selection = new Selection();
+    var selection = new this.api.Selection();
     selection.selectMarkers(this.el);
 
     this.trigger('content-changed');

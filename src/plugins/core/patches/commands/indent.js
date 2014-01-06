@@ -1,10 +1,4 @@
-define([
-  '../../../../api/command-patch',
-  '../../../../api/selection'
-], function (
-  CommandPatch,
-  Selection
-) {
+define(function () {
 
   /**
    * Prevent Chrome from inserting BLOCKQUOTEs inside of Ps, and also from
@@ -17,7 +11,7 @@ define([
 
   return function () {
     return function (scribe) {
-      var indentCommand = new CommandPatch('indent');
+      var indentCommand = new scribe.api.CommandPatch('indent');
 
       indentCommand.execute = function (value) {
         /**
@@ -25,7 +19,7 @@ define([
          * BLOCKQUOTE will be nested inside the P.
          * As per: http://jsbin.com/oDOriyU/3/edit?html,js,output
          */
-        var selection = new Selection();
+        var selection = new scribe.api.Selection();
         var range = selection.range;
 
         if (range.commonAncestorContainer.nodeName === 'P') {
@@ -42,7 +36,7 @@ define([
           selection.selection.addRange(range);
         }
 
-        CommandPatch.prototype.execute.call(this, value);
+        scribe.api.CommandPatch.prototype.execute.call(this, value);
 
         /**
          * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
@@ -50,7 +44,7 @@ define([
          */
 
         // Renew the selection
-        selection = new Selection();
+        selection = new scribe.api.Selection();
         var blockquoteNode = selection.getContaining(function (node) {
           return node.nodeName === 'BLOCKQUOTE';
         });
