@@ -1,5 +1,6 @@
 define([
   'event-emitter',
+  'lodash-modern/objects/defaults',
   './initializers/root-paragraph-element',
   './initializers/insert-br-on-return',
   './plugins/core/commands',
@@ -7,12 +8,10 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
-  './api/command',
-  './api/selection',
-  './api/undo-manager',
-  'lodash-modern/objects/defaults'
+  './undo-manager'
 ], function (
   EventEmitter,
+  defaults,
   rootParagraphElement,
   insertBrOnReturn,
   commands,
@@ -20,10 +19,7 @@ define([
   patches,
   shame,
   Api,
-  Command,
-  Selection,
-  UndoManager,
-  defaults
+  UndoManager
 ) {
 
   'use strict';
@@ -39,7 +35,7 @@ define([
 
     this.api = new Api(this);
 
-    this.undoManager = new this.api.UndoManager();
+    this.undoManager = new UndoManager();
     this.transactionManager = new this.api.TransactionManager();
 
     this.el.addEventListener('input', function () {

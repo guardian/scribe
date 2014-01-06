@@ -4,16 +4,14 @@ define([
   './api/node',
   './api/selection',
   './api/simple-command',
-  './api/transaction-manager',
-  './api/undo-manager'
+  './api/transaction-manager'
 ], function (
   buildCommandPatch,
   buildCommand,
   Node,
   buildSelection,
   buildSimpleCommand,
-  buildTransactionManager,
-  UndoManager
+  buildTransactionManager
 ) {
 
   'use strict';
@@ -25,6 +23,5 @@ define([
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);
     this.TransactionManager = buildTransactionManager(scribe);
-    this.UndoManager = UndoManager;
   };
 });
