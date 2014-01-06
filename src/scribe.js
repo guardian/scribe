@@ -7,9 +7,6 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
-  './api/command',
-  './api/selection',
-  './api/undo-manager',
   'lodash-modern/objects/defaults'
 ], function (
   EventEmitter,
@@ -20,9 +17,6 @@ define([
   patches,
   shame,
   Api,
-  Command,
-  Selection,
-  UndoManager,
   defaults
 ) {
 
