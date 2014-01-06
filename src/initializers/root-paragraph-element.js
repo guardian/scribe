@@ -1,8 +1,4 @@
-define([
-  '../api/selection'
-], function (
-  Selection
-) {
+define(function () {
 
   /**
    * Sets the default content of the scribe so that each carriage return creates
