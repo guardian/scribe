@@ -15,7 +15,7 @@ define(['lodash-modern/objects/assign'], function (assign) {
       end: function () {
         this.history.pop();
 
-        if (! this.history.length) {
+        if (this.history.length === 0) {
           scribe.pushHistory();
           scribe.trigger('content-changed');
         }
