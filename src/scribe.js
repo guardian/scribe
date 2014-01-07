@@ -140,6 +140,12 @@ define([
     var previousContent = previousUndoItem && previousUndoItem
       .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
+    /**
+     * Chrome and Firefox: If we did push to the history, this would break
+     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+     * This happens when doing any DOM manipulation.
+     */
+
     // We only want to push the history if the content actually changed.
     if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
       var selection = new this.api.Selection();
