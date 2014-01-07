@@ -24,7 +24,12 @@ define(['lodash-modern/objects/assign'], function (assign) {
       run: function (transaction) {
         this.start();
         if (transaction) {
-          transaction();
+          // If there is an error, don't prevent the transaction from ending.
+          try {
+            transaction();
+          } catch (error) {
+            console.error(error.stack);
+          }
         }
         this.end();
       }
