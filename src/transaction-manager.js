@@ -9,7 +9,7 @@ define(['lodash-modern/objects/assign'], function (assign) {
 
     assign(TransactionManager.prototype, {
       start: function () {
-        this.history.push(scribe.getContent());
+        this.history.push(1);
       },
 
       end: function () {
