@@ -1,18 +1,15 @@
 define([
-  'lodash-modern/objects/assign',
   './api/command-patch',
   './api/command',
   './api/node',
   './api/selection',
   './api/simple-command'
 ], function (
-  assign,
   buildCommandPatch,
   buildCommand,
   Node,
   buildSelection,
-  buildSimpleCommand,
-  UndoManager
+  buildSimpleCommand
 ) {
 
   'use strict';

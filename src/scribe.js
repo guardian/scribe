@@ -8,6 +8,7 @@ define([
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
+  './transaction-manager',
   './undo-manager'
 ], function (
   EventEmitter,
@@ -19,6 +20,7 @@ define([
   patches,
   shame,
   Api,
+  buildTransactionManager,
   UndoManager
 ) {
 
@@ -35,11 +37,18 @@ define([
 
     this.api = new Api(this);
 
+    var TransactionManager = buildTransactionManager(this);
     this.undoManager = new UndoManager();
+    this.transactionManager = new TransactionManager();
 
     this.el.addEventListener('input', function () {
-      this.pushHistory();
-      this.trigger('content-changed');
+      /**
+       * This event triggers when either the user types something or a native
+       * command is executed which causes the content to change (i.e.
+       * `document.execCommand('bold')`). We can't wrap a transaction around
+       * these actions, so instead we run the transaction in this event.
+       */
+      this.transactionManager.run();
     }.bind(this), false);
 
     /**
@@ -127,14 +136,30 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var selection = new this.api.Selection();
+    var previousUndoItem = this.undoManager.stack[this.undoManager.stack.length - 1];
+    var previousContent = previousUndoItem && previousUndoItem
+      .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-    var html;
-    selection.placeMarkers();
-    html = this.el.innerHTML;
-    selection.removeMarkers(this.el);
+    /**
+     * Chrome and Firefox: If we did push to the history, this would break
+     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+     * This happens when doing any DOM manipulation.
+     */
 
-    this.undoManager.push(html);
+    // We only want to push the history if the content actually changed.
+    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
+      var selection = new this.api.Selection();
+
+      selection.placeMarkers();
+      var html = this.el.innerHTML;
+      selection.removeMarkers(this.el);
+
+      this.undoManager.push(html);
+
+      return true;
+    } else {
+      return false;
+    }
   };
 
   Scribe.prototype.getCommand = function (commandName) {

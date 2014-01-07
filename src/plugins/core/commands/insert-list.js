@@ -18,55 +18,53 @@ define(function () {
 
       InsertListCommand.prototype.execute = function (value) {
         if (this.queryState()) {
+          scribe.transactionManager.run(function () {
+            var selection = new scribe.api.Selection();
 
-          var selection = new scribe.api.Selection();
-
-          var listNode = selection.getContaining(function (node) {
-            return node.nodeName === 'OL' || node.nodeName === 'UL';
-          });
-
-          var listItemNode = selection.getContaining(function (node) {
-            return node.nodeName === 'LI';
-          });
-
-          /**
-           * If we are not at the start of end of a UL/OL, we have to
-           * split the node and insert the P in the middle.
-           */
-
-          var nextListItemNodes = (new scribe.api.Node(listItemNode)).nextAll();
-
-          if (nextListItemNodes.length) {
-            var newListNode = document.createElement(listNode.nodeName);
-
-            nextListItemNodes.forEach(function (listItemNode) {
-              newListNode.appendChild(listItemNode);
+            var listNode = selection.getContaining(function (node) {
+              return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
 
-            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
-          }
+            var listItemNode = selection.getContaining(function (node) {
+              return node.nodeName === 'LI';
+            });
 
-          /**
-           * Insert a paragraph in place of the list item.
-           */
+            /**
+             * If we are not at the start of end of a UL/OL, we have to
+             * split the node and insert the P in the middle.
+             */
 
-          selection.placeMarkers();
+            var nextListItemNodes = (new scribe.api.Node(listItemNode)).nextAll();
 
-          var pNode = document.createElement('p');
-          pNode.innerHTML = listItemNode.innerHTML;
+            if (nextListItemNodes.length) {
+              var newListNode = document.createElement(listNode.nodeName);
 
-          listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-          listItemNode.parentNode.removeChild(listItemNode);
+              nextListItemNodes.forEach(function (listItemNode) {
+                newListNode.appendChild(listItemNode);
+              });
 
-          // If the list is now empty, clean it up.
-          if (listNode.innerHTML === '') {
-            listNode.parentNode.removeChild(listNode);
-          }
+              listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
+            }
 
-          selection.selectMarkers(scribe.el);
+            /**
+             * Insert a paragraph in place of the list item.
+             */
 
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
+            selection.placeMarkers();
+
+            var pNode = document.createElement('p');
+            pNode.innerHTML = listItemNode.innerHTML;
+
+            listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
+            listItemNode.parentNode.removeChild(listItemNode);
+
+            // If the list is now empty, clean it up.
+            if (listNode.innerHTML === '') {
+              listNode.parentNode.removeChild(listNode);
+            }
+
+            selection.selectMarkers(scribe.el);
+          }.bind(this));
         } else {
           scribe.api.Command.prototype.execute.call(this, value);
         }

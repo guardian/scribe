@@ -21,7 +21,6 @@
 # Known Bugs
 * Chrome: Add BLOCKQUOTE, add list, unapply blockquote = Creates BLOCKQUOTE
   without P.
-* An item is pushed to the undo manager every time an empty editor is emptied.
 * Applying the outdent command on a top level list item breaks P mode.
 * When inserting lists we remove any SPANs from the inside to fix a Chrome bug,
   but what if the user actually wants a SPAN?

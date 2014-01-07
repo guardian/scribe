@@ -12,7 +12,6 @@ require({
   }
 }, [
   'scribe',
-  'api/selection',
   'plugins/blockquote-command',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
@@ -24,7 +23,6 @@ require({
   'plugins/keyboard-shortcuts'
 ], function (
   Scribe,
-  Selection,
   blockquoteCommand,
   headingCommand,
   intelligentUnlinkCommand,
