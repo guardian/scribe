@@ -42,6 +42,12 @@ define([
     this.transactionManager = new TransactionManager();
 
     this.el.addEventListener('input', function () {
+      /**
+       * This event triggers when either the user types something or a native
+       * command is executed which causes the content to change (i.e.
+       * `document.execCommand('bold')`). We can't wrap a transaction around
+       * these actions, so instead we run the transaction in this event.
+       */
       this.transactionManager.run();
     }.bind(this), false);
 
