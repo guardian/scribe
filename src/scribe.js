@@ -42,8 +42,7 @@ define([
     this.transactionManager = new TransactionManager();
 
     this.el.addEventListener('input', function () {
-      this.transactionManager.start();
-      this.transactionManager.end();
+      this.transactionManager.run();
     }.bind(this), false);
 
     /**

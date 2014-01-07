@@ -19,6 +19,14 @@ define(['lodash-modern/objects/assign'], function (assign) {
           scribe.pushHistory();
           scribe.trigger('content-changed');
         }
+      },
+
+      run: function (transaction) {
+        this.start();
+        if (transaction) {
+          transaction();
+        }
+        this.end();
       }
     });
 
