@@ -23,15 +23,16 @@ define(['lodash-modern/objects/assign'], function (assign) {
 
       run: function (transaction) {
         this.start();
-        if (transaction) {
-          // If there is an error, don't prevent the transaction from ending.
-          try {
+        // If there is an error, don't prevent the transaction from ending.
+        try {
+          if (transaction) {
             transaction();
-          } catch (error) {
-            console.error(error.stack);
           }
+        } catch (error) {
+          throw error;
+        } finally {
+          this.end();
         }
-        this.end();
       }
     });
 
