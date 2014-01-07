@@ -28,8 +28,6 @@ define(['lodash-modern/objects/assign'], function (assign) {
           if (transaction) {
             transaction();
           }
-        } catch (error) {
-          throw error;
         } finally {
           this.end();
         }
