@@ -180,7 +180,7 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var previousUndoItem = this.undoManager.stack[this.undoManager.stack.length - 1];
+    var previousUndoItem = this.undoManager.stack[this.undoManager.position];
     var previousContent = previousUndoItem && previousUndoItem
       .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
