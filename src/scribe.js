@@ -171,7 +171,7 @@ define([
 
     // Restore the selection
     var selection = new this.api.Selection();
-    selection.selectMarkers(this.el);
+    selection.selectMarkers();
 
     this.trigger('content-changed');
   };

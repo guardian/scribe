@@ -35,7 +35,7 @@ define(function () {
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
                 listParentNode.parentNode.insertBefore(listNode, listParentNode.nextElementSibling);
-                selection.selectMarkers(scribe.el);
+                selection.selectMarkers();
                 listParentNode.parentNode.removeChild(listParentNode);
               }
             }

@@ -27,11 +27,11 @@ define(function () {
             // restore the selection on the copy.
             selection.placeMarkers();
             // We want to copy the selected nodes *with* the markers
-            selection.selectMarkers(scribe.el, true);
+            selection.selectMarkers(true);
             var selectedNodes = range.cloneContents();
             blockquoteNode.parentNode.insertBefore(selectedNodes, blockquoteNode);
             range.deleteContents();
-            selection.selectMarkers(scribe.el);
+            selection.selectMarkers();
 
             // Delete the BLOCKQUOTE if it's empty
             if (blockquoteNode.innerText === '') {
@@ -72,7 +72,7 @@ define(function () {
 
               selection.placeMarkers();
               blockquoteNode.parentNode.insertBefore(pNode, blockquoteNode.nextElementSibling);
-              selection.selectMarkers(scribe.el);
+              selection.selectMarkers();
 
               // If the BLOCKQUOTE is now empty, clean it up.
               if (blockquoteNode.innerHTML === '') {

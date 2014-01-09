@@ -60,20 +60,19 @@ define(function () {
       this.selection.addRange(this.range);
     };
 
-    Selection.prototype.getMarkers = function (editorNode) {
-      return editorNode.querySelectorAll('em.scribe-marker');
+    Selection.prototype.getMarkers = function () {
+      return scribe.el.querySelectorAll('em.scribe-marker');
     };
 
-    Selection.prototype.removeMarkers = function (editorNode) {
-      var markers = this.getMarkers(editorNode);
+    Selection.prototype.removeMarkers = function () {
+      var markers = this.getMarkers();
       Array.prototype.forEach.call(markers, function (marker) {
         marker.parentNode.removeChild(marker);
       });
     };
 
-    // TODO: use range for editorNode?
-    Selection.prototype.selectMarkers = function (editorNode, keepMarkers) {
-      var markers = this.getMarkers(editorNode);
+    Selection.prototype.selectMarkers = function (keepMarkers) {
+      var markers = this.getMarkers();
       if (!markers.length) {
         return;
       }
@@ -84,7 +83,7 @@ define(function () {
       }
 
       if (! keepMarkers) {
-        this.removeMarkers(editorNode);
+        this.removeMarkers();
       }
 
       this.selection.removeAllRanges();

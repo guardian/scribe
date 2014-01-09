@@ -38,7 +38,7 @@ define(function () {
             event.preventDefault();
             scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-            selection.selectMarkers(scribe.el);
+            selection.selectMarkers();
 
             scribe.pushHistory();
             scribe.trigger('content-changed');
