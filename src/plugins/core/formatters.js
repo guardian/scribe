@@ -65,7 +65,7 @@ define(function () {
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
-            selection.selectMarkers(scribe.el);
+            selection.selectMarkers();
 
             document.execCommand('insertHTML', null, scribe.formatter.format(data));
           }, 1);

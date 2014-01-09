@@ -63,7 +63,7 @@ define(function () {
               listNode.parentNode.removeChild(listNode);
             }
 
-            selection.selectMarkers(scribe.el);
+            selection.selectMarkers();
           }.bind(this));
         } else {
           scribe.api.Command.prototype.execute.call(this, value);

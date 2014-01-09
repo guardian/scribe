@@ -93,6 +93,50 @@ define([
       this.el.removeEventListener('focus', pushHistoryOnFocus);
     }.bind(this);
 
+    // TODO: abstract
+    this.el.addEventListener('focus', function () {
+      /**
+       * Firefox: Giving focus to a `contenteditable` will place the caret
+       * outside of any block elements. Chrome behaves correctly by placing the
+       * caret at the  earliest point possible inside the first block element.
+       * As per: http://jsbin.com/eLoFOku/1/edit?js,console,output
+       *
+       * We detect when this occurs and fix it by placing the caret ourselves.
+       */
+      var selection = new this.api.Selection();
+      // FIXME: Chrome error
+      selection.placeMarkers();
+      var firefoxBug = this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
+      selection.removeMarkers();
+
+      if (this.allowsBlockElements() && firefoxBug) {
+        var focusElement = getFirstDeepestChild(document.querySelector('[contenteditable]').firstChild);
+
+        var range = selection.range;
+
+        range.setStart(focusElement, 0);
+        range.setEnd(focusElement, 0);
+
+        selection.selection.removeAllRanges();
+        selection.selection.addRange(range);
+      }
+
+      function getFirstDeepestChild(node) {
+        var treeWalker = document.createTreeWalker(node);
+        var previousNode = treeWalker.currentNode;
+        if (treeWalker.firstChild()) {
+          // TODO: build list of non-empty elements (used elsewhere)
+          // Do not include non-empty elements
+          if (treeWalker.currentNode.nodeName === 'BR') {
+            return previousNode;
+          } else {
+            return getFirstDeepestChild(treeWalker.currentNode);
+          }
+        } else {
+          return treeWalker.currentNode;
+        }
+      }
+    }.bind(this));
     this.el.addEventListener('focus', pushHistoryOnFocus);
   }
 
@@ -136,7 +180,7 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var previousUndoItem = this.undoManager.stack[this.undoManager.stack.length - 1];
+    var previousUndoItem = this.undoManager.stack[this.undoManager.position];
     var previousContent = previousUndoItem && previousUndoItem
       .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
@@ -171,7 +215,7 @@ define([
 
     // Restore the selection
     var selection = new this.api.Selection();
-    selection.selectMarkers(this.el);
+    selection.selectMarkers();
 
     this.trigger('content-changed');
   };
