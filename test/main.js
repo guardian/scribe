@@ -817,15 +817,12 @@ describe('curly quotes plugin', function () {
 
 function setContent(html) {
   beforeEach(function () {
-    return driver.executeAsyncScript(function (html, done) {
-      require(['./api/selection'], function (Selection) {
-        window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
-        if (html.match('|').length) {
-          var selection = new scribe.api.Selection();
-          selection.selectMarkers(window.scribe.el);
-        }
-        done();
-      });
+    return driver.executeScript(function (html) {
+      window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
+      if (html.match('|').length) {
+        var selection = new window.scribe.api.Selection();
+        selection.selectMarkers(window.scribe.el);
+      }
     }, html);
   });
 }
