@@ -80,6 +80,10 @@ define(function () {
       this.range.setStartBefore(markers[0]);
       if (markers.length >= 2) {
         this.range.setEndAfter(markers[1]);
+      } else {
+        // We always reset the end marker because otherwise it will just
+        // use the current range’s end marker.
+        this.range.setEndAfter(markers[0]);
       }
 
       if (! keepMarkers) {
