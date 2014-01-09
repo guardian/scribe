@@ -1,6 +1,8 @@
-var expect = require('chai').expect;
+var chai = require('chai');
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
+
+var expect = chai.expect;
 
 require('mocha-as-promised')();
 
@@ -65,8 +67,7 @@ before(function (done) {
   server.start().then(function () {
     driver = new webdriver.Builder()
       .usingServer(server.address())
-      // TODO: firefox
-      .withCapabilities(webdriver.Capabilities.chrome())
+      .withCapabilities(webdriver.Capabilities.firefox())
       .build();
 
     driver.manage().timeouts().setScriptTimeout(2000);
@@ -74,6 +75,48 @@ before(function (done) {
     driver.get('http://localhost:8080/test/app/index.html').then(function () {
       done();
     });
+  });
+});
+
+before(function () {
+  return driver.getCapabilities().then(function (driverCapabilities) {
+    chai.use(function (chai, utils) {
+      chai.Assertion.addMethod('html', function (regExpContents) {
+        var obj = utils.flag(this, 'object');
+        new chai.Assertion(obj).to.match(getHtmlRegExp(regExpContents));
+      });
+    });
+
+    function getHtmlRegExp(string) {
+      string = string.replace('<bogus-br>', '<br>');
+
+      var fragments;
+      if (driverCapabilities.caps_.browserName === 'chrome') {
+        fragments = string
+          .replace('<firefox-bogus-br>', '')
+          .split('<chrome-bogus-br>')
+          .map(encodeRegExp)
+          .join('<br>');
+      } else if (driverCapabilities.caps_.browserName === 'firefox') {
+        fragments = string
+          // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
+          // for spaces with no right-hand side content.
+          .replace('&nbsp;', ' ')
+          .replace('<chrome-bogus-br>', '')
+          .split('<firefox-bogus-br>')
+          .map(encodeRegExp)
+          .join('<br>');
+      } else {
+        // Just incase
+        fragments = '';
+      }
+
+      return new RegExp('^' + fragments + '$');
+    }
+
+    function encodeRegExp(string) {
+      return string.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+    }
   });
 });
 
@@ -115,6 +158,8 @@ describe('undo manager', function () {
         return scribeNode.sendKeys('2');
       });
 
+      // TODO: it should push to the history
+
       when('the undo command is executed', function () {
         beforeEach(function () {
           return driver.executeScript(function () {
@@ -152,16 +197,15 @@ describe('P mode', function () {
     });
   });
 
-  given('no content', function () {
+  given('default content', function () {
     when('the user types', function () {
-
       beforeEach(function () {
         return scribeNode.sendKeys('1');
       });
 
       it('should insert the text inside of a P element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>1</p>');
+          expect(innerHTML).to.have.html('<p>1<firefox-bogus-br></p>');
         });
       });
 
@@ -172,7 +216,7 @@ describe('P mode', function () {
 
         it('should insert another P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<p>1</p><p><br></p>');
+            expect(innerHTML).to.have.html('<p>1</p><p><bogus-br></p>');
           });
         });
 
@@ -183,7 +227,7 @@ describe('P mode', function () {
 
           it('should insert the typed characters inside of the P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p>1</p><p>2</p>');
+              expect(innerHTML).to.have.html('<p>1</p><p>2<firefox-bogus-br></p>');
             });
           });
         });
@@ -203,7 +247,7 @@ describe('P mode', function () {
 
         it('should delete the list and insert an empty P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<p><br></p>');
+            expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
         });
       });
@@ -215,7 +259,7 @@ describe('P mode', function () {
 
         it('should delete the list and insert an empty P element', function () {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<p><br></p>');
+            expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
         });
       });
@@ -244,11 +288,11 @@ describe('P mode', function () {
 
         it('should split the list into two and insert an empty P element in-between', function () {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal(
+            expect(innerHTML).to.have.html(
               '<ul>' +
                 '<li>1</li>' +
               '</ul>' +
-              '<p><br></p>' +
+              '<p><bogus-br></p>' +
               '<ul>' +
                 '<li>2</li>' +
               '</ul>'
@@ -264,11 +308,11 @@ describe('P mode', function () {
 
         it('should split the list into two and insert an empty P element in-between', function () {
           scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal(
+            expect(innerHTML).to.have.html(
               '<ul>' +
                 '<li>1</li>' +
               '</ul>' +
-              '<p><br></p>' +
+              '<p><bogus-br></p>' +
               '<ul>' +
                 '<li>2</li>' +
               '</ul>'
@@ -284,7 +328,7 @@ describe('P mode', function () {
       return driver.executeScript(function () {
         return window.scribe.getContent();
       }).then(function (html) {
-        expect(html).to.equal('<p><br></p>');
+        expect(html).to.have.html('<p><bogus-br></p>');
       });
     });
   });
@@ -294,7 +338,7 @@ describe('P mode', function () {
       return driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
-        expect(html).to.equal('<p><br></p>');
+        expect(html).to.have.html('<p><bogus-br></p>');
       });
     });
   });
@@ -317,7 +361,7 @@ describe('BR mode', function () {
 
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('1<br>');
+        expect(innerHTML).to.have.html('1<bogus-br>');
       });
     });
 
@@ -328,7 +372,7 @@ describe('BR mode', function () {
 
       it('should create a new line by inserting a BR element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('1<br><br>');
+          expect(innerHTML).to.have.html('1<br><bogus-br>');
         });
       });
 
@@ -339,7 +383,7 @@ describe('BR mode', function () {
 
         it('should insert the typed characters on the new line', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br>2');
+            expect(innerHTML).to.have.html('1<br>2<firefox-bogus-br>');
           });
         });
       });
@@ -352,7 +396,7 @@ describe('BR mode', function () {
 
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('1<br>2<br>');
+        expect(innerHTML).to.have.html('1<br>2<bogus-br>');
       });
     });
 
@@ -363,7 +407,7 @@ describe('BR mode', function () {
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('1<br><br>2');
+          expect(innerHTML).to.have.html('1<br><br>2<firefox-bogus-br>');
         });
       });
 
@@ -374,7 +418,7 @@ describe('BR mode', function () {
 
         it('should insert the typed characters on the new line', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br>3<br>2');
+            expect(innerHTML).to.have.html('1<br>3<br>2<firefox-bogus-br>');
           });
         });
       });
@@ -387,7 +431,7 @@ describe('BR mode', function () {
 
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<i>1</i><br>');
+        expect(innerHTML).to.have.html('<i>1</i><bogus-br>');
       });
     });
 
@@ -398,7 +442,7 @@ describe('BR mode', function () {
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<i>1<br><br></i>');
+          expect(innerHTML).to.have.html('<i>1<br><bogus-br></i>');
         });
       });
 
@@ -409,17 +453,17 @@ describe('BR mode', function () {
 
         it('should insert the typed characters after the BR element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<i>1<br>2</i>');
+            expect(innerHTML).to.have.html('<i>1<br>2<firefox-bogus-br></i>');
           });
         });
       });
     });
   });
 
-  given('no content', function () {
+  given('default content', function () {
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<br>');
+        expect(innerHTML).to.have.html('<bogus-br>');
       });
     });
 
@@ -430,7 +474,7 @@ describe('BR mode', function () {
 
       it('should insert the typed characters', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('1');
+          expect(innerHTML).to.have.html('1<firefox-bogus-br>');
         });
       });
 
@@ -441,7 +485,7 @@ describe('BR mode', function () {
 
         it('should insert two BR elements', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('1<br><br>');
+            expect(innerHTML).to.have.html('1<br><bogus-br>');
           });
         });
 
@@ -452,7 +496,7 @@ describe('BR mode', function () {
 
           it('should replace the second BR element with the typed characters', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('1<br>2');
+              expect(innerHTML).to.have.html('1<br>2<firefox-bogus-br>');
             });
           });
         });
@@ -471,11 +515,11 @@ describe('BR mode', function () {
   });
 
   describe('#getHTML()', function () {
-    it('should return nothing', function () {
+    it('should return a bogus BR', function () {
       return driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
-        expect(html).to.equal('<br>');
+        expect(html).to.have.html('<bogus-br>');
       });
     });
   });
@@ -512,7 +556,7 @@ describe('commands', function () {
 
           it('should inserts the typed characters inside of a B element, inside of a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p><b>1</b></p>');
+              expect(innerHTML).to.have.html('<p><b>1</b><firefox-bogus-br></p>');
             });
           });
         });
@@ -560,7 +604,7 @@ describe('commands', function () {
 
         it('should wrap the content in an ordered list', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
+            expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
           });
         });
       });
@@ -585,7 +629,7 @@ describe('commands', function () {
 
           it('should wrap the content in an ordered list', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
+              expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
             });
           });
         });
@@ -620,7 +664,7 @@ describe('smart lists plugin', function () {
 
       it('should create an unordered list', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<ul><li><br></li></ul>');
+          expect(innerHTML).to.have.html('<ul><li><bogus-br></li></ul>');
         });
       });
 
@@ -631,7 +675,7 @@ describe('smart lists plugin', function () {
 
         it('should insert the typed characters inside of the LI element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<ul><li>abc</li></ul>');
+            expect(innerHTML).to.have.html('<ul><li>abc<firefox-bogus-br></li></ul>');
           });
         });
 
@@ -642,7 +686,7 @@ describe('smart lists plugin', function () {
 
           it('should create a new LI element', function () {
             scribeNode.getInnerHTML().then(function (innerHTML) {
-              return expect(innerHTML).to.equal('<ul><li>abc</li><li><br></li></ul>');
+              expect(innerHTML).to.have.html('<ul><li>abc</li><li><bogus-br></li></ul>');
             });
           });
 
@@ -653,7 +697,7 @@ describe('smart lists plugin', function () {
 
             it('should insert the typed characters inside the new LI element', function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                expect(innerHTML).to.equal('<ul><li>abc</li><li>def</li></ul>');
+                expect(innerHTML).to.have.html('<ul><li>abc</li><li>def<firefox-bogus-br></li></ul>');
               });
             });
           });
@@ -665,7 +709,7 @@ describe('smart lists plugin', function () {
 
             it('should end the list and start a new P', function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                expect(innerHTML).to.equal('<ul><li>abc</li></ul><p><br></p>');
+                expect(innerHTML).to.have.html('<ul><li>abc</li></ul><p><bogus-br></p>');
               });
             });
           });
@@ -686,7 +730,7 @@ describe('smart lists plugin', function () {
         it('should write these characters and not create a list', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             var prefixNbsp = prefix.replace(' ', '&nbsp;');
-            expect(innerHTML).to.equal('<p>hello' +prefixNbsp+ '</p>');
+            expect(innerHTML).to.have.html('<p>hello' +prefixNbsp+ '<firefox-bogus-br></p>');
           });
         });
       });
@@ -708,7 +752,7 @@ describe('smart lists plugin', function () {
 
         it('should create an unordered list containing the words on the line', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.equal('<ul><li>hello<br></li></ul>');
+            expect(innerHTML).to.have.html('<ul><li>hello<bogus-br></li></ul>');
           });
         });
       });
@@ -725,7 +769,7 @@ describe('smart lists plugin', function () {
 
     it('should create an ordered list', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
-        expect(innerHTML).to.equal('<ol><li><br></li></ol>');
+        expect(innerHTML).to.have.html('<ol><li><bogus-br></li></ol>');
       });
     });
 
@@ -757,7 +801,7 @@ describe('curly quotes plugin', function () {
 
       it('should insert an opening curly double quote instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>“<br></p>');
+          expect(innerHTML).to.have.html('<p>“<bogus-br></p>');
         });
       });
     });
@@ -769,7 +813,7 @@ describe('curly quotes plugin', function () {
 
       it('should not insert any content', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p><br></p>');
+          expect(innerHTML).to.have.html('<p><bogus-br></p>');
         });
       });
     });
@@ -787,7 +831,7 @@ describe('curly quotes plugin', function () {
 
       it('should insert a closing curly double quote instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>Hello”</p>');
+          expect(innerHTML).to.have.html('<p>Hello”<firefox-bogus-br></p>');
         });
       });
     });
@@ -821,7 +865,7 @@ function setContent(html) {
       window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
       if (html.match('|').length) {
         var selection = new window.scribe.api.Selection();
-        selection.selectMarkers(window.scribe.el);
+        selection.selectMarkers();
       }
     }, html);
   });
