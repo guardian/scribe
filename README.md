@@ -29,3 +29,8 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 ### `Document.queryCommandState`
 * Browser magic: Chrome and Firefox report command state to be true after
   applying a command to a collapsed selection, but why?: http://jsbin.com/eDOxacI/1/edit?js,console,output
+
+### `Element.focus`
+* Firefox: Giving focus to a `contenteditable` will place the caret outside of
+  any block elements. Chrome behaves correctly by placing the caret at the
+  earliest point possible inside the first block element: http://jsbin.com/eLoFOku/1/edit?js,console,output
