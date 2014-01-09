@@ -2,6 +2,8 @@ var expect = require('chai').expect;
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 
+require('mocha-as-promised')();
+
 /* global describe, it, after, afterEach, before, beforeEach */
 
 function given() {
@@ -75,43 +77,33 @@ before(function (done) {
   });
 });
 
-after(function (done) {
+after(function () {
   // FIXME: Quit fails when there was an error from the WebDriver
-  driver.quit().then(function () {
+  return driver.quit().then(function () {
     return server.stop();
-  }).then(function () {
-    done();
   });
 });
 
-beforeEach(function (done) {
-  driver.wait(function () {
+beforeEach(function () {
+  return driver.wait(function () {
     return driver.executeScript('return document.readyState').then(function (returnValue) {
       return returnValue === 'complete';
     });
-  }).then(function () {
-    done();
   });
 });
 
-afterEach(function (done) {
-  driver.navigate().refresh().then(function () {
-    done();
-  });
+afterEach(function () {
+  return driver.navigate().refresh();
 });
 
 describe('undo manager', function () {
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe();
   });
 
-  beforeEach(function (done) {
-    driver.executeScript(function () {
+  beforeEach(function () {
+    return driver.executeScript(function () {
       window.scribe.initialize();
-    }).then(function () {
-      done();
     });
   });
 
@@ -119,23 +111,19 @@ describe('undo manager', function () {
     setContent('<p>|1</p>');
 
     when('the user types', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('2').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('2');
       });
 
       when('the undo command is executed', function () {
-        beforeEach(function (done) {
-          driver.executeScript(function () {
+        beforeEach(function () {
+          return driver.executeScript(function () {
             window.scribe.getCommand('undo').execute();
-          }).then(function () {
-            done();
           });
         });
 
-        it('should restore the caret and the content', function (done) {
-          driver.executeScript(function () {
+        it('should restore the caret and the content', function () {
+          return driver.executeScript(function () {
             // Insert a marker so we can see where the caret is
             var selection = window.getSelection();
             var range = selection.getRangeAt(0);
@@ -143,9 +131,8 @@ describe('undo manager', function () {
             marker.classList.add('scribe-marker');
             range.insertNode(marker);
           }).then(function () {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<p><em class="scribe-marker"></em>1</p>');
-              done();
             });
           });
         });
@@ -155,61 +142,48 @@ describe('undo manager', function () {
 });
 
 describe('P mode', function () {
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe();
   });
 
-  beforeEach(function (done) {
-    driver.executeScript(function () {
+  beforeEach(function () {
+    return driver.executeScript(function () {
       window.scribe.initialize();
-    }).then(function () {
-      done();
     });
   });
 
   given('no content', function () {
     when('the user types', function () {
 
-      beforeEach(function (done) {
-        scribeNode.sendKeys('1').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('1');
       });
 
-      it('should insert the text inside of a P element', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should insert the text inside of a P element', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>1</p>');
-          done();
         });
       });
 
       when('the user presses ENTER', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.ENTER);
         });
 
-        it('should insert another P element', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert another P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<p>1</p><p><br></p>');
-            done();
           });
         });
 
         when('the user types', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys('2').then(function () {
-              done();
-            });
+          beforeEach(function () {
+            return scribeNode.sendKeys('2');
           });
 
-          it('should insert the typed characters inside of the P element', function (done) {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+          it('should insert the typed characters inside of the P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<p>1</p><p>2</p>');
-              done();
             });
           });
         });
@@ -223,24 +197,20 @@ describe('P mode', function () {
       setContent('<ul><li>|<br></li></ul>');
 
       when('the user presses backspace', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
         });
 
         it('should delete the list and insert an empty P element', function () {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<p><br></p>');
           });
         });
       });
 
       when('the user presses enter', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.ENTER);
         });
 
         it('should delete the list and insert an empty P element', function () {
@@ -268,10 +238,8 @@ describe('P mode', function () {
       );
 
       when('the user presses backspace', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.BACK_SPACE).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
@@ -290,10 +258,8 @@ describe('P mode', function () {
       });
 
       when('the user presses enter', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.ENTER);
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
@@ -314,40 +280,34 @@ describe('P mode', function () {
   });
 
   describe('#getContent()', function () {
-    it('should return an empty P element', function (done) {
-      driver.executeScript(function () {
+    it('should return an empty P element', function () {
+      return driver.executeScript(function () {
         return window.scribe.getContent();
       }).then(function (html) {
         expect(html).to.equal('<p><br></p>');
-        done();
       });
     });
   });
 
   describe('#getHTML()', function () {
-    it('should return an empty P element', function (done) {
-      driver.executeScript(function () {
+    it('should return an empty P element', function () {
+      return driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
         expect(html).to.equal('<p><br></p>');
-        done();
       });
     });
   });
 });
 
 describe('BR mode', function () {
-  beforeEach(function (done) {
-    initializeScribe({ allowBlockElements: false }).then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe({ allowBlockElements: false });
   });
 
-  beforeEach(function (done) {
-    driver.executeScript(function () {
+  beforeEach(function () {
+    return driver.executeScript(function () {
       window.scribe.initialize();
-    }).then(function () {
-      done();
     });
   });
 
@@ -355,38 +315,31 @@ describe('BR mode', function () {
   given('content of "1|"', function () {
     setContent('1|');
 
-    it('should append a bogus BR to the content', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
+    it('should append a bogus BR to the content', function () {
+      return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('1<br>');
-        done();
       });
     });
 
     when('the user presses ENTER', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys(webdriver.Key.ENTER);
       });
 
-      it('should create a new line by inserting a BR element', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should create a new line by inserting a BR element', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('1<br><br>');
-          done();
         });
       });
 
       when('the user types', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(2).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(2);
         });
 
-        it('should insert the typed characters on the new line', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert the typed characters on the new line', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('1<br>2');
-            done();
           });
         });
       });
@@ -397,38 +350,31 @@ describe('BR mode', function () {
   given('content of "1|<br>2"', function () {
     setContent('1|<br>2');
 
-    it('should append a bogus BR to the content', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
+    it('should append a bogus BR to the content', function () {
+      return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('1<br>2<br>');
-        done();
       });
     });
 
     when('the user presses ENTER', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys(webdriver.Key.ENTER);
       });
 
-      it('should delete the bogus BR element and create a new line by inserting a BR element', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('1<br><br>2');
-          done();
         });
       });
 
       when('the user types', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(3).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(3);
         });
 
-        it('should insert the typed characters on the new line', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert the typed characters on the new line', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('1<br>3<br>2');
-            done();
           });
         });
       });
@@ -439,38 +385,31 @@ describe('BR mode', function () {
   given('content of "<i>1|</i>', function () {
     setContent('<i>1|</i>');
 
-    it('should append a bogus BR to the content', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
+    it('should append a bogus BR to the content', function () {
+      return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<i>1</i><br>');
-        done();
       });
     });
 
     when('the user presses ENTER', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys(webdriver.Key.ENTER);
       });
 
-      it('should delete the bogus BR element and create a new line by inserting a BR element', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<i>1<br><br></i>');
-          done();
         });
       });
 
       when('the user types', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(2).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(2);
         });
 
-        it('should insert the typed characters after the BR element', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert the typed characters after the BR element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<i>1<br>2</i>');
-            done();
           });
         });
       });
@@ -478,52 +417,42 @@ describe('BR mode', function () {
   });
 
   given('no content', function () {
-    it('should append a bogus BR to the content', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
+    it('should append a bogus BR to the content', function () {
+      return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<br>');
-        done();
       });
     });
 
     when('the user types', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('1').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('1');
       });
 
-      it('should insert the typed characters', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should insert the typed characters', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('1');
-          done();
         });
       });
 
       when('the user presses ENTER', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.ENTER);
         });
 
-        it('should insert two BR elements', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert two BR elements', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('1<br><br>');
-            done();
           });
         });
 
         when('the user types', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys('2').then(function () {
-              done();
-            });
+          beforeEach(function () {
+            return scribeNode.sendKeys('2');
           });
 
-          it('should replace the second BR element with the typed characters', function (done) {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+          it('should replace the second BR element with the typed characters', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('1<br>2');
-              done();
             });
           });
         });
@@ -532,23 +461,21 @@ describe('BR mode', function () {
   });
 
   describe('#getContent()', function () {
-    it('should return nothing', function (done) {
-      driver.executeScript(function () {
+    it('should return nothing', function () {
+      return driver.executeScript(function () {
         return window.scribe.getContent();
       }).then(function (html) {
         expect(html).to.equal('');
-        done();
       });
     });
   });
 
   describe('#getHTML()', function () {
-    it('should return nothing', function (done) {
-      driver.executeScript(function () {
+    it('should return nothing', function () {
+      return driver.executeScript(function () {
         return window.scribe.getHTML();
       }).then(function (html) {
         expect(html).to.equal('<br>');
-        done();
       });
     });
   });
@@ -556,45 +483,36 @@ describe('BR mode', function () {
 
 describe('commands', function () {
 
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe();
   });
 
-  beforeEach(function (done) {
-    driver.executeScript(function () {
+  beforeEach(function () {
+    return driver.executeScript(function () {
       window.scribe.initialize();
-    }).then(function () {
-      done();
     });
   });
 
   describe('bold', function () {
     given('an empty editor', function () {
       when('the command is executed', function () {
-        beforeEach(function (done) {
+        beforeEach(function () {
           scribeNode.click();
 
-          driver.executeScript(function () {
+          return driver.executeScript(function () {
             var boldCommand = window.scribe.getCommand('bold');
             boldCommand.execute();
-          }).then(function () {
-            done();
           });
         });
 
         when('the user types', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys('1').then(function () {
-              done();
-            });
+          beforeEach(function () {
+            return scribeNode.sendKeys('1');
           });
 
-          it('should inserts the typed characters inside of a B element, inside of a P element', function (done) {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+          it('should inserts the typed characters inside of a B element, inside of a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<p><b>1</b></p>');
-              done();
             });
           });
         });
@@ -607,19 +525,16 @@ describe('commands', function () {
       setContent('<p><i>|1|</i></p>');
 
       when('the command is executed', function () {
-        beforeEach(function (done) {
-          driver.executeScript(function () {
+        beforeEach(function () {
+          return driver.executeScript(function () {
             var removeFormatCommand = window.scribe.getCommand('removeFormat');
             removeFormatCommand.execute();
-          }).then(function () {
-            done();
           });
         });
 
-        it('should remove the formatting', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should remove the formatting', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<p>1</p>');
-            done();
           });
         });
       });
@@ -634,51 +549,43 @@ describe('commands', function () {
       setContent('<p>|1</p>');
 
       when('the command is executed', function () {
-        beforeEach(function (done) {
+        beforeEach(function () {
           scribeNode.click();
 
-          driver.executeScript(function () {
+          return driver.executeScript(function () {
             var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
             removeFormatCommand.execute();
-          }).then(function () {
-            done();
           });
         });
 
-        it('should wrap the content in an ordered list', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should wrap the content in an ordered list', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
-            done();
           });
         });
       });
 
       // FIXME: re-organise, this is a browser bug, not a feature
       when('a parent element has a custom CSS line height', function () {
-        beforeEach(function (done) {
-          driver.executeScript(function () {
+        beforeEach(function () {
+          return driver.executeScript(function () {
             document.body.style.lineHeight = 2;
-          }).then(function () {
-            done();
           });
         });
 
         when('the command is executed', function () {
-          beforeEach(function (done) {
+          beforeEach(function () {
             scribeNode.click();
 
-            driver.executeScript(function () {
+            return driver.executeScript(function () {
               var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
               removeFormatCommand.execute();
-            }).then(function () {
-              done();
             });
           });
 
-          it('should wrap the content in an ordered list', function (done) {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+          it('should wrap the content in an ordered list', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<ol><li>1<br></li></ol>');
-              done();
             });
           });
         });
@@ -689,21 +596,17 @@ describe('commands', function () {
 
 describe('smart lists plugin', function () {
 
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe();
   });
 
-  beforeEach(function (done) {
-    driver.executeAsyncScript(function (done) {
+  beforeEach(function () {
+    return driver.executeAsyncScript(function (done) {
       require(['plugins/smart-lists'], function (smartLists) {
         window.scribe.use(smartLists());
         window.scribe.initialize();
         done();
       });
-    }).then(function () {
-      done();
     });
   });
 
@@ -711,73 +614,58 @@ describe('smart lists plugin', function () {
   unorderedPrefixes.forEach(function(prefix) {
 
     when('the user types "' +prefix+ '"', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys(prefix).then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys(prefix);
       });
 
-      it('should create an unordered list', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should create an unordered list', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<ul><li><br></li></ul>');
-          done();
         });
       });
 
       when('the user types', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys('abc').then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys('abc');
         });
 
-        it('should insert the typed characters inside of the LI element', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should insert the typed characters inside of the LI element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<ul><li>abc</li></ul>');
-            done();
           });
         });
 
         when('the user presses ENTER', function () {
-          beforeEach(function (done) {
-            scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-              done();
-            });
+          beforeEach(function () {
+            return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
 
-          it('should create a new LI element', function (done) {
+          it('should create a new LI element', function () {
             scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<ul><li>abc</li><li><br></li></ul>');
-              done();
+              return expect(innerHTML).to.equal('<ul><li>abc</li><li><br></li></ul>');
             });
           });
 
           when('the user types', function () {
-            beforeEach(function (done) {
-              scribeNode.sendKeys('def').then(function () {
-                done();
-              });
+            beforeEach(function () {
+              return scribeNode.sendKeys('def');
             });
 
-            it('should insert the typed characters inside the new LI element', function (done) {
-              scribeNode.getInnerHTML().then(function (innerHTML) {
+            it('should insert the typed characters inside the new LI element', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<ul><li>abc</li><li>def</li></ul>');
-                done();
               });
             });
           });
 
           when('the user presses ENTER', function () {
-            beforeEach(function (done) {
-              scribeNode.sendKeys(webdriver.Key.ENTER).then(function () {
-                done();
-              });
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
 
-            it('should end the list and start a new P', function (done) {
-              scribeNode.getInnerHTML().then(function (innerHTML) {
+            it('should end the list and start a new P', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<ul><li>abc</li></ul><p><br></p>');
-                done();
               });
             });
           });
@@ -786,30 +674,25 @@ describe('smart lists plugin', function () {
     });
 
     given('some content on the line', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('hello').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('hello');
       });
 
       when('the user types "' +prefix+ '"', function () {
-        beforeEach(function (done) {
-          scribeNode.sendKeys(prefix).then(function () {
-            done();
-          });
+        beforeEach(function () {
+          return scribeNode.sendKeys(prefix);
         });
 
-        it('should write these characters and not create a list', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should write these characters and not create a list', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             var prefixNbsp = prefix.replace(' ', '&nbsp;');
             expect(innerHTML).to.equal('<p>hello' +prefixNbsp+ '</p>');
-            done();
           });
         });
       });
 
       when('the user goes to the start of the line and types "' +prefix+ '"', function () {
-        beforeEach(function (done) {
+        beforeEach(function () {
           var goToStart = new webdriver.ActionSequence(driver)
             .click(scribeNode)
             .sendKeys(webdriver.Key.LEFT)
@@ -820,15 +703,12 @@ describe('smart lists plugin', function () {
             .sendKeys(prefix)
             .perform();
 
-          goToStart.then(function () {
-            done();
-          });
+          return goToStart;
         });
 
-        it('should create an unordered list containing the words on the line', function (done) {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+        it('should create an unordered list containing the words on the line', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.equal('<ul><li>hello<br></li></ul>');
-            done();
           });
         });
       });
@@ -839,16 +719,13 @@ describe('smart lists plugin', function () {
   // TODO: reuse steps above for ordered lists?
 
   when('the user types "1. "', function () {
-    beforeEach(function (done) {
-      scribeNode.sendKeys('1. ').then(function () {
-        done();
-      });
+    beforeEach(function () {
+      return scribeNode.sendKeys('1. ');
     });
 
-    it('should create an ordered list', function (done) {
-      scribeNode.getInnerHTML().then(function (innerHTML) {
+    it('should create an ordered list', function () {
+      return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.equal('<ol><li><br></li></ol>');
-        done();
       });
     });
 
@@ -858,98 +735,78 @@ describe('smart lists plugin', function () {
 
 describe('curly quotes plugin', function () {
 
-  beforeEach(function (done) {
-    initializeScribe().then(function () {
-      done();
-    });
+  beforeEach(function () {
+    return initializeScribe();
   });
 
-  beforeEach(function (done) {
-    driver.executeAsyncScript(function (done) {
+  beforeEach(function () {
+    return driver.executeAsyncScript(function (done) {
       require(['plugins/curly-quotes'], function (curlyQuotes) {
         window.scribe.use(curlyQuotes());
         window.scribe.initialize();
         done();
       });
-    }).then(function () {
-      done();
     });
   });
 
   given('the caret is at the beginning of a line', function () {
     when('the user types ascii double quote', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('"').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
       });
 
-      it('should insert an opening curly double quote instead', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should insert an opening curly double quote instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>“<br></p>');
-          done();
         });
       });
     });
 
     when('the user presses the Right key', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys(webdriver.Key.RIGHT).then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys(webdriver.Key.RIGHT);
       });
 
-      it('should not insert any content', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should not insert any content', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p><br></p>');
-          done();
         });
       });
     });
   });
 
   given('the caret is at the end of a word', function () {
-    beforeEach(function (done) {
-      scribeNode.sendKeys('Hello').then(function () {
-        done();
-      });
+    beforeEach(function () {
+      return scribeNode.sendKeys('Hello');
     });
 
     when('the user types ascii double quote', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('"').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
       });
 
-      it('should insert a closing curly double quote instead', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it('should insert a closing curly double quote instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>Hello”</p>');
-          done();
         });
       });
     });
   });
 
   given('the caret is after the end of a word', function () {
-    beforeEach(function (done) {
-      scribeNode.sendKeys('Hello ').then(function () { // Note the space
-        done();
-      });
+    beforeEach(function () {
+      return scribeNode.sendKeys('Hello '); // Note the space
     });
 
     when('the user types ascii double quote', function () {
-      beforeEach(function (done) {
-        scribeNode.sendKeys('"').then(function () {
-          done();
-        });
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
       });
 
-      it.skip('should insert an opening curly double quote instead', function (done) {
-        scribeNode.getInnerHTML().then(function (innerHTML) {
+      it.skip('should insert an opening curly double quote instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
           // FIXME: failing, inserts nbsp!
           expect(innerHTML).to.equal('<p>Hello “</p>');
-          done();
         });
       });
     });
@@ -959,8 +816,8 @@ describe('curly quotes plugin', function () {
 });
 
 function setContent(html) {
-  beforeEach(function (done) {
-    driver.executeAsyncScript(function (html, done) {
+  beforeEach(function () {
+    return driver.executeAsyncScript(function (html, done) {
       require(['./api/selection'], function (Selection) {
         window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
         if (html.match('|').length) {
@@ -969,8 +826,6 @@ function setContent(html) {
         }
         done();
       });
-    }, html).then(function () {
-      done();
-    });
+    }, html);
   });
 }
