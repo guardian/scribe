@@ -5,6 +5,10 @@ Scribe
 Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 
 ### `document.execCommand` commands
+* Firefox: When the `contenteditable` element is a custom element, an error is
+  thrown when trying to apply one of the following commands.
+  As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
+  `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
