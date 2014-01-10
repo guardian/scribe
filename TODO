@@ -19,6 +19,7 @@
 
 
 # Known Bugs
+* Focus should select all content
 * Chrome: Add BLOCKQUOTE, add list, unapply blockquote = Creates BLOCKQUOTE
   without P.
 * Applying the outdent command on a top level list item breaks P mode.
