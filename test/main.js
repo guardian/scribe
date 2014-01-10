@@ -58,13 +58,13 @@ function initializeScribe(options) {
 var server;
 var driver;
 
-before(function (done) {
+before(function () {
   // Note: you need to run from the root of the project
   server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
     port: 4444
   });
 
-  server.start().then(function () {
+  return server.start().then(function () {
     driver = new webdriver.Builder()
       .usingServer(server.address())
       .withCapabilities(webdriver.Capabilities.firefox())
@@ -72,9 +72,7 @@ before(function (done) {
 
     driver.manage().timeouts().setScriptTimeout(2000);
 
-    driver.get('http://localhost:8080/test/app/index.html').then(function () {
-      done();
-    });
+    return driver.get('http://localhost:8080/test/app/index.html');
   });
 });
 
