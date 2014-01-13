@@ -110,7 +110,7 @@ define([
       selection.removeMarkers();
 
       if (this.allowsBlockElements() && firefoxBug) {
-        var focusElement = getFirstDeepestChild(document.querySelector('[contenteditable]').firstChild);
+        var focusElement = getFirstDeepestChild(this.el.firstChild);
 
         var range = selection.range;
 
