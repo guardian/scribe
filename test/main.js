@@ -95,7 +95,7 @@ browsers.forEach(function (browser) {
           var fragments;
           if (driverCapabilities.caps_.browserName === 'chrome') {
             fragments = string
-              .replace('<firefox-bogus-br>', '')
+              .replace(/<firefox-bogus-br>/g, '')
               .split('<chrome-bogus-br>')
               .map(encodeRegExp)
               .join('<br>');
@@ -104,7 +104,7 @@ browsers.forEach(function (browser) {
               // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
               // for spaces with no right-hand side content.
               .replace('&nbsp;', ' ')
-              .replace('<chrome-bogus-br>', '')
+              .replace(/<chrome-bogus-br>/g, '')
               .split('<firefox-bogus-br>')
               .map(encodeRegExp)
               .join('<br>');
