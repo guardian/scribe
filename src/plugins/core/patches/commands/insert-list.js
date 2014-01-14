@@ -48,21 +48,18 @@ define(function () {
              *
              * FIXME: what if the user actually wants to use SPANs? This could
              * cause conflicts.
-             * TODO: only remove top level SPAN in LI?
              */
 
-            var treeWalker = document.createTreeWalker(listNode);
-
-            while (treeWalker.nextNode()) {
-              if (treeWalker.currentNode.nodeName === 'SPAN') {
+            Array.prototype.forEach.call(listNode.querySelectorAll('li'), function (listItemNode) {
+              if (listItemNode.firstChild.nodeName === 'SPAN') {
                 // TODO: unwrap API
-                var spanElement = treeWalker.currentNode;
+                var spanElement = listItemNode.firstChild;
                 while (spanElement.childNodes.length > 0) {
                   spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
                 }
                 spanElement.parentNode.removeChild(spanElement);
               }
-            }
+            });
           }
         }.bind(this));
       };

@@ -635,6 +635,49 @@ browsers.forEach(function (browser) {
             });
           });
         });
+
+        given('content of "<p>|1</p><p>2|</p>"', function () {
+          setContent('<p>|1</p><p>2|</p>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return driver.executeScript(function () {
+                var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
+                removeFormatCommand.execute();
+              });
+            });
+
+            it('should wrap the content in an ordered list', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
+              });
+            });
+          });
+
+          // FIXME: re-organise, this is a browser bug, not a feature
+          when('a parent element has a custom CSS line height', function () {
+            beforeEach(function () {
+              return driver.executeScript(function () {
+                document.body.style.lineHeight = 2;
+              });
+            });
+
+            when('the command is executed', function () {
+              beforeEach(function () {
+                return driver.executeScript(function () {
+                  var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
+                  removeFormatCommand.execute();
+                });
+              });
+
+              it('should wrap the content in an ordered list', function () {
+                return scribeNode.getInnerHTML().then(function (innerHTML) {
+                  expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
+                });
+              });
+            });
+          });
+        });
       });
     });
 
