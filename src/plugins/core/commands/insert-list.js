@@ -31,6 +31,7 @@ define(function () {
 
         if (this.queryState()) {
           var selection = new scribe.api.Selection();
+          var range = selection.range;
 
           var listNode = selection.getContaining(function (node) {
             return node.nodeName === 'OL' || node.nodeName === 'UL';
@@ -41,9 +42,6 @@ define(function () {
           });
 
           scribe.transactionManager.run(function () {
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
             if (listItemElement) {
               var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
 
