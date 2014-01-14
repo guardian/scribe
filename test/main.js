@@ -658,6 +658,45 @@ browsers.forEach(function (browser) {
             });
           });
         });
+
+        /**
+         * Unapplying
+         */
+
+        given('content of "<ol><li>1|</li></ol>"', function () {
+          setContent('<ol><li>1|</li></ol>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return executeCommand('insertOrderedList');
+            });
+
+            it('should remove the list and replace the list item with a P element', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>1</p>');
+              });
+            });
+          });
+        });
+
+        given('content of "<ol><li>|1</li><li>2|</li></ol>"', function () {
+          setContent('<ol><li>|1</li><li>2|</li></ol>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return driver.executeScript(function () {
+                var insertOrderedListCommand = window.scribe.getCommand('insertOrderedList');
+                insertOrderedListCommand.execute();
+              });
+            });
+
+            it('should wrap the content in an ordered list', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+              });
+            });
+          });
+        });
       });
     });
 
