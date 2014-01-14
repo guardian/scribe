@@ -558,7 +558,7 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys('1');
               });
 
-              it('should inserts the typed characters inside of a B element, inside of a P element', function () {
+              it('should insert the typed characters inside of a B element, inside of a P element', function () {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p><b>1</b><firefox-bogus-br></p>');
                 });
