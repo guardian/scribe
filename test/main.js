@@ -585,6 +585,10 @@ browsers.forEach(function (browser) {
       // functionality.
       // TODO: one suite for OLs and ULs or duplicates?
       describe('insertOrderedList', function () {
+        /**
+         * Applying
+         */
+
         given('content of "<p>|1</p>"', function () {
           setContent('<p>|1</p>');
 
@@ -654,6 +658,60 @@ browsers.forEach(function (browser) {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
                 });
+              });
+            });
+          });
+        });
+
+        /**
+         * Unapplying
+         */
+
+        given('content of "<ol><li>1|</li></ol>"', function () {
+          setContent('<ol><li>1|</li></ol>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return executeCommand('insertOrderedList');
+            });
+
+            it('should remove the list and replace the list item with a P element', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>1</p>');
+              });
+            });
+          });
+        });
+
+        given('content of "<ol><li>|1</li><li>2|</li></ol>"', function () {
+          setContent('<ol><li>|1</li><li>2|</li></ol>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return executeCommand('insertOrderedList');
+            });
+
+            it('should remove the list and replace each list item with a P element', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                // TODO: test selection
+                expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+              });
+            });
+          });
+        });
+
+        given('content of "<ol><li>1</li><li>|2</li><li>3|</li><li>4</li></ol>"', function () {
+          setContent('<ol><li>1</li><li>|2</li><li>3|</li><li>4</li></ol>');
+
+          when('the command is executed', function () {
+            beforeEach(function () {
+              return executeCommand('insertOrderedList');
+            });
+
+            it('should split the list into two and replace each selected list item with a P element', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                // TODO: test selection
+                expect(innerHTML).to.have.html('<ol><li>1</li></ol><p>2</p><p>3</p><ol><li>4</li></ol>');
               });
             });
           });
