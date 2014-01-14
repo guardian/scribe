@@ -85,18 +85,18 @@ require({
   scribe.use(linkPromptCommand());
   scribe.use(sanitizer({
     tags: {
-      p: [],
-      br: [],
-      b: [],
-      strong: [],
-      i: [],
-      s: [],
-      blockquote: [],
-      ol: [],
-      ul: [],
-      li: [],
-      a: [ 'href' ],
-      h2: []
+      p: {},
+      br: {},
+      b: {},
+      strong: {},
+      i: {},
+      s: {},
+      blockquote: {},
+      ol: {},
+      ul: {},
+      li: {},
+      a: { href: true },
+      h2: {}
     }
   }));
   Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
