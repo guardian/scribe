@@ -81,7 +81,6 @@ browsers.forEach(function (browser) {
     });
 
     before(function () {
-      console.log(2);
       return driver.getCapabilities().then(function (driverCapabilities) {
         chai.use(function (chai, utils) {
           chai.Assertion.addMethod('html', function (regExpContents) {
