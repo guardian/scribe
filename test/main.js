@@ -599,8 +599,8 @@ browsers.forEach(function (browser) {
           when('the command is executed', function () {
             beforeEach(function () {
               return driver.executeScript(function () {
-                var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
-                removeFormatCommand.execute();
+                var insertOrderedListCommand = window.scribe.getCommand('insertOrderedList');
+                insertOrderedListCommand.execute();
               });
             });
 
@@ -622,8 +622,8 @@ browsers.forEach(function (browser) {
             when('the command is executed', function () {
               beforeEach(function () {
                 return driver.executeScript(function () {
-                  var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
-                  removeFormatCommand.execute();
+                  var insertOrderedListCommand = window.scribe.getCommand('insertOrderedList');
+                  insertOrderedListCommand.execute();
                 });
               });
 
