@@ -596,8 +596,6 @@ browsers.forEach(function (browser) {
 
           when('the command is executed', function () {
             beforeEach(function () {
-              scribeNode.click();
-
               return driver.executeScript(function () {
                 var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
                 removeFormatCommand.execute();
@@ -621,8 +619,6 @@ browsers.forEach(function (browser) {
 
             when('the command is executed', function () {
               beforeEach(function () {
-                scribeNode.click();
-
                 return driver.executeScript(function () {
                   var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
                   removeFormatCommand.execute();
