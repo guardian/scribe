@@ -166,9 +166,7 @@ browsers.forEach(function (browser) {
 
           when('the undo command is executed', function () {
             beforeEach(function () {
-              return driver.executeScript(function () {
-                window.scribe.getCommand('undo').execute();
-              });
+              return executeCommand('undo');
             });
 
             it('should restore the caret and the content', function () {
@@ -547,10 +545,7 @@ browsers.forEach(function (browser) {
             beforeEach(function () {
               scribeNode.click();
 
-              return driver.executeScript(function () {
-                var boldCommand = window.scribe.getCommand('bold');
-                boldCommand.execute();
-              });
+              return executeCommand('bold');
             });
 
             when('the user types', function () {
@@ -574,10 +569,7 @@ browsers.forEach(function (browser) {
 
           when('the command is executed', function () {
             beforeEach(function () {
-              return driver.executeScript(function () {
-                var removeFormatCommand = window.scribe.getCommand('removeFormat');
-                removeFormatCommand.execute();
-              });
+              return executeCommand('removeFormat');
             });
 
             it('should remove the formatting', function () {
@@ -598,10 +590,7 @@ browsers.forEach(function (browser) {
 
           when('the command is executed', function () {
             beforeEach(function () {
-              return driver.executeScript(function () {
-                var insertOrderedListCommand = window.scribe.getCommand('insertOrderedList');
-                insertOrderedListCommand.execute();
-              });
+              return executeCommand('insertOrderedList');
             });
 
             it('should wrap the content in an ordered list', function () {
@@ -621,10 +610,7 @@ browsers.forEach(function (browser) {
 
             when('the command is executed', function () {
               beforeEach(function () {
-                return driver.executeScript(function () {
-                  var insertOrderedListCommand = window.scribe.getCommand('insertOrderedList');
-                  insertOrderedListCommand.execute();
-                });
+                return executeCommand('insertOrderedList');
               });
 
               it('should wrap the content in an ordered list', function () {
@@ -641,10 +627,7 @@ browsers.forEach(function (browser) {
 
           when('the command is executed', function () {
             beforeEach(function () {
-              return driver.executeScript(function () {
-                var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
-                removeFormatCommand.execute();
-              });
+              return executeCommand('insertOrderedList');
             });
 
             it('should wrap the content in an ordered list', function () {
@@ -664,10 +647,7 @@ browsers.forEach(function (browser) {
 
             when('the command is executed', function () {
               beforeEach(function () {
-                return driver.executeScript(function () {
-                  var removeFormatCommand = window.scribe.getCommand('insertOrderedList');
-                  removeFormatCommand.execute();
-                });
+                return executeCommand('insertOrderedList');
               });
 
               it('should wrap the content in an ordered list', function () {
@@ -912,6 +892,13 @@ browsers.forEach(function (browser) {
           }
         }, html);
       });
+    }
+
+    function executeCommand(commandName) {
+      return driver.executeScript(function (commandName) {
+        var insertOrderedListCommand = window.scribe.getCommand(commandName);
+        insertOrderedListCommand.execute();
+      }, commandName);
     }
   });
 });
