@@ -66,18 +66,17 @@ define(function () {
               listItemElement.parentNode.removeChild(listItemElement);
             } else {
               /**
-               * When the whole list is selected, we replace each list item with
-               * a paragraph.
+               * When multiple list items are selected, we replace each list
+               * item with a paragraph.
                */
-              var documentFragment = document.createDocumentFragment();
 
               // We can't query for list items in the selection so we loop
               // through them all and find the intersection ourselves.
-              // TODO: identity
               var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
                 function (listItemElement) {
                 return range.intersectsNode(listItemElement) && listItemElement;
               }).filter(function (listItemElement) {
+                // TODO: identity
                 return listItemElement;
               });
               var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
@@ -94,14 +93,17 @@ define(function () {
               // afterwards.
               selection.placeMarkers();
 
+              var documentFragment = document.createDocumentFragment();
               selectedListItemElements.forEach(function (listItemElement) {
                 var pElement = document.createElement('p');
                 pElement.innerHTML = listItemElement.innerHTML;
                 documentFragment.appendChild(pElement);
               });
 
+              // Insert the Ps
               listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
 
+              // Remove the LIs
               selectedListItemElements.forEach(function (listItemElement) {
                 listItemElement.parentNode.removeChild(listItemElement);
               });
