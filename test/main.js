@@ -1,3 +1,5 @@
+// TODO: Running tests in multiple browsers breaks `describe/it.only`
+
 var chai = require('chai');
 var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
