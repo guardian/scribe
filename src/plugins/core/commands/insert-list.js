@@ -18,7 +18,7 @@ define(function () {
 
       InsertListCommand.prototype.execute = function (value) {
         function splitList(listItemElements) {
-          if (listItemElements.length) {
+          if (listItemElements.length > 0) {
             var newListNode = document.createElement(listNode.nodeName);
 
             listItemElements.forEach(function (listItemElement) {
