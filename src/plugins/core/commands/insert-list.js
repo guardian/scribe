@@ -30,7 +30,7 @@ define(function () {
             });
 
             /**
-             * If we are not at the start of end of a UL/OL, we have to
+             * If we are not at the start or end of a UL/OL, we have to
              * split the node and insert the P in the middle.
              */
 
