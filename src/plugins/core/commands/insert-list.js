@@ -55,11 +55,8 @@ define(function () {
             var pNode = document.createElement('p');
             pNode.innerHTML = listItemNode.innerHTML;
 
-            listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-            listItemNode.parentNode.removeChild(listItemNode);
-
             // If the list is now empty, clean it up.
-            if (listNode.innerHTML === '') {
+            if (listNode.childNodes.length === 0) {
               listNode.parentNode.removeChild(listNode);
             }
 
