@@ -47,6 +47,9 @@ define(function () {
            * This is required because, without access to the Clipboard API, there is literally
            * no other way to manipulate content on paste.
            * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
+           *
+           * Firefox <= 21
+           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
            */
 
           var selection = new scribe.api.Selection();
