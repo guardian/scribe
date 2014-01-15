@@ -45,37 +45,6 @@ require({
   }
 
   /**
-   * Inline/tooltip style toolbar
-   */
-
-  // Unfortunately, there is no `selectionchange` event.
-  scribe.el.addEventListener('keyup', showOrHideInlineToolbar);
-  scribe.el.addEventListener('mouseup', showOrHideInlineToolbar);
-
-  var tooltip = document.createElement('div');
-  // Lazily copy the existing toolbar, insert it dynamically
-  tooltip.appendChild(document.querySelector('.toolbar').cloneNode(true));
-  tooltip.hidden = true;
-  document.body.appendChild(tooltip);
-
-  function showOrHideInlineToolbar() {
-    // TODO: use internal API for getting range
-    var selection = new scribe.api.Selection();
-    var range = selection.range;
-
-    if (range.commonAncestorContainer.textContent && ! selection.selection.isCollapsed) {
-      var boundary = range.getClientRects()[0];
-
-      tooltip.style.position = 'absolute';
-      tooltip.hidden = false;
-      tooltip.style.left = (((boundary.left + boundary.right) / 2) - (tooltip.offsetWidth / 2)) + 'px';
-      tooltip.style.top = boundary.top - tooltip.offsetHeight + 'px';
-    } else {
-      tooltip.hidden = true;
-    }
-  }
-
-  /**
    * Plugins
    */
 
@@ -83,6 +52,7 @@ require({
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
+  // TODO: require formatter?
   scribe.use(sanitizer({
     tags: {
       p: {},
@@ -125,61 +95,6 @@ require({
   });
 
   scribe.use(keyboardShortcuts(commandsToKeyboardShortcutsMap));
-
-  /**
-   * Rename nodes
-   */
-
-  scribe.formatter.formatters.push(function (html) {
-    var config = {
-      b: 'strong'
-    };
-
-    var sandboxNode = document.createElement('div');
-    sandboxNode.innerHTML = html;
-
-    renameNodes(sandboxNode);
-
-    return sandboxNode.innerHTML;
-
-    function renameNodes(parentNode) {
-      var treeWalker = createTreeWalker(parentNode);
-      var node = treeWalker.firstChild();
-      if (!node) { return; }
-
-      do {
-        var lowerCaseNodeName = node.nodeName.toLowerCase();
-
-        // Ignore text nodes and nodes that have already been transformed
-        if (node.nodeType === 3 || node._transformed) {
-          continue;
-        }
-
-        var transformNodeName = config[lowerCaseNodeName];
-        if (transformNodeName) {
-          var transformNode = document.createElement(transformNodeName);
-          transformNode.innerHTML = node.innerHTML;
-          parentNode.insertBefore(transformNode, node);
-          // TODO: remove on node directly?
-          parentNode.removeChild(node);
-
-          renameNodes(parentNode);
-          break;
-        }
-
-        // Sanitize children
-        renameNodes(node);
-
-        // Mark node as transformed so it's ignored in future runs
-        node._transformed = true;
-      } while (node = treeWalker.nextSibling());
-    }
-
-    function createTreeWalker(node) {
-      return document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
-    }
-
-  });
 
   if (scribe.allowsBlockElements()) {
     scribe.setContent('<p>Hello, World!</p>');
