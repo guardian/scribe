@@ -69,6 +69,11 @@ define(function () {
 
             // Restore the caret position
             selection.selectMarkers();
+            /**
+             * Firefox 19 (and maybe others): even though the applied range
+             * exists within the Scribe instance, we need to focus it.
+             */
+            scribe.el.focus();
 
             document.execCommand('insertHTML', null, scribe.formatter.format(data));
           }, 1);
