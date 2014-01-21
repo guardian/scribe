@@ -26,6 +26,7 @@
 * Applying the outdent command on a top level list item breaks P mode.
 * When inserting lists we remove any SPANs from the inside to fix a Chrome bug,
   but what if the user actually wants a SPAN?
+* Possible to paste blockquotes inside of blockquotes
 
 
 # Fixed
