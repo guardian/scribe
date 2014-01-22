@@ -9,7 +9,7 @@ define(function () {
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
       } else {
-        this.range = new window.Range();
+        this.range = document.createRange();
       }
     }
 
