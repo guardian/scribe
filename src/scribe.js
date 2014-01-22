@@ -48,7 +48,15 @@ define([
        * `document.execCommand('bold')`). We can't wrap a transaction around
        * these actions, so instead we run the transaction in this event.
        */
-      this.transactionManager.run();
+       /**
+        * Chrome (<=23): The input event is triggered after the input happens
+        * but before the caret position is changed.
+        * Need to reproduce.
+        * TODO: could this cause other issues?
+        */
+      setTimeout(function () {
+        this.transactionManager.run();
+      }.bind(this), 0);
     }.bind(this), false);
 
     /**
