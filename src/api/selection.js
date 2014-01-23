@@ -27,6 +27,7 @@ define(function () {
       // End marker
       var rangeEnd = this.range.cloneRange();
       rangeEnd.collapse(false);
+      // FIXME: Chrome error
       rangeEnd.insertNode(endMarker);
 
       /**

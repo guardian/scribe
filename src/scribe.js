@@ -51,7 +51,7 @@ define([
        /**
         * Chrome (<=23): The input event is triggered after the input happens
         * but before the caret position is changed.
-        * Need to reproduce.
+        * Need to reproduce: http://jsbin.com/iWetuGEs/1/edit
         * TODO: could this cause other issues?
         */
       setTimeout(function () {
