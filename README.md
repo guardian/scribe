@@ -13,7 +13,8 @@ At the core of Scribe we have:
 
 ### Patches
 
-Scribe patches [many browser inconsistencies][browser inconsistencies] in the [native command API][Executing Commands].
+Scribe patches [many browser inconsistencies][browser inconsistencies] in the
+[native command API][Executing Commands].
 
 ### Modes
 
@@ -71,8 +72,11 @@ scribe.initialize();
 
 ### Browser Support
 
-Scribe is built for browsers that support the [Selection][Selection API] and
-[Range][Range API] APIs: Firefox >= 19, Chrome >= 21, and Safari 7.
+Theoretically, Scribe should work in any browser with the
+[Selection][Selection API] API, the [Range][Range API] API, and support for most
+of the non-standardised list of commands that appears in
+[this MDN article][Executing Commands]. It has been tested in Firefox >= 19,
+Chrome >= 21, and Safari 7.
 
 We have a [suite of integration tests][https://github.com/guardian/scribe/tree/master/test]
 in this repository that will eventually run in the cloud, providing clear
