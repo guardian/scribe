@@ -38,11 +38,9 @@ require({
 
   var scribe = new Scribe(document.querySelector('.scribe'), { allowBlockElements: true });
 
-  scribe.on('content-changed', updateHTML);
-
-  function updateHTML() {
+  scribe.on('content-changed', function updateHTML() {
     document.querySelector('.scribe-html').textContent = scribe.getHTML();
-  }
+  });
 
   /**
    * Plugins
@@ -52,7 +50,6 @@ require({
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
-  // TODO: require formatter?
   scribe.use(sanitizer({
     tags: {
       p: {},
@@ -69,9 +66,7 @@ require({
       h2: {}
     }
   }));
-  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
-    scribe.use(toolbar(toolbarNode));
-  });
+  scribe.use(toolbar(document.querySelector('.toolbar')));
   scribe.use(smartLists());
   scribe.use(curlyQuotes());
 
@@ -79,6 +74,7 @@ require({
    * Keyboard shortcuts
    */
 
+   // Canonical 'Ctrl' key for Windows and Mac keyboards
   var ctrlKey = function (event) { return event.metaKey || event.ctrlKey; };
 
   var commandsToKeyboardShortcutsMap = Object.freeze({
@@ -102,6 +98,5 @@ require({
     scribe.setContent('Hello, World!');
   }
 
-  // Finally…
   scribe.initialize();
 });
