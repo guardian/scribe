@@ -1,6 +1,5 @@
 {
   "name": "scribe",
-  "private": true,
   "version": "0.0.8",
   "devDependencies": {
     "chai": "~1.8.1",
