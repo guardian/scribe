@@ -28,6 +28,14 @@ new lines instead.
 
 TODO
 
+## Installation
+```
+bower install scribe
+```
+
+TODO: provide link to bundled version
+TODO: register bundled version in Bower
+
 ## Options
 
 <dl>
@@ -39,7 +47,7 @@ TODO
 
 TODO
 
-## Example Usage
+## Example
 
 ``` html
 <div class="scribe">

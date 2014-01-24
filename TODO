@@ -1,5 +1,8 @@
 # Other
 * Test older Safari versions
+* Abstract plugins into new repos
+* Provide link to bundled version
+* Register bundled version in Bower
 
 
 # Feature Development
