@@ -78,7 +78,7 @@ of the non-standardised list of commands that appears in
 [this MDN article][Executing Commands]. It has been tested in Firefox >= 19,
 Chrome >= 21, and Safari 7.
 
-We have a [suite of integration tests][https://github.com/guardian/scribe/tree/master/test]
+We have a [suite of integration tests](https://github.com/guardian/scribe/tree/master/test)
 in this repository that will eventually run in the cloud, providing clear
 visibility of browser support.
 
