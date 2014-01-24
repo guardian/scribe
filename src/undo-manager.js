@@ -15,7 +15,7 @@ define(function () {
     this.stack.length = ++this.position;
     this.stack.push(item);
 
-    if (this.stack.length === this.maxStackSize + 1) {
+    while (this.stack.length > this.maxStackSize) {
       this.stack.shift();
       --this.position;
     }
