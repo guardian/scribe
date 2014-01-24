@@ -1,40 +1,75 @@
 Scribe
 ======
 
-## List of `contenteditable` Browser Inconsistencies
-Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
+## Core
 
-### `document.execCommand` commands
-* Firefox: When the `contenteditable` element is a custom element, an error is
-  thrown when trying to apply one of the following commands.
-  As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
-  `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
-* "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
-* "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
-* "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
-* "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
-* "`outdent`":
-  - Chrome removes BLOCKQUOTE content formatting: http://jsbin.com/okAYaHa/1/edit?html,js,output
-  - Chrome removes collapsed selection formatting: http://jsbin.com/IfaRaFO/1/edit?html,js,output
-* "`insertOrderedList`"/"`insertOrderedList`":
-  - Chrome nests list inside of block elements: http://jsbin.com/eFiRedUc/1/edit?html,js,output
-  - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output
-  - Chrome appends SPAN to LIs with inline styling for `line-height`: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
-* "`indent`":
-  - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
-  - Chrome nests ULs inside of ULs: http://jsbin.com/ORikUPa/3/edit?html,js,output
-  - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
+At the core of Scribe we have:
 
-### `Range.insertNode`
-* Chrome inserts a bogus text node: http://jsbin.com/ODapifEb/1/edit?js,console,output
-  - This in turn creates several bugs when perfoming commands on selections
-    that contain an empty text node (`removeFormat`, `unlink`)
+* [Patches for many browser inconsistencies surrounding `contenteditable`](#patches);
+* [Inline and block element modes](#modes).
 
-### `Document.queryCommandState`
-* Browser magic: Chrome and Firefox report command state to be true after
-  applying a command to a collapsed selection, but why?: http://jsbin.com/eDOxacI/1/edit?js,console,output
+### Patches
 
-### `Element.focus`
-* Firefox: Giving focus to a `contenteditable` will place the caret outside of
-  any block elements. Chrome behaves correctly by placing the caret at the
-  earliest point possible inside the first block element: http://jsbin.com/eLoFOku/1/edit?js,console,output
+Scribe patches [many browser inconsistencies][browser inconsistencies] in the [native command API][Executing Commands].
+
+### Modes
+
+Natively, `contenteditable` will produce DIVs for new lines. This is not a bug.
+However, this is not ideal because in most cases we require semantic HTML to be
+produced.
+
+Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs for
+new lines instead.
+
+## Plugins
+
+TODO
+
+## Architecture
+
+Everything is a plugin.
+
+### Commands
+
+Commands are objects that describe command formatting operations. For example,
+the bold command.
+
+They tell Scribe:
+
+* how to format some HTML when executed (similar to `document.queryCommand`);
+* how to query for whether the given command has been executed on the current selection (similar to `document.queryCommandState`);
+* how to query for whether the command can be executed on the document in its current state (similar to `document.queryCommandEnabled`)
+
+https://developer.mozilla.org/en/docs/Midas
+
+To ensure a separation of concerns, commands are split into multiple layers.
+
+<dl>
+  <dt>Scribe</dt>
+  <dd>Where custom behaviour is defined.</dd>
+  <dt>Scribe Patches</dt>
+  <dd>Where patches for brower inconsistencies in native commands are defined.</dd>
+  <dt>Native</dt>
+</dl>
+
+When a command method is called by Scribe, it will be filtered through these
+layers sequentially.
+
+## FAQ
+
+# Why does Scribe have a custom undo manager?
+
+The [native API for formatting content in a
+`contenteditable`][Executing Commands] has [many browser inconsistencies][browser inconsistencies].
+Scribe has to manipulate the DOM directly on top of using these commands in order to patch
+those inconsistencies. What’s more, there is no widely supported command for
+telling `contenteditable` to insert Ps or BRs for line breaks. Thus, to add
+this behaviour Scribe needs to manipulate the DOM once again.
+
+The undo stack breaks whenever DOM manipulation is used instead of the native
+command API, therefore we have to use our own.
+
+## References
+
+[Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands  "Executing Commands"
+[browser inconsistencies]: https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md
