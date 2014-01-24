@@ -125,6 +125,6 @@ The undo stack breaks whenever DOM manipulation is used instead of the native
 command API, therefore we have to use our own.
 
 [browser inconsistencies]: https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md
-[Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands  "Executing Commands"
+[Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands
 [Range API]: https://developer.mozilla.org/en-US/docs/Web/API/Range
 [Selection API]: https://developer.mozilla.org/en-US/docs/Web/API/Selection
