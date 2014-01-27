@@ -5,6 +5,7 @@ define([
   './initializers/insert-br-on-return',
   './plugins/core/commands',
   './plugins/core/formatters',
+  './plugins/core/formatters/replace-nbsp-chars',
   './plugins/core/patches',
   './plugins/core/shame',
   './api',
@@ -17,6 +18,7 @@ define([
   insertBrOnReturn,
   commands,
   formatters,
+  replaceNbspCharsFormatter,
   patches,
   shame,
   Api,
@@ -72,7 +74,10 @@ define([
       this.addInitializer(insertBrOnReturn());
     }
 
+    // Formatters
+    // TODO: should the formatter object itself be an API instead of a plugin?
     this.use(formatters());
+    this.use(replaceNbspCharsFormatter());
 
     // Patches
     this.use(patches.commands.bold());
