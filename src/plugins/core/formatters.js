@@ -32,7 +32,7 @@ define(function () {
           // TODO: what data should we be getting?
           data = event.clipboardData.getData('text/html') || event.clipboardData.getData('text/plain');
 
-          document.execCommand('insertHTML', null, scribe.formatter.format(data));
+          scribe.insertHTML(data);
         } else {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
@@ -75,7 +75,7 @@ define(function () {
              */
             scribe.el.focus();
 
-            document.execCommand('insertHTML', null, scribe.formatter.format(data));
+            scribe.insertHTML(data);
           }, 1);
         }
       });

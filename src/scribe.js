@@ -249,6 +249,12 @@ define([
     this.trigger('content-changed');
   };
 
+  Scribe.prototype.insertHTML = function (html) {
+    // TODO: error if the selection is not within the Scribe instance? Or
+    // focus the Scribe instance if it is not already focused?
+    document.execCommand('insertHTML', null, this.formatter.format(html));
+  };
+
   return Scribe;
 
 });
