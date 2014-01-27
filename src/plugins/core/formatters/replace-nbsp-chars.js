@@ -8,7 +8,7 @@ define(function () {
 
   return function () {
     return function (scribe) {
-      var nbspChar = '&nbsp;';
+      var nbspChar = '&nbsp;|\xA0';
       var nbspCharRegExp = new RegExp(nbspChar, 'g');
 
       // TODO: should we be doing this on paste?
