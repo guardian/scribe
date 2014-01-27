@@ -6,7 +6,7 @@ define([
   './plugins/core/commands',
   './plugins/core/formatters/replace-nbsp-chars',
   './plugins/core/patches',
-  './plugins/core/shame',
+  './plugins/core/events',
   './api',
   './transaction-manager',
   './undo-manager'
@@ -18,7 +18,7 @@ define([
   commands,
   replaceNbspCharsFormatter,
   patches,
-  shame,
+  events,
   Api,
   buildTransactionManager,
   UndoManager
@@ -91,7 +91,7 @@ define([
     this.use(commands.redo());
     this.use(commands.undo());
 
-    this.use(shame());
+    this.use(events());
 
     var pushHistoryOnFocus = function () {
       // Tabbing into the editor doesn't create a range immediately, so we have to
