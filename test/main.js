@@ -188,6 +188,40 @@ browsers.forEach(function (browser) {
       });
     });
 
+    describe('formatters', function () {
+      beforeEach(function () {
+        return initializeScribe();
+      });
+
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.initialize();
+        });
+      });
+
+      describe('non-breaking spaces', function () {
+        given('default content', function () {
+          // i.e. paste
+          when('a non-breaking space is inserted', function () {
+            beforeEach(function () {
+              // Focus it before-hand
+              scribeNode.click();
+
+              return driver.executeScript(function () {
+                window.scribe.insertHTML('1&nbsp;2');
+              });
+            });
+
+            it('should replace the non-breaking space character with a normal space', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>1 2<chrome-bogus-br></p>');
+              });
+            });
+          });
+        });
+      });
+    });
+
     describe('P mode', function () {
       beforeEach(function () {
         return initializeScribe();

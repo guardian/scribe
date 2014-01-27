@@ -4,9 +4,9 @@ define([
   './initializers/root-paragraph-element',
   './initializers/insert-br-on-return',
   './plugins/core/commands',
-  './plugins/core/formatters',
+  './plugins/core/formatters/replace-nbsp-chars',
   './plugins/core/patches',
-  './plugins/core/shame',
+  './plugins/core/events',
   './api',
   './transaction-manager',
   './undo-manager'
@@ -16,9 +16,9 @@ define([
   rootParagraphElement,
   insertBrOnReturn,
   commands,
-  formatters,
+  replaceNbspCharsFormatter,
   patches,
-  shame,
+  events,
   Api,
   buildTransactionManager,
   UndoManager
@@ -34,6 +34,7 @@ define([
     });
     this.commandPatches = {};
     this.initializers = [];
+    this.formatter = new Formatter();
 
     this.api = new Api(this);
 
@@ -72,7 +73,8 @@ define([
       this.addInitializer(insertBrOnReturn());
     }
 
-    this.use(formatters());
+    // Formatters
+    this.use(replaceNbspCharsFormatter());
 
     // Patches
     this.use(patches.commands.bold());
@@ -89,7 +91,7 @@ define([
     this.use(commands.redo());
     this.use(commands.undo());
 
-    this.use(shame());
+    this.use(events());
 
     var pushHistoryOnFocus = function () {
       // Tabbing into the editor doesn't create a range immediately, so we have to
@@ -242,6 +244,25 @@ define([
     this.setHTML(this.formatter.format(content));
 
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.insertHTML = function (html) {
+    // TODO: error if the selection is not within the Scribe instance? Or
+    // focus the Scribe instance if it is not already focused?
+    document.execCommand('insertHTML', null, this.formatter.format(html));
+  };
+
+  // TODO: abstract
+  function Formatter() {
+    this.formatters = [];
+  }
+
+  Formatter.prototype.format = function (html) {
+    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formattedHTML;
   };
 
   return Scribe;
