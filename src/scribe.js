@@ -4,7 +4,6 @@ define([
   './initializers/root-paragraph-element',
   './initializers/insert-br-on-return',
   './plugins/core/commands',
-  './plugins/core/formatters',
   './plugins/core/formatters/replace-nbsp-chars',
   './plugins/core/patches',
   './plugins/core/shame',
@@ -17,7 +16,6 @@ define([
   rootParagraphElement,
   insertBrOnReturn,
   commands,
-  formatters,
   replaceNbspCharsFormatter,
   patches,
   shame,
@@ -36,6 +34,7 @@ define([
     });
     this.commandPatches = {};
     this.initializers = [];
+    this.formatter = new Formatter();
 
     this.api = new Api(this);
 
@@ -75,8 +74,6 @@ define([
     }
 
     // Formatters
-    // TODO: should the formatter object itself be an API instead of a plugin?
-    this.use(formatters());
     this.use(replaceNbspCharsFormatter());
 
     // Patches
@@ -253,6 +250,19 @@ define([
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
     document.execCommand('insertHTML', null, this.formatter.format(html));
+  };
+
+  // TODO: abstract
+  function Formatter() {
+    this.formatters = [];
+  }
+
+  Formatter.prototype.format = function (html) {
+    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formattedHTML;
   };
 
   return Scribe;
