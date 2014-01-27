@@ -50,13 +50,10 @@ TODO
 
 ## Example
 
-``` html
-<div class="scribe">
-```
-
 ``` js
+var scribeElement = document.querySelector('.scribe');
 // Create an instance of Scribe
-var scribe = new Scribe(document.querySelector('.scribe'));
+var scribe = new Scribe(scribeElement);
 
 // Use some plugins
 scribe.use(blockquoteCommandPlugin());
