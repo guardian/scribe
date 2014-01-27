@@ -188,7 +188,7 @@ browsers.forEach(function (browser) {
       });
     });
 
-    describe.only('formatters', function () {
+    describe('formatters', function () {
       beforeEach(function () {
         return initializeScribe();
       });
