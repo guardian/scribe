@@ -2,6 +2,7 @@
 * Remove event listeners, emit unbind to plugins so that can too
 * Config for nesting elements
 * Transactions for commands and undo manager
+* Intersect commands to run formatters
 
 
 # Outstanding Patches
