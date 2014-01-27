@@ -13,6 +13,7 @@ require({
 }, [
   'scribe',
   'plugins/blockquote-command',
+  'plugins/convert-new-lines-to-html',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
   'plugins/link-prompt-command',
@@ -24,6 +25,7 @@ require({
 ], function (
   Scribe,
   blockquoteCommand,
+  convertNewLinesToHtml,
   headingCommand,
   intelligentUnlinkCommand,
   linkPromptCommand,
@@ -74,6 +76,7 @@ require({
   });
   scribe.use(smartLists());
   scribe.use(curlyQuotes());
+  scribe.use(convertNewLinesToHtml());
 
   /**
    * Keyboard shortcuts
