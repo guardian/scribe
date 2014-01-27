@@ -8,6 +8,9 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nbspChar = '\xA0';
+      var nbspCharRegExp = new RegExp(nbspChar, 'g');
+
       scribe.formatter.formatters.push(function (html) {
         var binElement = document.createElement('div');
         binElement.innerHTML = html;
@@ -21,8 +24,7 @@ define(function () {
           var node = treeWalker.firstChild();
           if (node) {
             do {
-              var nbspChar = '\xA0';
-              node.textContent = node.textContent.replace(new RegExp(nbspChar, 'g'), ' ');
+              node.textContent = node.textContent.replace(nbspCharRegExp, ' ');
 
               // Sanitize children
               replaceNbspChars(node);
