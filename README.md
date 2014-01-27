@@ -10,7 +10,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
   `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
-* "`insertHTML`": http://jsbin.com/elicInov/2/edit?html,js,output
+* "`insertHTML`":
+  - http://jsbin.com/elicInov/2/edit?html,js,output
+  - Chrome applies styling to invalid markup, Firefox allows invalid markup: http://jsbin.com/ObiBoweG/1/edit?js,console,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
 * "`outdent`":
