@@ -22,7 +22,7 @@ function when() {
   describe.apply(null, args);
 }
 
-var browsers = ['chrome', 'firefox'];
+var browsers = ['chrome'];
 
 browsers.forEach(function (browser) {
   describe(browser, function () {
@@ -890,6 +890,104 @@ browsers.forEach(function (browser) {
 
       });
 
+    });
+
+    describe('patches', function () {
+      describe('strip line-height styling on paragraph editing', function () {
+
+        beforeEach(function () {
+          return initializeScribe();
+        });
+
+        beforeEach(function () {
+          return driver.executeScript(function () {
+            window.scribe.el.style.lineHeight = '1.5';
+            window.scribe.initialize();
+          });
+        });
+
+        given('<p>|<br></p><p>hello</p>', function () {
+          setContent('<p>|<br></p><p>hello</p>');
+
+          when('the user presses delete', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.DELETE);
+            });
+
+            it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>hello<bogus-br></p>');
+              });
+            });
+          });
+        });
+
+        given('<p><br></p><p>|hello</p>', function () {
+          setContent('<p><br></p><p>|hello</p>');
+
+          when('the user presses backspace', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
+            });
+
+            it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>hello<bogus-br></p>');
+              });
+            });
+          });
+        });
+
+        given('<p>|<br></p><p><em>hello</em></p>', function () {
+          setContent('<p>|<br></p><p><em>hello</em></p>');
+
+          when('the user presses delete', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.DELETE);
+            });
+
+            it('should not add a line-height to the <em>', function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p><em>hello</em><bogus-br></p>');
+              });
+            });
+          });
+        });
+
+        given('<p><br></p><p>|<em>hello</em></p>', function () {
+          setContent('<p><br></p><p>|<em>hello</em></p>');
+
+          when('the user presses backspace', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
+            });
+
+            it('should not add a line-height to the <em>', function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p><em>hello</em><bogus-br></p>');
+              });
+            });
+          });
+        });
+
+        // combined case
+        given('<p>|<br></p><p>text <em>hello</em> world!</p>', function () {
+          setContent('<p>|<br></p><p>text <em>hello</em> world!</p>');
+
+          when('the user presses delete', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.DELETE);
+            });
+
+            it('should not add a span or a line-height to the <em>', function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>text <em>hello</em> world!<bogus-br></p>');
+              });
+            });
+          });
+        });
+
+      });
     });
 
     describe('curly quotes plugin', function () {
