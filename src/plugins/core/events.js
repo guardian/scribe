@@ -109,7 +109,9 @@ define(function () {
             var range = selection.range;
 
             if (range.collapsed) {
-              var containerPara = selection.getContaining('P');
+              var containerPara = selection.getContaining(function (node) {
+                return node.nodeName === 'P';
+              });
               if (containerPara) {
                 // Store the caret position
                 selection.placeMarkers();
