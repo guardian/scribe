@@ -22,7 +22,7 @@ function when() {
   describe.apply(null, args);
 }
 
-var browsers = ['chrome'];
+var browsers = ['chrome', 'firefox'];
 
 browsers.forEach(function (browser) {
   describe(browser, function () {
