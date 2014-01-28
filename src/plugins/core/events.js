@@ -109,15 +109,15 @@ define(function () {
             var range = selection.range;
 
             if (range.collapsed) {
-              var containerNode = findParentBlock(range.commonAncestorContainer);
-              if (containerNode.tagName === 'P') {
+              var containerPara = selection.getContaining('P');
+              if (containerPara) {
                 // Store the caret position
                 selection.placeMarkers();
 
                 // We clone the childNodes into an Array so that it's
                 // not affected by any manipulation below when we
                 // iterate over it
-                var childNodes = Array.prototype.slice.call(containerNode.childNodes);
+                var childNodes = Array.prototype.slice.call(containerPara.childNodes);
                 childNodes.forEach(function(paraChild) {
                   if (paraChild.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
@@ -140,15 +140,6 @@ define(function () {
             }
           }
         });
-      }
-
-      // TODO: share helper?
-      function findParentBlock(node) {
-        var blockElements = ['P', 'LI', 'DIV'];
-        while (blockElements.indexOf(node.tagName) === -1) {
-          node = node.parentNode;
-        }
-        return node;
       }
 
 
