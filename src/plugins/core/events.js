@@ -108,7 +108,8 @@ define(function () {
         if (event.clipboardData) {
           event.preventDefault();
           // TODO: what data should we be getting?
-          data = event.clipboardData.getData('text/html') || event.clipboardData.getData('text/plain');
+          data = event.clipboardData.getData('text/html') ||
+            escapeHtml(event.clipboardData.getData('text/plain'));
 
           scribe.insertHTML(data);
         } else {
@@ -157,6 +158,16 @@ define(function () {
           }, 1);
         }
       });
+
+
+      function escapeHtml(str) {
+        return String(str).
+          replace(/&/g, '&amp;').
+          replace(/</g, '&lt;').
+          replace(/>/g, '&gt;').
+          replace(/"/g, '&quot;');
+      }
+
     };
   };
 });
