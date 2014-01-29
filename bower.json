@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "eventEmitter": "~4.2.6",
-    "html-janitor": "~0.2.0",
+    "html-janitor": "~0.2.1",
     "lodash-amd": "~2.4.0"
   }
 }
