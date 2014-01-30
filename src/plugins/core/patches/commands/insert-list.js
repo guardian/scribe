@@ -52,12 +52,8 @@ define(function () {
 
             Array.prototype.forEach.call(listNode.querySelectorAll('li'), function (listItemNode) {
               if (listItemNode.firstChild.nodeName === 'SPAN') {
-                // TODO: unwrap API
-                var spanElement = listItemNode.firstChild;
-                while (spanElement.childNodes.length > 0) {
-                  spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
-                }
-                spanElement.parentNode.removeChild(spanElement);
+                var spanElement = new scribe.api.Element(listItemNode.firstChild);
+                spanElement.unwrap();
               }
             });
           }
