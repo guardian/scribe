@@ -615,8 +615,6 @@ browsers.forEach(function (browser) {
         });
       });
 
-      // TODO: find a way to separate tests for browser patches from normal
-      // functionality.
       // TODO: one suite for OLs and ULs or duplicates?
       describe('insertOrderedList', function () {
         /**
@@ -637,27 +635,6 @@ browsers.forEach(function (browser) {
               });
             });
           });
-
-          // FIXME: re-organise, this is a browser bug, not a feature
-          when('a parent element has a custom CSS line height', function () {
-            beforeEach(function () {
-              return driver.executeScript(function () {
-                document.body.style.lineHeight = 2;
-              });
-            });
-
-            when('the command is executed', function () {
-              beforeEach(function () {
-                return executeCommand('insertOrderedList');
-              });
-
-              it('should not wrap the list contents in a SPAN with an inline style for `line-height`', function () {
-                return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
-                });
-              });
-            });
-          });
         });
 
         given('content of "<p>|1</p><p>2|</p>"', function () {
@@ -671,27 +648,6 @@ browsers.forEach(function (browser) {
             it('should wrap the content in an ordered list', function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
-              });
-            });
-          });
-
-          // FIXME: re-organise, this is a browser bug, not a feature
-          when('a parent element has a custom CSS line height', function () {
-            beforeEach(function () {
-              return driver.executeScript(function () {
-                document.body.style.lineHeight = 2;
-              });
-            });
-
-            when('the command is executed', function () {
-              beforeEach(function () {
-                return executeCommand('insertOrderedList');
-              });
-
-              it('should wrap the content in an ordered list', function () {
-                return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
-                });
               });
             });
           });
@@ -893,14 +849,62 @@ browsers.forEach(function (browser) {
     });
 
     describe('patches', function () {
+      describe('commands', function () {
+        describe('insertOrderedList', function () {
+          given('a parent element with a custom CSS line height', function () {
+            beforeEach(function () {
+              return initializeScribe();
+            });
+
+            beforeEach(function () {
+              return driver.executeScript(function () {
+                document.body.style.lineHeight = 2;
+                window.scribe.initialize();
+              });
+            });
+
+            given('content of "<p>|1</p>"', function () {
+              setContent('<p>|1</p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not wrap the list contents in a SPAN with an inline style for `line-height`', function () {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+
+            given('content of "<p>|1</p><p>2|</p>"', function () {
+              setContent('<p>|1</p><p>2|</p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should wrap the content in an ordered list', function () {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+
       // Specifically in Chrome
       describe('don\'t insert line-height styling on paragraph editing', function () {
+        given('a parent element with a custom CSS line height', function () {
+          beforeEach(function () {
+            return initializeScribe();
+          });
 
-        beforeEach(function () {
-          return initializeScribe();
-        });
-
-        given('a parent element with a custom line height', function() {
           beforeEach(function () {
             return driver.executeScript(function () {
               document.body.style.lineHeight = 2;
@@ -989,9 +993,7 @@ browsers.forEach(function (browser) {
               });
             });
           });
-
         });
-
       });
     });
 
