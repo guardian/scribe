@@ -245,7 +245,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses ENTER', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -276,7 +276,7 @@ browsers.forEach(function (browser) {
         given('content of "<ul><li>|<br></li></ul>"', function () {
           setContent('<ul><li>|<br></li></ul>');
 
-          when('the user presses backspace', function () {
+          when('the user presses <backspace>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
             });
@@ -288,7 +288,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses enter', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -317,7 +317,7 @@ browsers.forEach(function (browser) {
             '</ul>'
           );
 
-          when('the user presses backspace', function () {
+          when('the user presses <backspace>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
             });
@@ -337,7 +337,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses enter', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -401,7 +401,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -436,7 +436,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -471,7 +471,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -514,7 +514,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses ENTER', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -794,7 +794,7 @@ browsers.forEach(function (browser) {
               });
             });
 
-            when('the user presses ENTER', function () {
+            when('the user presses <enter>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.ENTER);
               });
@@ -817,7 +817,7 @@ browsers.forEach(function (browser) {
                 });
               });
 
-              when('the user presses ENTER', function () {
+              when('the user presses <enter>', function () {
                 beforeEach(function () {
                   return scribeNode.sendKeys(webdriver.Key.ENTER);
                 });
@@ -911,7 +911,7 @@ browsers.forEach(function (browser) {
           given('<p>|<br></p><p>hello</p>', function () {
             setContent('<p>|<br></p><p>hello</p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
@@ -927,7 +927,7 @@ browsers.forEach(function (browser) {
           given('<p><br></p><p>|hello</p>', function () {
             setContent('<p><br></p><p>|hello</p>');
 
-            when('the user presses backspace', function () {
+            when('the user presses <backspace>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
@@ -943,7 +943,7 @@ browsers.forEach(function (browser) {
           given('<p>|<br></p><p><em>hello</em></p>', function () {
             setContent('<p>|<br></p><p><em>hello</em></p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
@@ -959,7 +959,7 @@ browsers.forEach(function (browser) {
           given('<p><br></p><p>|<em>hello</em></p>', function () {
             setContent('<p><br></p><p>|<em>hello</em></p>');
 
-            when('the user presses backspace', function () {
+            when('the user presses <backspace>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
@@ -976,7 +976,7 @@ browsers.forEach(function (browser) {
           given('<p>|<br></p><p>text <em>hello</em> world!</p>', function () {
             setContent('<p>|<br></p><p>text <em>hello</em> world!</p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
@@ -1023,7 +1023,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses the Right key', function () {
+        when('the user presses <right>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.RIGHT);
           });
