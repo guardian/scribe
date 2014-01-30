@@ -7,20 +7,19 @@ define(function () {
   }
 
   Node.prototype.getAncestor = function (nodeFilter) {
-    // TODO: use do instead?
-    // TODO: don't change *this* node object when traversing!
-    while (this.node) {
-      if (nodeFilter(this.node)) {
-        return this.node;
+    var currentNode = this.node;
+    do {
+      if (nodeFilter(currentNode)) {
+        return currentNode;
       }
-      this.node = this.node.parentNode;
+      currentNode = currentNode.parentNode;
       // If it's a `contenteditable` then it's likely going to be the Scribe
       // instance, so stop traversing there.
-      if (this.node && this.node.attributes && this.node.attributes.getNamedItem('contenteditable')) {
-        delete this.node;
+      if (currentNode && currentNode.attributes && currentNode.attributes.getNamedItem('contenteditable')) {
+        currentNode = null;
         return;
       }
-    }
+    } while (currentNode);
   };
 
   Node.prototype.nextAll = function () {
