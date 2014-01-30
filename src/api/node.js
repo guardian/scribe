@@ -25,7 +25,7 @@ define(function () {
   Node.prototype.nextAll = function () {
     var all = [];
     var el = this.node;
-    while (el = el.nextElementSibling) {
+    while (el = el.nextSibling) {
       all.push(el);
     }
     return all;
