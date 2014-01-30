@@ -651,7 +651,7 @@ browsers.forEach(function (browser) {
                 return executeCommand('insertOrderedList');
               });
 
-              it('should wrap the content in an ordered list', function () {
+              it('should not wrap the list contents in a SPAN with an inline style for `line-height`', function () {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
                 });
@@ -916,7 +916,7 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>hello<chrome-bogus-br></p>');
                 });
@@ -932,7 +932,7 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
 
-              it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>hello<chrome-bogus-br></p>');
                 });
@@ -948,7 +948,7 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not add a line-height to the <em>', function() {
+              it('should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p><em>hello</em><chrome-bogus-br></p>');
                 });
@@ -964,7 +964,7 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
 
-              it('should not add a line-height to the <em>', function() {
+              it('should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p><em>hello</em><chrome-bogus-br></p>');
                 });
@@ -981,7 +981,8 @@ browsers.forEach(function (browser) {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not add a span or a line-height to the <em>', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`, ' +
+                'and should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>text <em>hello</em> world!<chrome-bogus-br></p>');
                 });
