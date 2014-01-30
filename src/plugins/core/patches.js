@@ -3,13 +3,15 @@ define([
   './patches/commands/indent',
   './patches/commands/insert-list',
   './patches/commands/outdent',
-  './patches/empty-when-deleting'
+  './patches/empty-when-deleting',
+  './patches/events'
 ], function (
   boldCommand,
   indentCommand,
   insertListCommands,
   outdentCommand,
-  emptyWhenDeleting
+  emptyWhenDeleting,
+  events
 ) {
 
   /**
@@ -27,7 +29,8 @@ define([
       insertList: insertListCommands,
       outdent: outdentCommand
     },
-    emptyWhenDeleting: emptyWhenDeleting
+    emptyWhenDeleting: emptyWhenDeleting,
+    events: events
   };
 
 });

@@ -84,6 +84,7 @@ define([
     if (this.allowsBlockElements()) {
       this.use(patches.emptyWhenDeleting());
     }
+    this.use(patches.events());
 
     this.use(commands.indent());
     this.use(commands.insertList());
