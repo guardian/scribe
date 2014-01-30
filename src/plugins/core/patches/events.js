@@ -5,17 +5,22 @@ define(function () {
   return function () {
     return function (scribe) {
       /**
-       * Chrome: Altering the paragraph structure by pressing
+       * Chrome: If a parent node has a CSS `line-height` when we apply the
+       * insert(Un)OrderedList command, altering the paragraph structure by pressing
        * <backspace> or <delete> (merging/deleting paragraphs) sometimes
        * results in the application of a line-height attribute to the
        * contents of the paragraph, either onto existing elements or
        * by wrapping text in a span.
        * As per: http://jsbin.com/isIdoKA/4/edit?html,css,js,output
+       *
+       * FIXME: what if the user actually wants to use SPANs? This could
+       * cause conflicts.
        */
       // TODO: do we need to run this on every key press, or could we
       //       detect when the issue may have occurred?
       // TODO: run in a transaction so as to record the change? how do
       //       we know in advance whether there will be a change though?
+      // TODO: share somehow with `InsertList` command
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
