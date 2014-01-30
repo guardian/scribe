@@ -301,6 +301,22 @@ browsers.forEach(function (browser) {
           });
         });
 
+        given('content of "<ul><li><em>|</em><br></li></ul>"', function () {
+          setContent('<ul><li><em>|</em><br></li></ul>');
+
+          when('the user presses <enter>', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.ENTER);
+            });
+
+            it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
+              scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p><em></em><bogus-br></p>');
+              });
+            });
+          });
+        });
+
         given('content of "' +
             '<ul>' +
               '<li>1</li>' +
