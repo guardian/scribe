@@ -68,9 +68,10 @@ define(function () {
             var range = selection.range;
 
             if (range.collapsed) {
-              // FIXME: confirm whether to use innerText or innerHTML
-              if (range.commonAncestorContainer.nodeName === 'LI'
-                && (range.commonAncestorContainer.innerText === '' || range.commonAncestorContainer.innerHTML === '<br>')) {
+              var containerLIElement = selection.getContaining(function (node) {
+                return node.nodeName === 'LI';
+              });
+              if (containerLIElement && containerLIElement.innerText.trim() === '') {
                 /**
                  * LIs
                  */
