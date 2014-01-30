@@ -912,7 +912,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p>|<br></p><p>hello</p>', function () {
+          given('content of "<p>|<br></p><p>hello</p>"', function () {
             setContent('<p>|<br></p><p>hello</p>');
 
             when('the user presses <delete>', function () {
@@ -928,7 +928,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p><br></p><p>|hello</p>', function () {
+          given('content of "<p><br></p><p>|hello</p>"', function () {
             setContent('<p><br></p><p>|hello</p>');
 
             when('the user presses <backspace>', function () {
@@ -944,7 +944,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p>|<br></p><p><em>hello</em></p>', function () {
+          given('content of "<p>|<br></p><p><em>hello</em></p>"', function () {
             setContent('<p>|<br></p><p><em>hello</em></p>');
 
             when('the user presses <delete>', function () {
@@ -960,7 +960,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p><br></p><p>|<em>hello</em></p>', function () {
+          given('content of "<p><br></p><p>|<em>hello</em></p>"', function () {
             setContent('<p><br></p><p>|<em>hello</em></p>');
 
             when('the user presses <backspace>', function () {
@@ -977,7 +977,7 @@ browsers.forEach(function (browser) {
           });
 
           // combined case
-          given('<p>|<br></p><p>text <em>hello</em> world!</p>', function () {
+          given('content of "<p>|<br></p><p>text <em>hello</em> world!</p>"', function () {
             setContent('<p>|<br></p><p>text <em>hello</em> world!</p>');
 
             when('the user presses <delete>', function () {
