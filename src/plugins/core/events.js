@@ -137,6 +137,12 @@ define(function () {
                      * `line-height` on those elements, so we remove it here.
                      */
                     pElementChildNode.style.lineHeight = null;
+
+                    // There probably wasn’t a `style` attribute before, so
+                    // remove it if it is now empty.
+                    if (pElementChildNode.getAttribute('style') === '') {
+                      pElementChildNode.removeAttribute('style');
+                    }
                   }
                 });
 
