@@ -91,11 +91,12 @@ define(function () {
       }
 
       /**
-       * In Chrome, altering the paragraph structure by pressing
-       * backspace or delete (merging/deleting paragraphs) sometimes
+       * Chrome: Altering the paragraph structure by pressing
+       * <backspace> or <delete> (merging/deleting paragraphs) sometimes
        * results in the application of a line-height attribute to the
        * contents of the paragraph, either onto existing elements or
        * by wrapping text in a span.
+       * As per: http://jsbin.com/isIdoKA/4/edit?html,css,js,output
        */
       // TODO: do we need to run this on every key press, or could we
       //       detect when the issue may have occurred?
