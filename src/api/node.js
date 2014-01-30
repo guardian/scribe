@@ -6,6 +6,8 @@ define(function () {
     this.node = node;
   }
 
+  // TODO: should the return value be wrapped in one of our APIs?
+  // Node or Selection?
   Node.prototype.getAncestor = function (nodeFilter) {
     var currentNode = this.node;
     do {

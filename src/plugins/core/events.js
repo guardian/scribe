@@ -124,12 +124,8 @@ define(function () {
                 pElementChildNodes.forEach(function(pElementChildNode) {
                   if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
-                    // TODO: unwrap API
-                    var spanElement = pElementChildNode;
-                    while (spanElement.childNodes.length > 0) {
-                      spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
-                    }
-                    spanElement.parentNode.removeChild(spanElement);
+                    var spanElement = new scribe.api.Element(pElementChildNode);
+                    spanElement.unwrap();
                   } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
                     /**
                      * If the paragraph contains inline elements such as
