@@ -903,7 +903,7 @@ browsers.forEach(function (browser) {
         given('a parent element with a custom line height', function() {
           beforeEach(function () {
             return driver.executeScript(function () {
-              window.scribe.el.style.lineHeight = '1.5';
+              document.body.style.lineHeight = 2;
               window.scribe.initialize();
             });
           });
