@@ -110,31 +110,33 @@ define(function () {
             var range = selection.range;
 
             if (range.collapsed) {
-              var containerPara = selection.getContaining(function (node) {
+              var containerPElement = selection.getContaining(function (node) {
                 return node.nodeName === 'P';
               });
-              if (containerPara) {
+              if (containerPElement) {
                 // Store the caret position
                 selection.placeMarkers();
 
                 // We clone the childNodes into an Array so that it's
                 // not affected by any manipulation below when we
                 // iterate over it
-                var childNodes = Array.prototype.slice.call(containerPara.childNodes);
-                childNodes.forEach(function(paraChild) {
-                  if (paraChild.nodeName === 'SPAN') {
+                var pElementChildNodes = Array.prototype.slice.call(containerPElement.childNodes);
+                pElementChildNodes.forEach(function(pElementChildNode) {
+                  if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
                     // TODO: unwrap API
-                    var spanElement = paraChild;
+                    var spanElement = pElementChildNode;
                     while (spanElement.childNodes.length > 0) {
                       spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
                     }
                     spanElement.parentNode.removeChild(spanElement);
-                  } else if (paraChild.nodeType === Node.ELEMENT_NODE) {
-                    // A line-height might have been applied to an
-                    // existing child node, e.g. an anchor link or
-                    // emphasis, so we remove it to be safe
-                    paraChild.style.lineHeight = null;
+                  } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
+                    /**
+                     * If the paragraph contains inline elements such as
+                     * A, B, or I, Chrome will also append an inline style for
+                     * `line-height` on those elements, so we remove it here.
+                     */
+                    pElementChildNode.style.lineHeight = null;
                   }
                 });
 
