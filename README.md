@@ -40,3 +40,6 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * Firefox: Giving focus to a `contenteditable` will place the caret outside of
   any block elements. Chrome behaves correctly by placing the caret at the
   earliest point possible inside the first block element: http://jsbin.com/eLoFOku/1/edit?js,console,output
+
+### Events
+* Chrome appends SPANs with inline styling for `line-height` on <backspace> or <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
