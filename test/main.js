@@ -894,6 +894,40 @@ browsers.forEach(function (browser) {
                 });
               });
             });
+
+            given('content of "<p><em>|1|</em></p>"', function () {
+              setContent('<p><em>|1|</em></p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not add an inline style for `line-height` to the EM', function() {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li><em>1</em><chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+
+            // combined case
+            given('content of "<p>|1<em>2|</em></p>"', function () {
+              setContent('<p>|1<em>2|</em></p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`, ' +
+                  'and should not add an inline style for `line-height` to the EM', function() {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<em>2</em><chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
           });
         });
       });
