@@ -115,21 +115,24 @@ define([
        * We detect when this occurs and fix it by placing the caret ourselves.
        */
       var selection = new this.api.Selection();
-      // FIXME: Chrome error
-      selection.placeMarkers();
-      var isFirefoxBug = this.allowsBlockElements() && this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
-      selection.removeMarkers();
+      // In Chrome, the range is not created on or before this event loop.
+      // It doesn’t matter because this is a fix for Firefox.
+      if (selection.range) {
+        selection.placeMarkers();
+        var isFirefoxBug = this.allowsBlockElements() && this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
+        selection.removeMarkers();
 
-      if (isFirefoxBug) {
-        var focusElement = getFirstDeepestChild(this.el.firstChild);
+        if (isFirefoxBug) {
+          var focusElement = getFirstDeepestChild(this.el.firstChild);
 
-        var range = selection.range;
+          var range = selection.range;
 
-        range.setStart(focusElement, 0);
-        range.setEnd(focusElement, 0);
+          range.setStart(focusElement, 0);
+          range.setEnd(focusElement, 0);
 
-        selection.selection.removeAllRanges();
-        selection.selection.addRange(range);
+          selection.selection.removeAllRanges();
+          selection.selection.addRange(range);
+        }
       }
 
       function getFirstDeepestChild(node) {
