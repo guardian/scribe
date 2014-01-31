@@ -1047,7 +1047,7 @@ browsers.forEach(function (browser) {
       });
     });
 
-    describe.only('curly quotes plugin', function () {
+    describe('curly quotes plugin', function () {
 
       beforeEach(function () {
         return initializeScribe();
