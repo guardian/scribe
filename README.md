@@ -12,6 +12,7 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`":
   - http://jsbin.com/elicInov/2/edit?html,js,output
+  - Chrome tries to be clever by applying inline styles/SPANs with `line-height`: http://jsbin.com/ilEmudi/4/edit?css,js,output
   - Chrome applies styling to invalid markup, Firefox allows invalid markup: http://jsbin.com/ObiBoweG/1/edit?js,console,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
