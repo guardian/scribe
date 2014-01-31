@@ -998,6 +998,61 @@ describe('patches', function () {
       });
     });
   });
+
+  describe.only('don\'t insert line-height styling on inline elements when pasting into a block element', function () {
+    given('a parent element with a custom CSS line height', function () {
+      beforeEach(function () {
+        return initializeScribe();
+      });
+
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          document.body.style.lineHeight = 2;
+          window.scribe.initialize();
+        });
+      });
+
+      givenContentOf('<p>1|</p>', function () {
+        beforeEach(function () {
+          scribeNode.click();
+        });
+
+        when('inserting HTML content containing an inline element', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertHTML('<b>2</b>');
+            });
+          });
+
+          it('should not apply an inline style for `line-height` on the B', function() {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+            });
+          });
+        });
+
+        when('inserting HTML content containing an inline element followed by plain content', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertHTML('<b>2</b>3');
+            });
+          });
+
+          it('should not apply an inline style for `line-height` on the B', function() {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<b>2</b>3</p>');
+            });
+          });
+        });
+      });
+    });
+  });
 });
 
 describe('curly quotes plugin', function () {
