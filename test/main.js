@@ -156,15 +156,11 @@ describe('undo manager', function () {
     });
   });
 
-  given('content of "<p>|1</p>"', function () {
-    setContent('<p>|1</p>');
-
+  givenContentOf('<p>|1</p>', function () {
     when('the user types', function () {
       beforeEach(function () {
         return scribeNode.sendKeys('2');
       });
-
-      // TODO: it should push to the history
 
       when('the undo command is executed', function () {
         beforeEach(function () {
@@ -275,9 +271,7 @@ describe('P mode', function () {
 
   describe('lists', function () {
     // The BR node denotes where the user will type.
-    given('content of "<ul><li>|<br></li></ul>"', function () {
-      setContent('<ul><li>|<br></li></ul>');
-
+    givenContentOf('<ul><li>|<br></li></ul>', function () {
       when('the user presses <backspace>', function () {
         beforeEach(function () {
           return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
@@ -303,9 +297,7 @@ describe('P mode', function () {
       });
     });
 
-    given('content of "<ul><li><em>|</em><br></li></ul>"', function () {
-      setContent('<ul><li><em>|</em><br></li></ul>');
-
+    givenContentOf('<ul><li><em>|</em><br></li></ul>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
           return scribeNode.sendKeys(webdriver.Key.ENTER);
@@ -319,21 +311,13 @@ describe('P mode', function () {
       });
     });
 
-    given('content of "' +
-        '<ul>' +
-          '<li>1</li>' +
-          '<li>|<br></li>' +
-          '<li>2</li>' +
-        '</ul>' +
-      '"',
+    givenContentOf(
+      '<ul>' +
+        '<li>1</li>' +
+        '<li>|<br></li>' +
+        '<li>2</li>' +
+      '</ul>',
       function () {
-      setContent(
-        '<ul>' +
-          '<li>1</li>' +
-          '<li>|<br></li>' +
-          '<li>2</li>' +
-        '</ul>'
-      );
 
       when('the user presses <backspace>', function () {
         beforeEach(function () {
@@ -410,9 +394,7 @@ describe('BR mode', function () {
   });
 
   // Without right-hand side content
-  given('content of "1|"', function () {
-    setContent('1|');
-
+  givenContentOf('1|', function () {
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.have.html('1<bogus-br>');
@@ -445,9 +427,7 @@ describe('BR mode', function () {
   });
 
   // With right-hand side content
-  given('content of "1|<br>2"', function () {
-    setContent('1|<br>2');
-
+  givenContentOf('1|<br>2', function () {
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.have.html('1<br>2<bogus-br>');
@@ -480,9 +460,7 @@ describe('BR mode', function () {
   });
 
   // Inside an inline element
-  given('content of "<i>1|</i>', function () {
-    setContent('<i>1|</i>');
-
+  givenContentOf('<i>1|</i>', function () {
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.have.html('<i>1</i><bogus-br>');
@@ -616,9 +594,7 @@ describe('commands', function () {
   });
 
   describe('removeFormat', function () {
-    given('content of "<p><i>|1|</i></p>"', function () {
-      setContent('<p><i>|1|</i></p>');
-
+    givenContentOf('<p><i>|1|</i></p>', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           return executeCommand('removeFormat');
@@ -639,9 +615,7 @@ describe('commands', function () {
      * Applying
      */
 
-    given('content of "<p>|1</p>"', function () {
-      setContent('<p>|1</p>');
-
+    givenContentOf('<p>|1</p>', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           return executeCommand('insertOrderedList');
@@ -655,8 +629,7 @@ describe('commands', function () {
       });
     });
 
-    given('content of "<p>|1</p><p>2|</p>"', function () {
-      setContent('<p>|1</p><p>2|</p>');
+    givenContentOf('<p>|1</p><p>2|</p>', function () {
 
       when('the command is executed', function () {
         beforeEach(function () {
@@ -675,8 +648,7 @@ describe('commands', function () {
      * Unapplying
      */
 
-    given('content of "<ol><li>1|</li></ol>"', function () {
-      setContent('<ol><li>1|</li></ol>');
+    givenContentOf('<ol><li>1|</li></ol>', function () {
 
       when('the command is executed', function () {
         beforeEach(function () {
@@ -691,8 +663,7 @@ describe('commands', function () {
       });
     });
 
-    given('content of "<ol><li>|1</li><li>2|</li></ol>"', function () {
-      setContent('<ol><li>|1</li><li>2|</li></ol>');
+    givenContentOf('<ol><li>|1</li><li>2|</li></ol>', function () {
 
       when('the command is executed', function () {
         beforeEach(function () {
@@ -708,9 +679,7 @@ describe('commands', function () {
       });
     });
 
-    given('content of "<ol><li>1</li><li>|2</li><li>3|</li><li>4</li></ol>"', function () {
-      setContent('<ol><li>1</li><li>|2</li><li>3|</li><li>4</li></ol>');
-
+    givenContentOf('<ol><li>1</li><li>|2</li><li>3|</li><li>4</li></ol>', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           return executeCommand('insertOrderedList');
@@ -881,9 +850,7 @@ describe('patches', function () {
           });
         });
 
-        given('content of "<p>|1</p>"', function () {
-          setContent('<p>|1</p>');
-
+        givenContentOf('<p>|1</p>', function () {
           when('the command is executed', function () {
             beforeEach(function () {
               return executeCommand('insertOrderedList');
@@ -897,9 +864,7 @@ describe('patches', function () {
           });
         });
 
-        given('content of "<p>|1</p><p>2|</p>"', function () {
-          setContent('<p>|1</p><p>2|</p>');
-
+        givenContentOf('<p>|1</p><p>2|</p>', function () {
           when('the command is executed', function () {
             beforeEach(function () {
               return executeCommand('insertOrderedList');
@@ -913,9 +878,7 @@ describe('patches', function () {
           });
         });
 
-        given('content of "<p><em>|1|</em></p>"', function () {
-          setContent('<p><em>|1|</em></p>');
-
+        givenContentOf('<p><em>|1|</em></p>', function () {
           when('the command is executed', function () {
             beforeEach(function () {
               return executeCommand('insertOrderedList');
@@ -930,9 +893,7 @@ describe('patches', function () {
         });
 
         // combined case
-        given('content of "<p>|1<em>2|</em></p>"', function () {
-          setContent('<p>|1<em>2|</em></p>');
-
+        givenContentOf('<p>|1<em>2|</em></p>', function () {
           when('the command is executed', function () {
             beforeEach(function () {
               return executeCommand('insertOrderedList');
@@ -964,9 +925,7 @@ describe('patches', function () {
         });
       });
 
-      given('content of "<p>|<br></p><p>hello</p>"', function () {
-        setContent('<p>|<br></p><p>hello</p>');
-
+      givenContentOf('<p>|<br></p><p>hello</p>', function () {
         when('the user presses <delete>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.DELETE);
@@ -980,9 +939,7 @@ describe('patches', function () {
         });
       });
 
-      given('content of "<p><br></p><p>|hello</p>"', function () {
-        setContent('<p><br></p><p>|hello</p>');
-
+      givenContentOf('<p><br></p><p>|hello</p>', function () {
         when('the user presses <backspace>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
@@ -996,9 +953,7 @@ describe('patches', function () {
         });
       });
 
-      given('content of "<p>|<br></p><p><em>hello</em></p>"', function () {
-        setContent('<p>|<br></p><p><em>hello</em></p>');
-
+      givenContentOf('<p>|<br></p><p><em>hello</em></p>', function () {
         when('the user presses <delete>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.DELETE);
@@ -1012,9 +967,7 @@ describe('patches', function () {
         });
       });
 
-      given('content of "<p><br></p><p>|<em>hello</em></p>"', function () {
-        setContent('<p><br></p><p>|<em>hello</em></p>');
-
+      givenContentOf('<p><br></p><p>|<em>hello</em></p>', function () {
         when('the user presses <backspace>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
@@ -1029,9 +982,7 @@ describe('patches', function () {
       });
 
       // combined case
-      given('content of "<p>|<br></p><p>text <em>hello</em> world!</p>"', function () {
-        setContent('<p>|<br></p><p>text <em>hello</em> world!</p>');
-
+      givenContentOf('<p>|<br></p><p>text <em>hello</em> world!</p>', function () {
         when('the user presses <delete>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.DELETE);
@@ -1171,15 +1122,14 @@ describe('curly quotes plugin', function () {
 });
 
 function setContent(html) {
-  beforeEach(function () {
-    return driver.executeScript(function (html) {
-      window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
-      if (html.match('|').length) {
-        var selection = new window.scribe.api.Selection();
-        selection.selectMarkers();
-      }
-    }, html);
-  });
+  return driver.executeScript(function (html) {
+    window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
+    if (html.match('|').length) {
+      var selection = new window.scribe.api.Selection();
+      selection.selectMarkers();
+    }
+    window.scribe.pushHistory();
+  }, html);
 }
 
 function executeCommand(commandName) {
@@ -1187,4 +1137,15 @@ function executeCommand(commandName) {
     var insertOrderedListCommand = window.scribe.getCommand(commandName);
     insertOrderedListCommand.execute();
   }, commandName);
+}
+
+function givenContentOf(content, fn) {
+  given('content of "' + content + '"', function () {
+    beforeEach(function () {
+      scribeNode.click();
+      return setContent(content);
+    });
+
+    fn();
+  });
 }
