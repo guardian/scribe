@@ -245,7 +245,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses ENTER', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -276,7 +276,7 @@ browsers.forEach(function (browser) {
         given('content of "<ul><li>|<br></li></ul>"', function () {
           setContent('<ul><li>|<br></li></ul>');
 
-          when('the user presses backspace', function () {
+          when('the user presses <backspace>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
             });
@@ -288,7 +288,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses enter', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -296,6 +296,22 @@ browsers.forEach(function (browser) {
             it('should delete the list and insert an empty P element', function () {
               scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.have.html('<p><bogus-br></p>');
+              });
+            });
+          });
+        });
+
+        given('content of "<ul><li><em>|</em><br></li></ul>"', function () {
+          setContent('<ul><li><em>|</em><br></li></ul>');
+
+          when('the user presses <enter>', function () {
+            beforeEach(function () {
+              return scribeNode.sendKeys(webdriver.Key.ENTER);
+            });
+
+            it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
+              scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p><em></em><bogus-br></p>');
               });
             });
           });
@@ -317,7 +333,7 @@ browsers.forEach(function (browser) {
             '</ul>'
           );
 
-          when('the user presses backspace', function () {
+          when('the user presses <backspace>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
             });
@@ -337,7 +353,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses enter', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -401,7 +417,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -436,7 +452,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -471,7 +487,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses ENTER', function () {
+        when('the user presses <enter>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.ENTER);
           });
@@ -514,7 +530,7 @@ browsers.forEach(function (browser) {
             });
           });
 
-          when('the user presses ENTER', function () {
+          when('the user presses <enter>', function () {
             beforeEach(function () {
               return scribeNode.sendKeys(webdriver.Key.ENTER);
             });
@@ -615,8 +631,6 @@ browsers.forEach(function (browser) {
         });
       });
 
-      // TODO: find a way to separate tests for browser patches from normal
-      // functionality.
       // TODO: one suite for OLs and ULs or duplicates?
       describe('insertOrderedList', function () {
         /**
@@ -637,27 +651,6 @@ browsers.forEach(function (browser) {
               });
             });
           });
-
-          // FIXME: re-organise, this is a browser bug, not a feature
-          when('a parent element has a custom CSS line height', function () {
-            beforeEach(function () {
-              return driver.executeScript(function () {
-                document.body.style.lineHeight = 2;
-              });
-            });
-
-            when('the command is executed', function () {
-              beforeEach(function () {
-                return executeCommand('insertOrderedList');
-              });
-
-              it('should wrap the content in an ordered list', function () {
-                return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
-                });
-              });
-            });
-          });
         });
 
         given('content of "<p>|1</p><p>2|</p>"', function () {
@@ -671,27 +664,6 @@ browsers.forEach(function (browser) {
             it('should wrap the content in an ordered list', function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
-              });
-            });
-          });
-
-          // FIXME: re-organise, this is a browser bug, not a feature
-          when('a parent element has a custom CSS line height', function () {
-            beforeEach(function () {
-              return driver.executeScript(function () {
-                document.body.style.lineHeight = 2;
-              });
-            });
-
-            when('the command is executed', function () {
-              beforeEach(function () {
-                return executeCommand('insertOrderedList');
-              });
-
-              it('should wrap the content in an ordered list', function () {
-                return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
-                });
               });
             });
           });
@@ -794,7 +766,7 @@ browsers.forEach(function (browser) {
               });
             });
 
-            when('the user presses ENTER', function () {
+            when('the user presses <enter>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.ENTER);
               });
@@ -817,7 +789,7 @@ browsers.forEach(function (browser) {
                 });
               });
 
-              when('the user presses ENTER', function () {
+              when('the user presses <enter>', function () {
                 beforeEach(function () {
                   return scribeNode.sendKeys(webdriver.Key.ENTER);
                 });
@@ -893,30 +865,112 @@ browsers.forEach(function (browser) {
     });
 
     describe('patches', function () {
+      describe('commands', function () {
+        describe('insertOrderedList', function () {
+          given('a parent element with a custom CSS line height', function () {
+            beforeEach(function () {
+              return initializeScribe();
+            });
+
+            beforeEach(function () {
+              return driver.executeScript(function () {
+                document.body.style.lineHeight = 2;
+                window.scribe.initialize();
+              });
+            });
+
+            given('content of "<p>|1</p>"', function () {
+              setContent('<p>|1</p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not wrap the list contents in a SPAN with an inline style for `line-height`', function () {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+
+            given('content of "<p>|1</p><p>2|</p>"', function () {
+              setContent('<p>|1</p><p>2|</p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should wrap the content in an ordered list', function () {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+
+            given('content of "<p><em>|1|</em></p>"', function () {
+              setContent('<p><em>|1|</em></p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not add an inline style for `line-height` to the EM', function() {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li><em>1</em><chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+
+            // combined case
+            given('content of "<p>|1<em>2|</em></p>"', function () {
+              setContent('<p>|1<em>2|</em></p>');
+
+              when('the command is executed', function () {
+                beforeEach(function () {
+                  return executeCommand('insertOrderedList');
+                });
+
+                it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`, ' +
+                  'and should not add an inline style for `line-height` to the EM', function() {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                    expect(innerHTML).to.have.html('<ol><li>1<em>2</em><chrome-bogus-br></li></ol>');
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+
       // Specifically in Chrome
       describe('don\'t insert line-height styling on paragraph editing', function () {
+        given('a parent element with a custom CSS line height', function () {
+          beforeEach(function () {
+            return initializeScribe();
+          });
 
-        beforeEach(function () {
-          return initializeScribe();
-        });
-
-        given('a parent element with a custom line height', function() {
           beforeEach(function () {
             return driver.executeScript(function () {
-              window.scribe.el.style.lineHeight = '1.5';
+              document.body.style.lineHeight = 2;
               window.scribe.initialize();
             });
           });
 
-          given('<p>|<br></p><p>hello</p>', function () {
+          given('content of "<p>|<br></p><p>hello</p>"', function () {
             setContent('<p>|<br></p><p>hello</p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>hello<chrome-bogus-br></p>');
                 });
@@ -924,15 +978,15 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p><br></p><p>|hello</p>', function () {
+          given('content of "<p><br></p><p>|hello</p>"', function () {
             setContent('<p><br></p><p>|hello</p>');
 
-            when('the user presses backspace', function () {
+            when('the user presses <backspace>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
 
-              it('should not wrap the remaining paragraph in <span> with line-height', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>hello<chrome-bogus-br></p>');
                 });
@@ -940,15 +994,15 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p>|<br></p><p><em>hello</em></p>', function () {
+          given('content of "<p>|<br></p><p><em>hello</em></p>"', function () {
             setContent('<p>|<br></p><p><em>hello</em></p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not add a line-height to the <em>', function() {
+              it('should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p><em>hello</em><chrome-bogus-br></p>');
                 });
@@ -956,15 +1010,15 @@ browsers.forEach(function (browser) {
             });
           });
 
-          given('<p><br></p><p>|<em>hello</em></p>', function () {
+          given('content of "<p><br></p><p>|<em>hello</em></p>"', function () {
             setContent('<p><br></p><p>|<em>hello</em></p>');
 
-            when('the user presses backspace', function () {
+            when('the user presses <backspace>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
               });
 
-              it('should not add a line-height to the <em>', function() {
+              it('should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p><em>hello</em><chrome-bogus-br></p>');
                 });
@@ -973,24 +1027,23 @@ browsers.forEach(function (browser) {
           });
 
           // combined case
-          given('<p>|<br></p><p>text <em>hello</em> world!</p>', function () {
+          given('content of "<p>|<br></p><p>text <em>hello</em> world!</p>"', function () {
             setContent('<p>|<br></p><p>text <em>hello</em> world!</p>');
 
-            when('the user presses delete', function () {
+            when('the user presses <delete>', function () {
               beforeEach(function () {
                 return scribeNode.sendKeys(webdriver.Key.DELETE);
               });
 
-              it('should not add a span or a line-height to the <em>', function() {
+              it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`, ' +
+                'and should not add an inline style for `line-height` to the EM', function() {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>text <em>hello</em> world!<chrome-bogus-br></p>');
                 });
               });
             });
           });
-
         });
-
       });
     });
 
@@ -1023,7 +1076,7 @@ browsers.forEach(function (browser) {
           });
         });
 
-        when('the user presses the Right key', function () {
+        when('the user presses <right>', function () {
           beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.RIGHT);
           });

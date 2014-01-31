@@ -68,9 +68,10 @@ define(function () {
             var range = selection.range;
 
             if (range.collapsed) {
-              // FIXME: confirm whether to use innerText or innerHTML
-              if (range.commonAncestorContainer.nodeName === 'LI'
-                && (range.commonAncestorContainer.innerText === '' || range.commonAncestorContainer.innerHTML === '<br>')) {
+              var containerLIElement = selection.getContaining(function (node) {
+                return node.nodeName === 'LI';
+              });
+              if (containerLIElement && containerLIElement.innerText.trim() === '') {
                 /**
                  * LIs
                  */
@@ -84,60 +85,6 @@ define(function () {
                 var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
 
                 command.execute();
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * In Chrome, altering the paragraph structure by pressing
-       * backspace or delete (merging/deleting paragraphs) sometimes
-       * results in the application of a line-height attribute to the
-       * contents of the paragraph, either onto existing elements or
-       * by wrapping text in a span.
-       */
-      // TODO: do we need to run this on every key press, or could we
-      //       detect when the issue may have occurred?
-      // TODO: run in a transaction so as to record the change? how do
-      //       we know in advance whether there will be a change though?
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keyup', function (event) {
-          if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            if (range.collapsed) {
-              var containerPara = selection.getContaining(function (node) {
-                return node.nodeName === 'P';
-              });
-              if (containerPara) {
-                // Store the caret position
-                selection.placeMarkers();
-
-                // We clone the childNodes into an Array so that it's
-                // not affected by any manipulation below when we
-                // iterate over it
-                var childNodes = Array.prototype.slice.call(containerPara.childNodes);
-                childNodes.forEach(function(paraChild) {
-                  if (paraChild.nodeName === 'SPAN') {
-                    // Unwrap any SPAN that has been inserted
-                    // TODO: unwrap API
-                    var spanElement = paraChild;
-                    while (spanElement.childNodes.length > 0) {
-                      spanElement.parentNode.insertBefore(spanElement.childNodes[0], spanElement);
-                    }
-                    spanElement.parentNode.removeChild(spanElement);
-                  } else if (paraChild.nodeType === Node.ELEMENT_NODE) {
-                    // A line-height might have been applied to an
-                    // existing child node, e.g. an anchor link or
-                    // emphasis, so we remove it to be safe
-                    paraChild.style.lineHeight = null;
-                  }
-                });
-
-                selection.selectMarkers();
               }
             }
           }

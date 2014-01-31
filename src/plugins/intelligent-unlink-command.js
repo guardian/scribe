@@ -25,11 +25,7 @@ define(function () {
             });
 
             if (aNode) {
-              // TODO: unwrap API
-              while (aNode.childNodes.length > 0) {
-                aNode.parentNode.insertBefore(aNode.childNodes[0], aNode);
-              }
-              aNode.parentNode.removeChild(aNode);
+              new scribe.api.Element(aNode.parentNode).unwrap(aNode);
             }
           }.bind(this));
         } else {
