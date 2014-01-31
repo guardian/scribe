@@ -1076,7 +1076,7 @@ browsers.forEach(function (browser) {
       });
 
 
-      given('an empty editor', function () {
+      given('default content', function () {
         when('inserting content with single quotes', function () {
           beforeEach(function () {
             // Focus it before-hand
