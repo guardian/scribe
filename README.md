@@ -42,4 +42,7 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   earliest point possible inside the first block element: http://jsbin.com/eLoFOku/1/edit?js,console,output
 
 ### Events
-* Chrome appends SPANs with inline styling for `line-height` on <backspace> or <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
+* Chrome appends SPANs with inline styling for `line-height` on <backspace> or
+  <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
+* Firefox breaks out of P mode on <backspace> or <delete> keyboard events
+  when HTML has indentation between block elements: http://jsbin.com/EyuKase/1/edit?js,output
