@@ -209,8 +209,8 @@ define([
       var selection = new this.api.Selection();
 
       selection.placeMarkers();
-      var html = this.el.innerHTML;
-      selection.removeMarkers(this.el);
+      var html = this.getHTML();
+      selection.removeMarkers();
 
       this.undoManager.push(html);
 
