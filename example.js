@@ -54,9 +54,7 @@ require({
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
-  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
-    scribe.use(toolbar(toolbarNode));
-  });
+  scribe.use(toolbar(document.querySelector('.toolbar')));
   scribe.use(smartLists());
   scribe.use(curlyQuotes());
 
