@@ -105,7 +105,7 @@ define([
     }.bind(this);
 
     // TODO: abstract
-    this.el.addEventListener('focus', function () {
+    this.el.addEventListener('focus', function placeCaretOnFocus() {
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
