@@ -117,10 +117,10 @@ define([
       var selection = new this.api.Selection();
       // FIXME: Chrome error
       selection.placeMarkers();
-      var firefoxBug = this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
+      var isFirefoxBug = this.allowsBlockElements() && this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
       selection.removeMarkers();
 
-      if (this.allowsBlockElements() && firefoxBug) {
+      if (isFirefoxBug) {
         var focusElement = getFirstDeepestChild(this.el.firstChild);
 
         var range = selection.range;
