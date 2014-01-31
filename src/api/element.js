@@ -9,11 +9,11 @@ define(['./node'], function (Node) {
   Element.prototype = Object.create(Node.prototype);
   Element.prototype.constructor = Element;
 
-  Element.prototype.unwrap = function () {
-    while (this.node.childNodes.length > 0) {
-      this.node.parentNode.insertBefore(this.node.childNodes[0], this.node);
+  Element.prototype.unwrap = function (childNode) {
+    while (childNode.childNodes.length > 0) {
+      this.node.insertBefore(childNode.childNodes[0], childNode);
     }
-    this.node.parentNode.removeChild(this.node);
+    this.node.removeChild(childNode);
   };
 
   return Element;
