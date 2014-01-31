@@ -18,7 +18,11 @@ define(function () {
     var NON_BREAKING_SPACE = '\u00A0';
 
     return function (scribe) {
+      // Substitute quotes while typing
       scribe.el.addEventListener('keypress', input);
+
+      // Substitute quotes on setting content or paste
+      scribe.formatter.formatters.push(substituteCurlyQuotes);
 
       function input(event) {
         var curlyChar;
@@ -92,6 +96,38 @@ define(function () {
         var selection = new scribe.api.Selection();
         selection.selection.removeAllRanges();
         selection.selection.addRange(rangeAfter);
+      }
+
+      function substituteCurlyQuotes(html) {
+        // We don't want to replace quotes within the HTML markup
+        // (e.g. attributes), only to text nodes
+        var holder = document.createElement('div');
+        holder.innerHTML = html;
+
+        // Replace straight single and double quotes with curly
+        // equivalent in the given string
+        mapTextNodes(holder, function(str) {
+          return str.
+            replace(/(\w)"/g, '$1' + closeDoubleCurly).
+            replace(/"/g, openDoubleCurly).
+            replace(/(\w)'/g, '$1' + closeSingleCurly).
+            replace(/'/g, openSingleCurly);
+        });
+
+        return holder.innerHTML;
+      }
+
+      // Apply a function on all text nodes in a container, mutating in place
+      function mapTextNodes(container, func) {
+        var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+        var node = walker.firstChild();
+        if (node) {
+          do {
+            node.data = func(node.data);
+          } while ((node = walker.nextSibling()));
+        }
+
+        return node;
       }
 
     };

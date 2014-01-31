@@ -22,7 +22,7 @@ function when() {
   describe.apply(null, args);
 }
 
-var browsers = ['chrome', 'firefox'];
+var browsers = ['chrome'];
 
 browsers.forEach(function (browser) {
   describe(browser, function () {
@@ -1119,12 +1119,51 @@ browsers.forEach(function (browser) {
 
           it.skip('should insert an opening curly double quote instead', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // FIXME: failing, inserts nbsp!
-              expect(innerHTML).to.equal('<p>Hello “</p>');
+              // Disabled as Chrome inserts a bogus &nbsp; - this
+              // might be a bug we want to fix though!
+              expect(innerHTML).to.have.html('<p>Hello “<firefox-bogus-br></p>');
             });
           });
         });
 
+      });
+
+
+      given('default content', function () {
+        when('inserting content with single quotes', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes'</em></p>");
+            });
+          });
+
+          it('should replace with curly double quotes instead', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              // Note that the attribute quotes got changed to double quotes; no biggie though
+              expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes’</em></p>');
+            });
+          });
+        });
+
+        when('inserting content with double quotes', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes"</em></p>');
+            });
+          });
+
+          it('should replace with curly double quotes instead', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes”</em></p>');
+            });
+          });
+        });
       });
 
     });
