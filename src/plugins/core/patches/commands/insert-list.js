@@ -60,8 +60,8 @@ define(function () {
               listItemElementChildNodes.forEach(function(listElementChildNode) {
                 if (listElementChildNode.nodeName === 'SPAN') {
                   // Unwrap any SPAN that has been inserted
-                  var spanElement = new scribe.api.Element(listElementChildNode);
-                  spanElement.unwrap();
+                  var spanElement = listElementChildNode;
+                  new scribe.api.Element(listItemElement).unwrap(spanElement);
                 } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
                   /**
                    * If the list item contains inline elements such as
