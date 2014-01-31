@@ -18,7 +18,7 @@ define(function () {
         return scribe.undoManager.position < scribe.undoManager.stack.length - 1;
       };
 
-      scribe.commandPatches.redo = redoCommand;
+      scribe.commands.redo = redoCommand;
 
       scribe.el.addEventListener('keydown', function (event) {
         if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
