@@ -999,7 +999,7 @@ describe('patches', function () {
     });
   });
 
-  describe.only('don\'t insert line-height styling on inline elements when pasting into a block element', function () {
+  describe('don\'t insert line-height styling on inline elements when pasting into a block element', function () {
     given('a parent element with a custom CSS line height', function () {
       beforeEach(function () {
         return initializeScribe();
@@ -1013,10 +1013,6 @@ describe('patches', function () {
       });
 
       givenContentOf('<p>1|</p>', function () {
-        beforeEach(function () {
-          scribeNode.click();
-        });
-
         when('inserting HTML content containing an inline element', function () {
           beforeEach(function () {
             // Focus it before-hand
@@ -1034,6 +1030,7 @@ describe('patches', function () {
           });
         });
 
+        // Only occurs if the plain content is preceded by an inline element
         when('inserting HTML content containing an inline element followed by plain content', function () {
           beforeEach(function () {
             // Focus it before-hand

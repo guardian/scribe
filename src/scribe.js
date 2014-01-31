@@ -80,6 +80,7 @@ define([
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
     this.use(patches.commands.insertList());
+    this.use(patches.commands.insertHTML());
     this.use(patches.commands.outdent());
     if (this.allowsBlockElements()) {
       this.use(patches.emptyWhenDeleting());
@@ -253,7 +254,7 @@ define([
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    document.execCommand('insertHTML', null, this.formatter.format(html));
+    this.getCommand('insertHTML').execute(this.formatter.format(html));
   };
 
   // TODO: abstract
