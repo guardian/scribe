@@ -54,7 +54,13 @@ require({
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
-  // TODO: require formatter?
+  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
+    scribe.use(toolbar(toolbarNode));
+  });
+  scribe.use(smartLists());
+  scribe.use(curlyQuotes());
+
+  // Formatters
   scribe.use(sanitizer({
     tags: {
       p: {},
@@ -71,11 +77,6 @@ require({
       h2: {}
     }
   }));
-  Array.prototype.forEach.call(document.querySelectorAll('.toolbar'), function (toolbarNode) {
-    scribe.use(toolbar(toolbarNode));
-  });
-  scribe.use(smartLists());
-  scribe.use(curlyQuotes());
   scribe.use(convertNewLinesToHtmlFormatter());
 
   /**
