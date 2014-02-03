@@ -696,7 +696,7 @@ describe('commands', function () {
 
   describe('insertHTML', function () {
     given('default content', function () {
-      when('the command is executed with a value of "<p>1</p>2', function () {
+      when('the command is executed with a value of "<p>1</p>2"', function () {
         beforeEach(function () {
           // Focus it before-hand
           scribeNode.click();
@@ -704,14 +704,14 @@ describe('commands', function () {
           return executeCommand('insertHTML', '<p>1</p>2');
         });
 
-        it('should wrap all content in a P element', function () {
+        it('should wrap the content in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
           });
         });
       });
 
-      when('the command is executed with a value of "<p>1</p>2<br>3', function () {
+      when('the command is executed with a value of "<p>1</p>2<br>3"', function () {
         beforeEach(function () {
           // Focus it before-hand
           scribeNode.click();
@@ -719,7 +719,7 @@ describe('commands', function () {
           return executeCommand('insertHTML', '<p>1</p>2<br>3');
         });
 
-        it('should wrap all content in a P element', function () {
+        it('should wrap the content in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p><p>2</p><p><br></p><p>3</p>');
           });
