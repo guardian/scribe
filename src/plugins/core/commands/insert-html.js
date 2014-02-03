@@ -14,23 +14,51 @@ define(['lodash-modern/collections/contains'], function (contains) {
 
       insertHTMLCommand.execute = function (value) {
         if (scribe.allowsBlockElements()) {
+          /**
+           * Ensure P mode.
+           *
+           * Wrap any orphan text nodes in a P element.
+           */
+          // TODO: This should be configurable and also correct markup such as
+          // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
+          // TODO: This should probably be a part of HTML Janitor, or some other
+          // formatter.
           scribe.transactionManager.run(function () {
             var bin = document.createElement('div');
             bin.innerHTML = value;
 
-            var binChildNodes = Array.prototype.slice.call(bin.childNodes);
-            binChildNodes.forEach(function (binChildNode) {
-              if (! isBlockElement(binChildNode)) {
-                // TODO: wrap API
-                var pElement = document.createElement('p');
-                bin.insertBefore(pElement, binChildNode);
-                pElement.appendChild(binChildNode);
-              }
-            });
+            traverse(bin);
 
             var newValue = bin.innerHTML;
 
             scribe.api.Command.prototype.execute.call(this, newValue);
+
+            function traverse(parentNode) {
+              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+              var node = treeWalker.firstChild();
+              var isTopContainerElement = ! parentNode.parentNode;
+
+              while (node) {
+                if (! isBlockElement(node)
+                    && (parentNode.nodeName === 'BLOCKQUOTE'
+                        || ! isBlockElement(parentNode)
+                        || isTopContainerElement)) {
+                  // TODO: wrap API
+                  var pElement = document.createElement('p');
+                  parentNode.insertBefore(pElement, node);
+                  pElement.appendChild(node);
+                  // We break this loop and start the traverse again from the
+                  // parent node, because changing the DOM as above breaks the
+                  // tree walker.
+                  traverse(parentNode);
+                  break;
+                } else {
+                  traverse(node);
+                }
+
+                node = treeWalker.nextSibling();
+              }
+            }
           }.bind(this));
         } else {
           scribe.api.Command.prototype.execute.call(this, value);

@@ -725,6 +725,51 @@ describe('commands', function () {
           });
         });
       });
+
+      when('the command is executed with a value of "<blockquote>1</blockquote>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<blockquote>1</blockquote>');
+        });
+
+        it('should wrap the content of the BLOCKQUOTE element in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<ul>1</ul>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<ul>1</ul>');
+        });
+
+        it.skip('should wrap the content of the UL element in a LI element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<ul><li>1</li></ul>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<ol>1</ol>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<ol>1</ol>');
+        });
+
+        it.skip('should wrap the content of the OL element in a LI element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<ol><li>1</li></ol>');
+          });
+        });
+      });
     });
   });
 });
