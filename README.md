@@ -14,6 +14,11 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - http://jsbin.com/elicInov/2/edit?html,js,output
   - Chrome tries to be clever by applying inline styles/SPANs with `line-height`: http://jsbin.com/ilEmudi/4/edit?css,js,output
   - Chrome applies styling to invalid markup, Firefox allows invalid markup: http://jsbin.com/ObiBoweG/1/edit?js,console,output
+  - Given an empty P element, Chrome will wrap inserted text nodes not in a P,
+    whereas Firefox will not: http://jsbin.com/olEbecEM/1/edit?js,output
+  - Given a non-empty P element, Chrome will no longer wrap inserted text
+    nodes (see above). Chrome will merge the existing and new paragraph, whereas
+    Firefox will not: http://jsbin.com/uvEdacoz/1/edit?js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
 * "`outdent`":

@@ -693,6 +693,85 @@ describe('commands', function () {
       });
     });
   });
+
+  describe('insertHTML', function () {
+    given('default content and P mode enabled', function () {
+      when('the command is executed with a value of "<p>1</p>2"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<p>1</p>2');
+        });
+
+        it('should wrap the content in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<p>1</p>2<br>3"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<p>1</p>2<br>3');
+        });
+
+        it('should wrap the content in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p><p><br></p><p>3</p>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<blockquote>1</blockquote>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<blockquote>1</blockquote>');
+        });
+
+        it('should wrap the content of the BLOCKQUOTE element in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<ul>1</ul>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<ul>1</ul>');
+        });
+
+        it.skip('should wrap the content of the UL element in a LI element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<ul><li>1</li></ul>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<ol>1</ol>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<ol>1</ol>');
+        });
+
+        it.skip('should wrap the content of the OL element in a LI element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<ol><li>1</li></ol>');
+          });
+        });
+      });
+    });
+  });
 });
 
 describe('smart lists plugin', function () {
@@ -1183,11 +1262,11 @@ function setContent(html) {
   }, html);
 }
 
-function executeCommand(commandName) {
-  return driver.executeScript(function (commandName) {
+function executeCommand(commandName, value) {
+  return driver.executeScript(function (commandName, value) {
     var insertOrderedListCommand = window.scribe.getCommand(commandName);
-    insertOrderedListCommand.execute();
-  }, commandName);
+    insertOrderedListCommand.execute(value);
+  }, commandName, value);
 }
 
 function givenContentOf(content, fn) {
