@@ -13,24 +13,28 @@ define(['lodash-modern/collections/contains'], function (contains) {
       var insertHTMLCommand = new scribe.api.Command('insertHTML');
 
       insertHTMLCommand.execute = function (value) {
-        scribe.transactionManager.run(function () {
-          var bin = document.createElement('div');
-          bin.innerHTML = value;
+        if (scribe.allowsBlockElements()) {
+          scribe.transactionManager.run(function () {
+            var bin = document.createElement('div');
+            bin.innerHTML = value;
 
-          var binChildNodes = Array.prototype.slice.call(bin.childNodes);
-          binChildNodes.forEach(function (binChildNode) {
-            if (! isBlockElement(binChildNode)) {
-              // TODO: wrap API
-              var pElement = document.createElement('p');
-              bin.insertBefore(pElement, binChildNode);
-              pElement.appendChild(binChildNode);
-            }
-          });
+            var binChildNodes = Array.prototype.slice.call(bin.childNodes);
+            binChildNodes.forEach(function (binChildNode) {
+              if (! isBlockElement(binChildNode)) {
+                // TODO: wrap API
+                var pElement = document.createElement('p');
+                bin.insertBefore(pElement, binChildNode);
+                pElement.appendChild(binChildNode);
+              }
+            });
 
-          var newValue = bin.innerHTML;
+            var newValue = bin.innerHTML;
 
-          scribe.api.Command.prototype.execute.call(this, newValue);
-        }.bind(this));
+            scribe.api.Command.prototype.execute.call(this, newValue);
+          }.bind(this));
+        } else {
+          scribe.api.Command.prototype.execute.call(this, value);
+        }
       };
 
       scribe.commands.insertHTML = insertHTMLCommand;
