@@ -79,8 +79,8 @@ define([
     // Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
-    this.use(patches.commands.insertList());
     this.use(patches.commands.insertHTML());
+    this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
     if (this.allowsBlockElements()) {
       this.use(patches.emptyWhenDeleting());

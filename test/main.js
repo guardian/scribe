@@ -558,7 +558,6 @@ describe('BR mode', function () {
 });
 
 describe('commands', function () {
-
   beforeEach(function () {
     return initializeScribe();
   });
