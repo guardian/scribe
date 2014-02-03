@@ -695,7 +695,7 @@ describe('commands', function () {
   });
 
   describe('insertHTML', function () {
-    given('default content', function () {
+    given('default content and P mode enabled', function () {
       when('the command is executed with a value of "<p>1</p>2"', function () {
         beforeEach(function () {
           // Focus it before-hand
