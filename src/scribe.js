@@ -88,6 +88,7 @@ define([
     this.use(patches.events());
 
     this.use(commands.indent());
+    this.use(commands.insertHTML());
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
