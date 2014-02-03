@@ -36,13 +36,13 @@ define(['lodash-modern/collections/contains'], function (contains) {
             function traverse(parentNode) {
               var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
               var node = treeWalker.firstChild();
-              var isTopContainerElement = ! parentNode.parentNode;
+              var isUnderTopContainerElement = ! parentNode.parentNode;
 
               while (node) {
                 if (! isBlockElement(node)
                     && (parentNode.nodeName === 'BLOCKQUOTE'
                         || ! isBlockElement(parentNode)
-                        || isTopContainerElement)) {
+                        || isUnderTopContainerElement)) {
                   // TODO: wrap API
                   var pElement = document.createElement('p');
                   parentNode.insertBefore(pElement, node);
