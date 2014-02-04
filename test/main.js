@@ -1118,7 +1118,7 @@ describe('patches', function () {
 
           it('should not apply an inline style for `line-height` on the B', function() {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1<b>2</b>3</p>');
+              expect(innerHTML).to.have.html('<p>1<b>2</b></p><p>3</p>');
             });
           });
         });
