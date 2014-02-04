@@ -13,7 +13,7 @@ define(function () {
 
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return nodeFilter(node.node) && node.node || node.getAncestor(nodeFilter);
+      return nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
