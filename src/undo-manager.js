@@ -11,7 +11,9 @@ define(function () {
   UndoManager.prototype.maxStackSize = 100;
 
   UndoManager.prototype.push = function (item) {
-    console.log('UndoManager.push: %s', item);
+    if (window.location.search.match('debug')) {
+      console.log('UndoManager.push: %s', item);
+    }
     this.stack.length = ++this.position;
     this.stack.push(item);
 
