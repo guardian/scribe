@@ -21,7 +21,7 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  UndoManager
+  buildUndoManager
 ) {
 
   'use strict';
@@ -30,7 +30,8 @@ define([
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
-      allowBlockElements: true
+      allowBlockElements: true,
+      debug: false
     });
     this.commandPatches = {};
     this.formatter = new Formatter();
@@ -38,8 +39,10 @@ define([
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
-    this.undoManager = new UndoManager();
     this.transactionManager = new TransactionManager();
+    
+    var UndoManager = buildUndoManager(this);
+    this.undoManager = new UndoManager();
 
     this.el.setAttribute('contenteditable', true);
 
@@ -245,6 +248,10 @@ define([
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
     this.getCommand('insertHTML').execute(this.formatter.format(html));
+  };
+
+  Scribe.prototype.isDebugModeEnabled = function () {
+    return this.options.debug;
   };
 
   // TODO: abstract
