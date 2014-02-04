@@ -719,7 +719,7 @@ describe('commands', function () {
           return executeCommand('insertHTML', '<p>1<b>2</b></p>');
         });
 
-        it('should wrap the content in a P element', function () {
+        it('should insert the HTML as it is', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
           });
