@@ -711,6 +711,21 @@ describe('commands', function () {
         });
       });
 
+      when('the command is executed with a value of "<p>1<b>2</b></p>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<p>1<b>2</b></p>');
+        });
+
+        it('should wrap the content in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+          });
+        });
+      });
+
       when('the command is executed with a value of "<p>1</p>2<br>3"', function () {
         beforeEach(function () {
           // Focus it before-hand
