@@ -21,7 +21,7 @@ define([
   events,
   Api,
   buildTransactionManager,
-  UndoManager
+  buildUndoManager
 ) {
 
   'use strict';
@@ -40,10 +40,10 @@ define([
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
-    this.undoManager = new UndoManager({
-      isDebugModeEnabled: this.options.debug
-    });
     this.transactionManager = new TransactionManager();
+    
+    var UndoManager = buildUndoManager(this);
+    this.undoManager = new UndoManager();
 
     this.el.addEventListener('input', function () {
       /**
@@ -259,6 +259,10 @@ define([
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
     this.getCommand('insertHTML').execute(this.formatter.format(html));
+  };
+
+  Scribe.prototype.isDebugModeEnabled = function () {
+    return this.options.debug;
   };
 
   // TODO: abstract
