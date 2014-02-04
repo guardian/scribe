@@ -741,6 +741,22 @@ describe('commands', function () {
         });
       });
 
+      when('the command is executed with a value of "<b>1</b>2"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<b>1</b>2');
+        });
+
+        // TODO: This is a shortcoming of the `insertHTML` command
+        it.skip('should wrap the content in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b>1</b>2</p>');
+          });
+        });
+      });
+
       when('the command is executed with a value of "<blockquote>1</blockquote>"', function () {
         beforeEach(function () {
           // Focus it before-hand
