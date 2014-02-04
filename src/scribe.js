@@ -30,7 +30,8 @@ define([
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
-      allowBlockElements: true
+      allowBlockElements: true,
+      debug: false
     });
     this.commandPatches = {};
     this.initializers = [];
@@ -39,7 +40,9 @@ define([
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
-    this.undoManager = new UndoManager();
+    this.undoManager = new UndoManager({
+      isDebugModeEnabled: this.options.debug
+    });
     this.transactionManager = new TransactionManager();
 
     this.el.addEventListener('input', function () {

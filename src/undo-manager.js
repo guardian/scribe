@@ -2,16 +2,16 @@ define(function () {
 
   'use strict';
 
-  function UndoManager() {
+  function UndoManager(options) {
     this.position = 0;
-
     this.stack = [];
+    this.debug = (options.isDebugModeEnabled) ? true : false;
   }
 
   UndoManager.prototype.maxStackSize = 100;
 
   UndoManager.prototype.push = function (item) {
-    if (window.location.search.match('debug')) {
+    if (this.debug) {
       console.log('UndoManager.push: %s', item);
     }
     this.stack.length = ++this.position;
