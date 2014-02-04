@@ -150,12 +150,6 @@ describe('undo manager', function () {
     return initializeScribe();
   });
 
-  beforeEach(function () {
-    return driver.executeScript(function () {
-      window.scribe.initialize();
-    });
-  });
-
   givenContentOf('<p>|1</p>', function () {
     when('the user types', function () {
       beforeEach(function () {
@@ -191,12 +185,6 @@ describe('formatters', function () {
     return initializeScribe();
   });
 
-  beforeEach(function () {
-    return driver.executeScript(function () {
-      window.scribe.initialize();
-    });
-  });
-
   describe('non-breaking spaces', function () {
     given('default content', function () {
       // i.e. paste
@@ -223,12 +211,6 @@ describe('formatters', function () {
 describe('P mode', function () {
   beforeEach(function () {
     return initializeScribe();
-  });
-
-  beforeEach(function () {
-    return driver.executeScript(function () {
-      window.scribe.initialize();
-    });
   });
 
   given('default content', function () {
@@ -385,12 +367,6 @@ describe('P mode', function () {
 describe('BR mode', function () {
   beforeEach(function () {
     return initializeScribe({ allowBlockElements: false });
-  });
-
-  beforeEach(function () {
-    return driver.executeScript(function () {
-      window.scribe.initialize();
-    });
   });
 
   // Without right-hand side content
@@ -560,12 +536,6 @@ describe('BR mode', function () {
 describe('commands', function () {
   beforeEach(function () {
     return initializeScribe();
-  });
-
-  beforeEach(function () {
-    return driver.executeScript(function () {
-      window.scribe.initialize();
-    });
   });
 
   describe('bold', function () {
@@ -815,7 +785,6 @@ describe('smart lists plugin', function () {
     return driver.executeAsyncScript(function (done) {
       require(['plugins/smart-lists'], function (smartLists) {
         window.scribe.use(smartLists());
-        window.scribe.initialize();
         done();
       });
     });
@@ -955,7 +924,6 @@ describe('patches', function () {
         beforeEach(function () {
           return driver.executeScript(function () {
             document.body.style.lineHeight = 2;
-            window.scribe.initialize();
           });
         });
 
@@ -1030,7 +998,6 @@ describe('patches', function () {
       beforeEach(function () {
         return driver.executeScript(function () {
           document.body.style.lineHeight = 2;
-          window.scribe.initialize();
         });
       });
 
@@ -1117,7 +1084,6 @@ describe('patches', function () {
       beforeEach(function () {
         return driver.executeScript(function () {
           document.body.style.lineHeight = 2;
-          window.scribe.initialize();
         });
       });
 
@@ -1171,7 +1137,6 @@ describe('curly quotes plugin', function () {
     return driver.executeAsyncScript(function (done) {
       require(['plugins/curly-quotes'], function (curlyQuotes) {
         window.scribe.use(curlyQuotes());
-        window.scribe.initialize();
         done();
       });
     });

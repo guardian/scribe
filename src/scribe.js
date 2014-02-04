@@ -1,24 +1,24 @@
 define([
   'event-emitter',
   'lodash-modern/objects/defaults',
-  './initializers/root-paragraph-element',
-  './initializers/insert-br-on-return',
   './plugins/core/commands',
-  './plugins/core/formatters/replace-nbsp-chars',
-  './plugins/core/patches',
   './plugins/core/events',
+  './plugins/core/formatters/replace-nbsp-chars',
+  './plugins/core/inline-elements-mode',
+  './plugins/core/patches',
+  './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
   './undo-manager'
 ], function (
   EventEmitter,
   defaults,
-  rootParagraphElement,
-  insertBrOnReturn,
   commands,
-  replaceNbspCharsFormatter,
-  patches,
   events,
+  replaceNbspCharsFormatter,
+  inlineElementsMode,
+  patches,
+  setRootPElement,
   Api,
   buildTransactionManager,
   UndoManager
@@ -33,7 +33,6 @@ define([
       allowBlockElements: true
     });
     this.commandPatches = {};
-    this.initializers = [];
     this.formatter = new Formatter();
 
     this.api = new Api(this);
@@ -41,6 +40,8 @@ define([
     var TransactionManager = buildTransactionManager(this);
     this.undoManager = new UndoManager();
     this.transactionManager = new TransactionManager();
+
+    this.el.setAttribute('contenteditable', true);
 
     this.el.addEventListener('input', function () {
       /**
@@ -64,13 +65,14 @@ define([
      * Core Plugins
      */
 
-    // FIXME: event order matters
     if (this.allowsBlockElements()) {
-      // P mode
-      this.addInitializer(rootParagraphElement());
+      // Commands assume block elements are allowed, so all we have to do is
+      // set the content.
+      this.use(setRootPElement());
     } else {
-      // BR mode
-      this.addInitializer(insertBrOnReturn());
+      // Commands assume block elements are allowed, so we have to set the
+      // content and override some UX.
+      this.use(inlineElementsMode());
     }
 
     // Formatters
@@ -158,23 +160,10 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  Scribe.prototype.initialize = function () {
-    this.el.setAttribute('contenteditable', true);
-
-    this.initializers.forEach(function (initializer) {
-      initializer(this);
-    }, this);
-  };
-
   // For plugins
   // TODO: tap combinator?
   Scribe.prototype.use = function (configurePlugin) {
     configurePlugin(this);
-    return this;
-  };
-
-  Scribe.prototype.addInitializer = function (initializer) {
-    this.initializers.push(initializer);
     return this;
   };
 
