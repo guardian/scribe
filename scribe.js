@@ -703,148 +703,6 @@ define('lodash-modern/objects/defaults',['./keys', '../internals/objectTypes'], 
   return defaults;
 });
 
-define('initializers/root-paragraph-element',[],function () {
-
-  /**
-   * Sets the default content of the scribe so that each carriage return creates
-   * a P.
-   */
-
-  
-
-  return function () {
-    return function (scribe) {
-      // The content might have already been set, in which case we don't want
-      // to apply.
-      if (scribe.getHTML().trim() === '') {
-        /**
-         * We have to begin with the following HTML, because otherwise some
-         * browsers(?) will position the caret outside of the P when the scribe is
-         * focused.
-         */
-        scribe.setContent('<p><br></p>');
-      }
-    };
-  };
-
-});
-
-define('initializers/insert-br-on-return',[],function () {
-
-  
-
-  // TODO: abstract
-  function hasContent(rootNode) {
-    var treeWalker = document.createTreeWalker(rootNode);
-
-    while (treeWalker.nextNode()) {
-      if (treeWalker.currentNode) {
-        // If the node is a non-empty element or has content
-        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  return function () {
-    return function (scribe) {
-      /**
-       * Firefox has a `insertBrOnReturn` command, but this is not a part of
-       * any standard. One day we might have an `insertLineBreak` command,
-       * proposed by this spec:
-       * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
-       * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
-       */
-      scribe.el.addEventListener('keydown', function (event) {
-        if (event.keyCode === 13) { // enter
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var blockNode = selection.getContaining(function (node) {
-            return node.nodeName === 'LI' || (/^(H[1-6])$/).test(node.nodeName);
-          });
-
-          if (! blockNode) {
-            event.preventDefault();
-
-            /**
-             * Firefox: Delete the bogus BR as we insert another one later.
-             * We have to do this because otherwise the browser will believe
-             * there is content to the right of the selection.
-             */
-            if (scribe.el.lastChild.nodeName === 'BR') {
-              scribe.el.removeChild(scribe.el.lastChild);
-            }
-
-            var brNode = document.createElement('br');
-
-            range.insertNode(brNode);
-            // After inserting the BR into the range is no longer collapsed, so
-            // we have to collapse it again.
-            // TODO: Older versions of Firefox require this argument even though
-            // it is supposed to be optional. Proxy/polyfill?
-            range.collapse(false);
-
-            /**
-             * Chrome: If there is no right-hand side content, inserting a BR
-             * will not appear to create a line break.
-             * Firefox: If there is no right-hand side content, inserting a BR
-             * will appear to create a weird "half-line break".
-             *
-             * Possible solution: Insert two BRs.
-             * ✓ Chrome: Inserting two BRs appears to create a line break.
-             * Typing will then delete the bogus BR element.
-             * Firefox: Inserting two BRs will create two line breaks.
-             *
-             * Solution: Only insert two BRs if there is no right-hand
-             * side content.
-             *
-             * If the user types on a line immediately after a BR element,
-             * Chrome will replace the BR element with the typed characters,
-             * whereas Firefox will not. Thus, to satisfy Firefox we have to
-             * insert a bogus BR element on initialization (see below).
-             */
-
-            var contentToEndRange = range.cloneRange();
-            contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
-
-            // Get the content from the range to the end of the heading
-            var contentToEndFragment = contentToEndRange.cloneContents();
-
-            // If there is not already a right hand side content we need to
-            // insert a bogus BR element.
-            if (! hasContent(contentToEndFragment)) {
-              var bogusBrNode = document.createElement('br');
-              range.insertNode(bogusBrNode);
-            }
-
-            var newRange = range.cloneRange();
-
-            newRange.setStartAfter(brNode, 0);
-            newRange.setEndAfter(brNode, 0);
-
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(newRange);
-
-            scribe.pushHistory();
-            scribe.trigger('content-changed');
-          }
-        }
-      }.bind(this));
-
-      if (scribe.getHTML().trim() === '') {
-        // Bogus BR element for Firefox — see explanation above.
-        // TODO: also append when consumer sets the content manually.
-        // TODO: hide when the user calls `getHTML`?
-        scribe.setContent('');
-      }
-    };
-  };
-});
-
 define('plugins/core/commands/indent',[],function () {
 
   
@@ -1773,9 +1631,11 @@ define('plugins/core/commands/insert-html',['lodash-modern/collections/contains'
               var isUnderTopContainerElement = ! parentNode.parentNode;
 
               while (node) {
+                var isUnderBlockElement = new scribe.api.Node(node).getAncestor(isBlockElement);
+
                 if (! isBlockElement(node)
                     && (parentNode.nodeName === 'BLOCKQUOTE'
-                        || ! isBlockElement(parentNode)
+                        || ! isUnderBlockElement
                         || isUnderTopContainerElement)) {
                   // TODO: wrap API
                   var pElement = document.createElement('p');
@@ -2063,6 +1923,182 @@ define('plugins/core/commands',[
 
 });
 
+define('plugins/core/events',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside a heading to ensure a P element is created.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13) { // enter
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            var headingNode = selection.getContaining(function (node) {
+              return (/^(H[1-6])$/).test(node.nodeName);
+            });
+
+            /**
+             * If we are at the end of the heading, insert a P. Otherwise handle
+             * natively.
+             */
+            if (headingNode && range.collapsed) {
+              var contentToEndRange = range.cloneRange();
+              contentToEndRange.setEndAfter(headingNode, 0);
+
+              // Get the content from the range to the end of the heading
+              var contentToEndFragment = contentToEndRange.cloneContents();
+
+              if (contentToEndFragment.firstChild.innerText === '') {
+                event.preventDefault();
+
+                // Default P
+                // TODO: Abstract somewhere
+                var pNode = document.createElement('p');
+                var brNode = document.createElement('br');
+                pNode.appendChild(brNode);
+
+                headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+
+                // Re-apply range
+                range.setStart(pNode, 0);
+                range.setEnd(pNode, 0);
+
+                selection.selection.removeAllRanges();
+                selection.selection.addRange(range);
+
+                scribe.pushHistory();
+                scribe.trigger('content-changed');
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside list item nodes.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            if (range.collapsed) {
+              var containerLIElement = selection.getContaining(function (node) {
+                return node.nodeName === 'LI';
+              });
+              if (containerLIElement && containerLIElement.innerText.trim() === '') {
+                /**
+                 * LIs
+                 */
+
+                event.preventDefault();
+
+                var listNode = selection.getContaining(function (node) {
+                  return node.nodeName === 'UL' || node.nodeName === 'OL';
+                });
+
+                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
+
+                command.execute();
+              }
+            }
+          }
+        });
+      }
+
+
+      /**
+       * Run formatters on paste
+       */
+
+      /**
+       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
+       * I also don't like how it has the authority to perform `event.preventDefault`.
+       */
+
+      scribe.el.addEventListener('paste', function handlePaste(event) {
+        /**
+         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
+         * will execute the second branch here.
+         */
+        var data;
+        if (event.clipboardData) {
+          event.preventDefault();
+          // TODO: what data should we be getting?
+          data = event.clipboardData.getData('text/html') ||
+            escapeHtml(event.clipboardData.getData('text/plain'));
+
+          scribe.insertHTML(data);
+        } else {
+          /**
+           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
+           * sequence of events:
+           *
+           *   - Save the text selection
+           *   - Focus another, hidden textarea so we paste there
+           *   - Copy the pasted content of said textarea
+           *   - Give focus back to the scribe
+           *   - Restore the text selection
+           *
+           * This is required because, without access to the Clipboard API, there is literally
+           * no other way to manipulate content on paste.
+           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
+           *
+           * Firefox <= 21
+           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
+           */
+
+          var selection = new scribe.api.Selection();
+
+          // Store the caret position
+          selection.placeMarkers();
+
+          var bin = document.createElement('div');
+          document.body.appendChild(bin);
+          bin.setAttribute('contenteditable', true);
+          bin.focus();
+
+          // Wait for the paste to happen (next loop?)
+          setTimeout(function () {
+            data = bin.innerHTML;
+            bin.parentNode.removeChild(bin);
+
+            // Restore the caret position
+            selection.selectMarkers();
+            /**
+             * Firefox 19 (and maybe others): even though the applied range
+             * exists within the Scribe instance, we need to focus it.
+             */
+            scribe.el.focus();
+
+            scribe.insertHTML(data);
+          }, 1);
+        }
+      });
+
+
+      function escapeHtml(str) {
+        return String(str).
+          replace(/&/g, '&amp;').
+          replace(/</g, '&lt;').
+          replace(/>/g, '&gt;').
+          replace(/"/g, '&quot;');
+      }
+
+    };
+  };
+});
+
 define('plugins/core/formatters/replace-nbsp-chars',[],function () {
 
   /**
@@ -2083,6 +2119,122 @@ define('plugins/core/formatters/replace-nbsp-chars',[],function () {
     };
   };
 
+});
+
+define('plugins/core/inline-elements-mode',[],function () {
+
+  
+
+  // TODO: abstract
+  function hasContent(rootNode) {
+    var treeWalker = document.createTreeWalker(rootNode);
+
+    while (treeWalker.nextNode()) {
+      if (treeWalker.currentNode) {
+        // If the node is a non-empty element or has content
+        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  return function () {
+    return function (scribe) {
+      /**
+       * Firefox has a `insertBrOnReturn` command, but this is not a part of
+       * any standard. One day we might have an `insertLineBreak` command,
+       * proposed by this spec:
+       * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
+       * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
+       */
+      scribe.el.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) { // enter
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var blockNode = selection.getContaining(function (node) {
+            return node.nodeName === 'LI' || (/^(H[1-6])$/).test(node.nodeName);
+          });
+
+          if (! blockNode) {
+            event.preventDefault();
+
+            /**
+             * Firefox: Delete the bogus BR as we insert another one later.
+             * We have to do this because otherwise the browser will believe
+             * there is content to the right of the selection.
+             */
+            if (scribe.el.lastChild.nodeName === 'BR') {
+              scribe.el.removeChild(scribe.el.lastChild);
+            }
+
+            var brNode = document.createElement('br');
+
+            range.insertNode(brNode);
+            // After inserting the BR into the range is no longer collapsed, so
+            // we have to collapse it again.
+            // TODO: Older versions of Firefox require this argument even though
+            // it is supposed to be optional. Proxy/polyfill?
+            range.collapse(false);
+
+            /**
+             * Chrome: If there is no right-hand side content, inserting a BR
+             * will not appear to create a line break.
+             * Firefox: If there is no right-hand side content, inserting a BR
+             * will appear to create a weird "half-line break".
+             *
+             * Possible solution: Insert two BRs.
+             * ✓ Chrome: Inserting two BRs appears to create a line break.
+             * Typing will then delete the bogus BR element.
+             * Firefox: Inserting two BRs will create two line breaks.
+             *
+             * Solution: Only insert two BRs if there is no right-hand
+             * side content.
+             *
+             * If the user types on a line immediately after a BR element,
+             * Chrome will replace the BR element with the typed characters,
+             * whereas Firefox will not. Thus, to satisfy Firefox we have to
+             * insert a bogus BR element on initialization (see below).
+             */
+
+            var contentToEndRange = range.cloneRange();
+            contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
+
+            // Get the content from the range to the end of the heading
+            var contentToEndFragment = contentToEndRange.cloneContents();
+
+            // If there is not already a right hand side content we need to
+            // insert a bogus BR element.
+            if (! hasContent(contentToEndFragment)) {
+              var bogusBrNode = document.createElement('br');
+              range.insertNode(bogusBrNode);
+            }
+
+            var newRange = range.cloneRange();
+
+            newRange.setStartAfter(brNode, 0);
+            newRange.setEndAfter(brNode, 0);
+
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(newRange);
+
+            scribe.pushHistory();
+            scribe.trigger('content-changed');
+          }
+        }
+      }.bind(this));
+
+      if (scribe.getHTML().trim() === '') {
+        // Bogus BR element for Firefox — see explanation above.
+        // TODO: also append when consumer sets the content manually.
+        // TODO: hide when the user calls `getHTML`?
+        scribe.setContent('');
+      }
+    };
+  };
 });
 
 define('plugins/core/patches/commands/bold',[],function () {
@@ -2621,180 +2773,30 @@ define('plugins/core/patches',[
 
 });
 
-define('plugins/core/events',[],function () {
+define('plugins/core/set-root-p-element',[],function () {
+
+  /**
+   * Sets the default content of the scribe so that each carriage return creates
+   * a P.
+   */
 
   
 
   return function () {
     return function (scribe) {
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside a heading to ensure a P element is created.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) { // enter
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            var headingNode = selection.getContaining(function (node) {
-              return (/^(H[1-6])$/).test(node.nodeName);
-            });
-
-            /**
-             * If we are at the end of the heading, insert a P. Otherwise handle
-             * natively.
-             */
-            if (headingNode && range.collapsed) {
-              var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(headingNode, 0);
-
-              // Get the content from the range to the end of the heading
-              var contentToEndFragment = contentToEndRange.cloneContents();
-
-              if (contentToEndFragment.firstChild.innerText === '') {
-                event.preventDefault();
-
-                // Default P
-                // TODO: Abstract somewhere
-                var pNode = document.createElement('p');
-                var brNode = document.createElement('br');
-                pNode.appendChild(brNode);
-
-                headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
-
-                // Re-apply range
-                range.setStart(pNode, 0);
-                range.setEnd(pNode, 0);
-
-                selection.selection.removeAllRanges();
-                selection.selection.addRange(range);
-
-                scribe.pushHistory();
-                scribe.trigger('content-changed');
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside list item nodes.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            if (range.collapsed) {
-              var containerLIElement = selection.getContaining(function (node) {
-                return node.nodeName === 'LI';
-              });
-              if (containerLIElement && containerLIElement.innerText.trim() === '') {
-                /**
-                 * LIs
-                 */
-
-                event.preventDefault();
-
-                var listNode = selection.getContaining(function (node) {
-                  return node.nodeName === 'UL' || node.nodeName === 'OL';
-                });
-
-                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
-
-                command.execute();
-              }
-            }
-          }
-        });
-      }
-
-
-      /**
-       * Run formatters on paste
-       */
-
-      /**
-       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
-       * I also don't like how it has the authority to perform `event.preventDefault`.
-       */
-
-      scribe.el.addEventListener('paste', function handlePaste(event) {
+      // The content might have already been set, in which case we don't want
+      // to apply.
+      if (scribe.getHTML().trim() === '') {
         /**
-         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
-         * will execute the second branch here.
+         * We have to begin with the following HTML, because otherwise some
+         * browsers(?) will position the caret outside of the P when the scribe is
+         * focused.
          */
-        var data;
-        if (event.clipboardData) {
-          event.preventDefault();
-          // TODO: what data should we be getting?
-          data = event.clipboardData.getData('text/html') ||
-            escapeHtml(event.clipboardData.getData('text/plain'));
-
-          scribe.insertHTML(data);
-        } else {
-          /**
-           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
-           * sequence of events:
-           *
-           *   - Save the text selection
-           *   - Focus another, hidden textarea so we paste there
-           *   - Copy the pasted content of said textarea
-           *   - Give focus back to the scribe
-           *   - Restore the text selection
-           *
-           * This is required because, without access to the Clipboard API, there is literally
-           * no other way to manipulate content on paste.
-           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
-           *
-           * Firefox <= 21
-           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
-           */
-
-          var selection = new scribe.api.Selection();
-
-          // Store the caret position
-          selection.placeMarkers();
-
-          var bin = document.createElement('div');
-          document.body.appendChild(bin);
-          bin.setAttribute('contenteditable', true);
-          bin.focus();
-
-          // Wait for the paste to happen (next loop?)
-          setTimeout(function () {
-            data = bin.innerHTML;
-            bin.parentNode.removeChild(bin);
-
-            // Restore the caret position
-            selection.selectMarkers();
-            /**
-             * Firefox 19 (and maybe others): even though the applied range
-             * exists within the Scribe instance, we need to focus it.
-             */
-            scribe.el.focus();
-
-            scribe.insertHTML(data);
-          }, 1);
-        }
-      });
-
-
-      function escapeHtml(str) {
-        return String(str).
-          replace(/&/g, '&amp;').
-          replace(/</g, '&lt;').
-          replace(/>/g, '&gt;').
-          replace(/"/g, '&quot;');
+        scribe.setContent('<p><br></p>');
       }
-
     };
   };
+
 });
 
 define('api/command-patch',[],function () {
@@ -2877,8 +2879,8 @@ define('api/node',[],function () {
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
   Node.prototype.getAncestor = function (nodeFilter) {
-    var currentNode = this.node;
-    do {
+    var currentNode = this.node.parentNode;
+    while (currentNode) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
@@ -2889,7 +2891,7 @@ define('api/node',[],function () {
         currentNode = null;
         return;
       }
-    } while (currentNode);
+    }
   };
 
   Node.prototype.nextAll = function () {
@@ -2942,7 +2944,7 @@ define('api/selection',[],function () {
 
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return node.getAncestor(nodeFilter);
+      return nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
@@ -3232,24 +3234,24 @@ define('undo-manager',[],function () {
 define('scribe',[
   'event-emitter',
   'lodash-modern/objects/defaults',
-  './initializers/root-paragraph-element',
-  './initializers/insert-br-on-return',
   './plugins/core/commands',
-  './plugins/core/formatters/replace-nbsp-chars',
-  './plugins/core/patches',
   './plugins/core/events',
+  './plugins/core/formatters/replace-nbsp-chars',
+  './plugins/core/inline-elements-mode',
+  './plugins/core/patches',
+  './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
   './undo-manager'
 ], function (
   EventEmitter,
   defaults,
-  rootParagraphElement,
-  insertBrOnReturn,
   commands,
-  replaceNbspCharsFormatter,
-  patches,
   events,
+  replaceNbspCharsFormatter,
+  inlineElementsMode,
+  patches,
+  setRootPElement,
   Api,
   buildTransactionManager,
   UndoManager
@@ -3264,7 +3266,6 @@ define('scribe',[
       allowBlockElements: true
     });
     this.commandPatches = {};
-    this.initializers = [];
     this.formatter = new Formatter();
 
     this.api = new Api(this);
@@ -3272,6 +3273,8 @@ define('scribe',[
     var TransactionManager = buildTransactionManager(this);
     this.undoManager = new UndoManager();
     this.transactionManager = new TransactionManager();
+
+    this.el.setAttribute('contenteditable', true);
 
     this.el.addEventListener('input', function () {
       /**
@@ -3295,13 +3298,14 @@ define('scribe',[
      * Core Plugins
      */
 
-    // FIXME: event order matters
     if (this.allowsBlockElements()) {
-      // P mode
-      this.addInitializer(rootParagraphElement());
+      // Commands assume block elements are allowed, so all we have to do is
+      // set the content.
+      this.use(setRootPElement());
     } else {
-      // BR mode
-      this.addInitializer(insertBrOnReturn());
+      // Commands assume block elements are allowed, so we have to set the
+      // content and override some UX.
+      this.use(inlineElementsMode());
     }
 
     // Formatters
@@ -3389,23 +3393,10 @@ define('scribe',[
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  Scribe.prototype.initialize = function () {
-    this.el.setAttribute('contenteditable', true);
-
-    this.initializers.forEach(function (initializer) {
-      initializer(this);
-    }, this);
-  };
-
   // For plugins
   // TODO: tap combinator?
   Scribe.prototype.use = function (configurePlugin) {
     configurePlugin(this);
-    return this;
-  };
-
-  Scribe.prototype.addInitializer = function (initializer) {
-    this.initializers.push(initializer);
     return this;
   };
 
