@@ -212,7 +212,7 @@ describe('formatters', function () {
 
         it('should replace the non-breaking space character with a normal space', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1 2<chrome-bogus-br></p>');
+            expect(innerHTML).to.have.html('<p>1 2</p>');
           });
         });
       });
@@ -707,6 +707,21 @@ describe('commands', function () {
         it('should wrap the content in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
+
+      when('the command is executed with a value of "<p>1<b>2</b></p>"', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return executeCommand('insertHTML', '<p>1<b>2</b></p>');
+        });
+
+        it('should insert the HTML as it is', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
           });
         });
       });

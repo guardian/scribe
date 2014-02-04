@@ -9,8 +9,8 @@ define(function () {
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
   Node.prototype.getAncestor = function (nodeFilter) {
-    var currentNode = this.node;
-    do {
+    var currentNode = this.node.parentNode;
+    while (currentNode) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
@@ -21,7 +21,7 @@ define(function () {
         currentNode = null;
         return;
       }
-    } while (currentNode);
+    }
   };
 
   Node.prototype.nextAll = function () {
