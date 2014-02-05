@@ -32,7 +32,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Chrome tries to be clever by applying inline styles/SPANs with `line-height`: http://jsbin.com/OtemujAY/10/edit?html,css,js,output
 * "`indent`":
   - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
-  - Chrome nests ULs inside of ULs: http://jsbin.com/ORikUPa/3/edit?html,js,output
+  - Chrome nests ULs inside of ULs:
+    - http://jsbin.com/ORikUPa/3/edit?html,js,output
+    - http://jsbin.com/kuvi/1/edit?js,output
   - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
 
 ### `Range.insertNode`
