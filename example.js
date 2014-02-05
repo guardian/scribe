@@ -103,7 +103,4 @@ require({
   } else {
     scribe.setContent('Hello, World!');
   }
-
-  // Finally…
-  scribe.initialize();
 });
