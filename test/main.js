@@ -799,6 +799,50 @@ describe('commands', function () {
       });
     });
   });
+
+  describe('indent', function () {
+    givenContentOf('<p>|1|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>1|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>|1</p><ul><li>2|</li></ul>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        it.skip('should wrap the P and UL elements in a BLOCKQUOTE element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<blockquote><p>1</p><ul><li>2</li></ul></blockquote>');
+          });
+        });
+      });
+    });
+  });
 });
 
 describe('smart lists plugin', function () {
