@@ -23,7 +23,10 @@ define(function () {
           var selection = new scribe.api.Selection();
           var range = selection.range;
 
-          if (range.commonAncestorContainer.nodeName === 'P') {
+          var isCaretOnNewLine =
+              (range.commonAncestorContainer.nodeName === 'P'
+               && range.commonAncestorContainer.innerHTML === '<br>');
+          if (isCaretOnNewLine) {
             // FIXME: this text node is left behind. Tidy it up somehow,
             // or don't use it at all.
             var textNode = document.createTextNode(INVISIBLE_CHAR);
