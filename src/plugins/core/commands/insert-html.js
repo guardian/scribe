@@ -39,7 +39,9 @@ define(['lodash-modern/collections/contains'], function (contains) {
               var isUnderTopContainerElement = ! parentNode.parentNode;
 
               while (node) {
-                var isUnderBlockElement = new scribe.api.Node(node).getAncestor(isBlockElement);
+                var isUnderBlockElement = !! new scribe.api.Node(node).getAncestor(function (node) {
+                  return node !== bin && isBlockElement(node);
+                });
 
                 if (! isBlockElement(node)
                     && (parentNode.nodeName === 'BLOCKQUOTE'
