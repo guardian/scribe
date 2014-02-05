@@ -11,9 +11,19 @@ define(function () {
         var command = scribe.getCommand(button.dataset.commandName);
 
         button.addEventListener('click', function () {
-          command.execute();
-          // Chrome focuses the scribe automatically. Firefox does not.
+          /**
+           * Focus will have been taken away from the Scribe instance when
+           * clicking on a button. It is important that we focus the instance
+           * again before executing the command, because it might rely on
+           * selection data.
+           */
           scribe.el.focus();
+          command.execute();
+          /**
+           * Chrome has a bit of magic to re-focus the `contenteditable` when a
+           * command is executed.
+           * As per: http://jsbin.com/papi/1/edit?html,js,output
+           */
         });
 
         // Keep the state of toolbar buttons in sync with the current selection.
