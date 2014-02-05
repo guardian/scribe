@@ -732,7 +732,7 @@ describe('commands', function () {
 
         it('should wrap the content in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1</p><p>2</p><p><br></p><p>3</p>');
+            expect(innerHTML).to.have.html('<p>1</p><p>2<br>3</p>');
           });
         });
       });
@@ -746,7 +746,7 @@ describe('commands', function () {
         });
 
         // TODO: This is a shortcoming of the `insertHTML` command
-        it.skip('should wrap the content in a P element', function () {
+        it('should wrap the content in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><b>1</b>2</p>');
           });
