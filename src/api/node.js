@@ -23,7 +23,7 @@ define(function () {
 
     // If it's a `contenteditable` then it's likely going to be the Scribe
     // instance, so stop traversing there.
-    while (! isTopContainerElement(currentNode)) {
+    while (currentNode && ! isTopContainerElement(currentNode)) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
