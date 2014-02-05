@@ -8,6 +8,8 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * Firefox: When the `contenteditable` element is a custom element, an error is
   thrown when trying to apply one of the following commands.
   As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
+* Chrome has some magic to re-focus the `contenteditable` when a command is
+  executed: http://jsbin.com/papi/1/edit?html,js,output
   `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`":
