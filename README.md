@@ -36,6 +36,7 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
     - http://jsbin.com/ORikUPa/3/edit?html,js,output
     - http://jsbin.com/kuvi/1/edit?js,output
   - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
+  - Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
 
 ### `Range.insertNode`
 * Chrome inserts a bogus text node: http://jsbin.com/ODapifEb/1/edit?js,console,output
