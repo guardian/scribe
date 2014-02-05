@@ -30,6 +30,34 @@ define(function () {
       };
 
       scribe.commands.blockquote = blockquoteCommand;
+
+      /**
+       * If the paragraphs option is set to true, we unapply the blockquote on
+       * <enter> keypresses if the caret is on a new line.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13) { // enter
+
+            var command = scribe.getCommand('blockquote');
+            if (command.queryState()) {
+              var selection = new scribe.api.Selection();
+              var containerPElement = selection.getContaining(function (node) {
+                return node.nodeName === 'P';
+              });
+              // TODO: abstract
+              var isCaretOnNewLine =
+                (containerPElement.nodeName === 'P'
+                 && (containerPElement.innerHTML === '<br>'
+                     || containerPElement.innerHTML.trim() === ''));
+              if (isCaretOnNewLine) {
+                event.preventDefault();
+                command.execute();
+              }
+            }
+          }
+        });
+      }
     };
   };
 

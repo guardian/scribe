@@ -251,6 +251,32 @@ describe('P mode', function () {
     });
   });
 
+  describe('blockquotes', function () {
+    beforeEach(function () {
+      return driver.executeAsyncScript(function (done) {
+        require(['plugins/blockquote-command'], function (blockquoteCommand) {
+          window.scribe.use(blockquoteCommand());
+          done();
+        });
+      });
+    });
+
+    // The BR node denotes where the user will type.
+    givenContentOf('<blockquote><p>|<br></p></blockquote>', function () {
+      when('the user presses <enter>', function () {
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.ENTER);
+        });
+
+        it('should delete the blockquote and insert an empty P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><bogus-br></p>');
+          });
+        });
+      });
+    });
+  });
+
   describe('lists', function () {
     // The BR node denotes where the user will type.
     givenContentOf('<ul><li>|<br></li></ul>', function () {
