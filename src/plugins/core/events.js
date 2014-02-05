@@ -91,7 +91,6 @@ define(function () {
         });
       }
 
-
       /**
        * Run formatters on paste
        */
