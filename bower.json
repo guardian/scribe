@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "eventEmitter": "~4.2.6",
-    "html-janitor": "71d51a73961df2449a29285ccf9eab2464db5baf",
+    "html-janitor": "b73d906f2e30dbfd7d84d28305b42a91118fcd65",
     "lodash-amd": "~2.4.0"
   },
   "devDependencies": {
