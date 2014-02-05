@@ -98,9 +98,9 @@ define(function () {
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      return (containerPElement.nodeName === 'P'
-              && (containerPElement.innerHTML === '<br>'
-                  || containerPElement.innerHTML.trim() === ''));
+      return containerPElement && (containerPElement.nodeName === 'P'
+                                   && (containerPElement.innerHTML === '<br>'
+                                       || containerPElement.innerHTML.trim() === ''));
     };
 
     return Selection;
