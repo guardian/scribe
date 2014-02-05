@@ -42,15 +42,7 @@ define(function () {
             var command = scribe.getCommand('blockquote');
             if (command.queryState()) {
               var selection = new scribe.api.Selection();
-              var containerPElement = selection.getContaining(function (node) {
-                return node.nodeName === 'P';
-              });
-              // TODO: abstract
-              var isCaretOnNewLine =
-                (containerPElement.nodeName === 'P'
-                 && (containerPElement.innerHTML === '<br>'
-                     || containerPElement.innerHTML.trim() === ''));
-              if (isCaretOnNewLine) {
+              if (selection.isCaretOnNewLine()) {
                 event.preventDefault();
                 command.execute();
               }
