@@ -8,19 +8,26 @@ define(function () {
 
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
+  // TODO: write tests. unit or integration?
   Node.prototype.getAncestor = function (nodeFilter) {
+    var isTopContainerElement = function (element) {
+      return element && element.attributes
+        && element.attributes.getNamedItem('contenteditable');
+    };
+    // TODO: should this happen here?
+    if (isTopContainerElement(this.node)) {
+      return;
+    }
+
     var currentNode = this.node.parentNode;
-    while (currentNode) {
+
+    // If it's a `contenteditable` then it's likely going to be the Scribe
+    // instance, so stop traversing there.
+    while (isTopContainerElement(currentNode)) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
       currentNode = currentNode.parentNode;
-      // If it's a `contenteditable` then it's likely going to be the Scribe
-      // instance, so stop traversing there.
-      if (currentNode && currentNode.attributes && currentNode.attributes.getNamedItem('contenteditable')) {
-        currentNode = null;
-        return;
-      }
     }
   };
 
