@@ -60,9 +60,8 @@ define([
                 return accumulator;
 
                 function startNewGroup() {
-                  var newGroup = [];
+                  var newGroup = [binChildNode];
                   accumulator.push(newGroup);
-                  newGroup.push(binChildNode);
                 }
               }, []);
 
