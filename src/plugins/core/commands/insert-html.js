@@ -46,10 +46,8 @@ define([
             function wrapChildNodes(parentNode) {
               var groups = Array.prototype.reduce.call(parentNode.childNodes, function (accumulator, binChildNode) {
                 var group = last(accumulator);
-                var isFirstGroup = accumulator.length === 1;
-                var isEmptyGroup = group.length === 0;
-                var isBlockGroup = ! isEmptyGroup && isBlockElement(group[0]);
-                if (isFirstGroup && isEmptyGroup || isBlockGroup === isBlockElement(binChildNode)) {
+                var isBlockGroup = group && isBlockElement(group[0]);
+                if (group && (isBlockGroup === isBlockElement(binChildNode))) {
                   group.push(binChildNode);
                 } else {
                   var newGroup = [];
@@ -57,15 +55,11 @@ define([
                   newGroup.push(binChildNode);
                 }
                 return accumulator;
-              }, [[]]);
+              }, []);
 
               var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-                var isEmptyGroup = group.length === 0;
-                var isBlockGroup = ! isEmptyGroup && isBlockElement(group[0]);
+                var isBlockGroup = isBlockElement(group[0]);
                 return ! isBlockGroup;
-              }).filter(function (nodes) {
-                // Remove empty groups
-                return nodes.length;
               });
 
               consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
