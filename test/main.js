@@ -691,109 +691,111 @@ describe('commands', function () {
   });
 
   describe('insertHTML', function () {
-    given('default content and P mode enabled', function () {
-      when('the command is executed with a value of "<p>1</p>2"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+    given('P mode enabled', function () {
+      given('default content', function () {
+        when('the command is executed with a value of "<p>1</p>2"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<p>1</p>2');
-        });
+            return executeCommand('insertHTML', '<p>1</p>2');
+          });
 
-        it('should wrap the content in a P element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          it('should wrap the content in a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<p>1<b>2</b></p>"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<p>1<b>2</b></p>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<p>1<b>2</b></p>');
-        });
+            return executeCommand('insertHTML', '<p>1<b>2</b></p>');
+          });
 
-        it('should insert the HTML as it is', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+          it('should insert the HTML as it is', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<p>1</p>2<br>3"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<p>1</p>2<br>3"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<p>1</p>2<br>3');
-        });
+            return executeCommand('insertHTML', '<p>1</p>2<br>3');
+          });
 
-        it('should wrap the content in a P element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1</p><p>2<br>3</p>');
+          it('should wrap the content in a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p><p>2<br>3</p>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<b>1</b>2"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<b>1</b>2"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<b>1</b>2');
-        });
+            return executeCommand('insertHTML', '<b>1</b>2');
+          });
 
-        // TODO: This is a shortcoming of the `insertHTML` command
-        it('should wrap the content in a P element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><b>1</b>2</p>');
+          // TODO: This is a shortcoming of the `insertHTML` command
+          it('should wrap the content in a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p><b>1</b>2</p>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<blockquote>1</blockquote>"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<blockquote>1</blockquote>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<blockquote>1</blockquote>');
-        });
+            return executeCommand('insertHTML', '<blockquote>1</blockquote>');
+          });
 
-        it('should wrap the content of the BLOCKQUOTE element in a P element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+          it('should wrap the content of the BLOCKQUOTE element in a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<ul>1</ul>"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<ul>1</ul>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<ul>1</ul>');
-        });
+            return executeCommand('insertHTML', '<ul>1</ul>');
+          });
 
-        it.skip('should wrap the content of the UL element in a LI element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<ul><li>1</li></ul>');
+          it.skip('should wrap the content of the UL element in a LI element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<ul><li>1</li></ul>');
+            });
           });
         });
-      });
 
-      when('the command is executed with a value of "<ol>1</ol>"', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+        when('the command is executed with a value of "<ol>1</ol>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return executeCommand('insertHTML', '<ol>1</ol>');
-        });
+            return executeCommand('insertHTML', '<ol>1</ol>');
+          });
 
-        it.skip('should wrap the content of the OL element in a LI element', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<ol><li>1</li></ol>');
+          it.skip('should wrap the content of the OL element in a LI element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<ol><li>1</li></ol>');
+            });
           });
         });
       });
