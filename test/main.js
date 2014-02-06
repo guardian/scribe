@@ -799,6 +799,27 @@ describe('commands', function () {
           });
         });
       });
+
+      givenContentOf('<p>1|</p>', function () {
+        when('the command is executed with a value of "<b>2</b>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return executeCommand('insertHTML', '<b>2</b>');
+          });
+
+          /**
+           * Fails in Firefox. Actual HTML: "<p>1</p><p><b>2</b></p>"
+           * As per browser inconsistency: http://jsbin.com/olEbecEM/1/edit?js,output
+           */
+          it.skip('should wrap the content in a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+            });
+          });
+        });
+      });
     });
   });
 
