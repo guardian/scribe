@@ -46,15 +46,24 @@ define([
             function wrapChildNodes(parentNode) {
               var groups = Array.prototype.reduce.call(parentNode.childNodes, function (accumulator, binChildNode) {
                 var group = last(accumulator);
-                var isBlockGroup = group && isBlockElement(group[0]);
-                if (group && (isBlockGroup === isBlockElement(binChildNode))) {
-                  group.push(binChildNode);
+                if (! group) {
+                  startNewGroup();
                 } else {
+                  var isBlockGroup = isBlockElement(group[0]);
+                  if (isBlockGroup === isBlockElement(binChildNode)) {
+                    group.push(binChildNode);
+                  } else {
+                    startNewGroup();
+                  }
+                }
+
+                return accumulator;
+
+                function startNewGroup() {
                   var newGroup = [];
                   accumulator.push(newGroup);
                   newGroup.push(binChildNode);
                 }
-                return accumulator;
               }, []);
 
               var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
