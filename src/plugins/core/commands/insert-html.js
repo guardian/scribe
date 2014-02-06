@@ -1,4 +1,10 @@
-define(['lodash-modern/collections/contains'], function (contains) {
+define([
+  'lodash-modern/arrays/last',
+  'lodash-modern/collections/contains',
+], function (
+  last,
+  contains
+) {
 
   'use strict';
 
@@ -27,39 +33,68 @@ define(['lodash-modern/collections/contains'], function (contains) {
             var bin = document.createElement('div');
             bin.innerHTML = value;
 
+            wrapChildNodes(bin);
             traverse(bin);
 
             var newValue = bin.innerHTML;
 
             scribe.api.Command.prototype.execute.call(this, newValue);
 
-            function traverse(parentNode) {
-              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
-              var node = treeWalker.firstChild();
-              var isUnderTopContainerElement = ! parentNode.parentNode;
-
-              while (node) {
-                var isUnderBlockElement = !! new scribe.api.Node(node).getAncestor(function (node) {
-                  return node !== bin && isBlockElement(node);
-                });
-
-                if (! isBlockElement(node)
-                    && (parentNode.nodeName === 'BLOCKQUOTE'
-                        || ! isUnderBlockElement
-                        || isUnderTopContainerElement)) {
-                  // TODO: wrap API
-                  var pElement = document.createElement('p');
-                  parentNode.insertBefore(pElement, node);
-                  pElement.appendChild(node);
-                  // We break this loop and start the traverse again from the
-                  // parent node, because changing the DOM as above breaks the
-                  // tree walker.
-                  traverse(parentNode);
-                  break;
+            /**
+             * Wrap consecutive inline elements and text nodes in a P element.
+             */
+            function wrapChildNodes(parentNode) {
+              var groups = Array.prototype.reduce.call(parentNode.childNodes, function (accumulator, binChildNode) {
+                var group = last(accumulator);
+                if (! group) {
+                  startNewGroup();
                 } else {
-                  traverse(node);
+                  var isBlockGroup = isBlockElement(group[0]);
+                  if (isBlockGroup === isBlockElement(binChildNode)) {
+                    group.push(binChildNode);
+                  } else {
+                    startNewGroup();
+                  }
                 }
 
+                return accumulator;
+
+                function startNewGroup() {
+                  var newGroup = [];
+                  accumulator.push(newGroup);
+                  newGroup.push(binChildNode);
+                }
+              }, []);
+
+              var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
+                var isBlockGroup = isBlockElement(group[0]);
+                return ! isBlockGroup;
+              });
+
+              consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
+                var pElement = document.createElement('p');
+                nodes[0].parentNode.insertBefore(pElement, nodes[0]);
+                nodes.forEach(function (node) {
+                  pElement.appendChild(node);
+                });
+              });
+
+              parentNode._isWrapped = true;
+            }
+
+            // Traverse the tree, wrapping child nodes as we go.
+            function traverse(parentNode) {
+              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+              var node = treeWalker.firstChild();
+
+              while (node) {
+                // TODO: At the moment we only support BLOCKQUOTEs. See failing
+                // tests.
+                if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
+                  wrapChildNodes(node);
+                  traverse(parentNode);
+                  break;
+                }
                 node = treeWalker.nextSibling();
               }
             }
