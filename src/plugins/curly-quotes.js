@@ -108,13 +108,31 @@ define(function () {
         // equivalent in the given string
         mapTextNodes(holder, function(str) {
           return str.
-            replace(/([^\s])"/g, '$1' + closeDoubleCurly).
-            replace(/"/g, openDoubleCurly).
-            replace(/([^\s])'/g, '$1' + closeSingleCurly).
-            replace(/'/g, openSingleCurly);
+            replace(/(.)?'(.)?/g,
+                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
+            replace(/(.)?"(.)?/g,
+                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
         });
 
         return holder.innerHTML;
+      }
+
+      function replaceQuotesFromContext(openCurly, closeCurly) {
+        return function(m, prev, next) {
+          prev = prev || '';
+          next = next || '';
+          var isStart = ! prev;
+          var isEnd = ! next;
+          var hasCharsBefore = /[^\s]/.test(prev);
+          var hasCharsAfter = /[^\s]/.test(next);
+          // Optimistic heuristic, would need to look at DOM structure
+          // (esp block vs inline elements) for more robust inference
+          if (hasCharsBefore || (isStart && ! hasCharsAfter && ! isEnd)) {
+            return prev + closeCurly + next;
+          } else {
+            return prev + openCurly + next;
+          }
+        };
       }
 
       // Apply a function on all text nodes in a container, mutating in place

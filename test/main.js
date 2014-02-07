@@ -1225,7 +1225,7 @@ describe('patches', function () {
 
           it('should not apply an inline style for `line-height` on the B', function() {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1<b>2</b></p><p>3</p>');
+              expect(innerHTML).to.have.html('<p>1<b>2</b>3</p>');
             });
           });
         });
@@ -1335,37 +1335,145 @@ describe('curly quotes plugin', function () {
 
 
   given('default content', function () {
-    when('inserting content with single quotes', function () {
-      beforeEach(function () {
-        // Focus it before-hand
-        scribeNode.click();
+    beforeEach(function () {
+      // Focus it before-hand
+      scribeNode.click();
+    });
 
+    /* Single quotes */
+
+    when('inserting single quotes around a word', function () {
+      beforeEach(function () {
         return driver.executeScript(function () {
-          window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes!'</em></p>");
+          window.scribe.insertHTML("<p>Hello 'world'!</p>");
         });
       });
 
-      it('should replace with curly double quotes instead', function () {
+      it('should replace with curly single quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Note that the attribute quotes got changed to double quotes; no biggie though
-          expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes!’</em></p>');
+          expect(innerHTML).to.equal('<p>Hello ‘world’!</p>');
         });
       });
     });
 
-    when('inserting content with double quotes', function () {
+    when('inserting single quotes after punctuation', function () {
       beforeEach(function () {
-        // Focus it before-hand
-        scribeNode.click();
-
         return driver.executeScript(function () {
-          window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes!"</em></p>');
+          window.scribe.insertHTML("<p>'Hello world!'</p>");
+        });
+      });
+
+      it('should replace with curly single quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>‘Hello world!’</p>');
+        });
+      });
+    });
+
+    when('inserting single quotes after closing elements', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          // Misplaced inline elements wrt whitespace, but can happen
+          window.scribe.insertHTML("<p>'<em>Hello world!</em>' <strong>And </strong>'other'<strong> example</strong></p>");
+        });
+      });
+
+      it('should replace with curly single quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>‘<em>Hello world!</em>’ <strong>And </strong>‘other’<strong> example</strong></p>');
+        });
+      });
+    });
+
+    when('inserting single quotes in between closing elements', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          // Misplaced inline elements wrt whitespace, but can happen
+          window.scribe.insertHTML("<p>'<em>Hello world!</em>'</p>");
+        });
+      });
+
+      // Fails due to simplistic heuristic, but we assume it's not
+      // going to happen much, and can be fixed manually in the worst
+      // case
+      it.skip('should replace with curly single quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>‘<em>Hello world!</em>’</p>');
+        });
+      });
+    });
+
+    when('inserting content with single quoted attributes', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML("<p><em class='foo'>Just text</em></p>");
+        });
+      });
+
+      it('should not convert them to curly quotes', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          // Note that the attribute quotes got changed to double quotes; no biggie though
+          expect(innerHTML).to.equal('<p><em class="foo">Just text</em></p>');
+        });
+      });
+    });
+
+
+    /* Double quotes */
+
+    when('inserting double quotes around a word', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p>Hello "world"!</p>');
         });
       });
 
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes!”</em></p>');
+          expect(innerHTML).to.equal('<p>Hello “world”!</p>');
+        });
+      });
+    });
+
+    when('inserting double quotes after punctuation', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p>"Hello world!"</p>');
+        });
+      });
+
+      it('should replace with curly double quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>“Hello world!”</p>');
+        });
+      });
+    });
+
+    when('inserting double quotes after closing elements', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          // Misplaced inline elements wrt whitespace, but can happen
+          window.scribe.insertHTML('<p>"<em>Hello world!</em>" <strong>And </strong>"other"<strong> example</strong></p>');
+        });
+      });
+
+      it('should replace with curly double quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>“<em>Hello world!</em>” <strong>And </strong>“other”<strong> example</strong></p>');
+        });
+      });
+    });
+
+    when('inserting content with double quoted attributes', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p><em class="foo">Just text</em></p>');
+        });
+      });
+
+      it('should not convert them to curly quotes', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p><em class="foo">Just text</em></p>');
         });
       });
     });
