@@ -109,9 +109,9 @@ define(function () {
         mapTextNodes(holder, function(str) {
           return str.
             replace(/(.)?'(.)?/g,
-                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly)).
+                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
             replace(/(.)?"(.)?/g,
-                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly));
+                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
         });
 
         return holder.innerHTML;
