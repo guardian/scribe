@@ -1385,6 +1385,20 @@ describe('curly quotes plugin', function () {
       });
     });
 
+    when('inserting single quotes between elements and newlines', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML("<p>1\n'<em>2</em>'\n3</p>");
+        });
+      });
+
+      it('should replace with curly single quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal("<p>1\n‘<em>2</em>’\n3</p>");
+        });
+      });
+    });
+
     when('inserting single quotes in between closing elements', function () {
       beforeEach(function () {
         return driver.executeScript(function () {
@@ -1460,6 +1474,20 @@ describe('curly quotes plugin', function () {
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p>“<em>Hello world!</em>” <strong>And </strong>“other”<strong> example</strong></p>');
+        });
+      });
+    });
+
+    when('inserting double quotes between elements and newlines', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p>1\n"<em>2</em>"\n3</p>');
+        });
+      });
+
+      it('should replace with curly double quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>1\n“<em>2</em>”\n3</p>');
         });
       });
     });

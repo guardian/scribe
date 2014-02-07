@@ -108,9 +108,10 @@ define(function () {
         // equivalent in the given string
         mapTextNodes(holder, function(str) {
           return str.
-            replace(/(.)?'(.)?/g,
+            // Use [\s\S] instead of . to match any characters _including newlines_
+            replace(/([\s\S])?'([\s\S])?/g,
                     replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
-            replace(/(.)?"(.)?/g,
+            replace(/([\s\S])?"([\s\S])?/g,
                     replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
         });
 
