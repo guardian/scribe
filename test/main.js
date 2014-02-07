@@ -1293,6 +1293,25 @@ describe('curly quotes plugin', function () {
     });
   });
 
+
+  given('the caret is after a dot', function () {
+    beforeEach(function () {
+      return scribeNode.sendKeys('“Hello.');
+    });
+
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
+      });
+
+      it('should insert a closing curly double quote instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.have.html('<p>“Hello.”<firefox-bogus-br></p>');
+        });
+      });
+    });
+  });
+
   given('the caret is after the end of a word', function () {
     beforeEach(function () {
       return scribeNode.sendKeys('Hello '); // Note the space
