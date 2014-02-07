@@ -1385,6 +1385,24 @@ describe('curly quotes plugin', function () {
       });
     });
 
+    when('inserting single quotes in between closing elements', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          // Misplaced inline elements wrt whitespace, but can happen
+          window.scribe.insertHTML("<p>'<em>Hello world!</em>'</p>");
+        });
+      });
+
+      // Fails due to simplistic heuristic, but we assume it's not
+      // going to happen much, and can be fixed manually in the worst
+      // case
+      it.skip('should replace with curly single quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>‘<em>Hello world!</em>’</p>');
+        });
+      });
+    });
+
     when('inserting content with single quoted attributes', function () {
       beforeEach(function () {
         return driver.executeScript(function () {
