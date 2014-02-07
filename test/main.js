@@ -1322,14 +1322,14 @@ describe('curly quotes plugin', function () {
         scribeNode.click();
 
         return driver.executeScript(function () {
-          window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes'</em></p>");
+          window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes!'</em></p>");
         });
       });
 
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           // Note that the attribute quotes got changed to double quotes; no biggie though
-          expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes’</em></p>');
+          expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes!’</em></p>');
         });
       });
     });
@@ -1340,13 +1340,13 @@ describe('curly quotes plugin', function () {
         scribeNode.click();
 
         return driver.executeScript(function () {
-          window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes"</em></p>');
+          window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes!"</em></p>');
         });
       });
 
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes”</em></p>');
+          expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes!”</em></p>');
         });
       });
     });
