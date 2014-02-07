@@ -108,9 +108,9 @@ define(function () {
         // equivalent in the given string
         mapTextNodes(holder, function(str) {
           return str.
-            replace(/(\w)"/g, '$1' + closeDoubleCurly).
+            replace(/([^\s])"/g, '$1' + closeDoubleCurly).
             replace(/"/g, openDoubleCurly).
-            replace(/(\w)'/g, '$1' + closeSingleCurly).
+            replace(/([^\s])'/g, '$1' + closeSingleCurly).
             replace(/'/g, openSingleCurly);
         });
 

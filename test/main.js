@@ -1293,6 +1293,25 @@ describe('curly quotes plugin', function () {
     });
   });
 
+
+  given('the caret is after a dot', function () {
+    beforeEach(function () {
+      return scribeNode.sendKeys('“Hello.');
+    });
+
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
+      });
+
+      it('should insert a closing curly double quote instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.have.html('<p>“Hello.”<firefox-bogus-br></p>');
+        });
+      });
+    });
+  });
+
   given('the caret is after the end of a word', function () {
     beforeEach(function () {
       return scribeNode.sendKeys('Hello '); // Note the space
@@ -1322,14 +1341,14 @@ describe('curly quotes plugin', function () {
         scribeNode.click();
 
         return driver.executeScript(function () {
-          window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes'</em></p>");
+          window.scribe.insertHTML("<p>Hello 'world'! <em class='foo'>'Great quotes!'</em></p>");
         });
       });
 
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           // Note that the attribute quotes got changed to double quotes; no biggie though
-          expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes’</em></p>');
+          expect(innerHTML).to.equal('<p>Hello ‘world’! <em class="foo">‘Great quotes!’</em></p>');
         });
       });
     });
@@ -1340,13 +1359,13 @@ describe('curly quotes plugin', function () {
         scribeNode.click();
 
         return driver.executeScript(function () {
-          window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes"</em></p>');
+          window.scribe.insertHTML('<p>Hello "world"! <em class="foo">"Great quotes!"</em></p>');
         });
       });
 
       it('should replace with curly double quotes instead', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes”</em></p>');
+          expect(innerHTML).to.equal('<p>Hello “world”! <em class="foo">“Great quotes!”</em></p>');
         });
       });
     });
