@@ -872,8 +872,31 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
+        /*
+         * Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+         */
         it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome: "<blockquote><p>1</p><p>2</p></blockquote>""
+            expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>1|<br>2</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        /*
+         * Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
+         */
+        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome: "<blockquote><p>1</p></blockquote><p>2</p>"
+            // Firefox: "<p>1<br>2</p>"
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
           });
         });
