@@ -34,7 +34,7 @@ define(function () {
             selection.selectMarkers();
 
             // Delete the BLOCKQUOTE if it's empty
-            if (blockquoteNode.innerText === '') {
+            if (blockquoteNode.textContent === '') {
               blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
           } else {

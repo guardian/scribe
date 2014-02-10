@@ -30,7 +30,7 @@ define(function () {
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
 
-              if (contentToEndFragment.firstChild.innerText === '') {
+              if (contentToEndFragment.firstChild.textContent === '') {
                 event.preventDefault();
 
                 // Default P
@@ -71,7 +71,7 @@ define(function () {
               var containerLIElement = selection.getContaining(function (node) {
                 return node.nodeName === 'LI';
               });
-              if (containerLIElement && containerLIElement.innerText.trim() === '') {
+              if (containerLIElement && containerLIElement.textContent.trim() === '') {
                 /**
                  * LIs
                  */
