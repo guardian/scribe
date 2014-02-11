@@ -298,7 +298,7 @@ describe('P mode', function () {
         });
 
         it('should delete the list and insert an empty P element', function () {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
         });
@@ -312,7 +312,7 @@ describe('P mode', function () {
         });
 
         it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><em></em><bogus-br></p>');
           });
         });
@@ -333,7 +333,7 @@ describe('P mode', function () {
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html(
               '<ul>' +
                 '<li>1</li>' +
@@ -353,7 +353,7 @@ describe('P mode', function () {
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
-          scribeNode.getInnerHTML().then(function (innerHTML) {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html(
               '<ul>' +
                 '<li>1</li>' +
@@ -951,7 +951,7 @@ describe('smart lists plugin', function () {
           });
 
           it('should create a new LI element', function () {
-            scribeNode.getInnerHTML().then(function (innerHTML) {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.have.html('<ul><li>abc</li><li><bogus-br></li></ul>');
             });
           });
