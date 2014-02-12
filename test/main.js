@@ -873,7 +873,7 @@ describe('commands', function () {
         });
 
         /*
-         * Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+         * FIXME: Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
          */
         it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -891,7 +891,7 @@ describe('commands', function () {
         });
 
         /*
-         * Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
+         * FIXME: Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
          */
         it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {

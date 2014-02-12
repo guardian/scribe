@@ -98,9 +98,12 @@ define(function () {
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
+      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
+      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
+      var containerPElementInnerHTML = containerPElement.innerHTML.trim();
       return containerPElement && (containerPElement.nodeName === 'P'
-                                   && (containerPElement.innerHTML === '<br>'
-                                       || containerPElement.innerHTML.trim() === ''));
+                                   && (containerPElementInnerHTML === '<br>'
+                                       || containerPElementInnerHTML === ''));
     };
 
     return Selection;
