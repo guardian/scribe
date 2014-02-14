@@ -1,3 +1,7 @@
+/**
+ * TODO:
+ * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
+ */
 
 var chai = require('chai');
 var webdriver = require('selenium-webdriver');
@@ -813,12 +817,15 @@ describe('commands', function () {
             return executeCommand('insertHTML', '<b>2</b>');
           });
 
-          /**
-           * Fails in Firefox. Actual HTML: "<p>1</p><p><b>2</b></p>"
-           * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
-           */
-          it.skip('should wrap the content in a P element', function () {
+          it('should wrap the content in a P element', function () {
+            /**
+             * FIXME: Fails in Firefox.
+             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
+             */
+            if (browserName === 'firefox') { return; }
+
             return scribeNode.getInnerHTML().then(function (innerHTML) {
+              // Firefox: ""<p>1</p><p><b>2</b></p>""
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
@@ -834,8 +841,14 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        /**
+         * FIXME: Fails in Chrome. Bogus P element?
+         */
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          if (browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome: "<blockquote><p>1</p></blockquote><p></p>"
             expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
           });
         });
@@ -876,10 +889,12 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        /*
-         * FIXME: Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
-         */
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          /*
+           * FIXME: Fails in Chrome. Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+           */
+          if (browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome: "<blockquote><p>1</p><p>2</p></blockquote>""
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
@@ -894,10 +909,17 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        /*
-         * FIXME: Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
-         */
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          /*
+           * FIXME: Fails in Firefox.
+           * Firefox does not perform transformation upon Ps containing BRs.
+           * As per: http://jsbin.com/yiyaq/1/edit?js,output
+           */
+          /*
+           * FIXME: Fails in Chrome. Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+           */
+          if (browserName === 'firefox' || browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome: "<blockquote><p>1</p></blockquote><p>2</p>"
             // Firefox: "<p>1<br>2</p>"
@@ -1349,10 +1371,15 @@ describe('curly quotes plugin', function () {
         return scribeNode.sendKeys('"');
       });
 
-      it.skip('should insert an opening curly double quote instead', function () {
+      it('should insert an opening curly double quote instead', function () {
+        /**
+         * FIXME: Fails in Chrome.
+         * Disabled as Chrome inserts a bogus &nbsp; - this
+         * might be a bug we want to fix though!
+         */
+        if (browserName === 'chrome') { return; }
+
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Disabled as Chrome inserts a bogus &nbsp; - this
-          // might be a bug we want to fix though!
           expect(innerHTML).to.have.html('<p>Hello “<firefox-bogus-br></p>');
         });
       });
