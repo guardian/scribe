@@ -700,6 +700,25 @@ describe('commands', function () {
 
   describe('insertHTML', function () {
     given('P mode enabled', function () {
+      givenContentOf('<p>1|</p>', function () {
+        when('the command is executed with a value of "<p>2</p>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return executeCommand('insertHTML', '<p>2</p>');
+          });
+
+          it('should merge the inserted P element into the existing P element', function () {
+            if (browserName === 'firefox') { return; }
+
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>12</p>');
+            });
+          });
+        });
+      });
+
       given('default content', function () {
         when('the command is executed with a value of "<p>1</p>2"', function () {
           beforeEach(function () {
