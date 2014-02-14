@@ -1,8 +1,10 @@
+// TODO: Notify SauceLabs of status, as per: https://saucelabs.com/docs/additional-config#passed
 // TODO: Running tests in multiple browsers breaks `describe/it.only`
 
+var assign = require('lodash-node/modern/objects/assign');
 var chai = require('chai');
-var webdriver = require('selenium-webdriver');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
+var webdriver = require('selenium-webdriver');
 
 var expect = chai.expect;
 
@@ -20,12 +22,6 @@ function when() {
   var args = Object.create(arguments);
   args[0] = 'when ' + args[0];
   describe.apply(null, args);
-}
-
-var browserName = process.env.BROWSER_NAME;
-
-if (! browserName) {
-  throw new Error('The BROWSER_NAME environment variable must not be empty.');
 }
 
 var scribeNode;
@@ -53,35 +49,59 @@ function initializeScribe(options) {
   }
 }
 
-/* TODO
- * - rethink getInnerHTML in the light of being able to access the
- *   scribe instance; is it better to use scribeNode.getHTML, or how do we
- *   ensure 'content-changed' was triggered?
- * - simplify boilerplate by abstracting common test operations, e.g.
- *     when(type('hello'), function() {
- *       editorShouldContain('<p>hello</p>');
- *     });
- */
+var browserName = process.env.BROWSER_NAME;
+var browserVersion = process.env.BROWSER_VERSION;
+var platform = process.env.PLATFORM;
 
-var server;
+if (! browserName) {
+  throw new Error('The BROWSER_NAME environment variable must not be empty.');
+}
+
+var local = ! process.env.TRAVIS;
+
+if (local) {
+  var server;
+  before(function () {
+    // Note: you need to run from the root of the project
+    // TODO: path.resolve
+    server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
+      port: 4444
+    });
+
+    return server.start();
+  });
+}
+
 var driver;
 
 before(function () {
-  // Note: you need to run from the root of the project
-  server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
-    port: 4444
-  });
+  var serverAddress = local ? server.address() : 'http://ondemand.saucelabs.com:80/wd/hub';
 
-  return server.start().then(function () {
-    driver = new webdriver.Builder()
-      .usingServer(server.address())
-      .withCapabilities({ browserName: browserName })
-      .build();
+  var capabilities = {
+    browserName: browserName,
+    version: browserVersion,
+    platform: platform,
+  };
 
-    driver.manage().timeouts().setScriptTimeout(2000);
+  if (! local) {
+    assign(capabilities, {
+      build: process.env.TRAVIS_BUILD_NUMBER,
+      tags: [process.env.TRAVIS_NODE_VERSION, 'CI'],
+      name: [browserName, browserVersion].join(' '),
+      username: process.env.SAUCE_USERNAME,
+      accessKey: process.env.SAUCE_ACCESS_KEY,
+      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
+    });
+  }
 
-    return driver.get('http://localhost:8080/test/app/index.html');
-  });
+  driver = new webdriver.Builder()
+    .usingServer(serverAddress)
+    .withCapabilities(capabilities)
+    .build();
+
+  driver.manage().timeouts().setScriptTimeout(10000);
+
+  return driver.get('http://localhost:8080/test/app/index.html');
 });
 
 before(function () {
@@ -129,7 +149,9 @@ before(function () {
 after(function () {
   // FIXME: Quit fails when there was an error from the WebDriver
   return driver.quit().then(function () {
-    return server.stop();
+    if (local) {
+      return server.stop();
+    }
   });
 });
 
