@@ -67,7 +67,7 @@ define(function () {
         // If in a <p>
         var blockContainer = findBlockContainer(container);
         if (blockContainer && blockContainer.tagName === 'P') {
-          var startOfLineIsUList = isUnorderedListChar(container.textContent);
+          var startOfLineIsUList = isUnorderedListChar(container.textContent[0]);
           if (isUnorderedListChar(lastChar) && currentChar === 'Space' && startOfLineIsUList) {
             listCommand = 'insertUnorderedList';
           }
