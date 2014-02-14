@@ -443,7 +443,7 @@ describe('BR mode', function () {
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.have.html('1<br><br>2<firefox-bogus-br>');
+          expect(innerHTML).to.have.html('1<br><br>2');
         });
       });
 
@@ -454,7 +454,7 @@ describe('BR mode', function () {
 
         it('should insert the typed characters on the new line', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('1<br>3<br>2<firefox-bogus-br>');
+            expect(innerHTML).to.have.html('1<br>3<br>2');
           });
         });
       });
