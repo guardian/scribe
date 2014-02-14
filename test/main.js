@@ -227,7 +227,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should insert another P element', function () {
@@ -265,7 +265,7 @@ describe('P mode', function () {
     givenContentOf('<blockquote><p>|<br></p></blockquote>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the blockquote and insert an empty P element', function () {
@@ -294,7 +294,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the list and insert an empty P element', function () {
@@ -308,7 +308,7 @@ describe('P mode', function () {
     givenContentOf('<ul><li><em>|</em><br></li></ul>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
@@ -349,7 +349,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
@@ -405,7 +405,7 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should create a new line by inserting a BR element', function () {
@@ -438,7 +438,7 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
@@ -471,7 +471,7 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
@@ -514,7 +514,7 @@ describe('BR mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should insert two BR elements', function () {
@@ -947,7 +947,7 @@ describe('smart lists plugin', function () {
 
         when('the user presses <enter>', function () {
           beforeEach(function () {
-            return scribeNode.sendKeys(webdriver.Key.ENTER);
+            return scribeNode.sendKeys(webdriver.Key.RETURN);
           });
 
           it('should create a new LI element', function () {
@@ -970,7 +970,7 @@ describe('smart lists plugin', function () {
 
           when('the user presses <enter>', function () {
             beforeEach(function () {
-              return scribeNode.sendKeys(webdriver.Key.ENTER);
+              return scribeNode.sendKeys(webdriver.Key.RETURN);
             });
 
             it('should end the list and start a new P', function () {
