@@ -47,7 +47,14 @@ function initializeScribe(options) {
   function setupTest(options, done) {
     require(['scribe'], function (Scribe) {
       'use strict';
-      window.scribe = new Scribe(document.querySelector('.scribe'), options);
+      /**
+       * In Firefox, the options object appears to be frozen. I’m unable
+       * to find any documentation on why this is happening at
+       * http://selenium.googlecode.com/git/docs/api/javascript/class_webdriver_WebDriver.html.
+       * We create a new object with the previous object as its prototype to
+       * overcome this issue.
+       */
+      window.scribe = new Scribe(document.querySelector('.scribe'), Object.create(options));
       done();
     });
   }
