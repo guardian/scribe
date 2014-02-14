@@ -1,4 +1,3 @@
-// TODO: Running tests in multiple browsers breaks `describe/it.only`
 
 var chai = require('chai');
 var webdriver = require('selenium-webdriver');
@@ -92,45 +91,43 @@ before(function () {
 });
 
 before(function () {
-  return driver.getCapabilities().then(function (driverCapabilities) {
-    chai.use(function (chai, utils) {
-      chai.Assertion.addMethod('html', function (regExpContents) {
-        var obj = utils.flag(this, 'object');
-        new chai.Assertion(obj).to.match(getHtmlRegExp(regExpContents));
-      });
+  chai.use(function (chai, utils) {
+    chai.Assertion.addMethod('html', function (regExpContents) {
+      var obj = utils.flag(this, 'object');
+      new chai.Assertion(obj).to.match(getHtmlRegExp(regExpContents));
     });
-
-    function getHtmlRegExp(string) {
-      string = string.replace('<bogus-br>', '<br>');
-
-      var fragments;
-      if (driverCapabilities.caps_.browserName === 'chrome') {
-        fragments = string
-          .replace(/<firefox-bogus-br>/g, '')
-          .split('<chrome-bogus-br>')
-          .map(encodeRegExp)
-          .join('<br>');
-      } else if (driverCapabilities.caps_.browserName === 'firefox') {
-        fragments = string
-          // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
-          // for spaces with no right-hand side content.
-          .replace('&nbsp;', ' ')
-          .replace(/<chrome-bogus-br>/g, '')
-          .split('<firefox-bogus-br>')
-          .map(encodeRegExp)
-          .join('<br>');
-      } else {
-        // Just incase
-        fragments = '';
-      }
-
-      return new RegExp('^' + fragments + '$');
-    }
-
-    function encodeRegExp(string) {
-      return string.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
-    }
   });
+
+  function getHtmlRegExp(string) {
+    string = string.replace('<bogus-br>', '<br>');
+
+    var fragments;
+    if (browserName === 'chrome') {
+      fragments = string
+        .replace(/<firefox-bogus-br>/g, '')
+        .split('<chrome-bogus-br>')
+        .map(encodeRegExp)
+        .join('<br>');
+    } else if (browserName === 'firefox') {
+      fragments = string
+        // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
+        // for spaces with no right-hand side content.
+        .replace('&nbsp;', ' ')
+        .replace(/<chrome-bogus-br>/g, '')
+        .split('<firefox-bogus-br>')
+        .map(encodeRegExp)
+        .join('<br>');
+    } else {
+      // Just incase
+      fragments = '';
+    }
+
+    return new RegExp('^' + fragments + '$');
+  }
+
+  function encodeRegExp(string) {
+    return string.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+  }
 });
 
 after(function () {
