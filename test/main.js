@@ -1,4 +1,7 @@
-// TODO: Running tests in multiple browsers breaks `describe/it.only`
+/**
+ * TODO:
+ * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
+ */
 
 var chai = require('chai');
 var webdriver = require('selenium-webdriver');
@@ -47,7 +50,14 @@ function initializeScribe(options) {
   function setupTest(options, done) {
     require(['scribe'], function (Scribe) {
       'use strict';
-      window.scribe = new Scribe(document.querySelector('.scribe'), options);
+      /**
+       * In Firefox, the options object appears to be frozen. I’m unable
+       * to find any documentation on why this is happening at
+       * http://selenium.googlecode.com/git/docs/api/javascript/class_webdriver_WebDriver.html.
+       * We create a new object with the previous object as its prototype to
+       * overcome this issue.
+       */
+      window.scribe = new Scribe(document.querySelector('.scribe'), Object.create(options));
       done();
     });
   }
@@ -85,45 +95,43 @@ before(function () {
 });
 
 before(function () {
-  return driver.getCapabilities().then(function (driverCapabilities) {
-    chai.use(function (chai, utils) {
-      chai.Assertion.addMethod('html', function (regExpContents) {
-        var obj = utils.flag(this, 'object');
-        new chai.Assertion(obj).to.match(getHtmlRegExp(regExpContents));
-      });
+  chai.use(function (chai, utils) {
+    chai.Assertion.addMethod('html', function (regExpContents) {
+      var obj = utils.flag(this, 'object');
+      new chai.Assertion(obj).to.match(getHtmlRegExp(regExpContents));
     });
-
-    function getHtmlRegExp(string) {
-      string = string.replace('<bogus-br>', '<br>');
-
-      var fragments;
-      if (driverCapabilities.caps_.browserName === 'chrome') {
-        fragments = string
-          .replace(/<firefox-bogus-br>/g, '')
-          .split('<chrome-bogus-br>')
-          .map(encodeRegExp)
-          .join('<br>');
-      } else if (driverCapabilities.caps_.browserName === 'firefox') {
-        fragments = string
-          // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
-          // for spaces with no right-hand side content.
-          .replace('&nbsp;', ' ')
-          .replace(/<chrome-bogus-br>/g, '')
-          .split('<firefox-bogus-br>')
-          .map(encodeRegExp)
-          .join('<br>');
-      } else {
-        // Just incase
-        fragments = '';
-      }
-
-      return new RegExp('^' + fragments + '$');
-    }
-
-    function encodeRegExp(string) {
-      return string.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
-    }
   });
+
+  function getHtmlRegExp(string) {
+    string = string.replace('<bogus-br>', '<br>');
+
+    var fragments;
+    if (browserName === 'chrome') {
+      fragments = string
+        .replace(/<firefox-bogus-br>/g, '')
+        .split('<chrome-bogus-br>')
+        .map(encodeRegExp)
+        .join('<br>');
+    } else if (browserName === 'firefox') {
+      fragments = string
+        // Unlike Chrome, Firefox is not clever and does not insert `&nbsp;`
+        // for spaces with no right-hand side content.
+        .replace('&nbsp;', ' ')
+        .replace(/<chrome-bogus-br>/g, '')
+        .split('<firefox-bogus-br>')
+        .map(encodeRegExp)
+        .join('<br>');
+    } else {
+      // Just incase
+      fragments = '';
+    }
+
+    return new RegExp('^' + fragments + '$');
+  }
+
+  function encodeRegExp(string) {
+    return string.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+  }
 });
 
 after(function () {
@@ -227,7 +235,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should insert another P element', function () {
@@ -265,7 +273,7 @@ describe('P mode', function () {
     givenContentOf('<blockquote><p>|<br></p></blockquote>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the blockquote and insert an empty P element', function () {
@@ -294,7 +302,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the list and insert an empty P element', function () {
@@ -308,7 +316,7 @@ describe('P mode', function () {
     givenContentOf('<ul><li><em>|</em><br></li></ul>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
@@ -349,7 +357,7 @@ describe('P mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should split the list into two and insert an empty P element in-between', function () {
@@ -405,7 +413,7 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should create a new line by inserting a BR element', function () {
@@ -438,12 +446,12 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          expect(innerHTML).to.have.html('1<br><br>2<firefox-bogus-br>');
+          expect(innerHTML).to.have.html('1<br><br>2');
         });
       });
 
@@ -454,7 +462,7 @@ describe('BR mode', function () {
 
         it('should insert the typed characters on the new line', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('1<br>3<br>2<firefox-bogus-br>');
+            expect(innerHTML).to.have.html('1<br>3<br>2');
           });
         });
       });
@@ -471,7 +479,7 @@ describe('BR mode', function () {
 
     when('the user presses <enter>', function () {
       beforeEach(function () {
-        return scribeNode.sendKeys(webdriver.Key.ENTER);
+        return scribeNode.sendKeys(webdriver.Key.RETURN);
       });
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
@@ -514,7 +522,7 @@ describe('BR mode', function () {
 
       when('the user presses <enter>', function () {
         beforeEach(function () {
-          return scribeNode.sendKeys(webdriver.Key.ENTER);
+          return scribeNode.sendKeys(webdriver.Key.RETURN);
         });
 
         it('should insert two BR elements', function () {
@@ -692,6 +700,25 @@ describe('commands', function () {
 
   describe('insertHTML', function () {
     given('P mode enabled', function () {
+      givenContentOf('<p>1|</p>', function () {
+        when('the command is executed with a value of "<p>2</p>"', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return executeCommand('insertHTML', '<p>2</p>');
+          });
+
+          it('should merge the inserted P element into the existing P element', function () {
+            if (browserName === 'firefox') { return; }
+
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>12</p>');
+            });
+          });
+        });
+      });
+
       given('default content', function () {
         when('the command is executed with a value of "<p>1</p>2"', function () {
           beforeEach(function () {
@@ -809,12 +836,15 @@ describe('commands', function () {
             return executeCommand('insertHTML', '<b>2</b>');
           });
 
-          /**
-           * Fails in Firefox. Actual HTML: "<p>1</p><p><b>2</b></p>"
-           * As per browser inconsistency: http://jsbin.com/olEbecEM/1/edit?js,output
-           */
-          it.skip('should wrap the content in a P element', function () {
+          it('should wrap the content in a P element', function () {
+            /**
+             * FIXME: Fails in Firefox.
+             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
+             */
+            if (browserName === 'firefox') { return; }
+
             return scribeNode.getInnerHTML().then(function (innerHTML) {
+              // Firefox: ""<p>1</p><p><b>2</b></p>""
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
@@ -830,8 +860,14 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        /**
+         * FIXME: Fails in Chrome. Bogus P element?
+         */
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          if (browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome: "<blockquote><p>1</p></blockquote><p></p>"
             expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
           });
         });
@@ -872,10 +908,12 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        /*
-         * FIXME: Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
-         */
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          /*
+           * FIXME: Fails in Chrome. Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+           */
+          if (browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome: "<blockquote><p>1</p><p>2</p></blockquote>""
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
@@ -890,10 +928,17 @@ describe('commands', function () {
           return executeCommand('indent');
         });
 
-        /*
-         * FIXME: Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
-         */
-        it.skip('should wrap the P element in a BLOCKQUOTE element', function () {
+        it('should wrap the P element in a BLOCKQUOTE element', function () {
+          /*
+           * FIXME: Fails in Firefox.
+           * Firefox does not perform transformation upon Ps containing BRs.
+           * As per: http://jsbin.com/yiyaq/1/edit?js,output
+           */
+          /*
+           * FIXME: Fails in Chrome. Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
+           */
+          if (browserName === 'firefox' || browserName === 'chrome') { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome: "<blockquote><p>1</p></blockquote><p>2</p>"
             // Firefox: "<p>1<br>2</p>"
@@ -947,7 +992,7 @@ describe('smart lists plugin', function () {
 
         when('the user presses <enter>', function () {
           beforeEach(function () {
-            return scribeNode.sendKeys(webdriver.Key.ENTER);
+            return scribeNode.sendKeys(webdriver.Key.RETURN);
           });
 
           it('should create a new LI element', function () {
@@ -970,7 +1015,7 @@ describe('smart lists plugin', function () {
 
           when('the user presses <enter>', function () {
             beforeEach(function () {
-              return scribeNode.sendKeys(webdriver.Key.ENTER);
+              return scribeNode.sendKeys(webdriver.Key.RETURN);
             });
 
             it('should end the list and start a new P', function () {
@@ -1229,7 +1274,14 @@ describe('patches', function () {
           });
 
           it('should not apply an inline style for `line-height` on the B', function() {
+            /**
+             * FIXME: Fails in Firefox.
+             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
+             */
+            if (browserName === 'firefox') { return; }
+
             return scribeNode.getInnerHTML().then(function (innerHTML) {
+              // Firefox: "<p>1</p><p><b>2</b></p>"
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
@@ -1247,7 +1299,14 @@ describe('patches', function () {
           });
 
           it('should not apply an inline style for `line-height` on the B', function() {
+            /**
+             * FIXME: Fails in Firefox.
+             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
+             */
+            if (browserName === 'firefox') { return; }
+
             return scribeNode.getInnerHTML().then(function (innerHTML) {
+              // Firefox: "<p>1</p><p><b>2</b>3</p>"
               expect(innerHTML).to.have.html('<p>1<b>2</b>3</p>');
             });
           });
@@ -1345,10 +1404,15 @@ describe('curly quotes plugin', function () {
         return scribeNode.sendKeys('"');
       });
 
-      it.skip('should insert an opening curly double quote instead', function () {
+      it('should insert an opening curly double quote instead', function () {
+        /**
+         * FIXME: Fails in Chrome.
+         * Disabled as Chrome inserts a bogus &nbsp; - this
+         * might be a bug we want to fix though!
+         */
+        if (browserName === 'chrome') { return; }
+
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Disabled as Chrome inserts a bogus &nbsp; - this
-          // might be a bug we want to fix though!
           expect(innerHTML).to.have.html('<p>Hello “<firefox-bogus-br></p>');
         });
       });
