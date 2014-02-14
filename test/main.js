@@ -818,7 +818,7 @@ describe('commands', function () {
 
           /**
            * Fails in Firefox. Actual HTML: "<p>1</p><p><b>2</b></p>"
-           * As per browser inconsistency: http://jsbin.com/olEbecEM/1/edit?js,output
+           * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
            */
           it.skip('should wrap the content in a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
