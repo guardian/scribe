@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - '0.10'
+
+addons:
+  sauce_connect:
+    username:
+      secure: THTV4yTFsCh0Np0Qw+kPivdk9RF7HbNwmuUYupArNLlXUyDj7DBwomGEXwPfFMRP+uQrI+LQYp1IdXpmdgkYumuVDy/Jlt21joXKp6LN5ALbB94AjGGgTc0jQrgQTfNL5/KxxHYGOqmlzp9HH7aaNQCE3BXZGMvMAqJyDiRtkCA=
+    access_key:
+      secure: HsfA/KDVV4I1Ywt1ILkY9y4n+F6ZJowBTzZn8/cnfbWEAZdSUaDM7cwdGmHMYqm4xTBO9nlHdL+Wad1I8tZmVM9akxoJRdgbMR7m2BjvJwrkN83tp8MayI20M56bhzC/Sb3iY5J8c8BANGRX3JZ43Zy3tqTzb68mqOsZqMhZ/+A=
+env:
+  matrix:
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='19' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='20' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='21' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='22' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='23' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='24' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='25' PLATFORM='Linux'"
+    - "BROWSER_NAME='firefox' BROWSER_VERSION='26' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='26' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='27' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='28' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='29' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='30' PLATFORM='Linux'"
+    - "BROWSER_NAME='chrome' BROWSER_VERSION='31' PLATFORM='Windows 8.1'"
+script: "./ci"

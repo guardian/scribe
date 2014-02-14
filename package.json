@@ -2,6 +2,8 @@
   "name": "scribe",
   "devDependencies": {
     "chai": "~1.8.1",
+    "connect": "~2.12.0",
+    "lodash-node": "~2.4.1",
     "mocha": "~1.15.0",
     "mocha-as-promised": "~2.0.0",
     "plumber": "~0.1.0",
@@ -13,7 +15,7 @@
     "selenium-webdriver": "~2.37.0"
   },
   "scripts": {
-    "test": "BROWSER_NAME=chrome ./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec",
-    "test-dev": "BROWSER_NAME=chrome ./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec --watch"
+    "test": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec",
+    "test-dev": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec --watch"
   }
 }
