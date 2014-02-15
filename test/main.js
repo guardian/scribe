@@ -7,6 +7,7 @@
 
 var assign = require('lodash-node/modern/objects/assign');
 var chai = require('chai');
+var Q = require('q');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 var webdriver = require('selenium-webdriver');
 
@@ -112,7 +113,17 @@ before(function () {
 
   driver.manage().timeouts().setScriptTimeout(10000);
 
-  return driver.get('http://localhost:8080/test/app/index.html');
+  // Store the session ID so we can later notify Sauce Labs whether the suite
+  // was passed or not.
+  var getDriverSessionID;
+  if (! local) {
+    // TODO: don’t store the `sessionID` on `global` :-/
+    getDriverSessionID = driver.getSession().then(function (session) {
+      global.sessionID = session.getId();
+    });
+  }
+
+  return Q.all([getDriverSessionID, driver.get('http://localhost:8080/test/app/index.html')]);
 });
 
 before(function () {
