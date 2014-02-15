@@ -58,3 +58,7 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   on <backspace> or <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
 * Firefox breaks out of P mode on <backspace> or <delete> keyboard events
   when HTML has indentation between block elements: http://jsbin.com/EyuKase/1/edit?js,output
+
+## Other
+* Chrome (<= 28(?)): `TreeWalker` does not work properly with
+  `DocumentFragment`s: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
