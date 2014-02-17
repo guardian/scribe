@@ -48,11 +48,10 @@ define(function () {
         if (curlyChar) {
           event.preventDefault();
 
-          var quoteText = replaceSelectedRangeWith(curlyChar);
-          placeCaretAfter(quoteText);
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.transactionManager.run(function() {
+            var quoteText = replaceSelectedRangeWith(curlyChar);
+            placeCaretAfter(quoteText);
+          });
         }
       }
 
