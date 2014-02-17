@@ -70,6 +70,26 @@ if (! browserName) {
   throw new Error('The BROWSER_NAME environment variable must not be empty.');
 }
 
+var browserBugs = {
+  chrome: {
+    /**
+     * In Chrome <= 28, `TreeWalker` does not work properly with
+     * `DocumentFragment`s, which is a combination we use for this
+     * functionality. This could be fixed by ditching `DocumentFragment`s,
+     * or writing a patch for `TreeWalker`.
+     * As per issue: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
+     */
+    treeWalkerAndDocumentFragments: browserName === 'chrome' && contains(['26', '27', '28'], browserVersion),
+  },
+
+  firefox: {
+    /**
+     * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
+     */
+    insertHTMLNotMergingPElements: browserName === 'firefox'
+  }
+};
+
 var local = ! process.env.TRAVIS;
 
 if (local) {
@@ -485,15 +505,8 @@ describe('inline elements mode', function () {
       });
 
       it('should delete the bogus BR element and create a new line by inserting a BR element', function () {
-        /**
-         * FIXME: Fails in Chrome (26, 27, 28).
-         * In Chrome <= 28, `TreeWalker` does not work properly with
-         * `DocumentFragment`s, which is a combination we use for this
-         * functionality. This could be fixed by ditching `DocumentFragment`s,
-         * or writing a patch for `TreeWalker`.
-         * As per issue: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
-         */
-        if (browserName === 'chrome' && contains(['26', '27', '28'], browserVersion)) { return; }
+        // FIXME:
+        if (browserBugs.chrome.treeWalkerAndDocumentFragments) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           // Chrome (26, 27, 28): "1<br><br><br>2"
@@ -507,15 +520,8 @@ describe('inline elements mode', function () {
         });
 
         it('should insert the typed characters on the new line', function () {
-          /**
-           * FIXME: Fails in Chrome (26, 27, 28).
-           * In Chrome <= 28, `TreeWalker` does not work properly with
-           * `DocumentFragment`s, which is a combination we use for this
-           * functionality. This could be fixed by ditching `DocumentFragment`s,
-           * or writing a patch for `TreeWalker`.
-           * As per issue: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
-           */
-          if (browserName === 'chrome' && contains(['26', '27', '28'], browserVersion)) { return; }
+          // FIXME:
+          if (browserBugs.chrome.treeWalkerAndDocumentFragments) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome (26, 27, 28): "1<br>3<br><br>2"
@@ -894,11 +900,8 @@ describe('commands', function () {
           });
 
           it('should wrap the content in a P element', function () {
-            /**
-             * FIXME: Fails in Firefox.
-             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
-             */
-            if (browserName === 'firefox') { return; }
+            // FIXME:
+            if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               // Firefox: "<p>1</p><p><b>2</b></p>"
@@ -1331,11 +1334,8 @@ describe('patches', function () {
           });
 
           it('should not apply an inline style for `line-height` on the B', function() {
-            /**
-             * FIXME: Fails in Firefox.
-             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
-             */
-            if (browserName === 'firefox') { return; }
+            // FIXME:
+            if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               // Firefox: "<p>1</p><p><b>2</b></p>"
@@ -1356,11 +1356,8 @@ describe('patches', function () {
           });
 
           it('should not apply an inline style for `line-height` on the B', function() {
-            /**
-             * FIXME: Fails in Firefox.
-             * As per browser inconsistency: http://jsbin.com/uvEdacoz/6/edit?js,output
-             */
-            if (browserName === 'firefox') { return; }
+            // FIXME:
+            if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               // Firefox: "<p>1</p><p><b>2</b>3</p>"
