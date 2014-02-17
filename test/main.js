@@ -469,6 +469,7 @@ describe('inline elements mode', function () {
   // Without right-hand side content
   givenContentOf('1|', function () {
     it('should append a bogus BR to the content', function () {
+
       return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.have.html('1<bogus-br>');
       });
@@ -1449,6 +1450,7 @@ describe('curly quotes plugin', function () {
       });
 
       it('should insert a closing curly double quote instead', function () {
+        // FIXME:
         if (seleniumBugs.chromeSpecialCharacters) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
