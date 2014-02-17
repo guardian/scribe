@@ -112,7 +112,7 @@ before(function () {
     .withCapabilities(capabilities)
     .build();
 
-  driver.manage().timeouts().setScriptTimeout(10000);
+  driver.manage().timeouts().setScriptTimeout(20000);
 
   // Store the session ID so we can later notify Sauce Labs whether the suite
   // was passed or not.
