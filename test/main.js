@@ -70,6 +70,14 @@ if (! browserName) {
   throw new Error('The BROWSER_NAME environment variable must not be empty.');
 }
 
+var seleniumBugs = {
+  /**
+   * Chrome (30) does not properly send • or “ keys
+   * As per issue: https://code.google.com/p/selenium/issues/detail?id=6998
+   */
+  chromeSpecialCharacters: browserName === 'chrome' && browserVersion === '30'
+};
+
 var browserBugs = {
   chrome: {
     /**
@@ -1441,6 +1449,8 @@ describe('curly quotes plugin', function () {
       });
 
       it('should insert a closing curly double quote instead', function () {
+        if (seleniumBugs.chromeSpecialCharacters) { return; }
+
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.have.html('<p>“Hello.”<firefox-bogus-br></p>');
         });
