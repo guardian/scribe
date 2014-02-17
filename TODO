@@ -1,3 +1,5 @@
+* Run integration tests in Safari
+
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
 * Grammar for nesting elements, shared with sanitizer/commands
