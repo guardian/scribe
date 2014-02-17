@@ -12,10 +12,12 @@
     "plumber-requirejs": "~0.1.0",
     "plumber-uglifyjs": "~0.1.0",
     "plumber-write": "~0.1.0",
+    "q": "~1.0.0",
+    "request": "~2.33.0",
     "selenium-webdriver": "~2.37.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec",
+    "test": "node test/runner",
     "test-dev": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec --watch"
   }
 }
