@@ -36,12 +36,11 @@ define(function () {
 
           if ((collapsedSelection && scribe.getTextContent().trim() === '') || (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
-            scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-            selection.selectMarkers();
-
-            scribe.pushHistory();
-            scribe.trigger('content-changed');
+            scribe.transactionManager.run(function () {
+              scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
+              selection.selectMarkers();
+            });
           }
         }
       });

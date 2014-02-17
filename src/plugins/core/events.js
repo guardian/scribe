@@ -33,23 +33,22 @@ define(function () {
               if (contentToEndFragment.firstChild.textContent === '') {
                 event.preventDefault();
 
-                // Default P
-                // TODO: Abstract somewhere
-                var pNode = document.createElement('p');
-                var brNode = document.createElement('br');
-                pNode.appendChild(brNode);
+                scribe.transactionManager.run(function () {
+                  // Default P
+                  // TODO: Abstract somewhere
+                  var pNode = document.createElement('p');
+                  var brNode = document.createElement('br');
+                  pNode.appendChild(brNode);
 
-                headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
 
-                // Re-apply range
-                range.setStart(pNode, 0);
-                range.setEnd(pNode, 0);
+                  // Re-apply range
+                  range.setStart(pNode, 0);
+                  range.setEnd(pNode, 0);
 
-                selection.selection.removeAllRanges();
-                selection.selection.addRange(range);
-
-                scribe.pushHistory();
-                scribe.trigger('content-changed');
+                  selection.selection.removeAllRanges();
+                  selection.selection.addRange(range);
+                });
               }
             }
           }
