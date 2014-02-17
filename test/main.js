@@ -901,7 +901,7 @@ describe('commands', function () {
             if (browserName === 'firefox') { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Firefox: ""<p>1</p><p><b>2</b></p>""
+              // Firefox: "<p>1</p><p><b>2</b></p>"
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
