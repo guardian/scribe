@@ -433,7 +433,7 @@ describe('P mode', function () {
   });
 });
 
-describe('BR mode', function () {
+describe('inline elements mode', function () {
   beforeEach(function () {
     return initializeScribe({ allowBlockElements: false });
   });
