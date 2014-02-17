@@ -97,6 +97,10 @@ var seleniumBugs = {
   }
 };
 
+/**
+ * These are issues against browsers that we currently bypass in order to
+ * achieve a green build — because the problem is not worth fixing.
+ */
 var browserBugs = {
   chrome: {
     /**
