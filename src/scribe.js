@@ -4,6 +4,7 @@ define([
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
@@ -16,6 +17,7 @@ define([
   commands,
   events,
   replaceNbspCharsFormatter,
+  escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
@@ -80,6 +82,7 @@ define([
     }
 
     // Formatters
+    this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
     // Patches

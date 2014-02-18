@@ -285,6 +285,120 @@ describe('formatters', function () {
 
   describe('plain text', function () {
     // TODO: Abstract plugin tests
+    describe.only('escape HTML characters', function () {
+      when('content of "&" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('&');
+          });
+        });
+
+        it('should convert the "&" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&amp;</p>');
+          });
+        });
+      });
+
+      when('content of "<" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('<');
+          });
+        });
+
+        it('should convert the "<" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&lt;</p>');
+          });
+        });
+      });
+
+      when('content of ">" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('>');
+          });
+        });
+
+        it('should convert the ">" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&gt;</p>');
+          });
+        });
+      });
+
+      when('content of "\\"" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('"');
+          });
+        });
+
+        /**
+         * FIXME: Fails because `element.insertHTML = '<p>&quot;</p>'` unescapes
+         * the HTML entity (for double and single quotes). This can be fixed by
+         * replacing these tests with unit tests.
+         */
+        it.skip('should convert the "\\"" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&quot;</p>');
+          });
+        });
+      });
+
+      when('content of "\'" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('\'');
+          });
+        });
+
+        /**
+         * FIXME: Fails because `element.insertHTML = '<p>&#39;</p>'` unescapes
+         * the HTML entity (for double and single quotes). This can be fixed by
+         * replacing these tests with unit tests.
+         */
+        it.skip('should convert the "\'" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&#39;</p>');
+          });
+        });
+      });
+
+      when('content of "<p>1</p>" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('<p>1</p>');
+          });
+        });
+
+        it('should convert HTML characters to their corresponding HTML entities', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&lt;p&gt;1&lt;/p&gt;</p>');
+          });
+        });
+      });
+    });
+
     describe('convert new lines to HTML', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
