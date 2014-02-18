@@ -1,7 +1,8 @@
 /**
  * TODO:
  * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
- * - Notify SauceLabs of status, as per: https://saucelabs.com/docs/additional-config#passed
+ * - Move out unit tests (wherever we are testing individual methods; lots of
+ *   places!)
  * - Running tests in multiple browsers breaks `describe/it.only`
  */
 
