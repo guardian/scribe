@@ -1517,6 +1517,7 @@ describe('curly quotes plugin', function () {
         if (seleniumBugs.firefox[2]) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
+          // Chrome (30): "<p>Hello.”</p>"
           // Firefox (23, 24, 25): "<p>“Hello.”””<br></p>"
           expect(innerHTML).to.have.html('<p>“Hello.”<firefox-bogus-br></p>');
         });
