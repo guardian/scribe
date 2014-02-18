@@ -1,4 +1,8 @@
-define(function () {
+define([
+  'lodash-modern/utilities/escape',
+], function (
+  escape
+) {
 
   'use strict';
 
@@ -109,7 +113,7 @@ define(function () {
           event.preventDefault();
           // TODO: what data should we be getting?
           data = event.clipboardData.getData('text/html') ||
-            escapeHtml(event.clipboardData.getData('text/plain'));
+            escape(event.clipboardData.getData('text/plain'));
 
           scribe.insertHTML(data);
         } else {
@@ -158,15 +162,6 @@ define(function () {
           }, 1);
         }
       });
-
-
-      function escapeHtml(str) {
-        return String(str).
-          replace(/&/g, '&amp;').
-          replace(/</g, '&lt;').
-          replace(/>/g, '&gt;').
-          replace(/"/g, '&quot;');
-      }
 
     };
   };
