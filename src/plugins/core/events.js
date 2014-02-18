@@ -1,9 +1,7 @@
 define([
   'lodash-modern/collections/contains',
-  'lodash-modern/utilities/escape',
 ], function (
-  contains,
-  escape
+  contains
 ) {
 
   'use strict';
