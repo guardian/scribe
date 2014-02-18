@@ -3,7 +3,8 @@ define([
   'lodash-modern/objects/defaults',
   './plugins/core/commands',
   './plugins/core/events',
-  './plugins/core/formatters/replace-nbsp-chars',
+  './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
@@ -16,6 +17,7 @@ define([
   commands,
   events,
   replaceNbspCharsFormatter,
+  escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
@@ -34,13 +36,14 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.formatter = new Formatter();
+    this.plainTextFormatter = new Formatter();
+    this.htmlFormatter = new Formatter();
 
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
-    
+
     var UndoManager = buildUndoManager(this);
     this.undoManager = new UndoManager();
 
@@ -79,6 +82,7 @@ define([
     }
 
     // Formatters
+    this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
     // Patches
@@ -239,15 +243,19 @@ define([
       content = content + '<br>';
     }
 
-    this.setHTML(this.formatter.format(content));
+    this.setHTML(this.htmlFormatter.format(content));
 
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.insertPlainText = function (plainText) {
+    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(this.formatter.format(html));
+    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {

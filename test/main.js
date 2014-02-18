@@ -4,6 +4,7 @@
  * - Move out unit tests (wherever we are testing individual methods; lots of
  *   places!)
  * - Running tests in multiple browsers breaks `describe/it.only`
+ * - Abstract plugin tests
  */
 
 var assign = require('lodash-node/modern/objects/assign');
@@ -275,27 +276,193 @@ describe('undo manager', function () {
   });
 });
 
+// TODO: These should be unit tests of the formatter functions, not
+// integration tests.
 describe('formatters', function () {
   beforeEach(function () {
     return initializeScribe();
   });
 
-  describe('non-breaking spaces', function () {
-    given('default content', function () {
-      // i.e. paste
-      when('a non-breaking space is inserted', function () {
+  describe('plain text', function () {
+    // TODO: Abstract plugin tests
+    describe.only('escape HTML characters', function () {
+      when('content of "&" is inserted', function () {
         beforeEach(function () {
           // Focus it before-hand
           scribeNode.click();
 
           return driver.executeScript(function () {
-            window.scribe.insertHTML('1&nbsp;2');
+            window.scribe.insertPlainText('&');
           });
         });
 
-        it('should replace the non-breaking space character with a normal space', function () {
+        it('should convert the "&" character to the corresponding HTML entity', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1 2</p>');
+            expect(innerHTML).to.have.html('<p>&amp;</p>');
+          });
+        });
+      });
+
+      when('content of "<" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('<');
+          });
+        });
+
+        it('should convert the "<" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&lt;</p>');
+          });
+        });
+      });
+
+      when('content of ">" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('>');
+          });
+        });
+
+        it('should convert the ">" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&gt;</p>');
+          });
+        });
+      });
+
+      when('content of "\\"" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('"');
+          });
+        });
+
+        /**
+         * FIXME: Fails because `element.insertHTML = '<p>&quot;</p>'` unescapes
+         * the HTML entity (for double and single quotes). This can be fixed by
+         * replacing these tests with unit tests.
+         */
+        it.skip('should convert the "\\"" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&quot;</p>');
+          });
+        });
+      });
+
+      when('content of "\'" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('\'');
+          });
+        });
+
+        /**
+         * FIXME: Fails because `element.insertHTML = '<p>&#39;</p>'` unescapes
+         * the HTML entity (for double and single quotes). This can be fixed by
+         * replacing these tests with unit tests.
+         */
+        it.skip('should convert the "\'" character to the corresponding HTML entity', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&#39;</p>');
+          });
+        });
+      });
+
+      when('content of "<p>1</p>" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('<p>1</p>');
+          });
+        });
+
+        it('should convert HTML characters to their corresponding HTML entities', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>&lt;p&gt;1&lt;/p&gt;</p>');
+          });
+        });
+      });
+    });
+
+    describe('convert new lines to HTML', function () {
+      beforeEach(function () {
+        return driver.executeAsyncScript(function (done) {
+          require(['plugins/formatters/plain-text/convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+            window.scribe.use(convertNewLinesToHtmlFormatter());
+            done();
+          });
+        });
+      });
+
+      when('content of "1\\n2" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('1\n2');
+          });
+        });
+
+        it('should replace the new line character with a BR element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1<br>2</p>');
+          });
+        });
+      });
+
+      when('content of "1\\n\\n2" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('1\n\n2');
+          });
+        });
+
+        it('should replace the new line characters with a closing P tag and an opening P tag', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
+    });
+  });
+
+  describe('HTML', function () {
+    describe('replace non-breaking space characters', function () {
+      given('default content', function () {
+        // i.e. paste
+        when('a non-breaking space is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertHTML('1&nbsp;2');
+            });
+          });
+
+          it('should replace the non-breaking space character with a normal space', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1 2</p>');
+            });
           });
         });
       });

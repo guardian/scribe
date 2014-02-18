@@ -1,4 +1,8 @@
-define(function () {
+define([
+  'lodash-modern/collections/contains',
+], function (
+  contains
+) {
 
   'use strict';
 
@@ -104,14 +108,14 @@ define(function () {
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
          */
-        var data;
         if (event.clipboardData) {
           event.preventDefault();
-          // TODO: what data should we be getting?
-          data = event.clipboardData.getData('text/html') ||
-            escapeHtml(event.clipboardData.getData('text/plain'));
 
-          scribe.insertHTML(data);
+          if (contains(event.clipboardData.types, 'text/html')) {
+            scribe.insertHTML(event.clipboardData.getData('text/html'));
+          } else {
+            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
+          }
         } else {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
@@ -158,15 +162,6 @@ define(function () {
           }, 1);
         }
       });
-
-
-      function escapeHtml(str) {
-        return String(str).
-          replace(/&/g, '&amp;').
-          replace(/</g, '&lt;').
-          replace(/>/g, '&gt;').
-          replace(/"/g, '&quot;');
-      }
 
     };
   };
