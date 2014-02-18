@@ -302,7 +302,7 @@ describe('formatters', function () {
   });
 });
 
-describe('P mode', function () {
+describe('block mode', function () {
   beforeEach(function () {
     return initializeScribe();
   });
