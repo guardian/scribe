@@ -111,7 +111,7 @@ define([
         var data;
         if (event.clipboardData) {
           event.preventDefault();
-          // TODO: what data should we be getting?
+
           data = event.clipboardData.getData('text/html') ||
             escape(event.clipboardData.getData('text/plain'));
 
