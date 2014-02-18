@@ -1512,7 +1512,7 @@ describe('curly quotes plugin', function () {
 
       it('should insert a closing curly double quote instead', function () {
         // FIXME:
-        if (seleniumBugs.chromeSpecialCharacters) { return; }
+        if (seleniumBugs.chrome[1]) { return; }
         // FIXME:
         if (seleniumBugs.firefox[2]) { return; }
 
