@@ -13,7 +13,7 @@ require({
 }, [
   'scribe',
   'plugins/blockquote-command',
-  'plugins/formatters/convert-new-lines-to-html',
+  'plugins/formatters/plain-text/convert-new-lines-to-html',
   'plugins/heading-command',
   'plugins/intelligent-unlink-command',
   'plugins/link-prompt-command',

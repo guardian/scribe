@@ -1,6 +1,8 @@
 define([
+  'lodash-modern/collections/contains',
   'lodash-modern/utilities/escape',
 ], function (
+  contains,
   escape
 ) {
 
@@ -108,14 +110,14 @@ define([
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
          */
-        var data;
         if (event.clipboardData) {
           event.preventDefault();
 
-          data = event.clipboardData.getData('text/html') ||
-            escape(event.clipboardData.getData('text/plain'));
-
-          scribe.insertHTML(data);
+          if (contains(event.clipboardData.types, 'text/html')) {
+            scribe.insertHTML(event.clipboardData.getData('text/html'));
+          } else {
+            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
+          }
         } else {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a

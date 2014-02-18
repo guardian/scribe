@@ -275,9 +275,59 @@ describe('undo manager', function () {
   });
 });
 
+// TODO: These should be unit tests of the formatter functions, not
+// integration tests.
 describe('formatters', function () {
   beforeEach(function () {
     return initializeScribe();
+  });
+
+  describe('plain text', function () {
+    // TODO: Abstract plugin tests
+    describe('convert new lines to HTML', function () {
+      beforeEach(function () {
+        return driver.executeAsyncScript(function (done) {
+          require(['plugins/formatters/plain-text/convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+            window.scribe.use(convertNewLinesToHtmlFormatter());
+            done();
+          });
+        });
+      });
+
+      when('content of "1\\n2" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('1\n2');
+          });
+        });
+
+        it('should replace the new line character with a BR element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1<br>2</p>');
+          });
+        });
+      });
+
+      when('content of "1\\n\\n2" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertPlainText('1\n\n2');
+          });
+        });
+
+        it('should replace the new line characters with a closing P tag and an opening P tag', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
+    });
   });
 
   describe('non-breaking spaces', function () {
