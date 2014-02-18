@@ -4,6 +4,7 @@
  * - Move out unit tests (wherever we are testing individual methods; lots of
  *   places!)
  * - Running tests in multiple browsers breaks `describe/it.only`
+ * - Abstract plugin tests
  */
 
 var assign = require('lodash-node/modern/objects/assign');
