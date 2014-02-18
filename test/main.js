@@ -508,7 +508,7 @@ describe('inline elements mode', function () {
         if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "1<br><br><br>"
+          // Firefox (23, 24, 25): '1<br><br><br>'
           expect(innerHTML).to.have.html('1<br><bogus-br>');
         });
       });
@@ -523,7 +523,7 @@ describe('inline elements mode', function () {
           if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Firefox (23, 24, 25): "1<br><br>2<br>"
+            // Firefox (23, 24, 25): '1<br><br>2<br>'
             expect(innerHTML).to.have.html('1<br>2<firefox-bogus-br>');
           });
         });
@@ -551,7 +551,7 @@ describe('inline elements mode', function () {
         if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "1<br><br><br>2"
+          // Firefox (23, 24, 25): '1<br><br><br>2'
           // Chrome (26, 27, 28): "1<br><br><br>2"
           expect(innerHTML).to.have.html('1<br><br>2');
         });
@@ -569,7 +569,7 @@ describe('inline elements mode', function () {
           if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Firefox (23, 24, 25): "1<br><br>3<br>2"
+            // Firefox (23, 24, 25): '1<br><br>3<br>2'
             // Chrome (26, 27, 28): "1<br>3<br><br>2"
             expect(innerHTML).to.have.html('1<br>3<br>2');
           });
@@ -596,7 +596,7 @@ describe('inline elements mode', function () {
         if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "<i>1<br><br><br></i>"
+          // Firefox (23, 24, 25): '<i>1<br><br><br></i>'
           expect(innerHTML).to.have.html('<i>1<br><bogus-br></i>');
         });
       });
@@ -611,7 +611,7 @@ describe('inline elements mode', function () {
           if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Firefox (23, 24, 25): "<i>1<br><br>2<br></i>"
+            // Firefox (23, 24, 25): '<i>1<br><br>2<br></i>'
             expect(innerHTML).to.have.html('<i>1<br>2<firefox-bogus-br></i>');
           });
         });
@@ -647,7 +647,7 @@ describe('inline elements mode', function () {
           if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Firefox (23, 24, 25): "1<br><br><br>"
+            // Firefox (23, 24, 25): '1<br><br><br>'
             expect(innerHTML).to.have.html('1<br><bogus-br>');
           });
         });
@@ -662,7 +662,7 @@ describe('inline elements mode', function () {
             if (seleniumBugs.firefox.inlineElementsMode) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Firefox (23, 24, 25): "1<br><br>2<br>"
+              // Firefox (23, 24, 25): '1<br><br>2<br>'
               expect(innerHTML).to.have.html('1<br>2<firefox-bogus-br>');
             });
           });
@@ -966,7 +966,7 @@ describe('commands', function () {
             if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Firefox: "<p>1</p><p><b>2</b></p>"
+              // Firefox: '<p>1</p><p><b>2</b></p>'
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
@@ -989,7 +989,7 @@ describe('commands', function () {
           if (browserName === 'chrome') { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Chrome: "<blockquote><p>1</p></blockquote><p></p>"
+            // Chrome: '<blockquote><p>1</p></blockquote><p></p>''
             expect(innerHTML).to.have.html('<blockquote><p>1</p></blockquote>');
           });
         });
@@ -1037,7 +1037,7 @@ describe('commands', function () {
           if (browserName === 'chrome') { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Chrome: "<blockquote><p>1</p><p>2</p></blockquote>""
+            // Chrome: '<blockquote><p>1</p><p>2</p></blockquote>"''
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
           });
         });
@@ -1062,8 +1062,8 @@ describe('commands', function () {
           if (browserName === 'firefox' || browserName === 'chrome') { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Chrome: "<blockquote><p>1</p></blockquote><p>2</p>"
-            // Firefox: "<p>1<br>2</p>"
+            // Chrome: '<blockquote><p>1</p></blockquote><p>2</p>''
+            // Firefox: '<p>1<br>2</p>'
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
           });
         });
@@ -1100,7 +1100,7 @@ describe('smart lists plugin', function () {
         if (seleniumBugs.chrome.specialCharacters) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Chrome (30): "<p>"&nbsp;</p>"
+          // Chrome (30): '<p>"&nbsp;</p>'
           expect(innerHTML).to.have.html('<ul><li><bogus-br></li></ul>');
         });
       });
@@ -1115,7 +1115,7 @@ describe('smart lists plugin', function () {
           if (seleniumBugs.chrome.specialCharacters) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Chrome (30): "<p>" abc</p>"
+            // Chrome (30): '<p>" abc</p>'
             expect(innerHTML).to.have.html('<ul><li>abc<firefox-bogus-br></li></ul>');
           });
         });
@@ -1130,7 +1130,7 @@ describe('smart lists plugin', function () {
             if (seleniumBugs.chrome.specialCharacters) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Chrome (30): "<p>" abc</p><p><br></p>"
+              // Chrome (30): '<p>" abc</p><p><br></p>'
               expect(innerHTML).to.have.html('<ul><li>abc</li><li><bogus-br></li></ul>');
             });
           });
@@ -1145,7 +1145,7 @@ describe('smart lists plugin', function () {
               if (seleniumBugs.chrome.specialCharacters) { return; }
 
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                // Chrome (30): "<p>" abc</p><p>def</p>"
+                // Chrome (30): '<p>" abc</p><p>def</p>'
                 expect(innerHTML).to.have.html('<ul><li>abc</li><li>def<firefox-bogus-br></li></ul>');
               });
             });
@@ -1161,7 +1161,7 @@ describe('smart lists plugin', function () {
               if (seleniumBugs.chrome.specialCharacters) { return; }
 
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                // Chrome (30): "<p>" abc</p><p><br></p><p><br></p>"
+                // Chrome (30): '<p>" abc</p><p><br></p><p><br></p>'
                 expect(innerHTML).to.have.html('<ul><li>abc</li></ul><p><bogus-br></p>');
               });
             });
@@ -1186,7 +1186,7 @@ describe('smart lists plugin', function () {
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             var prefixNbsp = prefix.replace(' ', '&nbsp;');
-            // Chrome (30): "<p>hello"&nbsp;</p>"
+            // Chrome (30): '<p>hello"&nbsp;</p>'
             expect(innerHTML).to.have.html('<p>hello' +prefixNbsp+ '<firefox-bogus-br></p>');
           });
         });
@@ -1424,7 +1424,7 @@ describe('patches', function () {
             if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Firefox: "<p>1</p><p><b>2</b></p>"
+              // Firefox: '<p>1</p><p><b>2</b></p>'
               expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
             });
           });
@@ -1446,7 +1446,7 @@ describe('patches', function () {
             if (browserBugs.firefox.insertHTMLNotMergingPElements) { return; }
 
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              // Firefox: "<p>1</p><p><b>2</b>3</p>"
+              // Firefox: '<p>1</p><p><b>2</b>3</p>'
               expect(innerHTML).to.have.html('<p>1<b>2</b>3</p>');
             });
           });
@@ -1482,7 +1482,7 @@ describe('curly quotes plugin', function () {
         if (seleniumBugs.firefox.curlyQuotes) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "<p>“””<br></p>"
+          // Firefox (23, 24, 25): '<p>“””<br></p>'
           expect(innerHTML).to.have.html('<p>“<bogus-br></p>');
         });
       });
@@ -1516,7 +1516,7 @@ describe('curly quotes plugin', function () {
         if (seleniumBugs.firefox.curlyQuotes) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "<p>Hello”””<br></p>"
+          // Firefox (23, 24, 25): '<p>Hello”””<br></p>'
           expect(innerHTML).to.have.html('<p>Hello”<firefox-bogus-br></p>');
         });
       });
@@ -1541,8 +1541,8 @@ describe('curly quotes plugin', function () {
         if (seleniumBugs.firefox.curlyQuotes) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Chrome (30): "<p>Hello.”</p>"
-          // Firefox (23, 24, 25): "<p>“Hello.”””<br></p>"
+          // Chrome (30): '<p>Hello.”</p>'
+          // Firefox (23, 24, 25): '<p>“Hello.”””<br></p>'
           expect(innerHTML).to.have.html('<p>“Hello.”<firefox-bogus-br></p>');
         });
       });
@@ -1570,7 +1570,7 @@ describe('curly quotes plugin', function () {
         if (seleniumBugs.firefox.curlyQuotes) { return; }
 
         return scribeNode.getInnerHTML().then(function (innerHTML) {
-          // Firefox (23, 24, 25): "<p>Hello “””<br></p>"
+          // Firefox (23, 24, 25): '<p>Hello “””<br></p>'
           expect(innerHTML).to.have.html('<p>Hello “<firefox-bogus-br></p>');
         });
       });
