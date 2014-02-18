@@ -391,6 +391,14 @@ describe('formatters', function () {
           });
         });
 
+        /**
+         * FIXME: "&", "<" and ">" are escaped natively when you set
+         * `Element.innerHTML`. Thus, those tests would pass with or without
+         * the formatter. This test brings everything together to make sure
+         * it really works.
+         *
+         * This could be fixed by having unit tests.
+         */
         it('should convert HTML characters to their corresponding HTML entities', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>&lt;p&gt;1&lt;/p&gt;</p>');
