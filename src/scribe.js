@@ -41,7 +41,7 @@ define([
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
-    
+
     var UndoManager = buildUndoManager(this);
     this.undoManager = new UndoManager();
 
