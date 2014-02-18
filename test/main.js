@@ -284,7 +284,7 @@ describe('formatters', function () {
 
   describe('plain text', function () {
     // TODO: Abstract plugin tests
-    describe.only('escape HTML characters', function () {
+    describe('escape HTML characters', function () {
       when('content of "&" is inserted', function () {
         beforeEach(function () {
           // Focus it before-hand
