@@ -1208,7 +1208,11 @@ describe('smart lists plugin', function () {
         });
 
         it('should create an unordered list containing the words on the line', function () {
+          // FIXME:
+          if (seleniumBugs.chrome.specialCharacters) { return; }
+
           return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome (30): '<p>"&nbsp;hello</p>'
             expect(innerHTML).to.have.html('<ul><li>hello<bogus-br></li></ul>');
           });
         });
