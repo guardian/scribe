@@ -3,7 +3,6 @@
  * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
  * - Move out unit tests (wherever we are testing individual methods; lots of
  *   places!)
- * - Running tests in multiple browsers breaks `describe/it.only`
  * - Abstract plugin tests
  */
 
