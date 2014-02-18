@@ -330,22 +330,24 @@ describe('formatters', function () {
     });
   });
 
-  describe('non-breaking spaces', function () {
-    given('default content', function () {
-      // i.e. paste
-      when('a non-breaking space is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+  describe('HTML', function () {
+    describe('replace non-breaking space characters', function () {
+      given('default content', function () {
+        // i.e. paste
+        when('a non-breaking space is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return driver.executeScript(function () {
-            window.scribe.insertHTML('1&nbsp;2');
+            return driver.executeScript(function () {
+              window.scribe.insertHTML('1&nbsp;2');
+            });
           });
-        });
 
-        it('should replace the non-breaking space character with a normal space', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1 2</p>');
+          it('should replace the non-breaking space character with a normal space', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1 2</p>');
+            });
           });
         });
       });
