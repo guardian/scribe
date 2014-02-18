@@ -1376,7 +1376,14 @@ describe('smart lists plugin', function () {
             .sendKeys(webdriver.Key.LEFT)
             .sendKeys(webdriver.Key.LEFT)
             .sendKeys(webdriver.Key.LEFT)
-            .sendKeys(prefix)
+            /**
+             * Due to an issue with Selenium when running Firefox 22, 24, and
+             * 25, we need to send the prefix as individual keys.
+             * TODO: revisit at a later date
+             */
+             // .sendKeys(prefix)
+            .sendKeys(prefix[0])
+            .sendKeys(prefix[1])
             .perform();
 
           return goToStart;
@@ -1385,8 +1392,6 @@ describe('smart lists plugin', function () {
         it('should create an unordered list containing the words on the line', function () {
           // FIXME:
           if (seleniumBugs.chrome.specialCharacters) { return; }
-          // FIXME: Failing in Firefox (22, 24, 25). Unknown.
-          if (browserName === 'firefox' && contains(['22', '24', '25'], browserVersion)) { return; }
 
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             // Chrome (30): '<p>"&nbsp;hello</p>'
