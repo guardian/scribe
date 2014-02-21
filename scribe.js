@@ -740,41 +740,6 @@ define('plugins/core/commands/indent',[],function () {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseIndexOf',[], function() {
-
-  /**
-   * The base implementation of `_.indexOf` without support for binary searches
-   * or `fromIndex` constraints.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {*} value The value to search for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {number} Returns the index of the matched value or `-1`.
-   */
-  function baseIndexOf(array, value, fromIndex) {
-    var index = (fromIndex || 0) - 1,
-        length = array ? array.length : 0;
-
-    while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return baseIndexOf;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
 define('lodash-modern/utilities/noop',[], function() {
 
   /**
@@ -1397,6 +1362,594 @@ define('lodash-modern/internals/baseCreateCallback',['../functions/bind', '../ut
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
+define('lodash-modern/objects/forIn',['../internals/baseCreateCallback', '../internals/objectTypes'], function(baseCreateCallback, objectTypes) {
+
+  /**
+   * Iterates over own and inherited enumerable properties of an object,
+   * executing the callback for each property. The callback is bound to `thisArg`
+   * and invoked with three arguments; (value, key, object). Callbacks may exit
+   * iteration early by explicitly returning `false`.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Objects
+   * @param {Object} object The object to iterate over.
+   * @param {Function} [callback=identity] The function called per iteration.
+   * @param {*} [thisArg] The `this` binding of `callback`.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * function Shape() {
+   *   this.x = 0;
+   *   this.y = 0;
+   * }
+   *
+   * Shape.prototype.move = function(x, y) {
+   *   this.x += x;
+   *   this.y += y;
+   * };
+   *
+   * _.forIn(new Shape, function(value, key) {
+   *   console.log(key);
+   * });
+   * // => logs 'x', 'y', and 'move' (property order is not guaranteed across environments)
+   */
+  var forIn = function(collection, callback, thisArg) {
+    var index, iterable = collection, result = iterable;
+    if (!iterable) return result;
+    if (!objectTypes[typeof iterable]) return result;
+    callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+      for (index in iterable) {
+        if (callback(iterable[index], index, collection) === false) return result;
+      }
+    return result
+  };
+
+  return forIn;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/arrayPool',[], function() {
+
+  /** Used to pool arrays and objects used internally */
+  var arrayPool = [];
+
+  return arrayPool;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/getArray',['./arrayPool'], function(arrayPool) {
+
+  /**
+   * Gets an array from the array pool or creates a new one if the pool is empty.
+   *
+   * @private
+   * @returns {Array} The array from the pool.
+   */
+  function getArray() {
+    return arrayPool.pop() || [];
+  }
+
+  return getArray;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/maxPoolSize',[], function() {
+
+  /** Used as the max size of the `arrayPool` and `objectPool` */
+  var maxPoolSize = 40;
+
+  return maxPoolSize;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/releaseArray',['./arrayPool', './maxPoolSize'], function(arrayPool, maxPoolSize) {
+
+  /**
+   * Releases the given array back to the array pool.
+   *
+   * @private
+   * @param {Array} [array] The array to release.
+   */
+  function releaseArray(array) {
+    array.length = 0;
+    if (arrayPool.length < maxPoolSize) {
+      arrayPool.push(array);
+    }
+  }
+
+  return releaseArray;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/baseIsEqual',['../objects/forIn', './getArray', '../objects/isFunction', './objectTypes', './releaseArray'], function(forIn, getArray, isFunction, objectTypes, releaseArray) {
+
+  /** `Object#toString` result shortcuts */
+  var argsClass = '[object Arguments]',
+      arrayClass = '[object Array]',
+      boolClass = '[object Boolean]',
+      dateClass = '[object Date]',
+      numberClass = '[object Number]',
+      objectClass = '[object Object]',
+      regexpClass = '[object RegExp]',
+      stringClass = '[object String]';
+
+  /** Used for native method references */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the internal [[Class]] of values */
+  var toString = objectProto.toString;
+
+  /** Native method shortcuts */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * The base implementation of `_.isEqual`, without support for `thisArg` binding,
+   * that allows partial "_.where" style comparisons.
+   *
+   * @private
+   * @param {*} a The value to compare.
+   * @param {*} b The other value to compare.
+   * @param {Function} [callback] The function to customize comparing values.
+   * @param {Function} [isWhere=false] A flag to indicate performing partial comparisons.
+   * @param {Array} [stackA=[]] Tracks traversed `a` objects.
+   * @param {Array} [stackB=[]] Tracks traversed `b` objects.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   */
+  function baseIsEqual(a, b, callback, isWhere, stackA, stackB) {
+    // used to indicate that when comparing objects, `a` has at least the properties of `b`
+    if (callback) {
+      var result = callback(a, b);
+      if (typeof result != 'undefined') {
+        return !!result;
+      }
+    }
+    // exit early for identical values
+    if (a === b) {
+      // treat `+0` vs. `-0` as not equal
+      return a !== 0 || (1 / a == 1 / b);
+    }
+    var type = typeof a,
+        otherType = typeof b;
+
+    // exit early for unlike primitive values
+    if (a === a &&
+        !(a && objectTypes[type]) &&
+        !(b && objectTypes[otherType])) {
+      return false;
+    }
+    // exit early for `null` and `undefined` avoiding ES3's Function#call behavior
+    // http://es5.github.io/#x15.3.4.4
+    if (a == null || b == null) {
+      return a === b;
+    }
+    // compare [[Class]] names
+    var className = toString.call(a),
+        otherClass = toString.call(b);
+
+    if (className == argsClass) {
+      className = objectClass;
+    }
+    if (otherClass == argsClass) {
+      otherClass = objectClass;
+    }
+    if (className != otherClass) {
+      return false;
+    }
+    switch (className) {
+      case boolClass:
+      case dateClass:
+        // coerce dates and booleans to numbers, dates to milliseconds and booleans
+        // to `1` or `0` treating invalid dates coerced to `NaN` as not equal
+        return +a == +b;
+
+      case numberClass:
+        // treat `NaN` vs. `NaN` as equal
+        return (a != +a)
+          ? b != +b
+          // but treat `+0` vs. `-0` as not equal
+          : (a == 0 ? (1 / a == 1 / b) : a == +b);
+
+      case regexpClass:
+      case stringClass:
+        // coerce regexes to strings (http://es5.github.io/#x15.10.6.4)
+        // treat string primitives and their corresponding object instances as equal
+        return a == String(b);
+    }
+    var isArr = className == arrayClass;
+    if (!isArr) {
+      // unwrap any `lodash` wrapped values
+      var aWrapped = hasOwnProperty.call(a, '__wrapped__'),
+          bWrapped = hasOwnProperty.call(b, '__wrapped__');
+
+      if (aWrapped || bWrapped) {
+        return baseIsEqual(aWrapped ? a.__wrapped__ : a, bWrapped ? b.__wrapped__ : b, callback, isWhere, stackA, stackB);
+      }
+      // exit for functions and DOM nodes
+      if (className != objectClass) {
+        return false;
+      }
+      // in older versions of Opera, `arguments` objects have `Array` constructors
+      var ctorA = a.constructor,
+          ctorB = b.constructor;
+
+      // non `Object` object instances with different constructors are not equal
+      if (ctorA != ctorB &&
+            !(isFunction(ctorA) && ctorA instanceof ctorA && isFunction(ctorB) && ctorB instanceof ctorB) &&
+            ('constructor' in a && 'constructor' in b)
+          ) {
+        return false;
+      }
+    }
+    // assume cyclic structures are equal
+    // the algorithm for detecting cyclic structures is adapted from ES 5.1
+    // section 15.12.3, abstract operation `JO` (http://es5.github.io/#x15.12.3)
+    var initedStack = !stackA;
+    stackA || (stackA = getArray());
+    stackB || (stackB = getArray());
+
+    var length = stackA.length;
+    while (length--) {
+      if (stackA[length] == a) {
+        return stackB[length] == b;
+      }
+    }
+    var size = 0;
+    result = true;
+
+    // add `a` and `b` to the stack of traversed objects
+    stackA.push(a);
+    stackB.push(b);
+
+    // recursively compare objects and arrays (susceptible to call stack limits)
+    if (isArr) {
+      // compare lengths to determine if a deep comparison is necessary
+      length = a.length;
+      size = b.length;
+      result = size == length;
+
+      if (result || isWhere) {
+        // deep compare the contents, ignoring non-numeric properties
+        while (size--) {
+          var index = length,
+              value = b[size];
+
+          if (isWhere) {
+            while (index--) {
+              if ((result = baseIsEqual(a[index], value, callback, isWhere, stackA, stackB))) {
+                break;
+              }
+            }
+          } else if (!(result = baseIsEqual(a[size], value, callback, isWhere, stackA, stackB))) {
+            break;
+          }
+        }
+      }
+    }
+    else {
+      // deep compare objects using `forIn`, instead of `forOwn`, to avoid `Object.keys`
+      // which, in this case, is more costly
+      forIn(b, function(value, key, b) {
+        if (hasOwnProperty.call(b, key)) {
+          // count the number of properties.
+          size++;
+          // deep compare each property value.
+          return (result = hasOwnProperty.call(a, key) && baseIsEqual(a[key], value, callback, isWhere, stackA, stackB));
+        }
+      });
+
+      if (result && !isWhere) {
+        // ensure both objects have the same number of properties
+        forIn(a, function(value, key, a) {
+          if (hasOwnProperty.call(a, key)) {
+            // `size` will be `-1` if `a` has more properties than `b`
+            return (result = --size > -1);
+          }
+        });
+      }
+    }
+    stackA.pop();
+    stackB.pop();
+
+    if (initedStack) {
+      releaseArray(stackA);
+      releaseArray(stackB);
+    }
+    return result;
+  }
+
+  return baseIsEqual;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/utilities/property',[], function() {
+
+  /**
+   * Creates a "_.pluck" style function, which returns the `key` value of a
+   * given object.
+   *
+   * @static
+   * @memberOf _
+   * @category Utilities
+   * @param {string} key The name of the property to retrieve.
+   * @returns {Function} Returns the new function.
+   * @example
+   *
+   * var characters = [
+   *   { 'name': 'fred',   'age': 40 },
+   *   { 'name': 'barney', 'age': 36 }
+   * ];
+   *
+   * var getName = _.property('name');
+   *
+   * _.map(characters, getName);
+   * // => ['barney', 'fred']
+   *
+   * _.sortBy(characters, getName);
+   * // => [{ 'name': 'barney', 'age': 36 }, { 'name': 'fred',   'age': 40 }]
+   */
+  function property(key) {
+    return function(object) {
+      return object[key];
+    };
+  }
+
+  return property;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/functions/createCallback',['../internals/baseCreateCallback', '../internals/baseIsEqual', '../objects/isObject', '../objects/keys', '../utilities/property'], function(baseCreateCallback, baseIsEqual, isObject, keys, property) {
+
+  /**
+   * Produces a callback bound to an optional `thisArg`. If `func` is a property
+   * name the created callback will return the property value for a given element.
+   * If `func` is an object the created callback will return `true` for elements
+   * that contain the equivalent object properties, otherwise it will return `false`.
+   *
+   * @static
+   * @memberOf _
+   * @category Utilities
+   * @param {*} [func=identity] The value to convert to a callback.
+   * @param {*} [thisArg] The `this` binding of the created callback.
+   * @param {number} [argCount] The number of arguments the callback accepts.
+   * @returns {Function} Returns a callback function.
+   * @example
+   *
+   * var characters = [
+   *   { 'name': 'barney', 'age': 36 },
+   *   { 'name': 'fred',   'age': 40 }
+   * ];
+   *
+   * // wrap to create custom callback shorthands
+   * _.createCallback = _.wrap(_.createCallback, function(func, callback, thisArg) {
+   *   var match = /^(.+?)__([gl]t)(.+)$/.exec(callback);
+   *   return !match ? func(callback, thisArg) : function(object) {
+   *     return match[2] == 'gt' ? object[match[1]] > match[3] : object[match[1]] < match[3];
+   *   };
+   * });
+   *
+   * _.filter(characters, 'age__gt38');
+   * // => [{ 'name': 'fred', 'age': 40 }]
+   */
+  function createCallback(func, thisArg, argCount) {
+    var type = typeof func;
+    if (func == null || type == 'function') {
+      return baseCreateCallback(func, thisArg, argCount);
+    }
+    // handle "_.pluck" style callback shorthands
+    if (type != 'object') {
+      return property(func);
+    }
+    var props = keys(func),
+        key = props[0],
+        a = func[key];
+
+    // handle "_.where" style callback shorthands
+    if (props.length == 1 && a === a && !isObject(a)) {
+      // fast path the common case of providing an object with a single
+      // property containing a primitive value
+      return function(object) {
+        var b = object[key];
+        return a === b && (a !== 0 || (1 / a == 1 / b));
+      };
+    }
+    return function(object) {
+      var length = props.length,
+          result = false;
+
+      while (length--) {
+        if (!(result = baseIsEqual(object[props[length]], func[props[length]], null, true))) {
+          break;
+        }
+      }
+      return result;
+    };
+  }
+
+  return createCallback;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/arrays/last',['../functions/createCallback', '../internals/slice'], function(createCallback, slice) {
+
+  /** Used as a safe reference for `undefined` in pre ES5 environments */
+  var undefined;
+
+  /* Native method shortcuts for methods with the same name as other `lodash` methods */
+  var nativeMax = Math.max;
+
+  /**
+   * Gets the last element or last `n` elements of an array. If a callback is
+   * provided elements at the end of the array are returned as long as the
+   * callback returns truey. The callback is bound to `thisArg` and invoked
+   * with three arguments; (value, index, array).
+   *
+   * If a property name is provided for `callback` the created "_.pluck" style
+   * callback will return the property value of the given element.
+   *
+   * If an object is provided for `callback` the created "_.where" style callback
+   * will return `true` for elements that have the properties of the given object,
+   * else `false`.
+   *
+   * @static
+   * @memberOf _
+   * @category Arrays
+   * @param {Array} array The array to query.
+   * @param {Function|Object|number|string} [callback] The function called
+   *  per element or the number of elements to return. If a property name or
+   *  object is provided it will be used to create a "_.pluck" or "_.where"
+   *  style callback, respectively.
+   * @param {*} [thisArg] The `this` binding of `callback`.
+   * @returns {*} Returns the last element(s) of `array`.
+   * @example
+   *
+   * _.last([1, 2, 3]);
+   * // => 3
+   *
+   * _.last([1, 2, 3], 2);
+   * // => [2, 3]
+   *
+   * _.last([1, 2, 3], function(num) {
+   *   return num > 1;
+   * });
+   * // => [2, 3]
+   *
+   * var characters = [
+   *   { 'name': 'barney',  'blocked': false, 'employer': 'slate' },
+   *   { 'name': 'fred',    'blocked': true,  'employer': 'slate' },
+   *   { 'name': 'pebbles', 'blocked': true,  'employer': 'na' }
+   * ];
+   *
+   * // using "_.pluck" callback shorthand
+   * _.pluck(_.last(characters, 'blocked'), 'name');
+   * // => ['fred', 'pebbles']
+   *
+   * // using "_.where" callback shorthand
+   * _.last(characters, { 'employer': 'na' });
+   * // => [{ 'name': 'pebbles', 'blocked': true, 'employer': 'na' }]
+   */
+  function last(array, callback, thisArg) {
+    var n = 0,
+        length = array ? array.length : 0;
+
+    if (typeof callback != 'number' && callback != null) {
+      var index = length;
+      callback = createCallback(callback, thisArg, 3);
+      while (index-- && callback(array[index], index, array)) {
+        n++;
+      }
+    } else {
+      n = callback;
+      if (n == null || thisArg) {
+        return array ? array[length - 1] : undefined;
+      }
+    }
+    return slice(array, nativeMax(0, length - n));
+  }
+
+  return last;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/baseIndexOf',[], function() {
+
+  /**
+   * The base implementation of `_.indexOf` without support for binary searches
+   * or `fromIndex` constraints.
+   *
+   * @private
+   * @param {Array} array The array to search.
+   * @param {*} value The value to search for.
+   * @param {number} [fromIndex=0] The index to search from.
+   * @returns {number} Returns the index of the matched value or `-1`.
+   */
+  function baseIndexOf(array, value, fromIndex) {
+    var index = (fromIndex || 0) - 1,
+        length = array ? array.length : 0;
+
+    while (++index < length) {
+      if (array[index] === value) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  return baseIndexOf;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
 define('lodash-modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
 
   /**
@@ -1590,7 +2143,13 @@ define('lodash-modern/collections/contains',['../internals/baseIndexOf', '../obj
   return contains;
 });
 
-define('plugins/core/commands/insert-html',['lodash-modern/collections/contains'], function (contains) {
+define('plugins/core/commands/insert-html',[
+  'lodash-modern/arrays/last',
+  'lodash-modern/collections/contains',
+], function (
+  last,
+  contains
+) {
 
   
 
@@ -1619,37 +2178,67 @@ define('plugins/core/commands/insert-html',['lodash-modern/collections/contains'
             var bin = document.createElement('div');
             bin.innerHTML = value;
 
+            wrapChildNodes(bin);
             traverse(bin);
 
             var newValue = bin.innerHTML;
 
             scribe.api.Command.prototype.execute.call(this, newValue);
 
-            function traverse(parentNode) {
-              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
-              var node = treeWalker.firstChild();
-              var isUnderTopContainerElement = ! parentNode.parentNode;
-
-              while (node) {
-                var isUnderBlockElement = new scribe.api.Node(node).getAncestor(isBlockElement);
-
-                if (! isBlockElement(node)
-                    && (parentNode.nodeName === 'BLOCKQUOTE'
-                        || ! isUnderBlockElement
-                        || isUnderTopContainerElement)) {
-                  // TODO: wrap API
-                  var pElement = document.createElement('p');
-                  parentNode.insertBefore(pElement, node);
-                  pElement.appendChild(node);
-                  // We break this loop and start the traverse again from the
-                  // parent node, because changing the DOM as above breaks the
-                  // tree walker.
-                  traverse(parentNode);
-                  break;
+            /**
+             * Wrap consecutive inline elements and text nodes in a P element.
+             */
+            function wrapChildNodes(parentNode) {
+              var groups = Array.prototype.reduce.call(parentNode.childNodes, function (accumulator, binChildNode) {
+                var group = last(accumulator);
+                if (! group) {
+                  startNewGroup();
                 } else {
-                  traverse(node);
+                  var isBlockGroup = isBlockElement(group[0]);
+                  if (isBlockGroup === isBlockElement(binChildNode)) {
+                    group.push(binChildNode);
+                  } else {
+                    startNewGroup();
+                  }
                 }
 
+                return accumulator;
+
+                function startNewGroup() {
+                  var newGroup = [binChildNode];
+                  accumulator.push(newGroup);
+                }
+              }, []);
+
+              var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
+                var isBlockGroup = isBlockElement(group[0]);
+                return ! isBlockGroup;
+              });
+
+              consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
+                var pElement = document.createElement('p');
+                nodes[0].parentNode.insertBefore(pElement, nodes[0]);
+                nodes.forEach(function (node) {
+                  pElement.appendChild(node);
+                });
+              });
+
+              parentNode._isWrapped = true;
+            }
+
+            // Traverse the tree, wrapping child nodes as we go.
+            function traverse(parentNode) {
+              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+              var node = treeWalker.firstChild();
+
+              while (node) {
+                // TODO: At the moment we only support BLOCKQUOTEs. See failing
+                // tests.
+                if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
+                  wrapChildNodes(node);
+                  traverse(parentNode);
+                  break;
+                }
                 node = treeWalker.nextSibling();
               }
             }
@@ -1923,7 +2512,11 @@ define('plugins/core/commands',[
 
 });
 
-define('plugins/core/events',[],function () {
+define('plugins/core/events',[
+  'lodash-modern/collections/contains',
+], function (
+  contains
+) {
 
   
 
@@ -1955,26 +2548,25 @@ define('plugins/core/events',[],function () {
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
 
-              if (contentToEndFragment.firstChild.innerText === '') {
+              if (contentToEndFragment.firstChild.textContent === '') {
                 event.preventDefault();
 
-                // Default P
-                // TODO: Abstract somewhere
-                var pNode = document.createElement('p');
-                var brNode = document.createElement('br');
-                pNode.appendChild(brNode);
+                scribe.transactionManager.run(function () {
+                  // Default P
+                  // TODO: Abstract somewhere
+                  var pNode = document.createElement('p');
+                  var brNode = document.createElement('br');
+                  pNode.appendChild(brNode);
 
-                headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
 
-                // Re-apply range
-                range.setStart(pNode, 0);
-                range.setEnd(pNode, 0);
+                  // Re-apply range
+                  range.setStart(pNode, 0);
+                  range.setEnd(pNode, 0);
 
-                selection.selection.removeAllRanges();
-                selection.selection.addRange(range);
-
-                scribe.pushHistory();
-                scribe.trigger('content-changed');
+                  selection.selection.removeAllRanges();
+                  selection.selection.addRange(range);
+                });
               }
             }
           }
@@ -1996,7 +2588,7 @@ define('plugins/core/events',[],function () {
               var containerLIElement = selection.getContaining(function (node) {
                 return node.nodeName === 'LI';
               });
-              if (containerLIElement && containerLIElement.innerText.trim() === '') {
+              if (containerLIElement && containerLIElement.textContent.trim() === '') {
                 /**
                  * LIs
                  */
@@ -2016,7 +2608,6 @@ define('plugins/core/events',[],function () {
         });
       }
 
-
       /**
        * Run formatters on paste
        */
@@ -2031,14 +2622,14 @@ define('plugins/core/events',[],function () {
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
          */
-        var data;
         if (event.clipboardData) {
           event.preventDefault();
-          // TODO: what data should we be getting?
-          data = event.clipboardData.getData('text/html') ||
-            escapeHtml(event.clipboardData.getData('text/plain'));
 
-          scribe.insertHTML(data);
+          if (contains(event.clipboardData.types, 'text/html')) {
+            scribe.insertHTML(event.clipboardData.getData('text/html'));
+          } else {
+            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
+          }
         } else {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
@@ -2086,20 +2677,11 @@ define('plugins/core/events',[],function () {
         }
       });
 
-
-      function escapeHtml(str) {
-        return String(str).
-          replace(/&/g, '&amp;').
-          replace(/</g, '&lt;').
-          replace(/>/g, '&gt;').
-          replace(/"/g, '&quot;');
-      }
-
     };
   };
 });
 
-define('plugins/core/formatters/replace-nbsp-chars',[],function () {
+define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
 
   /**
    * Chrome:
@@ -2113,9 +2695,125 @@ define('plugins/core/formatters/replace-nbsp-chars',[],function () {
       var nbspCharRegExp = new RegExp(nbspChar, 'g');
 
       // TODO: should we be doing this on paste?
-      scribe.formatter.formatters.push(function (html) {
+      scribe.htmlFormatter.formatters.push(function (html) {
         return html.replace(nbspCharRegExp, ' ');
       });
+    };
+  };
+
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/htmlEscapes',[], function() {
+
+  /**
+   * Used to convert characters to HTML entities:
+   *
+   * Though the `>` character is escaped for symmetry, characters like `>` and `/`
+   * don't require escaping in HTML and have no special meaning unless they're part
+   * of a tag or an unquoted attribute value.
+   * http://mathiasbynens.be/notes/ambiguous-ampersands (under "semi-related fun fact")
+   */
+  var htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+
+  return htmlEscapes;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/escapeHtmlChar',['./htmlEscapes'], function(htmlEscapes) {
+
+  /**
+   * Used by `escape` to convert characters to HTML entities.
+   *
+   * @private
+   * @param {string} match The matched character to escape.
+   * @returns {string} Returns the escaped character.
+   */
+  function escapeHtmlChar(match) {
+    return htmlEscapes[match];
+  }
+
+  return escapeHtmlChar;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/reUnescapedHtml',['./htmlEscapes', '../objects/keys'], function(htmlEscapes, keys) {
+
+  /** Used to match HTML entities and HTML characters */
+  var reUnescapedHtml = RegExp('[' + keys(htmlEscapes).join('') + ']', 'g');
+
+  return reUnescapedHtml;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/utilities/escape',['../internals/escapeHtmlChar', '../objects/keys', '../internals/reUnescapedHtml'], function(escapeHtmlChar, keys, reUnescapedHtml) {
+
+  /**
+   * Converts the characters `&`, `<`, `>`, `"`, and `'` in `string` to their
+   * corresponding HTML entities.
+   *
+   * @static
+   * @memberOf _
+   * @category Utilities
+   * @param {string} string The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escape('Fred, Wilma, & Pebbles');
+   * // => 'Fred, Wilma, &amp; Pebbles'
+   */
+  function escape(string) {
+    return string == null ? '' : String(string).replace(reUnescapedHtml, escapeHtmlChar);
+  }
+
+  return escape;
+});
+
+define('plugins/core/formatters/plain-text/escape-html-characters',[
+  'lodash-modern/utilities/escape'
+], function (
+  escape
+) {
+
+  
+
+  return function () {
+    return function (scribe) {
+      scribe.plainTextFormatter.formatters.push(escape);
     };
   };
 
@@ -2162,67 +2860,66 @@ define('plugins/core/inline-elements-mode',[],function () {
           if (! blockNode) {
             event.preventDefault();
 
-            /**
-             * Firefox: Delete the bogus BR as we insert another one later.
-             * We have to do this because otherwise the browser will believe
-             * there is content to the right of the selection.
-             */
-            if (scribe.el.lastChild.nodeName === 'BR') {
-              scribe.el.removeChild(scribe.el.lastChild);
-            }
+            scribe.transactionManager.run(function () {
+              /**
+               * Firefox: Delete the bogus BR as we insert another one later.
+               * We have to do this because otherwise the browser will believe
+               * there is content to the right of the selection.
+               */
+              if (scribe.el.lastChild.nodeName === 'BR') {
+                scribe.el.removeChild(scribe.el.lastChild);
+              }
 
-            var brNode = document.createElement('br');
+              var brNode = document.createElement('br');
 
-            range.insertNode(brNode);
-            // After inserting the BR into the range is no longer collapsed, so
-            // we have to collapse it again.
-            // TODO: Older versions of Firefox require this argument even though
-            // it is supposed to be optional. Proxy/polyfill?
-            range.collapse(false);
+              range.insertNode(brNode);
+              // After inserting the BR into the range is no longer collapsed, so
+              // we have to collapse it again.
+              // TODO: Older versions of Firefox require this argument even though
+              // it is supposed to be optional. Proxy/polyfill?
+              range.collapse(false);
 
-            /**
-             * Chrome: If there is no right-hand side content, inserting a BR
-             * will not appear to create a line break.
-             * Firefox: If there is no right-hand side content, inserting a BR
-             * will appear to create a weird "half-line break".
-             *
-             * Possible solution: Insert two BRs.
-             * ✓ Chrome: Inserting two BRs appears to create a line break.
-             * Typing will then delete the bogus BR element.
-             * Firefox: Inserting two BRs will create two line breaks.
-             *
-             * Solution: Only insert two BRs if there is no right-hand
-             * side content.
-             *
-             * If the user types on a line immediately after a BR element,
-             * Chrome will replace the BR element with the typed characters,
-             * whereas Firefox will not. Thus, to satisfy Firefox we have to
-             * insert a bogus BR element on initialization (see below).
-             */
+              /**
+               * Chrome: If there is no right-hand side content, inserting a BR
+               * will not appear to create a line break.
+               * Firefox: If there is no right-hand side content, inserting a BR
+               * will appear to create a weird "half-line break".
+               *
+               * Possible solution: Insert two BRs.
+               * ✓ Chrome: Inserting two BRs appears to create a line break.
+               * Typing will then delete the bogus BR element.
+               * Firefox: Inserting two BRs will create two line breaks.
+               *
+               * Solution: Only insert two BRs if there is no right-hand
+               * side content.
+               *
+               * If the user types on a line immediately after a BR element,
+               * Chrome will replace the BR element with the typed characters,
+               * whereas Firefox will not. Thus, to satisfy Firefox we have to
+               * insert a bogus BR element on initialization (see below).
+               */
 
-            var contentToEndRange = range.cloneRange();
-            contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
+              var contentToEndRange = range.cloneRange();
+              contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
 
-            // Get the content from the range to the end of the heading
-            var contentToEndFragment = contentToEndRange.cloneContents();
+              // Get the content from the range to the end of the heading
+              var contentToEndFragment = contentToEndRange.cloneContents();
 
-            // If there is not already a right hand side content we need to
-            // insert a bogus BR element.
-            if (! hasContent(contentToEndFragment)) {
-              var bogusBrNode = document.createElement('br');
-              range.insertNode(bogusBrNode);
-            }
+              // If there is not already a right hand side content we need to
+              // insert a bogus BR element.
+              if (! hasContent(contentToEndFragment)) {
+                var bogusBrNode = document.createElement('br');
+                range.insertNode(bogusBrNode);
+              }
 
-            var newRange = range.cloneRange();
+              var newRange = range.cloneRange();
 
-            newRange.setStartAfter(brNode, 0);
-            newRange.setEndAfter(brNode, 0);
+              newRange.setStartAfter(brNode, 0);
+              newRange.setEndAfter(brNode, 0);
 
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(newRange);
-
-            scribe.pushHistory();
-            scribe.trigger('content-changed');
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(newRange);
+            });
           }
         }
       }.bind(this));
@@ -2292,7 +2989,10 @@ define('plugins/core/patches/commands/indent',[],function () {
           var selection = new scribe.api.Selection();
           var range = selection.range;
 
-          if (range.commonAncestorContainer.nodeName === 'P') {
+          var isCaretOnNewLine =
+              (range.commonAncestorContainer.nodeName === 'P'
+               && range.commonAncestorContainer.innerHTML === '<br>');
+          if (isCaretOnNewLine) {
             // FIXME: this text node is left behind. Tidy it up somehow,
             // or don't use it at all.
             var textNode = document.createTextNode(INVISIBLE_CHAR);
@@ -2520,7 +3220,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
             selection.selectMarkers();
 
             // Delete the BLOCKQUOTE if it's empty
-            if (blockquoteNode.innerText === '') {
+            if (blockquoteNode.textContent === '') {
               blockquoteNode.parentNode.removeChild(blockquoteNode);
             }
           } else {
@@ -2615,12 +3315,11 @@ define('plugins/core/patches/empty-when-deleting',[],function () {
 
           if ((collapsedSelection && scribe.getTextContent().trim() === '') || (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
-            scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
 
-            selection.selectMarkers();
-
-            scribe.pushHistory();
-            scribe.trigger('content-changed');
+            scribe.transactionManager.run(function () {
+              scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
+              selection.selectMarkers();
+            });
           }
         }
       });
@@ -2878,19 +3577,26 @@ define('api/node',[],function () {
 
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
+  // TODO: write tests. unit or integration?
   Node.prototype.getAncestor = function (nodeFilter) {
+    var isTopContainerElement = function (element) {
+      return element && element.attributes
+        && element.attributes.getNamedItem('contenteditable');
+    };
+    // TODO: should this happen here?
+    if (isTopContainerElement(this.node)) {
+      return;
+    }
+
     var currentNode = this.node.parentNode;
-    while (currentNode) {
+
+    // If it's a `contenteditable` then it's likely going to be the Scribe
+    // instance, so stop traversing there.
+    while (currentNode && ! isTopContainerElement(currentNode)) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
       currentNode = currentNode.parentNode;
-      // If it's a `contenteditable` then it's likely going to be the Scribe
-      // instance, so stop traversing there.
-      if (currentNode && currentNode.attributes && currentNode.attributes.getNamedItem('contenteditable')) {
-        currentNode = null;
-        return;
-      }
     }
   };
 
@@ -2944,7 +3650,9 @@ define('api/selection',[],function () {
 
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
+      var isTopContainerElement = node.node && node.node.attributes
+        && node.node.attributes.getNamedItem('contenteditable');
+      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
@@ -3021,6 +3729,18 @@ define('api/selection',[],function () {
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
+    };
+
+    Selection.prototype.isCaretOnNewLine = function () {
+      var containerPElement = this.getContaining(function (node) {
+        return node.nodeName === 'P';
+      });
+      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
+      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
+      var containerPElementInnerHTML = containerPElement.innerHTML.trim();
+      return containerPElement && (containerPElement.nodeName === 'P'
+                                   && (containerPElementInnerHTML === '<br>'
+                                       || containerPElementInnerHTML === ''));
     };
 
     return Selection;
@@ -3196,38 +3916,43 @@ define('undo-manager',[],function () {
 
   
 
-  function UndoManager() {
-    this.position = 0;
+  return function (scribe) {
 
-    this.stack = [];
-  }
-
-  UndoManager.prototype.maxStackSize = 100;
-
-  UndoManager.prototype.push = function (item) {
-    console.log('UndoManager.push: %s', item);
-    this.stack.length = ++this.position;
-    this.stack.push(item);
-
-    while (this.stack.length > this.maxStackSize) {
-      this.stack.shift();
-      --this.position;
+    function UndoManager() {
+      this.position = 0;
+      this.stack = [];
+      this.debug = scribe.isDebugModeEnabled();
     }
-  };
 
-  UndoManager.prototype.undo = function () {
-    if (this.position > 1) {
-      return this.stack[--this.position];
-    }
-  };
+    UndoManager.prototype.maxStackSize = 100;
 
-  UndoManager.prototype.redo = function () {
-    if (this.position < this.stack.length - 1) {
-      return this.stack[++this.position];
-    }
-  };
+    UndoManager.prototype.push = function (item) {
+      if (this.debug) {
+        console.log('UndoManager.push: %s', item);
+      }
+      this.stack.length = ++this.position;
+      this.stack.push(item);
 
-  return UndoManager;
+      while (this.stack.length > this.maxStackSize) {
+        this.stack.shift();
+        --this.position;
+      }
+    };
+
+    UndoManager.prototype.undo = function () {
+      if (this.position > 1) {
+        return this.stack[--this.position];
+      }
+    };
+
+    UndoManager.prototype.redo = function () {
+      if (this.position < this.stack.length - 1) {
+        return this.stack[++this.position];
+      }
+    };
+
+    return UndoManager;
+  };
 
 });
 
@@ -3236,7 +3961,8 @@ define('scribe',[
   'lodash-modern/objects/defaults',
   './plugins/core/commands',
   './plugins/core/events',
-  './plugins/core/formatters/replace-nbsp-chars',
+  './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
@@ -3249,12 +3975,13 @@ define('scribe',[
   commands,
   events,
   replaceNbspCharsFormatter,
+  escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
   Api,
   buildTransactionManager,
-  UndoManager
+  buildUndoManager
 ) {
 
   
@@ -3263,16 +3990,20 @@ define('scribe',[
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
-      allowBlockElements: true
+      allowBlockElements: true,
+      debug: false
     });
     this.commandPatches = {};
-    this.formatter = new Formatter();
+    this.plainTextFormatter = new Formatter();
+    this.htmlFormatter = new Formatter();
 
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
-    this.undoManager = new UndoManager();
     this.transactionManager = new TransactionManager();
+
+    var UndoManager = buildUndoManager(this);
+    this.undoManager = new UndoManager();
 
     this.el.setAttribute('contenteditable', true);
 
@@ -3309,6 +4040,7 @@ define('scribe',[
     }
 
     // Formatters
+    this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
     // Patches
@@ -3469,15 +4201,23 @@ define('scribe',[
       content = content + '<br>';
     }
 
-    this.setHTML(this.formatter.format(content));
+    this.setHTML(this.htmlFormatter.format(content));
 
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.insertPlainText = function (plainText) {
+    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(this.formatter.format(html));
+    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
+  };
+
+  Scribe.prototype.isDebugModeEnabled = function () {
+    return this.options.debug;
   };
 
   // TODO: abstract
@@ -3496,4 +4236,5 @@ define('scribe',[
   return Scribe;
 
 });
+
 //# sourceMappingURL=scribe.js.map
