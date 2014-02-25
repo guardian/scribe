@@ -28,11 +28,12 @@ define(function () {
             var selection = new scribe.api.Selection();
             var range = selection.range;
 
-            if (range.collapsed) {
-              var containerPElement = selection.getContaining(function (node) {
-                return node.nodeName === 'P';
-              });
-              if (containerPElement) {
+            // Note: the range is always collapsed on keyup here
+            var containerPElement = selection.getContaining(function (node) {
+              return node.nodeName === 'P';
+            });
+            if (containerPElement) {
+              scribe.transactionManager.run(function () {
                 // Store the caret position
                 selection.placeMarkers();
 
@@ -62,7 +63,7 @@ define(function () {
                 });
 
                 selection.selectMarkers();
-              }
+              });
             }
           }
         });
