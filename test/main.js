@@ -1987,8 +1987,8 @@ function setContent(html) {
 
 function executeCommand(commandName, value) {
   return driver.executeScript(function (commandName, value) {
-    var insertOrderedListCommand = window.scribe.getCommand(commandName);
-    insertOrderedListCommand.execute(value);
+    var command = window.scribe.getCommand(commandName);
+    command.execute(value);
   }, commandName, value);
 }
 
