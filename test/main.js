@@ -1511,12 +1511,46 @@ describe('patches', function () {
       givenContentOf('<p>|<br></p><p>hello</p>', function () {
         when('the user presses <delete>', function () {
           beforeEach(function () {
+            return driver.executeScript(function () {
+              window.scribe.on('content-changed', function() {
+                window.lastContent = window.scribe.getHTML();
+              });
+            });
+          });
+
+          beforeEach(function () {
             return scribeNode.sendKeys(webdriver.Key.DELETE);
           });
 
           it('should not wrap the remaining paragraph in a SPAN with an inline style for `line-height`', function() {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.have.html('<p>hello<chrome-bogus-br></p>');
+            });
+          });
+
+          it('should trigger the "content-updated" event without `line-height`', function() {
+            /* Note we only check the content of Scribe when the last
+             * 'content-updated' event was emitted; we know that an
+             * event may have been emitted while the data wasn't
+             * cleaned, but it should be overridden by a new event.
+             */
+            return driver.executeScript(function () {
+              return window.lastContent;
+            }).then(function(lastContent) {
+              expect(lastContent).to.have.html('<p>hello<chrome-bogus-br></p>');
+            });
+          });
+
+          // Check that the history is sane too
+          when('the undo command is executed', function () {
+            beforeEach(function () {
+              return executeCommand('undo');
+            });
+
+            it('should restore the initial content', function () {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p><br></p><p>hello</p>');
+              });
             });
           });
         });
@@ -1953,8 +1987,8 @@ function setContent(html) {
 
 function executeCommand(commandName, value) {
   return driver.executeScript(function (commandName, value) {
-    var insertOrderedListCommand = window.scribe.getCommand(commandName);
-    insertOrderedListCommand.execute(value);
+    var command = window.scribe.getCommand(commandName);
+    command.execute(value);
   }, commandName, value);
 }
 
