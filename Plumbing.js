@@ -1,5 +1,5 @@
 var all       = require('plumber-all');
-// var bower     = require('plumber-bower');
+// var bower  = require('plumber-bower');
 var glob      = require('plumber-glob');
 var requirejs = require('plumber-requirejs');
 var uglifyjs  = require('plumber-uglifyjs')();
