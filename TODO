@@ -1,4 +1,5 @@
 * Run integration tests in Safari
+* Docs on how to run tests in Sauce Labs
 
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
