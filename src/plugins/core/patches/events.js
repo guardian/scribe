@@ -33,6 +33,20 @@ define(function () {
               return node.nodeName === 'P';
             });
             if (containerPElement) {
+              /**
+               * The 'input' event listener has already triggered
+               * and recorded the faulty content as an item in the
+               * UndoManager.  We interfere with the undoManager
+               * here to discard that history item, and let the next
+               * transaction run produce a clean one instead.
+               *
+               * FIXME: ideally we would not trigger a
+               * 'content-changed' event with faulty HTML at all, but
+               * it's too late to cancel it at this stage (and it's
+               * not happened yet at keydown time).
+               */
+              scribe.undoManager.undo();
+
               scribe.transactionManager.run(function () {
                 // Store the caret position
                 selection.placeMarkers();
