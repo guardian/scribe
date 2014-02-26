@@ -3389,11 +3389,26 @@ define('plugins/core/patches/events',[],function () {
             var selection = new scribe.api.Selection();
             var range = selection.range;
 
-            if (range.collapsed) {
-              var containerPElement = selection.getContaining(function (node) {
-                return node.nodeName === 'P';
-              });
-              if (containerPElement) {
+            // Note: the range is always collapsed on keyup here
+            var containerPElement = selection.getContaining(function (node) {
+              return node.nodeName === 'P';
+            });
+            if (containerPElement) {
+              /**
+               * The 'input' event listener has already triggered
+               * and recorded the faulty content as an item in the
+               * UndoManager.  We interfere with the undoManager
+               * here to discard that history item, and let the next
+               * transaction run produce a clean one instead.
+               *
+               * FIXME: ideally we would not trigger a
+               * 'content-changed' event with faulty HTML at all, but
+               * it's too late to cancel it at this stage (and it's
+               * not happened yet at keydown time).
+               */
+              scribe.undoManager.undo();
+
+              scribe.transactionManager.run(function () {
                 // Store the caret position
                 selection.placeMarkers();
 
@@ -3423,7 +3438,7 @@ define('plugins/core/patches/events',[],function () {
                 });
 
                 selection.selectMarkers();
-              }
+              });
             }
           }
         });
@@ -4014,15 +4029,7 @@ define('scribe',[
        * `document.execCommand('bold')`). We can't wrap a transaction around
        * these actions, so instead we run the transaction in this event.
        */
-       /**
-        * Chrome (<=23): The input event is triggered after the input happens
-        * but before the caret position is changed.
-        * Need to reproduce: http://jsbin.com/iWetuGEs/1/edit
-        * TODO: could this cause other issues?
-        */
-      setTimeout(function () {
-        this.transactionManager.run();
-      }.bind(this), 0);
+      this.transactionManager.run();
     }.bind(this), false);
 
     /**
