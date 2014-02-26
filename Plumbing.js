@@ -50,19 +50,10 @@ module.exports = function (pipelines) {
     )
   ];
 
-  function addPluginBuildPipeline(requireJSConfig) {
-    return function (name) {
-      pipelines['build:' + name] = [
-        glob('./src/plugins/' + name + '.js'),
-        requirejs(requireJSConfig),
-        // Send the resource along these branches
-        all(
-          [uglifyjs, toBuildDir],
-          toBuildDir
-        )
-      ];
-    }
-  }
+  /**
+   * We define pipelines for building the non-core plugins. In the future the
+   * source files for these plugins will live in another repository.
+   */
 
   const genericPlugins = [
     'scribe-plugin-blockquote-command',
@@ -78,4 +69,18 @@ module.exports = function (pipelines) {
   genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJSConfig));
 
   addPluginBuildPipeline(sanitizerPluginRequireJSConfig)('scribe-plugin-sanitizer');
+
+  function addPluginBuildPipeline(requireJSConfig) {
+    return function (name) {
+      pipelines['build:' + name] = [
+        glob('./src/plugins/' + name + '.js'),
+        requirejs(requireJSConfig),
+        // Send the resource along these branches
+        all(
+          [uglifyjs, toBuildDir],
+          toBuildDir
+        )
+      ];
+    }
+  }
 };
