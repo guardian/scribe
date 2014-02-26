@@ -20,6 +20,22 @@ module.exports = function (pipelines) {
       }
   };
 
+  var sanitizerPluginRequireJSConfig = {
+      // FIXME: auto?
+      preserveLicenseComments: false,
+      paths: {
+          'html-janitor': '../../bower_components/html-janitor/src/html-janitor'
+      }
+  };
+
+  var genericPluginRequireJSConfig = {
+      // FIXME: auto?
+      preserveLicenseComments: false,
+      paths: {
+          'lodash-modern': '../../bower_components/lodash-amd/modern'
+      }
+  };
+
   var toBuildDir = write('./build');
   pipelines['build'] = [
     // TODO: use bower operation to find main of this component?
@@ -33,4 +49,33 @@ module.exports = function (pipelines) {
       toBuildDir
     )
   ];
+
+  function addPluginBuildPipeline(requireJSConfig) {
+    return function (name) {
+      pipelines['build:' + name] = [
+        glob('./src/plugins/' + name + '.js'),
+        requirejs(requireJSConfig),
+        // Send the resource along these branches
+        all(
+          [uglifyjs, toBuildDir],
+          toBuildDir
+        )
+      ];
+    }
+  }
+
+  const genericPlugins = [
+    'scribe-plugin-blockquote-command',
+    'scribe-plugin-curly-quotes',
+    'scribe-plugin-heading-command',
+    'scribe-plugin-intelligent-unlink-command',
+    'scribe-plugin-keyboard-shortcuts',
+    'scribe-plugin-link-prompt-command',
+    'scribe-plugin-smart-lists',
+    'scribe-plugin-toolbar'
+  ];
+
+  genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJSConfig));
+
+  addPluginBuildPipeline(sanitizerPluginRequireJSConfig)('scribe-plugin-sanitizer');
 };
