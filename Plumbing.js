@@ -37,6 +37,11 @@ module.exports = function (pipelines) {
   });
 
   var toBuildDir = write('./build');
+  var writeBoth = all(
+    [uglifyjs, toBuildDir],
+    toBuildDir
+  );
+
   pipelines['build'] = [
     // TODO: use bower operation to find main of this component?
     // As per: https://github.com/bower/bower/issues/1090
@@ -44,10 +49,7 @@ module.exports = function (pipelines) {
     glob('./src/scribe.js'),
     requireJS(requireJSConfig),
     // Send the resource along these branches
-    all(
-      [uglifyjs, toBuildDir],
-      toBuildDir
-    )
+    writeBoth
   ];
 
   /**
@@ -76,10 +78,7 @@ module.exports = function (pipelines) {
         glob('./src/plugins/' + name + '.js'),
         requireJSOperation,
         // Send the resource along these branches
-        all(
-          [uglifyjs, toBuildDir],
-          toBuildDir
-        )
+        writeBoth
       ];
     }
   }
