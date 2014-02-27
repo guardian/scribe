@@ -2,7 +2,7 @@ var all       = require('plumber-all');
 // var bower  = require('plumber-bower');
 var glob      = require('plumber-glob');
 var requireJS = require('plumber-requirejs');
-var uglifyjs  = require('plumber-uglifyjs')();
+var uglifyJS  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
 
 module.exports = function (pipelines) {
@@ -38,7 +38,7 @@ module.exports = function (pipelines) {
 
   var toBuildDir = write('./build');
   var writeBoth = all(
-    [uglifyjs, toBuildDir],
+    [uglifyJS, toBuildDir],
     toBuildDir
   );
 
