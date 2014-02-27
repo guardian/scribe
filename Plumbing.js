@@ -20,21 +20,21 @@ module.exports = function (pipelines) {
       }
   };
 
-  var sanitizerPluginRequireJSConfig = {
+  var sanitizerPluginRequireJS = requireJS({
       // FIXME: auto?
       preserveLicenseComments: false,
       paths: {
           'html-janitor': '../../bower_components/html-janitor/src/html-janitor'
       }
-  };
+  });
 
-  var genericPluginRequireJSConfig = {
+  var genericPluginRequireJS = requireJS({
       // FIXME: auto?
       preserveLicenseComments: false,
       paths: {
           'lodash-modern': '../../bower_components/lodash-amd/modern'
       }
-  };
+  });
 
   var toBuildDir = write('./build');
   pipelines['build'] = [
@@ -66,15 +66,15 @@ module.exports = function (pipelines) {
     'scribe-plugin-toolbar'
   ];
 
-  genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJSConfig));
+  genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJS));
 
-  addPluginBuildPipeline(sanitizerPluginRequireJSConfig)('scribe-plugin-sanitizer');
+  addPluginBuildPipeline(sanitizerPluginRequireJS)('scribe-plugin-sanitizer');
 
-  function addPluginBuildPipeline(requireJSConfig) {
+  function addPluginBuildPipeline(requireJSOperation) {
     return function (name) {
       pipelines['build:' + name] = [
         glob('./src/plugins/' + name + '.js'),
-        requireJS(requireJSConfig),
+        requireJSOperation,
         // Send the resource along these branches
         all(
           [uglifyjs, toBuildDir],
