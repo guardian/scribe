@@ -100,10 +100,14 @@ define(function () {
       });
       // We must do `innerHTML.trim()` to avoid weird Firefox bug:
       // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
-      var containerPElementInnerHTML = containerPElement.innerHTML.trim();
-      return containerPElement && (containerPElement.nodeName === 'P'
-                                   && (containerPElementInnerHTML === '<br>'
-                                       || containerPElementInnerHTML === ''));
+      if (containerPElement) {
+        var containerPElementInnerHTML = containerPElement.innerHTML.trim();
+        return (containerPElement.nodeName === 'P'
+                && (containerPElementInnerHTML === '<br>'
+                    || containerPElementInnerHTML === ''));
+      } else {
+        return false;
+      }
     };
 
     return Selection;
