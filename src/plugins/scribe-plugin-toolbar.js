@@ -13,9 +13,10 @@ define(function () {
         button.addEventListener('click', function () {
           /**
            * Focus will have been taken away from the Scribe instance when
-           * clicking on a button. It is important that we focus the instance
-           * again before executing the command, because it might rely on
-           * selection data.
+           * clicking on a button (Chrome will return the focus automatically
+           * but only if the selection is not collapsed. As per: http://jsbin.com/tupaj/1/edit?html,js,output).
+           * It is important that we focus the instance again before executing
+           * the command, because it might rely on selection data.
            */
           scribe.el.focus();
           command.execute();
