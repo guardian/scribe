@@ -1,7 +1,7 @@
 var all       = require('plumber-all');
 // var bower  = require('plumber-bower');
 var glob      = require('plumber-glob');
-var requirejs = require('plumber-requirejs');
+var requireJS = require('plumber-requirejs');
 var uglifyjs  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
 
@@ -42,7 +42,7 @@ module.exports = function (pipelines) {
     // As per: https://github.com/bower/bower/issues/1090
     // bower('scribe'),
     glob('./src/scribe.js'),
-    requirejs(requireJSConfig),
+    requireJS(requireJSConfig),
     // Send the resource along these branches
     all(
       [uglifyjs, toBuildDir],
@@ -74,7 +74,7 @@ module.exports = function (pipelines) {
     return function (name) {
       pipelines['build:' + name] = [
         glob('./src/plugins/' + name + '.js'),
-        requirejs(requireJSConfig),
+        requireJS(requireJSConfig),
         // Send the resource along these branches
         all(
           [uglifyjs, toBuildDir],
