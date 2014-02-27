@@ -409,7 +409,7 @@ describe('formatters', function () {
     describe('convert new lines to HTML', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['plugins/formatters/plain-text/convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+          require(['plugins/formatters/plain-text/scribe-plugin-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
             window.scribe.use(convertNewLinesToHtmlFormatter());
             done();
           });
@@ -523,7 +523,7 @@ describe('block mode', function () {
   describe('blockquotes', function () {
     beforeEach(function () {
       return driver.executeAsyncScript(function (done) {
-        require(['plugins/blockquote-command'], function (blockquoteCommand) {
+        require(['plugins/scribe-plugin-blockquote-command'], function (blockquoteCommand) {
           window.scribe.use(blockquoteCommand());
           done();
         });
@@ -1255,7 +1255,7 @@ describe('smart lists plugin', function () {
 
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
-      require(['plugins/smart-lists'], function (smartLists) {
+      require(['plugins/scribe-plugin-smart-lists'], function (smartLists) {
         window.scribe.use(smartLists());
         done();
       });
@@ -1684,7 +1684,7 @@ describe('curly quotes plugin', function () {
 
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
-      require(['plugins/curly-quotes'], function (curlyQuotes) {
+      require(['plugins/scribe-plugin-curly-quotes'], function (curlyQuotes) {
         window.scribe.use(curlyQuotes());
         done();
       });

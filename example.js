@@ -12,16 +12,16 @@ require({
   }
 }, [
   'scribe',
-  'plugins/blockquote-command',
-  'plugins/formatters/plain-text/convert-new-lines-to-html',
-  'plugins/heading-command',
-  'plugins/intelligent-unlink-command',
-  'plugins/link-prompt-command',
-  'plugins/sanitizer',
-  'plugins/toolbar',
-  'plugins/smart-lists',
-  'plugins/curly-quotes',
-  'plugins/keyboard-shortcuts'
+  'plugins/scribe-plugin-blockquote-command',
+  'plugins/formatters/plain-text/scribe-plugin-convert-new-lines-to-html',
+  'plugins/scribe-plugin-heading-command',
+  'plugins/scribe-plugin-intelligent-unlink-command',
+  'plugins/scribe-plugin-link-prompt-command',
+  'plugins/scribe-plugin-sanitizer',
+  'plugins/scribe-plugin-toolbar',
+  'plugins/scribe-plugin-smart-lists',
+  'plugins/scribe-plugin-curly-quotes',
+  'plugins/scribe-plugin-keyboard-shortcuts'
 ], function (
   Scribe,
   blockquoteCommand,
