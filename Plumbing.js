@@ -6,7 +6,7 @@ var uglifyjs  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
 
 module.exports = function (pipelines) {
-  var requireJSConfig = {
+  var mainRequireJS = requireJS({
       // FIXME: auto?
       preserveLicenseComments: false,
       paths: {
@@ -18,7 +18,7 @@ module.exports = function (pipelines) {
               exports: 'EventEmitter'
           }
       }
-  };
+  });
 
   var sanitizerPluginRequireJS = requireJS({
       // FIXME: auto?
@@ -47,7 +47,7 @@ module.exports = function (pipelines) {
     // As per: https://github.com/bower/bower/issues/1090
     // bower('scribe'),
     glob('./src/scribe.js'),
-    requireJS(requireJSConfig),
+    mainRequireJS,
     // Send the resource along these branches
     writeBoth
   ];
