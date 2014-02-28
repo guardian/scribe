@@ -33,8 +33,6 @@ define(function () {
         scribe.el.addEventListener('mouseup', updateUi);
         // We also want to update the UI whenever the content changes. This
         // could be when one of the toolbar buttons is actioned.
-        // TODO: The `input` event does not trigger when we manipulate the content
-        // ourselves. Maybe commands should fire events when they are activated.
         scribe.on('content-changed', updateUi);
 
         function updateUi() {
