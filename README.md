@@ -9,6 +9,8 @@ its plugins. We plan to improve this, however in the meantime we encourage
 you to look at the code. Scribe is very small in comparison to other libraries
 of its kind.
 
+[See an example][example].
+
 ## Core
 
 At the core of Scribe we have:
@@ -55,8 +57,7 @@ var toolbarElement = document.querySelector('.toolbar');
 scribe.use(scribePluginToolbar(toolbarElement));
 ```
 
-You can [see a live example here](http://guardian.github.io/scribe),
-or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
+You can [see a live example here][example], or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
 
 ## Architecture
 
@@ -124,7 +125,7 @@ layers sequentially.
 ## Plugins
 
 We have created a collection of plugins for advanced rich text editing purposes,
-all of which can be seen in use in our [example](http://guardian.github.io/scribe).
+all of which can be seen in use in our [example][example].
 * [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
 * [scribe-plugin-formatter-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
 * [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
@@ -161,3 +162,4 @@ command API, therefore we have to use our own.
 [Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands
 [Range API]: https://developer.mozilla.org/en-US/docs/Web/API/Range
 [Selection API]: https://developer.mozilla.org/en-US/docs/Web/API/Selection
+[example]: http://guardian.github.io/scribe
