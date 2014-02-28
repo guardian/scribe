@@ -31,27 +31,27 @@ define('scribe-plugin-toolbar',[],function () {
         // Unfortunately, there is no `selectionchange` event.
         scribe.el.addEventListener('keyup', updateUi);
         scribe.el.addEventListener('mouseup', updateUi);
+
+        scribe.el.addEventListener('focus', updateUi);
+        scribe.el.addEventListener('blur', updateUi);
+
         // We also want to update the UI whenever the content changes. This
         // could be when one of the toolbar buttons is actioned.
-        // TODO: The `input` event does not trigger when we manipulate the content
-        // ourselves. Maybe commands should fire events when they are activated.
         scribe.on('content-changed', updateUi);
 
         function updateUi() {
           var selection = new scribe.api.Selection();
 
-          if (selection.range) {
-            if (command.queryEnabled()) {
-              button.removeAttribute('disabled');
+          if (selection.range && command.queryEnabled()) {
+            button.removeAttribute('disabled');
 
-              if (command.queryState()) {
-                button.classList.add('active');
-              } else {
-                button.classList.remove('active');
-              }
+            if (command.queryState()) {
+              button.classList.add('active');
             } else {
-              button.setAttribute('disabled', 'disabled');
+              button.classList.remove('active');
             }
+          } else {
+            button.setAttribute('disabled', 'disabled');
           }
         }
       });
