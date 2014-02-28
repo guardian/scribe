@@ -2,8 +2,17 @@ require({
   baseUrl: './src',
   paths: {
     'event-emitter': '../bower_components/eventEmitter/EventEmitter',
-    'html-janitor': '../bower_components/html-janitor/src/html-janitor',
-    'lodash-modern': '../bower_components/lodash-amd/modern'
+    'lodash-modern': '../bower_components/lodash-amd/modern',
+    'scribe-plugin-blockquote-command': '../bower_components/scribe-plugin-blockquote-command/scribe-plugin-blockquote-command',
+    'scribe-plugin-curly-quotes': '../bower_components/scribe-plugin-curly-quotes/scribe-plugin-curly-quotes',
+    'scribe-plugin-formatter-plain-text-convert-new-lines-to-html': '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+    'scribe-plugin-heading-command': '../bower_components/scribe-plugin-heading-command/scribe-plugin-heading-command',
+    'scribe-plugin-intelligent-unlink-command': '../bower_components/scribe-plugin-intelligent-unlink-command/scribe-plugin-intelligent-unlink-command',
+    'scribe-plugin-keyboard-shortcuts': '../bower_components/scribe-plugin-keyboard-shortcuts/scribe-plugin-keyboard-shortcuts',
+    'scribe-plugin-link-prompt-command': '../bower_components/scribe-plugin-link-prompt-command/scribe-plugin-link-prompt-command',
+    'scribe-plugin-sanitizer': '../bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer',
+    'scribe-plugin-smart-lists': '../bower_components/scribe-plugin-smart-lists/scribe-plugin-smart-lists',
+    'scribe-plugin-toolbar': '../bower_components/scribe-plugin-toolbar/scribe-plugin-toolbar'
   },
   shim: {
     'event-emitter': {
@@ -12,28 +21,28 @@ require({
   }
 }, [
   'scribe',
-  'plugins/scribe-plugin-blockquote-command',
-  'plugins/formatters/plain-text/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
-  'plugins/scribe-plugin-heading-command',
-  'plugins/scribe-plugin-intelligent-unlink-command',
-  'plugins/scribe-plugin-link-prompt-command',
-  'plugins/scribe-plugin-sanitizer',
-  'plugins/scribe-plugin-toolbar',
-  'plugins/scribe-plugin-smart-lists',
-  'plugins/scribe-plugin-curly-quotes',
-  'plugins/scribe-plugin-keyboard-shortcuts'
+  'scribe-plugin-blockquote-command',
+  'scribe-plugin-curly-quotes',
+  'scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+  'scribe-plugin-heading-command',
+  'scribe-plugin-intelligent-unlink-command',
+  'scribe-plugin-keyboard-shortcuts',
+  'scribe-plugin-link-prompt-command',
+  'scribe-plugin-sanitizer',
+  'scribe-plugin-smart-lists',
+  'scribe-plugin-toolbar'
 ], function (
   Scribe,
-  blockquoteCommand,
-  convertNewLinesToHtmlFormatter,
-  headingCommand,
-  intelligentUnlinkCommand,
-  linkPromptCommand,
-  sanitizer,
-  toolbar,
-  smartLists,
-  curlyQuotes,
-  keyboardShortcuts
+  scribePluginBlockquoteCommand,
+  scribePluginCurlyQuotes,
+  scribePluginFormatterPlainTextConvertNewLinesToHtml,
+  scribePluginHeadingCommand,
+  scribePluginIntelligentUnlinkCommand,
+  scribePluginKeyboardShortcuts,
+  scribePluginLinkPromptCommand,
+  scribePluginSanitizer,
+  scribePluginSmartLists,
+  scribePluginToolbar
 ) {
 
   'use strict';
@@ -50,16 +59,16 @@ require({
    * Plugins
    */
 
-  scribe.use(blockquoteCommand());
-  scribe.use(headingCommand(2));
-  scribe.use(intelligentUnlinkCommand());
-  scribe.use(linkPromptCommand());
-  scribe.use(toolbar(document.querySelector('.toolbar')));
-  scribe.use(smartLists());
-  scribe.use(curlyQuotes());
+  scribe.use(scribePluginBlockquoteCommand());
+  scribe.use(scribePluginHeadingCommand(2));
+  scribe.use(scribePluginIntelligentUnlinkCommand());
+  scribe.use(scribePluginLinkPromptCommand());
+  scribe.use(scribePluginToolbar(document.querySelector('.toolbar')));
+  scribe.use(scribePluginSmartLists());
+  scribe.use(scribePluginCurlyQuotes());
 
   // Formatters
-  scribe.use(sanitizer({
+  scribe.use(scribePluginSanitizer({
     tags: {
       p: {},
       br: {},
@@ -75,7 +84,7 @@ require({
       h2: {}
     }
   }));
-  scribe.use(convertNewLinesToHtmlFormatter());
+  scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHtml());
 
   /**
    * Keyboard shortcuts
@@ -96,7 +105,7 @@ require({
     h2: function (event) { return ctrlKey(event) && event.keyCode === 50; }, // 2
   });
 
-  scribe.use(keyboardShortcuts(commandsToKeyboardShortcutsMap));
+  scribe.use(scribePluginKeyboardShortcuts(commandsToKeyboardShortcutsMap));
 
   if (scribe.allowsBlockElements()) {
     scribe.setContent('<p>Hello, World!</p>');
