@@ -7,7 +7,6 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
 * Chrome has some magic to re-focus the `contenteditable` when a command is
   executed and the selection is not collapsed: http://jsbin.com/papi/1/edit?html,js,output
-  `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
 * "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
 * "`insertHTML`":
   - http://jsbin.com/elicInov/2/edit?html,js,output
