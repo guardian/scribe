@@ -1,7 +1,7 @@
 Scribe [![Build Status](https://travis-ci.org/guardian/scribe.png)](https://travis-ci.org/guardian/scribe)
 ======
 
-An underlying layer for composing a custom rich text editor, with patches for
+A basis for composing a custom rich text editor for the web, with patches for
 browser inconsistencies and sensible defaults.
 
 **Please note:** There is a lot of missing documentation for Scribe and many of
