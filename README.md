@@ -142,8 +142,8 @@ all of which can be seen in use in our [example](http://guardian.github.io/scrib
 It is likely that there will be unknown edge cases, but these will be addressed
 when they are discovered.
 
-In the meantime, you can take some assurance from the fact that The Guardian is
-using Scribe as the basis for their internal CMS’ rich text editor.
+In the meantime, you can take some assurance from the fact that [The Guardian](http://gu.com)
+is using Scribe as the basis for their internal CMS’ rich text editor.
 
 ### Why does Scribe have a custom undo manager?
 
