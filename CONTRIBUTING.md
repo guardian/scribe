@@ -10,7 +10,6 @@ TODO: Add a script to do this for you
 * Push with tags
 
 ## Conventions
-
 * In documentation and code, refer to nodes by their canonical node name in
   uppercase. E.g. `P`.
 * When creating variables that refer to nodes or elements, suffix them with
