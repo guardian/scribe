@@ -123,7 +123,7 @@ layers sequentially.
 We have created a collection of plugins for advanced rich text editing purposes,
 all of which can be seen in use in our [example](http://guardian.github.io/scribe).
 * [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
-* [scribe-plugin-formatters-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
+* [scribe-plugin-formatter-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
 * [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
 * [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
 * [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
