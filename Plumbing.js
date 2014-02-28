@@ -68,7 +68,9 @@ module.exports = function (pipelines) {
     'scribe-plugin-toolbar'
   ];
 
-  genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJS));
+  genericPlugins.forEach(function (pluginName) {
+    addPluginBuildPipeline(genericPluginRequireJS)(pluginName);
+  });
   addPluginBuildPipeline(genericPluginRequireJS)('scribe-plugin-formatter-plain-text-convert-new-lines-to-html', '/formatters/plain-text');
 
   addPluginBuildPipeline(sanitizerPluginRequireJS)('scribe-plugin-sanitizer');
