@@ -69,17 +69,18 @@ module.exports = function (pipelines) {
   ];
 
   genericPlugins.forEach(addPluginBuildPipeline(genericPluginRequireJS));
+  addPluginBuildPipeline(genericPluginRequireJS)('scribe-plugin-formatter-plain-text-convert-new-lines-to-html', '/formatters/plain-text');
 
   addPluginBuildPipeline(sanitizerPluginRequireJS)('scribe-plugin-sanitizer');
 
   function addPluginBuildPipeline(requireJSOperation) {
-    return function (name) {
+    return function (name, path) {
       pipelines['build:' + name] = [
-        glob('./src/plugins/' + name + '.js'),
+        glob('./src/plugins' + (path || '') + '/' + name + '.js'),
         requireJSOperation,
         // Send the resource along these branches
         writeBoth
       ];
-    }
+    };
   }
 };
