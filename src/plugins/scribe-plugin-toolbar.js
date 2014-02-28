@@ -38,18 +38,16 @@ define(function () {
         function updateUi() {
           var selection = new scribe.api.Selection();
 
-          if (selection.range) {
-            if (command.queryEnabled()) {
-              button.removeAttribute('disabled');
+          if (selection.range && command.queryEnabled()) {
+            button.removeAttribute('disabled');
 
-              if (command.queryState()) {
-                button.classList.add('active');
-              } else {
-                button.classList.remove('active');
-              }
+            if (command.queryState()) {
+              button.classList.add('active');
             } else {
-              button.setAttribute('disabled', 'disabled');
+              button.classList.remove('active');
             }
+          } else {
+            button.setAttribute('disabled', 'disabled');
           }
         }
       });
