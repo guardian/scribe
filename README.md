@@ -1,64 +1,163 @@
-Scribe
+Scribe [![Build Status](https://travis-ci.org/guardian/scribe.png)](https://travis-ci.org/guardian/scribe)
 ======
 
-## List of `contenteditable` Browser Inconsistencies
-Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
+An underlying layer for composing a custom rich text editor, with patches for
+browser inconsistencies and sensible defaults.
 
-### `document.execCommand` commands
-* Firefox: When the `contenteditable` element is a custom element, an error is
-  thrown when trying to apply one of the following commands.
-  As per: http://jsbin.com/etepiPOn/1/edit?html,css,js,console,output
-* Chrome has some magic to re-focus the `contenteditable` when a command is
-  executed: http://jsbin.com/papi/1/edit?html,js,output
-  `insertOrderedList`, insertUnorderedList`, `indent`, `outdent`, `formatBlock`
-* "`insertBrOnReturn`": http://jsbin.com/IQUraXA/1/edit?html,js,output
-* "`insertHTML`":
-  - http://jsbin.com/elicInov/2/edit?html,js,output
-  - Chrome tries to be clever by applying inline styles/SPANs with `line-height`: http://jsbin.com/ilEmudi/4/edit?css,js,output
-  - Chrome applies styling to invalid markup, Firefox allows invalid markup: http://jsbin.com/ObiBoweG/1/edit?js,console,output
-  - Given an empty P element, Chrome will wrap inserted text nodes not in a P,
-    whereas Firefox will not: http://jsbin.com/olEbecEM/1/edit?js,output
-  - Given a non-empty P element, Chrome will merge the existing and new
-    paragraph, whereas Firefox will not: http://jsbin.com/uvEdacoz/6/edit?js,output
-    - TODO http://jsbin.com/uvEdacoz/4/edit
-* "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
-* "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
-* "`outdent`":
-  - Chrome removes BLOCKQUOTE content formatting: http://jsbin.com/okAYaHa/1/edit?html,js,output
-  - Chrome removes collapsed selection formatting: http://jsbin.com/IfaRaFO/1/edit?html,js,output
-* "`insertOrderedList`"/"`insertOrderedList`":
-  - Chrome nests list inside of block elements: http://jsbin.com/eFiRedUc/1/edit?html,js,output
-  - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output
-  - Chrome tries to be clever by applying inline styles/SPANs with `line-height`: http://jsbin.com/OtemujAY/10/edit?html,css,js,output
-* "`indent`":
-  - Chrome nests BLOCKQUOTE inside of P: http://jsbin.com/oDOriyU/3/edit?html,js,output
-  - Chrome nests ULs inside of ULs:
-    - http://jsbin.com/ORikUPa/3/edit?html,js,output
-    - http://jsbin.com/kuvi/1/edit?js,output
-  - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
-  - Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
-  - Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
+**Please note:** There is a lot of missing documentation for Scribe and many of
+its plugins. We plan to improve this, however in the meantime we encourage
+you to look at the code. Scribe is very small in comparison to other libraries
+of its kind.
 
-### `Range.insertNode`
-* Chrome inserts a bogus text node: http://jsbin.com/ODapifEb/1/edit?js,console,output
-  - This in turn creates several bugs when perfoming commands on selections
-    that contain an empty text node (`removeFormat`, `unlink`)
+## Core
 
-### `Document.queryCommandState`
-* Browser magic: Chrome and Firefox report command state to be true after
-  applying a command to a collapsed selection, but why?: http://jsbin.com/eDOxacI/1/edit?js,console,output
+At the core of Scribe we have:
 
-### `Element.focus`
-* Firefox: Giving focus to a `contenteditable` will place the caret outside of
-  any block elements. Chrome behaves correctly by placing the caret at the
-  earliest point possible inside the first block element: http://jsbin.com/eLoFOku/1/edit?js,console,output
+* [Patches for many browser inconsistencies surrounding `contenteditable`](#patches);
+* [Inline and block element modes](#modes).
 
-### Events
-* Chrome tries to be clever by applying inline styles/SPANs with `line-height`
-  on <backspace> or <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
-* Firefox breaks out of P mode on <backspace> or <delete> keyboard events
-  when HTML has indentation between block elements: http://jsbin.com/EyuKase/1/edit?js,output
+### Patches
 
-## Other
-* Chrome (<= 28(?)): `TreeWalker` does not work properly with
-  `DocumentFragment`s: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
+Scribe patches [many browser inconsistencies][browser inconsistencies] in the
+[native command API][Executing Commands].
+
+### Modes
+
+Natively, `contenteditable` will produce DIVs for new lines. This is not a bug.
+However, this is not ideal because in most cases we require semantic HTML to be
+produced.
+
+Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs (with
+block element mode turned off) for new lines instead.
+
+## Installation
+```
+bower install scribe
+```
+
+## Options
+
+<dl>
+  <dt>`allowBlockElements`</dt>
+  <dd>Enable/disable block element mode (enabled by default)</dd>
+</dl>
+
+## Example
+
+``` js
+var scribeElement = document.querySelector('.scribe');
+// Create an instance of Scribe
+var scribe = new Scribe(scribeElement);
+
+// Use some plugins
+scribe.use(scribePluginBlockquoteCommand());
+var toolbarElement = document.querySelector('.toolbar');
+scribe.use(scribePluginToolbar(toolbarElement));
+```
+
+You can [see a live example here](http://guardian.github.io/scribe),
+or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
+
+## Architecture
+
+[Everything is a plugin.](https://github.com/guardian/scribe/tree/master/src/plugins)
+
+A plugin is simply a function that receives Scribe as an argument:
+
+``` js
+function myPlugin(scribe) {}
+```
+
+A consumer can then use your plugin with `Scribe.use`:
+
+``` js
+scribe.use(myPlugin);
+```
+
+Plugins may package whatever functionality you desire, and you are free to use
+native APIs to do so. However, you are required to wrap any DOM manipulation in
+a transaction, so that we can capture state changes for the history. For
+example:
+
+``` js
+function myPlugin(scribe) {
+  scribe.transactionManager.run(function () {
+    // Do some fancy DOM manipulation
+  });
+}
+```
+
+### Browser Support
+
+Theoretically, Scribe should work in any browser with the
+[Selection][Selection API] API, the [Range][Range API] API, and support for most
+of the non-standardised list of commands that appears in
+[this MDN article][Executing Commands]. It has been tested in Firefox >= 21,
+Chrome >= 27, and Safari 7.
+
+See the [status of our integration tests](https://travis-ci.org/guardian/scribe)
+for more up-to-date support information.
+
+### Commands
+
+Commands are objects that describe command formatting operations. For example,
+the bold command.
+
+Commands tell Scribe:
+
+* how to format some HTML when executed (similar to `document.queryCommand`);
+* how to query for whether the given command has been executed on the current selection (similar to `document.queryCommandState`);
+* how to query for whether the command can be executed on the document in its current state (similar to `document.queryCommandEnabled`)
+
+To ensure a separation of concerns, commands are split into multiple layers.
+When a command method is called by Scribe, it will be filtered through these
+layers sequentially.
+
+<dl>
+  <dt>Scribe</dt>
+  <dd>Where custom behaviour is defined.</dd>
+  <dt>Scribe Patches</dt>
+  <dd>Where patches for brower inconsistencies in native commands are defined.</dd>
+  <dt>Native</dt>
+</dl>
+
+## Plugins
+
+We have created a collection of plugins for advanced rich text editing purposes,
+all of which can be seen in use in our [example](http://guardian.github.io/scribe).
+* [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
+* [scribe-plugin-formatter-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
+* [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
+* [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
+* [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
+* [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
+* [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
+* [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
+* [scribe-plugin-toolbar](https://github.com/guardian/scribe-plugin-toolbar)
+
+## FAQ
+
+### Is it production ready?
+
+It is likely that there will be unknown edge cases, but these will be addressed
+when they are discovered.
+
+In the meantime, you can take some assurance from the fact that The Guardian is
+using Scribe as the basis for their internal CMS’ rich text editor.
+
+### Why does Scribe have a custom undo manager?
+
+The [native API for formatting content in a
+`contenteditable`][Executing Commands] has [many browser inconsistencies][browser inconsistencies].
+Scribe has to manipulate the DOM directly on top of using these commands in order to patch
+those inconsistencies. What’s more, there is no widely supported command for
+telling `contenteditable` to insert Ps or BRs for line breaks. Thus, to add
+this behaviour Scribe needs to manipulate the DOM once again.
+
+The undo stack breaks whenever DOM manipulation is used instead of the native
+command API, therefore we have to use our own.
+
+[browser inconsistencies]: https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md
+[Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands
+[Range API]: https://developer.mozilla.org/en-US/docs/Web/API/Range
+[Selection API]: https://developer.mozilla.org/en-US/docs/Web/API/Selection

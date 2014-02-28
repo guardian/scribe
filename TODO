@@ -1,3 +1,6 @@
+# Other
+* Test older Safari versions
+* Provide link to bundled version
 * Run integration tests in Safari
 * Docs on how to run tests in Sauce Labs
 
