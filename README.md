@@ -1,4 +1,4 @@
-Scribe
+Scribe [![Build Status](https://travis-ci.org/guardian/scribe.png?branch=oja-docs)](https://travis-ci.org/guardian/scribe)
 ======
 
 An underlying layer for composing a custom rich text editor, with patches for
