@@ -1,0 +1,9 @@
+{
+  "name": "scribe-plugin-toolbar",
+  "version": "0.1.0",
+  "main": "./scribe-plugin-toolbar.js",
+  "authors": [
+    "Oliver Joseph Ash <oliverjash@icloud.com>"
+  ],
+  "license": "Apache 2.0"
+}

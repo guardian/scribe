@@ -1,13 +1,65 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Editor</title>
+    <title>Scribe</title>
   </head>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .toolbar {
+      margin-bottom: 1em;
+    }
+
+    button {
+      height: 3em;
+    }
+
+    button.active {
+      border-style: inset;
+    }
+
+    .scribe {
+      height: 370px;
+      overflow: auto;
+      margin-bottom: 1em;
+      border: 1px solid hsl(0, 0%, 80%);
+      padding: 0.5em;
+    }
+
+    .scribe-html {
+      width: 100%;
+      font-family: monospace;
+      border: 1px solid hsl(0, 0%, 80%);
+      padding: 0.5em;
+    }
+
+    p {
+      margin-top: 0;
+    }
+  </style>
   <body>
-    <div></div>
-    <script src="build.js"></script>
-    <script>
-      require('boot')
-    </script>
+    <h1>Scribe</h1>
+    <div class="toolbar">
+      <button data-command-name="bold">Bold</button>
+      <button data-command-name="italic">Italic</button>
+      <button data-command-name="strikeThrough">Strike Through</button>
+      <button data-command-name="removeFormat">Remove Formatting</button>
+      <button data-command-name="linkPrompt">Link</button>
+      <button data-command-name="unlink">Unlink</button>
+      <button data-command-name="insertOrderedList">Ordered List</button>
+      <button data-command-name="insertUnorderedList">Unordered List</button>
+      <button data-command-name="indent">Indent</button>
+      <button data-command-name="outdent">Outdent</button>
+      <button data-command-name="blockquote">Blockquote</button>
+      <button data-command-name="h2">H2</button>
+      <button data-command-name="undo">Undo</button>
+      <button data-command-name="redo">Redo</button>
+    </div>
+    <div class="scribe"></div>
+    <h2>Output</h2>
+    <textarea class="scribe-html" rows="15"></textarea>
+    <script src="bower_components/requirejs/require.js" data-main="./example"></script>
   </body>
 </html>

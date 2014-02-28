@@ -1,0 +1,19 @@
+{
+  "name": "scribe-plugin-heading-command",
+  "version": "0.1.0",
+  "main": "./scribe-plugin-heading-command.js",
+  "authors": [
+    "Oliver Joseph Ash <oliverjash@icloud.com>"
+  ],
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/guardian/scribe-plugin-heading-command",
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "75306210007351b7ff4df2ac5a2f37677342eb94"
+  },
+  "_source": "git://github.com/guardian/scribe-plugin-heading-command.git",
+  "_target": "0.1.0",
+  "_originalSource": "scribe-plugin-heading-command"
+}

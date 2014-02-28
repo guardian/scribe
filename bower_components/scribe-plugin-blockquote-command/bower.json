@@ -1,0 +1,9 @@
+{
+  "name": "scribe-plugin-blockquote-command",
+  "version": "0.1.0",
+  "main": "./scribe-plugin-blockquote-command.js",
+  "authors": [
+    "Oliver Joseph Ash <oliverjash@icloud.com>"
+  ],
+  "license": "Apache 2.0"
+}

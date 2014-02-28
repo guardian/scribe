@@ -1,0 +1,9 @@
+{
+  "name": "scribe-plugin-heading-command",
+  "version": "0.1.0",
+  "main": "./scribe-plugin-heading-command.js",
+  "authors": [
+    "Oliver Joseph Ash <oliverjash@icloud.com>"
+  ],
+  "license": "Apache 2.0"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "scribe-plugin-smart-lists",
+  "version": "0.1.0",
+  "main": "./scribe-plugin-smart-lists.js",
+  "authors": [
+    "Oliver Joseph Ash <oliverjash@icloud.com>"
+  ],
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/guardian/scribe-plugin-smart-lists",
+  "_release": "0.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.0",
+    "commit": "85efe42af4bb9333c473f9e2c45fab744da2abd3"
+  },
+  "_source": "git://github.com/guardian/scribe-plugin-smart-lists.git",
+  "_target": "0.1.0",
+  "_originalSource": "scribe-plugin-smart-lists"
+}
