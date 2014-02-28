@@ -30,20 +30,6 @@ produced.
 Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs (with
 block element mode turned off) for new lines instead.
 
-## Plugins
-
-We have created a collection of plugins for advanced rich text editing purposes,
-all of which can be seen in use in our [example](http://guardian.github.io/scribe).
-* [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
-* [scribe-plugin-formatters-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
-* [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
-* [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
-* [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
-* [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
-* [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
-* [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
-* [scribe-plugin-toolbar](https://github.com/guardian/scribe-plugin-toolbar)
-
 ## Installation
 ```
 bower install scribe
@@ -131,6 +117,20 @@ layers sequentially.
   <dd>Where patches for brower inconsistencies in native commands are defined.</dd>
   <dt>Native</dt>
 </dl>
+
+## Plugins
+
+We have created a collection of plugins for advanced rich text editing purposes,
+all of which can be seen in use in our [example](http://guardian.github.io/scribe).
+* [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
+* [scribe-plugin-formatters-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
+* [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
+* [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
+* [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
+* [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
+* [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
+* [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
+* [scribe-plugin-toolbar](https://github.com/guardian/scribe-plugin-toolbar)
 
 ## FAQ
 
