@@ -34,9 +34,6 @@ TODO
 bower install scribe
 ```
 
-TODO: provide link to bundled version
-TODO: register bundled version in Bower
-
 ## Options
 
 <dl>
@@ -56,11 +53,9 @@ var scribeElement = document.querySelector('.scribe');
 var scribe = new Scribe(scribeElement);
 
 // Use some plugins
-scribe.use(blockquoteCommandPlugin());
+scribe.use(scribePluginBlockquoteCommand());
 var toolbarElement = document.querySelector('.toolbar');
-scribe.use(toolbarPlugin(toolbarElement));
-
-scribe.initialize();
+scribe.use(scribePluginToolbar(toolbarElement));
 ```
 
 ## Architecture
