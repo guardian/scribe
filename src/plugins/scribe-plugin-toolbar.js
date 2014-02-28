@@ -31,6 +31,10 @@ define(function () {
         // Unfortunately, there is no `selectionchange` event.
         scribe.el.addEventListener('keyup', updateUi);
         scribe.el.addEventListener('mouseup', updateUi);
+
+        scribe.el.addEventListener('focus', updateUi);
+        scribe.el.addEventListener('blur', updateUi);
+
         // We also want to update the UI whenever the content changes. This
         // could be when one of the toolbar buttons is actioned.
         scribe.on('content-changed', updateUi);
