@@ -15,7 +15,7 @@ define([
     return function (scribe) {
       var janitor = new HTMLJanitor(config);
 
-      scribe.formatter.formatters.push(janitor.clean.bind(janitor));
+      scribe.htmlFormatter.formatters.push(janitor.clean.bind(janitor));
     };
   };
 

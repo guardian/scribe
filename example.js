@@ -12,18 +12,20 @@ require({
   }
 }, [
   'scribe',
-  'plugins/blockquote-command',
-  'plugins/heading-command',
-  'plugins/intelligent-unlink-command',
-  'plugins/link-prompt-command',
-  'plugins/sanitizer',
-  'plugins/toolbar',
-  'plugins/smart-lists',
-  'plugins/curly-quotes',
-  'plugins/keyboard-shortcuts'
+  'plugins/scribe-plugin-blockquote-command',
+  'plugins/formatters/plain-text/scribe-plugin-convert-new-lines-to-html',
+  'plugins/scribe-plugin-heading-command',
+  'plugins/scribe-plugin-intelligent-unlink-command',
+  'plugins/scribe-plugin-link-prompt-command',
+  'plugins/scribe-plugin-sanitizer',
+  'plugins/scribe-plugin-toolbar',
+  'plugins/scribe-plugin-smart-lists',
+  'plugins/scribe-plugin-curly-quotes',
+  'plugins/scribe-plugin-keyboard-shortcuts'
 ], function (
   Scribe,
   blockquoteCommand,
+  convertNewLinesToHtmlFormatter,
   headingCommand,
   intelligentUnlinkCommand,
   linkPromptCommand,
@@ -50,6 +52,11 @@ require({
   scribe.use(headingCommand(2));
   scribe.use(intelligentUnlinkCommand());
   scribe.use(linkPromptCommand());
+  scribe.use(toolbar(document.querySelector('.toolbar')));
+  scribe.use(smartLists());
+  scribe.use(curlyQuotes());
+
+  // Formatters
   scribe.use(sanitizer({
     tags: {
       p: {},
@@ -66,9 +73,7 @@ require({
       h2: {}
     }
   }));
-  scribe.use(toolbar(document.querySelector('.toolbar')));
-  scribe.use(smartLists());
-  scribe.use(curlyQuotes());
+  scribe.use(convertNewLinesToHtmlFormatter());
 
   /**
    * Keyboard shortcuts
@@ -97,6 +102,4 @@ require({
   } else {
     scribe.setContent('Hello, World!');
   }
-
-  scribe.initialize();
 });

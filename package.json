@@ -1,14 +1,23 @@
 {
   "name": "scribe",
-  "version": "0.0.9",
   "devDependencies": {
     "chai": "~1.8.1",
+    "connect": "~2.12.0",
+    "lodash-node": "~2.4.1",
     "mocha": "~1.15.0",
     "mocha-as-promised": "~2.0.0",
+    "plumber": "~0.2.0",
+    "plumber-all": "~0.2.0",
+    "plumber-glob": "~0.2.0",
+    "plumber-requirejs": "~0.2.0",
+    "plumber-uglifyjs": "~0.2.0",
+    "plumber-write": "~0.2.0",
+    "q": "~1.0.0",
+    "request": "~2.33.0",
     "selenium-webdriver": "~2.37.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec",
+    "test": "node test/runner",
     "test-dev": "./node_modules/.bin/mocha --timeout 20000 test/main.js --reporter spec --watch"
   }
 }

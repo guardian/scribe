@@ -3,47 +3,18 @@
 * Abstract plugins into new repos
 * Provide link to bundled version
 * Register bundled version in Bower
-
+* Run integration tests in Safari
+* Docs on how to run tests in Sauce Labs
 
 # Feature Development
 * Remove event listeners, emit unbind to plugins so that can too
-* Config for nesting elements
+* Grammar for nesting elements, shared with sanitizer/commands
+* Intersect commands to run formatters
 
-
-# Outstanding Patches
-* Chrome and Firefox: Bold command uses B node instead of STRONG
-* Chrome: Indenting/outdenting lists for nesting
-* Firefox 19: Unapplying blockquote sometimes does not delete BLOCKQUOTE element (?)
-
-
-# Disabled Things Which Should Be Enabled
-* `blockquote` command when caret is in a list
-
-
-# To Investigate
-* Buttons do not update the instance they are clicked. You have to start typing.
-
-
-# Known Bugs
+# Known Bugs (which we could write failing tests for)
 * Focus should select all content
-* Chrome: Add BLOCKQUOTE, add list, unapply blockquote = Creates BLOCKQUOTE
-  without P.
 * Applying the outdent command on a top level list item breaks P mode.
 * When inserting lists we remove any SPANs from the inside to fix a Chrome bug,
   but what if the user actually wants a SPAN?
 * Possible to paste blockquotes inside of blockquotes
 * Chrome: "1|2", ENTER, <select all>, apply list = orphan P
-
-
-# Fixed
-* Chrome: Add H1, <enter> = Creates DIV
-* Chrome: Add empty LI, <enter> = Creates DIV
-* Chrome: Add LI, unapply list = Creates DIV
-* Chrome: Add BLOCKQUOTE = Nests BLOCKQUOTE inside of P
-* Chrome: Add UL = Nests UL inside of P
-* Chrome: Add OL = Nests OL inside of P
-* Chrome: Add BLOCKQUOTE, add carriage return, unapply blockquote = broken Ps
-  - Breaks when blockquote is unapplied on middle paragraph element.
-* Chrome: Add 2 Ps, <select all>, apply blockquote, unapply blockquote = broken Ps
-* Chrome: Add BLOCKQUOTE = Has `style` attribute
-* Chrome: Appends span to LIs with inline styling for `line-height`: http://jsbin.com/OtemujAY/3/edit?html,css,js,output

@@ -18,7 +18,11 @@ define(function () {
     var NON_BREAKING_SPACE = '\u00A0';
 
     return function (scribe) {
+      // Substitute quotes while typing
       scribe.el.addEventListener('keypress', input);
+
+      // Substitute quotes on setting content or paste
+      scribe.htmlFormatter.formatters.push(substituteCurlyQuotes);
 
       function input(event) {
         var curlyChar;
@@ -44,11 +48,10 @@ define(function () {
         if (curlyChar) {
           event.preventDefault();
 
-          var quoteText = replaceSelectedRangeWith(curlyChar);
-          placeCaretAfter(quoteText);
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.transactionManager.run(function() {
+            var quoteText = replaceSelectedRangeWith(curlyChar);
+            placeCaretAfter(quoteText);
+          });
         }
       }
 
@@ -92,6 +95,57 @@ define(function () {
         var selection = new scribe.api.Selection();
         selection.selection.removeAllRanges();
         selection.selection.addRange(rangeAfter);
+      }
+
+      function substituteCurlyQuotes(html) {
+        // We don't want to replace quotes within the HTML markup
+        // (e.g. attributes), only to text nodes
+        var holder = document.createElement('div');
+        holder.innerHTML = html;
+
+        // Replace straight single and double quotes with curly
+        // equivalent in the given string
+        mapTextNodes(holder, function(str) {
+          return str.
+            // Use [\s\S] instead of . to match any characters _including newlines_
+            replace(/([\s\S])?'([\s\S])?/g,
+                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
+            replace(/([\s\S])?"([\s\S])?/g,
+                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
+        });
+
+        return holder.innerHTML;
+      }
+
+      function replaceQuotesFromContext(openCurly, closeCurly) {
+        return function(m, prev, next) {
+          prev = prev || '';
+          next = next || '';
+          var isStart = ! prev;
+          var isEnd = ! next;
+          var hasCharsBefore = /[^\s]/.test(prev);
+          var hasCharsAfter = /[^\s]/.test(next);
+          // Optimistic heuristic, would need to look at DOM structure
+          // (esp block vs inline elements) for more robust inference
+          if (hasCharsBefore || (isStart && ! hasCharsAfter && ! isEnd)) {
+            return prev + closeCurly + next;
+          } else {
+            return prev + openCurly + next;
+          }
+        };
+      }
+
+      // Apply a function on all text nodes in a container, mutating in place
+      function mapTextNodes(container, func) {
+        var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+        var node = walker.firstChild();
+        if (node) {
+          do {
+            node.data = func(node.data);
+          } while ((node = walker.nextSibling()));
+        }
+
+        return node;
       }
 
     };

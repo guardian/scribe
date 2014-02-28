@@ -8,14 +8,14 @@ define(function () {
 
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
-      } else {
-        this.range = document.createRange();
       }
     }
 
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return node.getAncestor(nodeFilter);
+      var isTopContainerElement = node.node && node.node.attributes
+        && node.node.attributes.getNamedItem('contenteditable');
+      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
@@ -27,7 +27,6 @@ define(function () {
       // End marker
       var rangeEnd = this.range.cloneRange();
       rangeEnd.collapse(false);
-      // FIXME: Chrome error
       rangeEnd.insertNode(endMarker);
 
       /**
@@ -93,6 +92,22 @@ define(function () {
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
+    };
+
+    Selection.prototype.isCaretOnNewLine = function () {
+      var containerPElement = this.getContaining(function (node) {
+        return node.nodeName === 'P';
+      });
+      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
+      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
+      if (containerPElement) {
+        var containerPElementInnerHTML = containerPElement.innerHTML.trim();
+        return (containerPElement.nodeName === 'P'
+                && (containerPElementInnerHTML === '<br>'
+                    || containerPElementInnerHTML === ''));
+      } else {
+        return false;
+      }
     };
 
     return Selection;

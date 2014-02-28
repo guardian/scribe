@@ -67,7 +67,7 @@ define(function () {
         // If in a <p>
         var blockContainer = findBlockContainer(container);
         if (blockContainer && blockContainer.tagName === 'P') {
-          var startOfLineIsUList = isUnorderedListChar(container.textContent);
+          var startOfLineIsUList = isUnorderedListChar(container.textContent[0]);
           if (isUnorderedListChar(lastChar) && currentChar === 'Space' && startOfLineIsUList) {
             listCommand = 'insertUnorderedList';
           }
@@ -82,13 +82,12 @@ define(function () {
           // Ignore the typed character
           event.preventDefault();
 
-          scribe.getCommand(listCommand).execute();
+          scribe.transactionManager.run(function() {
+            scribe.getCommand(listCommand).execute();
 
-          // Clear "* "/etc from the list item
-          removeSelectedTextNode();
-
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
+            // Clear "* "/etc from the list item
+            removeSelectedTextNode();
+          });
         }
       }
 

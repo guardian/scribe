@@ -1,11 +1,13 @@
 define([
   './commands/indent',
+  './commands/insert-html',
   './commands/insert-list',
   './commands/outdent',
   './commands/redo',
   './commands/undo'
 ], function (
   indent,
+  insertHTML,
   insertList,
   outdent,
   redo,
@@ -16,6 +18,7 @@ define([
 
   return {
     indent: indent,
+    insertHTML: insertHTML,
     insertList: insertList,
     outdent: outdent,
     redo: redo,

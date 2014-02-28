@@ -1,24 +1,11 @@
 {
   "name": "scribe",
-  "version": "0.0.9",
-  "authors": [
-    "Oliver Joseph Ash <oliverjash@icloud.com>"
-  ],
-  "license": "MIT",
-  "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "devDependencies": {
-    "requirejs": "~2.1.9"
-  },
   "dependencies": {
     "eventEmitter": "~4.2.6",
-    "html-janitor": "git@github.com:OliverJAsh/html-janitor.git#47a8efb0de2716e800896262fae2d5bcfe56cdbc",
+    "html-janitor": "b73d906f2e30dbfd7d84d28305b42a91118fcd65",
     "lodash-amd": "~2.4.0"
+  },
+  "devDependencies": {
+    "requirejs": "~2.1.9"
   }
 }

@@ -1,27 +1,29 @@
 define([
   'event-emitter',
   'lodash-modern/objects/defaults',
-  './initializers/root-paragraph-element',
-  './initializers/insert-br-on-return',
   './plugins/core/commands',
-  './plugins/core/formatters',
+  './plugins/core/events',
+  './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/plain-text/escape-html-characters',
+  './plugins/core/inline-elements-mode',
   './plugins/core/patches',
-  './plugins/core/shame',
+  './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
   './undo-manager'
 ], function (
   EventEmitter,
   defaults,
-  rootParagraphElement,
-  insertBrOnReturn,
   commands,
-  formatters,
+  events,
+  replaceNbspCharsFormatter,
+  escapeHtmlCharactersFormatter,
+  inlineElementsMode,
   patches,
-  shame,
+  setRootPElement,
   Api,
   buildTransactionManager,
-  UndoManager
+  buildUndoManager
 ) {
 
   'use strict';
@@ -30,16 +32,22 @@ define([
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
-      allowBlockElements: true
+      allowBlockElements: true,
+      debug: false
     });
     this.commandPatches = {};
-    this.initializers = [];
+    this.plainTextFormatter = new Formatter();
+    this.htmlFormatter = new Formatter();
 
     this.api = new Api(this);
 
     var TransactionManager = buildTransactionManager(this);
-    this.undoManager = new UndoManager();
     this.transactionManager = new TransactionManager();
+
+    var UndoManager = buildUndoManager(this);
+    this.undoManager = new UndoManager();
+
+    this.el.setAttribute('contenteditable', true);
 
     this.el.addEventListener('input', function () {
       /**
@@ -48,48 +56,46 @@ define([
        * `document.execCommand('bold')`). We can't wrap a transaction around
        * these actions, so instead we run the transaction in this event.
        */
-       /**
-        * Chrome (<=23): The input event is triggered after the input happens
-        * but before the caret position is changed.
-        * Need to reproduce: http://jsbin.com/iWetuGEs/1/edit
-        * TODO: could this cause other issues?
-        */
-      setTimeout(function () {
-        this.transactionManager.run();
-      }.bind(this), 0);
+      this.transactionManager.run();
     }.bind(this), false);
 
     /**
      * Core Plugins
      */
 
-    // FIXME: event order matters
     if (this.allowsBlockElements()) {
-      // P mode
-      this.addInitializer(rootParagraphElement());
+      // Commands assume block elements are allowed, so all we have to do is
+      // set the content.
+      this.use(setRootPElement());
     } else {
-      // BR mode
-      this.addInitializer(insertBrOnReturn());
+      // Commands assume block elements are allowed, so we have to set the
+      // content and override some UX.
+      this.use(inlineElementsMode());
     }
 
-    this.use(formatters());
+    // Formatters
+    this.use(escapeHtmlCharactersFormatter());
+    this.use(replaceNbspCharsFormatter());
 
     // Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
+    this.use(patches.commands.insertHTML());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
     if (this.allowsBlockElements()) {
       this.use(patches.emptyWhenDeleting());
     }
+    this.use(patches.events());
 
     this.use(commands.indent());
+    this.use(commands.insertHTML());
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
     this.use(commands.undo());
 
-    this.use(shame());
+    this.use(events());
 
     var pushHistoryOnFocus = function () {
       // Tabbing into the editor doesn't create a range immediately, so we have to
@@ -102,7 +108,7 @@ define([
     }.bind(this);
 
     // TODO: abstract
-    this.el.addEventListener('focus', function () {
+    this.el.addEventListener('focus', function placeCaretOnFocus() {
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
@@ -112,21 +118,24 @@ define([
        * We detect when this occurs and fix it by placing the caret ourselves.
        */
       var selection = new this.api.Selection();
-      // FIXME: Chrome error
-      selection.placeMarkers();
-      var firefoxBug = this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
-      selection.removeMarkers();
+      // In Chrome, the range is not created on or before this event loop.
+      // It doesn’t matter because this is a fix for Firefox.
+      if (selection.range) {
+        selection.placeMarkers();
+        var isFirefoxBug = this.allowsBlockElements() && this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
+        selection.removeMarkers();
 
-      if (this.allowsBlockElements() && firefoxBug) {
-        var focusElement = getFirstDeepestChild(this.el.firstChild);
+        if (isFirefoxBug) {
+          var focusElement = getFirstDeepestChild(this.el.firstChild);
 
-        var range = selection.range;
+          var range = selection.range;
 
-        range.setStart(focusElement, 0);
-        range.setEnd(focusElement, 0);
+          range.setStart(focusElement, 0);
+          range.setEnd(focusElement, 0);
 
-        selection.selection.removeAllRanges();
-        selection.selection.addRange(range);
+          selection.selection.removeAllRanges();
+          selection.selection.addRange(range);
+        }
       }
 
       function getFirstDeepestChild(node) {
@@ -150,23 +159,10 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  Scribe.prototype.initialize = function () {
-    this.el.setAttribute('contenteditable', true);
-
-    this.initializers.forEach(function (initializer) {
-      initializer(this);
-    }, this);
-  };
-
   // For plugins
   // TODO: tap combinator?
   Scribe.prototype.use = function (configurePlugin) {
     configurePlugin(this);
-    return this;
-  };
-
-  Scribe.prototype.addInitializer = function (initializer) {
-    this.initializers.push(initializer);
     return this;
   };
 
@@ -203,8 +199,8 @@ define([
       var selection = new this.api.Selection();
 
       selection.placeMarkers();
-      var html = this.el.innerHTML;
-      selection.removeMarkers(this.el);
+      var html = this.getHTML();
+      selection.removeMarkers();
 
       this.undoManager.push(html);
 
@@ -239,9 +235,36 @@ define([
       content = content + '<br>';
     }
 
-    this.setHTML(this.formatter.format(content));
+    this.setHTML(this.htmlFormatter.format(content));
 
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.insertPlainText = function (plainText) {
+    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
+  };
+
+  Scribe.prototype.insertHTML = function (html) {
+    // TODO: error if the selection is not within the Scribe instance? Or
+    // focus the Scribe instance if it is not already focused?
+    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
+  };
+
+  Scribe.prototype.isDebugModeEnabled = function () {
+    return this.options.debug;
+  };
+
+  // TODO: abstract
+  function Formatter() {
+    this.formatters = [];
+  }
+
+  Formatter.prototype.format = function (html) {
+    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formattedHTML;
   };
 
   return Scribe;

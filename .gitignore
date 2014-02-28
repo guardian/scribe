@@ -1,5 +1,4 @@
-build
-node_modules
-bower_components
-components
-vendor
+/build/
+/node_modules/
+/bower_components/
+/vendor/

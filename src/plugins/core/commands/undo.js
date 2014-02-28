@@ -18,7 +18,7 @@ define(function () {
         return scribe.undoManager.position > 1;
       };
 
-      scribe.commandPatches.undo = undoCommand;
+      scribe.commands.undo = undoCommand;
 
       scribe.el.addEventListener('keydown', function (event) {
         // TODO: use lib to abstract meta/ctrl keys?

@@ -6,27 +6,35 @@ define(function () {
     this.node = node;
   }
 
+  // TODO: should the return value be wrapped in one of our APIs?
+  // Node or Selection?
+  // TODO: write tests. unit or integration?
   Node.prototype.getAncestor = function (nodeFilter) {
-    // TODO: use do instead?
-    // TODO: don't change *this* node object when traversing!
-    while (this.node) {
-      if (nodeFilter(this.node)) {
-        return this.node;
+    var isTopContainerElement = function (element) {
+      return element && element.attributes
+        && element.attributes.getNamedItem('contenteditable');
+    };
+    // TODO: should this happen here?
+    if (isTopContainerElement(this.node)) {
+      return;
+    }
+
+    var currentNode = this.node.parentNode;
+
+    // If it's a `contenteditable` then it's likely going to be the Scribe
+    // instance, so stop traversing there.
+    while (currentNode && ! isTopContainerElement(currentNode)) {
+      if (nodeFilter(currentNode)) {
+        return currentNode;
       }
-      this.node = this.node.parentNode;
-      // If it's a `contenteditable` then it's likely going to be the Scribe
-      // instance, so stop traversing there.
-      if (this.node && this.node.attributes && this.node.attributes.getNamedItem('contenteditable')) {
-        delete this.node;
-        return;
-      }
+      currentNode = currentNode.parentNode;
     }
   };
 
   Node.prototype.nextAll = function () {
     var all = [];
     var el = this.node;
-    while (el = el.nextElementSibling) {
+    while (el = el.nextSibling) {
       all.push(el);
     }
     return all;
