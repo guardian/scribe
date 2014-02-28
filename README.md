@@ -55,6 +55,9 @@ var toolbarElement = document.querySelector('.toolbar');
 scribe.use(scribePluginToolbar(toolbarElement));
 ```
 
+You can [see a live example here](http://guardian.github.io/scribe),
+or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
+
 ## Architecture
 
 [Everything is a plugin.](https://github.com/guardian/scribe/tree/master/src/plugins)
