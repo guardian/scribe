@@ -1,5 +1,8 @@
 # Contributing
 
+* Add a failing test
+* No assumptions should be made in the code – comment every little detail
+
 ## Releasing
 TODO: Add a script to do this for you
 

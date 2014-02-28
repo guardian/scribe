@@ -22,8 +22,8 @@ Natively, `contenteditable` will produce DIVs for new lines. This is not a bug.
 However, this is not ideal because in most cases we require semantic HTML to be
 produced.
 
-Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs for
-new lines instead.
+Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs (with
+block element mode turned off) for new lines instead.
 
 ## Plugins
 
@@ -67,12 +67,11 @@ scribe.use(scribePluginToolbar(toolbarElement));
 Theoretically, Scribe should work in any browser with the
 [Selection][Selection API] API, the [Range][Range API] API, and support for most
 of the non-standardised list of commands that appears in
-[this MDN article][Executing Commands]. It has been tested in Firefox >= 19,
-Chrome >= 21, and Safari 7.
+[this MDN article][Executing Commands]. It has been tested in Firefox >= 21,
+Chrome >= 27, and Safari 7.
 
-We have a [suite of integration tests](https://github.com/guardian/scribe/tree/master/test)
-in this repository that will eventually run in the cloud, providing clear
-visibility of browser support.
+See the [status of our integration tests](https://travis-ci.org/guardian/scribe)
+for more up-to-date support information.
 
 ### Commands
 
@@ -86,6 +85,8 @@ Commands tell Scribe:
 * how to query for whether the command can be executed on the document in its current state (similar to `document.queryCommandEnabled`)
 
 To ensure a separation of concerns, commands are split into multiple layers.
+When a command method is called by Scribe, it will be filtered through these
+layers sequentially.
 
 <dl>
   <dt>Scribe</dt>
@@ -94,9 +95,6 @@ To ensure a separation of concerns, commands are split into multiple layers.
   <dd>Where patches for brower inconsistencies in native commands are defined.</dd>
   <dt>Native</dt>
 </dl>
-
-When a command method is called by Scribe, it will be filtered through these
-layers sequentially.
 
 ## FAQ
 
