@@ -39,7 +39,7 @@ bower install scribe
 
 <dl>
   <dt>`allowBlockElements`</dt>
-  <dd>Enable or disable block element mode (enabled by default)</dd>
+  <dd>Enable/disable block element mode (enabled by default)</dd>
 </dl>
 
 ## Example
