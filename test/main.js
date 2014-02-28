@@ -409,7 +409,7 @@ describe('formatters', function () {
     describe('convert new lines to HTML', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['plugins/formatters/plain-text/scribe-plugin-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+          require(['plugins/formatters/plain-text/scribe-plugin-formatter-plain-text-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
             window.scribe.use(convertNewLinesToHtmlFormatter());
             done();
           });
