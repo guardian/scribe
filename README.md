@@ -4,6 +4,11 @@ Scribe [![Build Status](https://travis-ci.org/guardian/scribe.png?branch=oja-doc
 An underlying layer for composing a custom rich text editor, with patches for
 browser inconsistencies and sensible defaults.
 
+**Please note:** There is a lot of missing documentation for Scribe and many of
+its plugins. We plan to improve this, however in the meantime we encourage
+you to look at the code. Scribe is very small in comparison to other libraries
+of its kind.
+
 ## Core
 
 At the core of Scribe we have:
@@ -27,7 +32,17 @@ block element mode turned off) for new lines instead.
 
 ## Plugins
 
-TODO
+We have created a collection of plugins for advanced rich text editing purposes,
+all of which can be seen in use in our [example](http://guardian.github.io/scribe).
+* [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
+* [scribe-plugin-formatters-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatters-plain-text-convert-new-lines-to-html)
+* [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
+* [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
+* [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
+* [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
+* [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
+* [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
+* [scribe-plugin-toolbar](https://github.com/guardian/scribe-plugin-toolbar)
 
 ## Installation
 ```
@@ -40,10 +55,6 @@ bower install scribe
   <dt>`allowBlockElements`</dt>
   <dd>Enable or disable block element mode (enabled by default)</dd>
 </dl>
-
-## API
-
-TODO
 
 ## Example
 
@@ -61,6 +72,31 @@ scribe.use(scribePluginToolbar(toolbarElement));
 ## Architecture
 
 [Everything is a plugin.](https://github.com/guardian/scribe/tree/master/src/plugins)
+
+A plugin is simply a function that receives Scribe as an argument:
+
+``` js
+function myPlugin(scribe) {}
+```
+
+A consumer can then use your plugin with `Scribe.use`:
+
+``` js
+scribe.use(myPlugin);
+```
+
+Plugins may package whatever functionality you desire, and you are free to use
+native APIs to do so. However, you are required to wrap any DOM manipulation in
+a transaction, so that we can capture state changes for the history. For
+example:
+
+``` js
+function myPlugin(scribe) {
+  scribe.transactionManager.run(function () {
+    // Do some fancy DOM manipulation
+  });
+}
+```
 
 ### Browser Support
 
@@ -104,7 +140,7 @@ It is likely that there will be unknown edge cases, but these will be addressed
 when they are discovered.
 
 In the meantime, you can take some assurance from the fact that The Guardian is
-using Scribe to compose the rich text editor for its internal CMS.
+using Scribe as the basis for the internal CMS’ rich text editor.
 
 ### Why does Scribe have a custom undo manager?
 
