@@ -51,8 +51,8 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 
 ### Events
 * Chrome tries to be clever by applying inline styles/SPANs with `line-height`
-  on <backspace> or <delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
-* Firefox breaks out of P mode on <backspace> or <delete> keyboard events
+  on \<backspace> or \<delete> keyboard events: http://jsbin.com/isIdoKA/3/edit?html,css,js,output
+* Firefox breaks out of P mode on \<backspace> or \<delete> keyboard events
   when HTML has indentation between block elements: http://jsbin.com/EyuKase/1/edit?js,output
 
 ## Other
