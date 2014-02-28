@@ -1,8 +1,6 @@
 # Other
 * Test older Safari versions
-* Abstract plugins into new repos
 * Provide link to bundled version
-* Register bundled version in Bower
 * Run integration tests in Safari
 * Docs on how to run tests in Sauce Labs
 
