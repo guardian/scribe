@@ -1928,6 +1928,21 @@ describe('curly quotes plugin', function () {
       });
     });
 
+
+    when('inserting double quotes inside parentheses', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p>("1")</p>');
+        });
+      });
+
+      it('should replace with curly double quotes instead', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>(“1”)</p>');
+        });
+      });
+    });
+
     when('inserting double quotes after closing elements', function () {
       beforeEach(function () {
         return driver.executeScript(function () {

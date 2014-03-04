@@ -123,8 +123,8 @@ define(function () {
           next = next || '';
           var isStart = ! prev;
           var isEnd = ! next;
-          var hasCharsBefore = /[^\s]/.test(prev);
-          var hasCharsAfter = /[^\s]/.test(next);
+          var hasCharsBefore = /[^\s()]/.test(prev);
+          var hasCharsAfter = /[^\s()]/.test(next);
           // Optimistic heuristic, would need to look at DOM structure
           // (esp block vs inline elements) for more robust inference
           if (hasCharsBefore || (isStart && ! hasCharsAfter && ! isEnd)) {
