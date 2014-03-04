@@ -1985,6 +1985,8 @@ describe('curly quotes plugin', function () {
       });
     });
 
+    // TODO: We could use insertPlainText, or better, rewrite much of
+    // this as a unit test where that would not be a concern
     when('inserting escaped HTML with double quoted attributes', function () {
       beforeEach(function () {
         return driver.executeScript(function () {
