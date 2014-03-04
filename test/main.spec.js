@@ -1769,6 +1769,31 @@ describe('curly quotes plugin', function () {
     });
   });
 
+  given('the caret is after an opening parenthesis', function () {
+    beforeEach(function () {
+      return scribeNode.sendKeys('(');
+    });
+
+    when('the user types ascii double quote', function () {
+      beforeEach(function () {
+        return scribeNode.sendKeys('"');
+      });
+
+      it('should insert an opening curly double quote', function () {
+        // FIXME:
+        if (seleniumBugs.chrome.specialCharacters) { return; }
+        // FIXME:
+        if (seleniumBugs.firefox.curlyQuotes) { return; }
+
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          // Chrome (30): '<p>Hello.”</p>'
+          // Firefox (23, 24, 25): '<p>“Hello.”””<br></p>'
+          expect(innerHTML).to.have.html('<p>(“<firefox-bogus-br></p>');
+        });
+      });
+    });
+  });
+
   given('the caret is after the end of a word', function () {
     beforeEach(function () {
       return scribeNode.sendKeys('Hello '); // Note the space

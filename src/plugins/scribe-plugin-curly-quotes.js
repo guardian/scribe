@@ -56,12 +56,8 @@ define(function () {
       }
 
       function wordBeforeSelectedRange() {
-        var prevChar = charBeforeSelectedRange();
-        return (
-          prevChar !== ' ' &&
-          prevChar !== NON_BREAKING_SPACE &&
-          typeof prevChar !== 'undefined'
-        );
+        var prevChar = charBeforeSelectedRange() || '';
+        return isWordCharacter(prevChar);
       }
 
       function charBeforeSelectedRange() {
@@ -74,6 +70,10 @@ define(function () {
         var selection = new scribe.api.Selection();
         var context = selection.range.commonAncestorContainer.textContent;
         return context[selection.range.endOffset];
+      }
+
+      function isWordCharacter(character) {
+          return /[^\s()]/.test(character);
       }
 
       /** Delete any selected text, insert text instead */
@@ -123,8 +123,8 @@ define(function () {
           next = next || '';
           var isStart = ! prev;
           var isEnd = ! next;
-          var hasCharsBefore = /[^\s()]/.test(prev);
-          var hasCharsAfter = /[^\s()]/.test(next);
+          var hasCharsBefore = isWordCharacter(prev);
+          var hasCharsAfter  = isWordCharacter(next);
           // Optimistic heuristic, would need to look at DOM structure
           // (esp block vs inline elements) for more robust inference
           if (hasCharsBefore || (isStart && ! hasCharsAfter && ! isEnd)) {
