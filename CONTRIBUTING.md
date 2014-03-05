@@ -15,7 +15,7 @@ TODO: Add a script to do this for you
 * Commit using version number as the message – also add `[ci skip]` (temporary
   Travis workaround: https://github.com/travis-ci/travis-ci/issues/1468)
 * `git tag v<version number>`
-* `git push origin <tag name>`
+* `git push origin dist <tag name>`
 * Update change log in `master` branch
 
 ## Conventions
