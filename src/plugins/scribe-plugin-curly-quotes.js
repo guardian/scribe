@@ -106,12 +106,22 @@ define(function () {
         // Replace straight single and double quotes with curly
         // equivalent in the given string
         mapTextNodes(holder, function(str) {
-          return str.
-            // Use [\s\S] instead of . to match any characters _including newlines_
-            replace(/([\s\S])?'([\s\S])?/g,
-                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
-            replace(/([\s\S])?"([\s\S])?/g,
-                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
+          // Tokenise HTML elements vs text between them
+          // Note: this is escaped HTML in the text node!
+          var tokens = str.split(/(<[^>]+?>)/);
+          return tokens.map(function(token) {
+            // Only replace quotes in text between (potential) HTML elements
+            if (token[0] === '<') {
+              return token;
+            } else {
+              return token.
+                // Use [\s\S] instead of . to match any characters _including newlines_
+                replace(/([\s\S])?'([\s\S])?/g,
+                        replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
+                replace(/([\s\S])?"([\s\S])?/g,
+                        replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
+            }
+          }).join('');
         });
 
         return holder.innerHTML;

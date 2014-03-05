@@ -1897,6 +1897,20 @@ describe('curly quotes plugin', function () {
       });
     });
 
+    when('inserting escaped HTML with single quoted attributes', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML("<p>&lt;p class='foo'&gt;1&lt;/p&gt;</p>");
+        });
+      });
+
+      it('should not convert them to curly quotes', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal("<p>&lt;p class='foo'&gt;1&lt;/p&gt;</p>");
+        });
+      });
+    });
+
 
     /* Double quotes */
 
@@ -1967,6 +1981,22 @@ describe('curly quotes plugin', function () {
       it('should not convert them to curly quotes', function () {
         return scribeNode.getInnerHTML().then(function (innerHTML) {
           expect(innerHTML).to.equal('<p><em class="foo">Just text</em></p>');
+        });
+      });
+    });
+
+    // TODO: We could use insertPlainText, or better, rewrite much of
+    // this as a unit test where that would not be a concern
+    when('inserting escaped HTML with double quoted attributes', function () {
+      beforeEach(function () {
+        return driver.executeScript(function () {
+          window.scribe.insertHTML('<p>&lt;p class="foo"&gt;1&lt;/p&gt;</p>');
+        });
+      });
+
+      it('should not convert them to curly quotes', function () {
+        return scribeNode.getInnerHTML().then(function (innerHTML) {
+          expect(innerHTML).to.equal('<p>&lt;p class="foo"&gt;1&lt;/p&gt;</p>');
         });
       });
     });
