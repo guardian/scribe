@@ -33,8 +33,13 @@ Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs (with
 block element mode turned off) for new lines instead.
 
 ## Installation
+
+Download and install npm.
+Download chromedriver and make sure that it is reachable through your system path.
 ```
+./setup.sh
 bower install scribe
+./ci
 ```
 
 ## Options
