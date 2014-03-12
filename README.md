@@ -1,8 +1,6 @@
 Scribe [![Build Status](https://travis-ci.org/guardian/scribe.png)](https://travis-ci.org/guardian/scribe)
 ======
 
-[![Selenium Test Status](https://saucelabs.com/browser-matrix/OliverJAsh.svg)](https://saucelabs.com/u/OliverJAsh)
-
 A rich text editor framework for the web platform, with patches for
 browser inconsistencies and sensible defaults.
 
