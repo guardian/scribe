@@ -1,3 +1,9 @@
+/*
+ * Warning: shameless self-plug!
+ * Plumber is the Guardian’s tool of choice for build systems.
+ * https://github.com/plumberjs/plumber
+ */
+
 var all       = require('plumber-all');
 // var bower  = require('plumber-bower');
 var glob      = require('plumber-glob');
