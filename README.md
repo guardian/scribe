@@ -63,7 +63,8 @@ You can [see a live example here][example], or [view the code here](https://gith
 
 ## Architecture
 
-[Everything is a plugin.](https://github.com/guardian/scribe/tree/master/src/plugins)
+* [Everything is a plugin.](https://github.com/guardian/scribe/tree/master/src/plugins)
+* No large/unecapsulated dependencies. The only dependency is [`lodash-amd`](https://github.com/lodash/lodash-amd), however the partials used from this library are bundled with the distribution.
 
 A plugin is simply a function that receives Scribe as an argument:
 
