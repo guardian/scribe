@@ -44,17 +44,21 @@ bower install scribe
   <dd>Enable/disable block element mode (enabled by default)</dd>
 </dl>
 
-## Example
+## Usage Example
+
+Scribe is an AMD module:
 
 ``` js
-var scribeElement = document.querySelector('.scribe');
-// Create an instance of Scribe
-var scribe = new Scribe(scribeElement);
-
-// Use some plugins
-scribe.use(scribePluginBlockquoteCommand());
-var toolbarElement = document.querySelector('.toolbar');
-scribe.use(scribePluginToolbar(toolbarElement));
+require(['scribe'], function () {
+  var scribeElement = document.querySelector('.scribe');
+  // Create an instance of Scribe
+  var scribe = new Scribe(scribeElement);
+  
+  // Use some plugins
+  scribe.use(scribePluginBlockquoteCommand());
+  var toolbarElement = document.querySelector('.toolbar');
+  scribe.use(scribePluginToolbar(toolbarElement));
+});
 ```
 
 You can [see a live example here][example], or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
