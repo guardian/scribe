@@ -106,7 +106,7 @@ for more up-to-date support information.
 
 ### Commands
 
-Commands are objects that describe command formatting operations. For example,
+Commands are objects that describe formatting operations. For example,
 the bold command.
 
 Commands tell Scribe:
