@@ -49,7 +49,7 @@ bower install scribe
 Scribe is an AMD module:
 
 ``` js
-require(['scribe'], function () {
+require(['scribe'], function (Scribe) {
   var scribeElement = document.querySelector('.scribe');
   // Create an instance of Scribe
   var scribe = new Scribe(scribeElement);
