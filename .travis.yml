@@ -23,4 +23,9 @@ env:
     - BROWSER_NAME='chrome' BROWSER_VERSION='30' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='31' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='32' PLATFORM='Windows XP'
-script: ./ci
+
+before_script:
+  - npm install -g bower
+  - bower install
+  - node test/server &
+script: npm test
