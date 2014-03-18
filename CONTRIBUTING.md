@@ -5,6 +5,14 @@
 * No assumptions should be made in the code – comment every little detail with
   references to isolated cases (when dealing with browser inconsistencies)
 
+## Testing Locally
+```
+./setup.sh
+node test/server
+java -jar vendor/selenium-server-standalone-2.37.0.jar
+BROWSER_NAME='chrome' node test/runner.js
+```
+
 ## Releasing
 TODO: Add a script to do this for you
 
