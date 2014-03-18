@@ -9,7 +9,13 @@ var counts = {
   fail: 0
 };
 
-mocha.timeout(20000);
+/**
+ * FIXME: We have to set a ridiculous timeout (20 minutes) because Travis’
+ * concurrent builds will sometimes exceed Sauce Labs’ concurrency. We should
+ * track the following issue to add an option to Travis for limiting
+ * concurrency: https://github.com/travis-ci/travis-ci/issues/1963
+ */
+mocha.timeout(1200000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/main.spec.js');
 
