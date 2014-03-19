@@ -11,23 +11,25 @@ define(function () {
       var codeCommand = new scribe.api.SimpleCommand('code', 'CODE');
 
       codeCommand.execute = function () {
-        // TODO: When this command supports all types of ranges we can abstract
-        // it and use it for any command that applies inline styles.
-        var selection = new scribe.api.Selection();
-        var range = selection.range;
+        scribe.transactionManager.run(function () {
+          // TODO: When this command supports all types of ranges we can abstract
+          // it and use it for any command that applies inline styles.
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
 
-        var selectedHtmlDocumentFragment = range.extractContents();
+          var selectedHtmlDocumentFragment = range.extractContents();
 
-        var codeElement = document.createElement('code');
-        codeElement.appendChild(selectedHtmlDocumentFragment);
+          var codeElement = document.createElement('code');
+          codeElement.appendChild(selectedHtmlDocumentFragment);
 
-        range.insertNode(codeElement);
+          range.insertNode(codeElement);
 
-        range.selectNode(codeElement);
+          range.selectNode(codeElement);
 
-        // Re-apply the range
-        selection.selection.removeAllRanges();
-        selection.selection.addRange(range);
+          // Re-apply the range
+          selection.selection.removeAllRanges();
+          selection.selection.addRange(range);
+        });
       };
 
       // There is no native command for CODE elements, so we have to provide
