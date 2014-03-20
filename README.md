@@ -39,6 +39,8 @@ block element mode turned off) for new lines instead.
 bower install scribe
 ```
 
+Alternatively, you can [access the distribution files through GitHub releases](https://github.com/guardian/scribe/releases).
+
 ## Options
 
 <dl>
