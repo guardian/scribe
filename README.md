@@ -6,6 +6,8 @@ Scribe [![Build Status](https://travis-ci.org/guardian/scribe.svg?branch=master)
 A rich text editor framework for the web platform, with patches for
 browser inconsistencies and sensible defaults.
 
+For an introduction, you may want to read the blog post [Inside the Guardian’s CMS: meet Scribe, an extensible rich text editor](http://www.theguardian.com/info/developer-blog/2014/mar/20/inside-the-guardians-cms-meet-scribe-an-extensible-rich-text-editor).
+
 **Please note:** There is a lot of missing documentation for Scribe and many of
 its plugins. We plan to improve this, however in the meantime we encourage
 you to look at the code. Scribe is very small in comparison to other libraries
