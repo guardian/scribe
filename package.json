@@ -13,6 +13,7 @@
     "plumber-uglifyjs": "~0.3.0",
     "plumber-write": "~0.3.1",
     "plumber-umdify": "~0.1.5",
+    "plumber-rename": "~0.3.0",
     "q": "~1.0.0",
     "request": "~2.33.0",
     "selenium-webdriver": "~2.37.0"

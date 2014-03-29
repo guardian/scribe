@@ -10,7 +10,8 @@ var glob      = require('plumber-glob');
 var requireJS = require('plumber-requirejs');
 var uglifyJS  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
-var umdify = require('plumber-umdify')();
+var umdify = require('plumber-umdify');
+var rename = require('plumber-rename');
 
 module.exports = function (pipelines) {
   var mainRequireJS = requireJS({
@@ -45,7 +46,6 @@ module.exports = function (pipelines) {
 
   var toBuildDir = write('./build');
   var writeBoth = all(
-    [umdify, toBuildDir],
     [uglifyJS, toBuildDir],
     toBuildDir
   );
@@ -59,7 +59,6 @@ module.exports = function (pipelines) {
     // Send the resource along these branches
     writeBoth
   ];
-
   /**
    * We define pipelines for building the non-core plugins. In the future the
    * source files for these plugins will live in another repository.
@@ -76,6 +75,8 @@ module.exports = function (pipelines) {
     'scribe-plugin-toolbar'
   ];
 
+  var pluginPipelines = [];
+
   genericPlugins.forEach(function (pluginName) {
     addPluginBuildPipeline(genericPluginRequireJS)(pluginName);
   });
@@ -85,12 +86,48 @@ module.exports = function (pipelines) {
 
   function addPluginBuildPipeline(requireJSOperation) {
     return function (name, path) {
+      // Save the pipeline data for reference
+      var pipeline = {
+        path: path,
+        name: name,
+        glob: glob('./src/plugins' + (path || '') + '/' + name + '.js'),
+        operation: requireJSOperation,
+        writeBoth: writeBoth
+      };
+
       pipelines['build:' + name] = [
-        glob('./src/plugins' + (path || '') + '/' + name + '.js'),
-        requireJSOperation,
+        pipeline.glob,
+        pipeline.operation,
         // Send the resource along these branches
-        writeBoth
+        pipeline.writeBoth
       ];
+
+      pluginPipelines.push(pipeline);
     };
   }
+
+  // Npm builder
+  var npmPipelines = [[
+    glob('./src/scribe.js'),
+    mainRequireJS,
+    [umdify('scribe'), toBuildDir]
+  ]];
+
+  // Merge plugins into build:npm pipeline
+  pluginPipelines.forEach(function(pipeline) {
+    var toBuildPluginDir = write('./build/plugins');
+    var output_name = pipeline.name.replace(/^scribe-plugin-/,'');
+    var npmPluginPipeline = [
+      pipeline.glob,
+      pipeline.operation,
+      rename(output_name),
+      [umdify(), toBuildPluginDir]
+    ];
+    npmPipelines.push(npmPluginPipeline);
+  });
+
+  // Export the pipeline now
+  pipelines['build:npm'] = [
+    all.apply(this,npmPipelines)
+  ];
 };
