@@ -10,6 +10,7 @@ var glob      = require('plumber-glob');
 var requireJS = require('plumber-requirejs');
 var uglifyJS  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
+var umdify = require('plumber-umdify')();
 
 module.exports = function (pipelines) {
   var mainRequireJS = requireJS({
@@ -44,6 +45,7 @@ module.exports = function (pipelines) {
 
   var toBuildDir = write('./build');
   var writeBoth = all(
+    [umdify, toBuildDir],
     [uglifyJS, toBuildDir],
     toBuildDir
   );
