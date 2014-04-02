@@ -73,5 +73,3 @@ define('scribe-plugin-image-prompt-command', [], function () {
     };
 
 });
-
-//# sourceMappingURL=scribe-plugin-link-prompt-command.js.map
