@@ -78,8 +78,6 @@ module.exports = function (pipelines) {
     'scribe-plugin-toolbar'
   ];
 
-  var pluginPipelines = [];
-
   genericPlugins.forEach(function (pluginName) {
     addPluginBuildPipeline(genericPluginRequireJS)(pluginName);
   });
@@ -98,7 +96,7 @@ module.exports = function (pipelines) {
         writeBoth: writeBoth
       };
 
-      // Add a separate build
+      // Add to separate build pipeline
       pipelines['build:' + name] = [
         pipeline.glob,
         pipeline.operation,
@@ -106,7 +104,7 @@ module.exports = function (pipelines) {
         pipeline.writeBoth
       ];
 
-      // Add to main build
+      // Add to main build pipeline
       var toBuildPluginDir = write('./build/plugins');
       var outputName = pipeline.name.replace(/^scribe-plugin-/,'');
 
