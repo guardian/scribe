@@ -14,7 +14,6 @@ define('scribe-plugin-image-prompt-command', [], function () {
 
             linkPromptCommand.execute = function () {
                 var selection = new scribe.api.Selection();
-                console.log(selection);
                 var range = selection.range;
                 var anchorNode = selection.getContaining(function (node) {
                     return node.nodeName === this.nodeName;
