@@ -12,7 +12,7 @@
     "plumber-requirejs": "~0.3.0",
     "plumber-uglifyjs": "~0.3.0",
     "plumber-write": "~0.3.1",
-    "plumber-umdify": "~0.1.6",
+    "plumber-umdify": "~0.2.3",
     "plumber-rename": "~0.3.0",
     "q": "~1.0.0",
     "request": "~2.33.0",
