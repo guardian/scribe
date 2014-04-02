@@ -25,7 +25,9 @@ module.exports = function (pipelines) {
           'event-emitter': {
               exports: 'EventEmitter'
           }
-      }
+      },
+      onBuildWrite: umdify.onBuildWrite,
+      wrap: umdify.wrap({'exportModule': 'scribe', 'globalKey': 'Scribe'})
   });
 
   var sanitizerPluginRequireJS = requireJS({
@@ -50,7 +52,7 @@ module.exports = function (pipelines) {
     toBuildDir
   );
 
-  pipelines['build'] = [
+ var buildPipelines = [[
     // TODO: use bower operation to find main of this component?
     // As per: https://github.com/bower/bower/issues/1090
     // bower('scribe'),
@@ -58,7 +60,8 @@ module.exports = function (pipelines) {
     mainRequireJS,
     // Send the resource along these branches
     writeBoth
-  ];
+  ]];
+
   /**
    * We define pipelines for building the non-core plugins. In the future the
    * source files for these plugins will live in another repository.
@@ -95,6 +98,7 @@ module.exports = function (pipelines) {
         writeBoth: writeBoth
       };
 
+      // Add a separate build
       pipelines['build:' + name] = [
         pipeline.glob,
         pipeline.operation,
@@ -102,32 +106,19 @@ module.exports = function (pipelines) {
         pipeline.writeBoth
       ];
 
-      pluginPipelines.push(pipeline);
+      // Add to main build
+      var toBuildPluginDir = write('./build/plugins');
+      var outputName = pipeline.name.replace(/^scribe-plugin-/,'');
+
+      buildPipelines.push([
+        pipeline.glob,
+        pipeline.operation,
+        rename(outputName),
+        [umdify.map(), toBuildPluginDir]
+      ]);
     };
   }
 
-  // Npm builder
-  var npmPipelines = [[
-    glob('./src/scribe.js'),
-    mainRequireJS,
-    [umdify('scribe'), toBuildDir]
-  ]];
-
-  // Merge plugins into build:npm pipeline
-  pluginPipelines.forEach(function(pipeline) {
-    var toBuildPluginDir = write('./build/plugins');
-    var output_name = pipeline.name.replace(/^scribe-plugin-/,'');
-    var npmPluginPipeline = [
-      pipeline.glob,
-      pipeline.operation,
-      rename(output_name),
-      [umdify(), toBuildPluginDir]
-    ];
-    npmPipelines.push(npmPluginPipeline);
-  });
-
-  // Export the pipeline now
-  pipelines['build:npm'] = [
-    all.apply(this,npmPipelines)
-  ];
+  // Generate the build pipeline
+  pipelines['build'] = [all.apply(this,buildPipelines)];
 };
