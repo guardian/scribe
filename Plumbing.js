@@ -111,8 +111,9 @@ module.exports = function (pipelines) {
       buildPipelines.push([
         pipeline.glob,
         pipeline.operation,
+        umdify.map(),
         rename(outputName),
-        [umdify.map(), toBuildPluginDir]
+        toBuildPluginDir
       ]);
     };
   }
