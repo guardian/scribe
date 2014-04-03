@@ -43,6 +43,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 ### `Document.queryCommandState`
 * Browser magic: Chrome and Firefox report command state to be true after
   applying a command to a collapsed selection, but why?: http://jsbin.com/eDOxacI/1/edit?js,console,output
+* `superscript`: Firefox: Returns false when a whole `SUP` is selected: http://jsbin.com/marox/1/edit?js,console,output
+* `subscript`: Firefox: Returns false when a whole `SUB` is selected: http://jsbin.com/marox/1/edit?js,console,output
+  - True for all inline elements?
 
 ### `Element.focus`
 * Firefox: Giving focus to a `contenteditable` will place the caret outside of
@@ -58,3 +61,6 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 ## Other
 * Chrome (<= 28(?)): `TreeWalker` does not work properly with
   `DocumentFragment`s: http://stackoverflow.com/questions/21803827/chrome-28-treewalker-not-working-with-documentfragments
+
+### `Range.commonAncestorContainer`
+* Firefox: Returns `P` when a whole `SUP` is selected: http://jsbin.com/xoqul/1/edit?js,console,output
