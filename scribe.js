@@ -2449,6 +2449,34 @@ define('plugins/core/commands/redo',[],function () {
 
 });
 
+define('plugins/core/commands/subscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var subscriptCommand = new scribe.api.Command('subscript');
+
+      scribe.commands.subscript = subscriptCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/superscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var superscriptCommand = new scribe.api.Command('superscript');
+
+      scribe.commands.superscript = superscriptCommand;
+    };
+  };
+
+});
+
 define('plugins/core/commands/undo',[],function () {
 
   
@@ -2489,6 +2517,8 @@ define('plugins/core/commands',[
   './commands/insert-list',
   './commands/outdent',
   './commands/redo',
+  './commands/subscript',
+  './commands/superscript',
   './commands/undo'
 ], function (
   indent,
@@ -2496,6 +2526,8 @@ define('plugins/core/commands',[
   insertList,
   outdent,
   redo,
+  subscript,
+  superscript,
   undo
 ) {
 
@@ -2507,6 +2539,8 @@ define('plugins/core/commands',[
     insertList: insertList,
     outdent: outdent,
     redo: redo,
+    subscript: subscript,
+    superscript: superscript,
     undo: undo
   };
 
@@ -4070,6 +4104,8 @@ define('scribe',[
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
+    this.use(commands.subscript());
+    this.use(commands.superscript());
     this.use(commands.undo());
 
     this.use(events());
