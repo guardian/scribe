@@ -4,6 +4,8 @@ define([
   './commands/insert-list',
   './commands/outdent',
   './commands/redo',
+  './commands/subscript',
+  './commands/superscript',
   './commands/undo'
 ], function (
   indent,
@@ -11,6 +13,8 @@ define([
   insertList,
   outdent,
   redo,
+  subscript,
+  superscript,
   undo
 ) {
 
@@ -22,6 +26,8 @@ define([
     insertList: insertList,
     outdent: outdent,
     redo: redo,
+    subscript: subscript,
+    superscript: superscript,
     undo: undo
   };
 
