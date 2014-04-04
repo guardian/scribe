@@ -230,7 +230,7 @@ after(function () {
 
 beforeEach(function () {
   return driver.wait(function () {
-    return driver.executeScript('return document.readyState').then(function (returnValue) {
+    return driver.executeScript('return scribe.targetWindow.document.readyState').then(function (returnValue) {
       return returnValue === 'complete';
     });
   });
@@ -261,7 +261,7 @@ describe('undo manager', function () {
             // Insert a marker so we can see where the caret is
             var selection = window.getSelection();
             var range = selection.getRangeAt(0);
-            var marker = document.createElement('em');
+            var marker = scribe.targetWindow.document.createElement('em');
             marker.classList.add('scribe-marker');
             range.insertNode(marker);
           }).then(function () {
@@ -1430,7 +1430,7 @@ describe('patches', function () {
 
         beforeEach(function () {
           return driver.executeScript(function () {
-            document.body.style.lineHeight = 2;
+            scribe.targetWindow.document.body.style.lineHeight = 2;
           });
         });
 
@@ -1504,7 +1504,7 @@ describe('patches', function () {
 
       beforeEach(function () {
         return driver.executeScript(function () {
-          document.body.style.lineHeight = 2;
+          scribe.targetWindow.document.body.style.lineHeight = 2;
         });
       });
 
@@ -1624,7 +1624,7 @@ describe('patches', function () {
 
       beforeEach(function () {
         return driver.executeScript(function () {
-          document.body.style.lineHeight = 2;
+          scribe.targetWindow.document.body.style.lineHeight = 2;
         });
       });
 

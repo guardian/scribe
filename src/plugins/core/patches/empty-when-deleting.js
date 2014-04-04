@@ -51,7 +51,7 @@ define(function () {
        * @return {string}
        */
       function serialiseRangeToHTML(range) {
-        var div = document.createElement('div');
+        var div = scribe.targetWindow.document.createElement('div');
         var contents = range.cloneContents();
         div.appendChild(contents);
         return div.innerHTML;
@@ -68,7 +68,7 @@ define(function () {
         // them with the stricly equality operator.
         var serialisedSelection = serialiseRangeToHTML(range);
 
-        var contentRange = document.createRange();
+        var contentRange = scribe.targetWindow.document.createRange();
         contentRange.selectNodeContents(scribe.el);
 
         var serialisedContent = serialiseRangeToHTML(contentRange);

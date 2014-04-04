@@ -35,6 +35,7 @@ define([
       allowBlockElements: true,
       debug: false
     });
+    this.targetWindow = options.targetWindow || window;
     this.commandPatches = {};
     this.plainTextFormatter = new Formatter();
     this.htmlFormatter = new Formatter();
@@ -139,7 +140,7 @@ define([
       }
 
       function getFirstDeepestChild(node) {
-        var treeWalker = document.createTreeWalker(node);
+        var treeWalker = scribe.targetWindow.document.createTreeWalker(node);
         var previousNode = treeWalker.currentNode;
         if (treeWalker.firstChild()) {
           // TODO: build list of non-empty elements (used elsewhere)

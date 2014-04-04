@@ -30,7 +30,7 @@ define([
           // TODO: This should probably be a part of HTML Janitor, or some other
           // formatter.
           scribe.transactionManager.run(function () {
-            var bin = document.createElement('div');
+            var bin = scribe.targetWindow.document.createElement('div');
             bin.innerHTML = value;
 
             wrapChildNodes(bin);
@@ -71,7 +71,7 @@ define([
               });
 
               consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-                var pElement = document.createElement('p');
+                var pElement = scribe.targetWindow.document.createElement('p');
                 nodes[0].parentNode.insertBefore(pElement, nodes[0]);
                 nodes.forEach(function (node) {
                   pElement.appendChild(node);
@@ -83,7 +83,7 @@ define([
 
             // Traverse the tree, wrapping child nodes as we go.
             function traverse(parentNode) {
-              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+              var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
               var node = treeWalker.firstChild();
 
               while (node) {

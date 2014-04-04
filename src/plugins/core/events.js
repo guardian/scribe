@@ -40,8 +40,8 @@ define([
                 scribe.transactionManager.run(function () {
                   // Default P
                   // TODO: Abstract somewhere
-                  var pNode = document.createElement('p');
-                  var brNode = document.createElement('br');
+                  var pNode = scribe.targetWindow.document.createElement('p');
+                  var brNode = scribe.targetWindow.document.createElement('br');
                   pNode.appendChild(brNode);
 
                   headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
@@ -140,8 +140,8 @@ define([
           // Store the caret position
           selection.placeMarkers();
 
-          var bin = document.createElement('div');
-          document.body.appendChild(bin);
+          var bin = scribe.targetWindow.document.createElement('div');
+          scribe.targetWindow.document.body.appendChild(bin);
           bin.setAttribute('contenteditable', true);
           bin.focus();
 

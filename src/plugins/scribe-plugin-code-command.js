@@ -19,7 +19,7 @@ define(function () {
 
           var selectedHtmlDocumentFragment = range.extractContents();
 
-          var codeElement = document.createElement('code');
+          var codeElement = scribe.targetWindow.document.createElement('code');
           codeElement.appendChild(selectedHtmlDocumentFragment);
 
           range.insertNode(codeElement);

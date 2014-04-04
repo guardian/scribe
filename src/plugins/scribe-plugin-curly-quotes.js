@@ -78,7 +78,7 @@ define(function () {
 
       /** Delete any selected text, insert text instead */
       function replaceSelectedRangeWith(text) {
-        var textNode = document.createTextNode(text);
+        var textNode = scribe.targetWindow.document.createTextNode(text);
 
         var selection = new scribe.api.Selection();
         selection.range.deleteContents();
@@ -88,7 +88,7 @@ define(function () {
       }
 
       function placeCaretAfter(node) {
-        var rangeAfter = document.createRange();
+        var rangeAfter = scribe.targetWindow.document.createRange();
         rangeAfter.setStartAfter(node);
         rangeAfter.setEndAfter(node);
 
@@ -100,7 +100,7 @@ define(function () {
       function substituteCurlyQuotes(html) {
         // We don't want to replace quotes within the HTML markup
         // (e.g. attributes), only to text nodes
-        var holder = document.createElement('div');
+        var holder = scribe.targetWindow.document.createElement('div');
         holder.innerHTML = html;
 
         // Replace straight single and double quotes with curly
@@ -147,7 +147,7 @@ define(function () {
 
       // Apply a function on all text nodes in a container, mutating in place
       function mapTextNodes(container, func) {
-        var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+        var walker = scribe.targetWindow.document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
         var node = walker.firstChild();
         if (node) {
           do {
