@@ -94,6 +94,8 @@ define([
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
+    this.use(commands.subscript());
+    this.use(commands.superscript());
     this.use(commands.undo());
 
     this.use(events());
