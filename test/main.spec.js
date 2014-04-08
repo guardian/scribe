@@ -2090,13 +2090,13 @@ describe('toolbar plugin', function () {
         var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
         for (var i = 0;i < vendorButtons.length;i++) {
           var button = vendorButtons[i];
-          if (button.className.match(/\bvendor\b/g)) {
-            // We have a vendor button, it shouldn't be disabled
-            expect(button.disabled).to.not.be.ok;
-          } else {
+          if (button.hasAttribute('data-command-name')) {
             // We have a default button, which is disabled when no text is
             // inserted
             expect(button.disabled).to.be.ok;
+          } else {
+            // We have a vendor button, it shouldn't be disabled
+            expect(button.disabled).to.not.be.ok;
           }
         }
         done();
