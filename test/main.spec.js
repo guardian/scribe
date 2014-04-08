@@ -2044,6 +2044,64 @@ describe('curly quotes plugin', function () {
 
 });
 
+describe('toolbar plugin', function () {
+
+  beforeEach(function () {
+    return initializeScribe();
+  });
+
+  beforeEach(function () {
+    return driver.executeAsyncScript(function (done) {
+      var body = document.querySelector('body');
+
+      // Create toolbar
+      var toolbar = document.createElement('div');
+      toolbar.className = 'scribe-toolbar';
+
+      // Create one default button
+      var defaultButton = document.createElement('button');
+      defaultButton.setAttribute('data-command-name', 'removeFormat');
+      defaultButton.innerText = 'Remove Format';
+
+      // Create a vendor button
+      var vendorButton = document.createElement('button');
+      vendorButton.className = 'vendor';
+      vendorButton.innerText = 'Leave vendor alone!';
+
+      // Add them to the DOM
+      toolbar.appendChild(defaultButton);
+      toolbar.appendChild(vendorButton);
+      body.appendChild(toolbar);
+
+      require(['plugins/scribe-plugin-toolbar'], function (toolbar) {
+        window.scribe.use(toolbar(), toolbar);
+        done();
+      });
+    });
+  });
+
+  when('updating the toolbar ui', function () {
+    beforeEach(function () {
+      return scribeNode.click();
+    });
+
+    it('should not convert them to curly quotes', function () {
+      var vendorButtons = document.querySelectorAll('.scribe-toolbar button')
+      for (var i = 0;i < vendorButtons.length;++i) {
+        var button = vendorButtons[i];
+        if (button.className.match(/\bvendor\b/g)) {
+          // We have a vendor button, it shouldn't be disabled
+          expect(button.disabled).to.not.be.ok;
+        } else {
+          // We have a default button, which is disabled when no text is
+          // inserted
+          expect(button.disabled).to.be.ok;
+        }
+      }
+    });
+  });
+});
+
 function setContent(html) {
   return driver.executeScript(function (html) {
     window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
