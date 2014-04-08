@@ -10,6 +10,8 @@ var glob      = require('plumber-glob');
 var requireJS = require('plumber-requirejs');
 var uglifyJS  = require('plumber-uglifyjs')();
 var write     = require('plumber-write');
+var umdify = require('plumber-umdify');
+var rename = require('plumber-rename');
 
 module.exports = function (pipelines) {
   var mainRequireJS = requireJS({
@@ -23,7 +25,9 @@ module.exports = function (pipelines) {
           'event-emitter': {
               exports: 'EventEmitter'
           }
-      }
+      },
+      onBuildWrite: umdify.onBuildWrite,
+      wrap: umdify.wrap({'exportModule': 'scribe', 'globalKey': 'Scribe'})
   });
 
   var sanitizerPluginRequireJS = requireJS({
@@ -48,7 +52,7 @@ module.exports = function (pipelines) {
     toBuildDir
   );
 
-  pipelines['build'] = [
+ var buildPipelines = [[
     // TODO: use bower operation to find main of this component?
     // As per: https://github.com/bower/bower/issues/1090
     // bower('scribe'),
@@ -56,7 +60,7 @@ module.exports = function (pipelines) {
     mainRequireJS,
     // Send the resource along these branches
     writeBoth
-  ];
+  ]];
 
   /**
    * We define pipelines for building the non-core plugins. In the future the
@@ -83,12 +87,37 @@ module.exports = function (pipelines) {
 
   function addPluginBuildPipeline(requireJSOperation) {
     return function (name, path) {
+      // Save the pipeline data for reference
+      var pipeline = {
+        path: path,
+        name: name,
+        glob: glob('./src/plugins' + (path || '') + '/' + name + '.js'),
+        operation: requireJSOperation,
+        writeBoth: writeBoth
+      };
+
+      // Add to separate build pipeline
       pipelines['build:' + name] = [
-        glob('./src/plugins' + (path || '') + '/' + name + '.js'),
-        requireJSOperation,
+        pipeline.glob,
+        pipeline.operation,
         // Send the resource along these branches
-        writeBoth
+        pipeline.writeBoth
       ];
+
+      // Add to main build pipeline
+      var toBuildPluginDir = write('./build/plugins');
+      var outputName = pipeline.name.replace(/^scribe-plugin-/,'');
+
+      buildPipelines.push([
+        pipeline.glob,
+        pipeline.operation,
+        umdify.map(),
+        rename(outputName),
+        toBuildPluginDir
+      ]);
     };
   }
+
+  // Generate the build pipeline
+  pipelines['build'] = [all.apply(this,buildPipelines)];
 };
