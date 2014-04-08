@@ -2065,7 +2065,6 @@ describe('toolbar plugin', function () {
 
       // Create a vendor button
       var vendorButton = document.createElement('button');
-      vendorButton.className = 'vendor';
       vendorButton.innerText = 'Leave vendor alone!';
 
       // Add them to the DOM
