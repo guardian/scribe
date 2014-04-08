@@ -2044,6 +2044,7 @@ describe('curly quotes plugin', function () {
 
 });
 
+
 describe('toolbar plugin', function () {
 
   beforeEach(function () {
@@ -2053,10 +2054,9 @@ describe('toolbar plugin', function () {
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
       var body = document.querySelector('body');
-
       // Create toolbar
-      var toolbar = document.createElement('div');
-      toolbar.className = 'scribe-toolbar';
+      var toolbarDiv = document.createElement('div');
+      toolbarDiv.className = 'scribe-toolbarDiv';
 
       // Create one default button
       var defaultButton = document.createElement('button');
@@ -2069,12 +2069,12 @@ describe('toolbar plugin', function () {
       vendorButton.innerText = 'Leave vendor alone!';
 
       // Add them to the DOM
-      toolbar.appendChild(defaultButton);
-      toolbar.appendChild(vendorButton);
-      body.appendChild(toolbar);
+      toolbarDiv.appendChild(defaultButton);
+      toolbarDiv.appendChild(vendorButton);
+      body.appendChild(toolbarDiv);
 
-      require(['plugins/scribe-plugin-toolbar'], function (toolbar) {
-        window.scribe.use(toolbar(), toolbar);
+      require(['plugins/scribe-plugin-toolbar'], function (toolbarPlugin) {
+        window.scribe.use(toolbarPlugin(toolbarDiv));
         done();
       });
     });
@@ -2082,22 +2082,26 @@ describe('toolbar plugin', function () {
 
   when('updating the toolbar ui', function () {
     beforeEach(function () {
+      // Click in the contenteditable to call updateUi()
       return scribeNode.click();
     });
 
-    it('should not convert them to curly quotes', function () {
-      var vendorButtons = document.querySelectorAll('.scribe-toolbar button')
-      for (var i = 0;i < vendorButtons.length;++i) {
-        var button = vendorButtons[i];
-        if (button.className.match(/\bvendor\b/g)) {
-          // We have a vendor button, it shouldn't be disabled
-          expect(button.disabled).to.not.be.ok;
-        } else {
-          // We have a default button, which is disabled when no text is
-          // inserted
-          expect(button.disabled).to.be.ok;
+    it('should not disable vendor buttons', function (done) {
+      return driver.executeAsyncScript(function (done) {
+        var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
+        for (var i = 0;i < vendorButtons.length;i++) {
+          var button = vendorButtons[i];
+          if (button.className.match(/\bvendor\b/g)) {
+            // We have a vendor button, it shouldn't be disabled
+            expect(button.disabled).to.not.be.ok;
+          } else {
+            // We have a default button, which is disabled when no text is
+            // inserted
+            expect(button.disabled).to.be.ok;
+          }
         }
-      }
+        done();
+      });
     });
   });
 });
