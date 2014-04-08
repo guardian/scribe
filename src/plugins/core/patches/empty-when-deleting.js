@@ -32,9 +32,11 @@ define(function () {
            */
 
           var collapsedSelection = selection.selection.isCollapsed;
+          var emptyContent = scribe.getTextContent().trim() === '';
           var allContentSelected = isRangeAllContent(selection.range);
 
-          if ((collapsedSelection && scribe.getTextContent().trim() === '') || (! collapsedSelection && allContentSelected)) {
+          if ((  collapsedSelection && emptyContent) ||
+              (! collapsedSelection && allContentSelected)) {
             event.preventDefault();
 
             scribe.transactionManager.run(function () {
