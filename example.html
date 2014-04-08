@@ -1,0 +1,44 @@
+<!-- Use this example when testing -->
+<style>
+  button {
+    height: 3em;
+  }
+
+  .active {
+    border-style: inset;
+  }
+
+  rte, rte-toolbar {
+    display: block;
+  }
+</style>
+<script src="./bower_components/requirejs/require.js"></script>
+<script>
+require({
+  paths: {
+    'event-emitter': './bower_components/eventEmitter/EventEmitter',
+    'lodash-modern': './bower_components/lodash-amd/modern'
+  },
+  shim: {
+    'event-emitter': {
+      exports: 'EventEmitter'
+    }
+  }
+}, [
+  './src/scribe',
+  './src/plugins/scribe-plugin-toolbar'
+], function (
+  Scribe,
+  scribePluginToolbar
+) {
+  var scribe = new Scribe(document.querySelector('rte'));
+
+  scribe.setContent('<p>Hello, World!</p>');
+
+  scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+});
+</script>
+<rte-toolbar>
+  <button data-command-name="bold">Bold</button>
+</rte-toolbar>
+<rte></rte>
