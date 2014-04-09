@@ -1247,6 +1247,9 @@ describe('commands', function () {
   });
 });
 
+/* Temporarily broken due to refactoring of <p> cleanup,
+ * plugin needs to be fixed and tests re-enabled
+ */
 describe.skip('smart lists plugin', function () {
 
   beforeEach(function () {
