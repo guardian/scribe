@@ -9,7 +9,6 @@
 ```
 ./setup.sh
 node test/server
-java -jar vendor/selenium-server-standalone-2.37.0.jar
 BROWSER_NAME='chrome' node test/runner.js
 ```
 
