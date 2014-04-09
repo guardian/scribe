@@ -1247,7 +1247,7 @@ describe('commands', function () {
   });
 });
 
-describe('smart lists plugin', function () {
+describe.skip('smart lists plugin', function () {
 
   beforeEach(function () {
     return initializeScribe();
