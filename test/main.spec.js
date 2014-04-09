@@ -1679,7 +1679,7 @@ describe('patches', function () {
   });
 
 
-  describe('stay inside paragraphs when modifying across paragraphs', function () {
+  describe('stay inside paragraphs when removing/replacing a selection of multiple paragraphs', function () {
     beforeEach(function () {
       return initializeScribe();
     });
@@ -1691,7 +1691,7 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.DELETE);
         });
 
-        it('should stay inside a P when deleting the content of the paragraph', function() {
+        it('delete the content but stay inside a P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
@@ -1719,7 +1719,7 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
         });
 
-        it('should stay inside a P when deleting the first two paragraphs', function() {
+        it('should delete the paragraphs but stay inside a P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p><p>3</p>');
           });
@@ -1733,7 +1733,7 @@ describe('patches', function () {
           return scribeNode.sendKeys('4');
         });
 
-        it('should insert the character inside a P, replacing the two selected paragraphs', function() {
+        it('should replace the selected paragraphs with the inserted character', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p><p>4</p>');
           });
