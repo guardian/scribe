@@ -13,6 +13,8 @@ var Q = require('q');
 var SeleniumServer = require('selenium-webdriver/remote').SeleniumServer;
 var webdriver = require('selenium-webdriver');
 
+chai.Assertion.includeStack = true;
+
 var expect = chai.expect;
 
 /* global describe, it, after, afterEach, before, beforeEach */
