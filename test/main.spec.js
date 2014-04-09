@@ -2081,15 +2081,14 @@ describe('toolbar plugin', function () {
 
   when('updating the toolbar ui', function () {
     beforeEach(function () {
-      // Click in the contenteditable to call updateUi()
+      // Click in the contenteditable to enable/disable relevant buttons
       return scribeNode.click();
     });
 
-    it('should not disable vendor buttons', function (done) {
+    it('should not disable vendor buttons', function () {
       return driver.executeAsyncScript(function (done) {
         var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
-        for (var i = 0;i < vendorButtons.length;i++) {
-          var button = vendorButtons[i];
+        Array.prototype.forEach.call(vendorButtons, function(button) {
           if (button.hasAttribute('data-command-name')) {
             // We have a default button, which is disabled when no text is
             // inserted
@@ -2098,7 +2097,7 @@ describe('toolbar plugin', function () {
             // We have a vendor button, it shouldn't be disabled
             expect(button.disabled).to.not.be.ok;
           }
-        }
+        });
         done();
       });
     });
