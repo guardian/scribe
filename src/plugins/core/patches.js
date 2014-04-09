@@ -4,7 +4,6 @@ define([
   './patches/commands/insert-html',
   './patches/commands/insert-list',
   './patches/commands/outdent',
-  './patches/empty-when-deleting',
   './patches/events'
 ], function (
   boldCommand,
@@ -12,7 +11,6 @@ define([
   insertHTMLCommand,
   insertListCommands,
   outdentCommand,
-  emptyWhenDeleting,
   events
 ) {
 
@@ -32,7 +30,6 @@ define([
       insertList: insertListCommands,
       outdent: outdentCommand
     },
-    emptyWhenDeleting: emptyWhenDeleting,
     events: events
   };
 
