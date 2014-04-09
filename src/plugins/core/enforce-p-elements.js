@@ -10,12 +10,14 @@ define([
    * Chrome and Firefox: Upon pressing backspace inside of a P, the browser
    * deletes the paragraph element, leaving the scribe in a pristine state.
    *
-   * Firefox: Erasing the range created by ‘Select All’ will leave the scribe
-   * in a pristine state.
+   * Firefox: Erasing across multiple paragraphs, or outside of a
+   * whole paragraph (e.g. by ‘Select All’) will leave the scribe in a
+   * pristine state.
    *
-   * Entering a new line in a pristine state state will insert `<div>`s where
-   * previously we had `<p>`'s. This patches the behaivour of delete/backspace
-   * so that we do not end up in a pristine state.
+   * Entering a new line in a pristine state state will insert
+   * `<div>`s (in Chrome) or `<br>`s (in Firefox) where previously we
+   * had `<p>`'s. This patches the behaviour of delete/backspace so
+   * that we do not end up in a pristine state.
    */
 
   'use strict';
@@ -73,6 +75,8 @@ define([
   function traverse(parentNode) {
     var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
     var node = treeWalker.firstChild();
+
+    // FIXME: does this recurse down?
 
     while (node) {
       // TODO: At the moment we only support BLOCKQUOTEs. See failing

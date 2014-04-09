@@ -9,6 +9,7 @@ define([
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
   './plugins/core/enforce-p-elements',
+  './plugins/core/ensure-selectable-containers',
   './api',
   './transaction-manager',
   './undo-manager',
@@ -24,6 +25,7 @@ define([
   patches,
   setRootPElement,
   enforcePElements,
+  ensureSelectableContainers,
   Api,
   buildTransactionManager,
   buildUndoManager,
@@ -72,7 +74,9 @@ define([
       // set the content.
       // TODO: replace this by initial formatter application?
       this.use(setRootPElement());
+      // Warning: enforcePElements must come before ensureSelectableContainers
       this.use(enforcePElements());
+      this.use(ensureSelectableContainers());
     } else {
       // Commands assume block elements are allowed, so we have to set the
       // content and override some UX.

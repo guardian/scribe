@@ -1688,7 +1688,21 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.DELETE);
         });
 
-        it('should stay inside a <p> when deleting the first two paragraphs', function() {
+        it('should stay inside a <p> when deleting the content of the paragraph', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><bogus-br></p>');
+          });
+        });
+      });
+    });
+
+    given('an empty editor', function () {
+      when('the user presses <backspace>', function () {
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
+        });
+
+        it('should stay inside a <p>', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
