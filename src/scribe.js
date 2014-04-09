@@ -11,7 +11,8 @@ define([
   './plugins/core/enforce-p-elements',
   './api',
   './transaction-manager',
-  './undo-manager'
+  './undo-manager',
+  './dom-observer'
 ], function (
   EventEmitter,
   defaults,
@@ -25,7 +26,8 @@ define([
   enforcePElements,
   Api,
   buildTransactionManager,
-  buildUndoManager
+  buildUndoManager,
+  observeDomChanges
 ) {
 
   'use strict';
@@ -157,6 +159,26 @@ define([
       }
     }.bind(this));
     this.el.addEventListener('focus', pushHistoryOnFocus);
+
+
+    var applyFormatters = function() {
+      // Discard the last history item, as we're going to be adding
+      // a new clean history item next.
+      this.undoManager.undo();
+
+      // FIXME: caret position after undo?
+
+      this.transactionManager.run(function () {
+        var selection = new this.api.Selection();
+        selection.placeMarkers()
+        this.setHTML(this.htmlFormatter.format(this.getHTML()));
+        selection.selectMarkers()
+      }.bind(this));
+    }.bind(this);
+
+
+    observeDomChanges(this.el, applyFormatters)
+
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);

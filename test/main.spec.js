@@ -262,11 +262,11 @@ describe('undo manager', function () {
             var selection = window.getSelection();
             var range = selection.getRangeAt(0);
             var marker = document.createElement('em');
-            marker.classList.add('scribe-marker');
+            marker.classList.add('caret-position');
             range.insertNode(marker);
           }).then(function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p><em class="scribe-marker"></em>1</p>');
+              expect(innerHTML).to.equal('<p><em class="caret-position"></em>1</p>');
             });
           });
         });
@@ -1030,7 +1030,7 @@ describe('commands', function () {
 
           it('should wrap the content in a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+              expect(innerHTML).to.have.html('<p>1</p><p>2<chrome-bogus-br></p>');
             });
           });
         });
@@ -1060,7 +1060,7 @@ describe('commands', function () {
 
           it('should wrap the content in a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1</p><p>2<br>3</p>');
+              expect(innerHTML).to.have.html('<p>1</p><p>2<br>3<chrome-bogus-br></p>');
             });
           });
         });
@@ -1076,7 +1076,7 @@ describe('commands', function () {
           // TODO: This is a shortcoming of the `insertHTML` command
           it('should wrap the content in a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p><b>1</b>2</p>');
+              expect(innerHTML).to.have.html('<p><b>1</b>2<chrome-bogus-br></p>');
             });
           });
         });
