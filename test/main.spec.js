@@ -15,8 +15,6 @@ var webdriver = require('selenium-webdriver');
 
 var expect = chai.expect;
 
-require('mocha-as-promised')();
-
 /* global describe, it, after, afterEach, before, beforeEach */
 
 function given() {
