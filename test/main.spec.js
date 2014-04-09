@@ -129,7 +129,7 @@ if (local) {
   before(function () {
     // Note: you need to run from the root of the project
     // TODO: path.resolve
-    server = new SeleniumServer('./vendor/selenium-server-standalone-2.37.0.jar', {
+    server = new SeleniumServer('./vendor/selenium-server-standalone-2.41.0.jar', {
       port: 4444
     });
 
