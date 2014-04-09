@@ -1691,7 +1691,7 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.DELETE);
         });
 
-        it('should stay inside a <p> when deleting the content of the paragraph', function() {
+        it('should stay inside a P when deleting the content of the paragraph', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
@@ -1705,7 +1705,7 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
         });
 
-        it('should stay inside a <p>', function() {
+        it('should stay inside a P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p>');
           });
@@ -1719,7 +1719,7 @@ describe('patches', function () {
           return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
         });
 
-        it('should stay inside a <p> when deleting the first two paragraphs', function() {
+        it('should stay inside a P when deleting the first two paragraphs', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><bogus-br></p><p>3</p>');
           });
@@ -1733,7 +1733,7 @@ describe('patches', function () {
           return scribeNode.sendKeys('4');
         });
 
-        it('should insert the character inside a <p>, replacing the two selected paragraphs', function() {
+        it('should insert the character inside a P, replacing the two selected paragraphs', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p><p>4</p>');
           });
