@@ -1674,6 +1674,56 @@ describe('patches', function () {
       });
     });
   });
+
+
+  describe('stay inside paragraphs when modifying across paragraphs', function () {
+    beforeEach(function () {
+      return initializeScribe();
+    });
+
+    // Equivalent to Select All (Ctrl+A)
+    givenContentOf('|<p>1</p>|', function () {
+      when('the user presses <delete>', function () {
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.DELETE);
+        });
+
+        it('should stay inside a <p> when deleting the first two paragraphs', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><bogus-br></p>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>|1</p><p>2|</p><p>3</p>', function () {
+      when('the user presses <backspace>', function () {
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);
+        });
+
+        it('should stay inside a <p> when deleting the first two paragraphs', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><bogus-br></p><p>3</p>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>1</p><p>|2</p><p>3|</p>', function () {
+      when('the user types a character', function () {
+        beforeEach(function () {
+          return scribeNode.sendKeys('4');
+        });
+
+        it('should insert the character inside a <p>, replacing the two selected paragraphs', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>4</p>');
+          });
+        });
+      });
+    });
+  });
 });
 
 describe('curly quotes plugin', function () {
