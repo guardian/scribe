@@ -8,6 +8,7 @@ define([
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
+  './plugins/core/enforce-p-elements',
   './api',
   './transaction-manager',
   './undo-manager'
@@ -21,6 +22,7 @@ define([
   inlineElementsMode,
   patches,
   setRootPElement,
+  enforcePElements,
   Api,
   buildTransactionManager,
   buildUndoManager
@@ -66,7 +68,9 @@ define([
     if (this.allowsBlockElements()) {
       // Commands assume block elements are allowed, so all we have to do is
       // set the content.
+      // TODO: replace this by initial formatter application?
       this.use(setRootPElement());
+      this.use(enforcePElements());
     } else {
       // Commands assume block elements are allowed, so we have to set the
       // content and override some UX.
