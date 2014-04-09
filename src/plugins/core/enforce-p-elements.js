@@ -7,12 +7,13 @@ define([
 ) {
 
   /**
-   * Chrome and Firefox: Upon pressing backspace inside of a P, the browser
-   * deletes the paragraph element, leaving the scribe in a pristine state.
+   * Chrome and Firefox: Upon pressing backspace inside of a P, the
+   * browser deletes the paragraph element, leaving the caret (and any
+   * content) outside of any P.
    *
    * Firefox: Erasing across multiple paragraphs, or outside of a
-   * whole paragraph (e.g. by ‘Select All’) will leave the scribe in a
-   * pristine state.
+   * whole paragraph (e.g. by ‘Select All’) will leave content outside
+   * of any P.
    *
    * Entering a new line in a pristine state state will insert
    * `<div>`s (in Chrome) or `<br>`s (in Firefox) where previously we
