@@ -166,19 +166,19 @@ define([
       // a new clean history item next.
       this.undoManager.undo();
 
-      // FIXME: caret position after undo?
-
+      // Pass content through formatters, place caret back
       this.transactionManager.run(function () {
         var selection = new this.api.Selection();
-        selection.placeMarkers()
+        selection.placeMarkers();
         this.setHTML(this.htmlFormatter.format(this.getHTML()));
-        selection.selectMarkers()
+        selection.selectMarkers();
       }.bind(this));
     }.bind(this);
 
+    observeDomChanges(this.el, applyFormatters);
 
-    observeDomChanges(this.el, applyFormatters)
-
+    // TODO: disconnect on tear down:
+    // observer.disconnect();
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);

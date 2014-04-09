@@ -106,8 +106,6 @@ define([
         wrapChildNodes(bin);
         traverse(bin);
 
-        // FIXME: non-P stuff?
-
         return bin.innerHTML;
       });
 
