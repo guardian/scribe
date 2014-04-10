@@ -23,8 +23,8 @@ define([
       }));
 
       var realChangedNodes = allChangedNodes.
-            filter(notEmptyTextNode).
-            filter(notSelectionMarkerNode);
+        filter(notEmptyTextNode).
+        filter(notSelectionMarkerNode);
 
       return realChangedNodes.length > 0;
     }
