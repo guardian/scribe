@@ -1,7 +1,9 @@
 define([
-  'lodash-modern/arrays/flatten'
+  'lodash-modern/arrays/flatten',
+  'lodash-modern/collections/toArray'
 ], function (
-  flatten
+  flatten,
+  toArray
 ) {
 
   function observeDomChanges(el, callback) {
@@ -15,8 +17,8 @@ define([
 
     function includeRealMutations(mutations) {
       var allChangedNodes = flatten(mutations.map(function(mutation) {
-        var added = Array.prototype.slice.call(mutation.addedNodes);
-        var removed = Array.prototype.slice.call(mutation.removedNodes);
+        var added   = toArray(mutation.addedNodes);
+        var removed = toArray(mutation.removedNodes);
         return added.concat(removed);
       }));
 
