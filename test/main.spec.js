@@ -94,7 +94,7 @@ var seleniumBugs = {
      * the manual event — *only when the curly quotes plugin is enabled.*
      * My hypothesis is that it is sent thrice.
      */
-    curlyQuotes: browserName === 'firefox' && contains(['23', '24', '25'], browserVersion)
+    curlyQuotes: browserName === 'firefox' && contains(['21', '23', '24', '25', '26'], browserVersion)
   }
 };
 
