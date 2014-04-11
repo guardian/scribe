@@ -45,7 +45,7 @@ require({
   scribe.on('content-changed', updateHTML);
 
   function updateHTML() {
-    document.querySelector('.scribe-html').textContent = scribe.getHTML();
+    document.querySelector('.scribe-html').value = scribe.getHTML();
   }
 
   /**
