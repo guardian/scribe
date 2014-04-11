@@ -732,6 +732,330 @@ define('plugins/core/commands/indent',[],function () {
 
 });
 
+define('plugins/core/commands/insert-list',[],function () {
+
+  /**
+   * If the paragraphs option is set to true, then when the list is
+   * unapplied, ensure that we enter a P element.
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var InsertListCommand = function (commandName) {
+        scribe.api.Command.call(this, commandName);
+      };
+
+      InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
+      InsertListCommand.prototype.constructor = InsertListCommand;
+
+      InsertListCommand.prototype.execute = function (value) {
+        function splitList(listItemElements) {
+          if (listItemElements.length > 0) {
+            var newListNode = document.createElement(listNode.nodeName);
+
+            listItemElements.forEach(function (listItemElement) {
+              newListNode.appendChild(listItemElement);
+            });
+
+            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
+          }
+        }
+
+        if (this.queryState()) {
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var listNode = selection.getContaining(function (node) {
+            return node.nodeName === 'OL' || node.nodeName === 'UL';
+          });
+
+          var listItemElement = selection.getContaining(function (node) {
+            return node.nodeName === 'LI';
+          });
+
+          scribe.transactionManager.run(function () {
+            if (listItemElement) {
+              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+
+              /**
+               * If we are not at the start or end of a UL/OL, we have to
+               * split the node and insert the P(s) in the middle.
+               */
+              splitList(nextListItemElements);
+
+              /**
+               * Insert a paragraph in place of the list item.
+               */
+
+              selection.placeMarkers();
+
+              var pNode = document.createElement('p');
+              pNode.innerHTML = listItemElement.innerHTML;
+
+              listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
+              listItemElement.parentNode.removeChild(listItemElement);
+            } else {
+              /**
+               * When multiple list items are selected, we replace each list
+               * item with a paragraph.
+               */
+
+              // We can't query for list items in the selection so we loop
+              // through them all and find the intersection ourselves.
+              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
+                function (listItemElement) {
+                return range.intersectsNode(listItemElement) && listItemElement;
+              }).filter(function (listItemElement) {
+                // TODO: identity
+                return listItemElement;
+              });
+              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
+              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+
+              /**
+               * If we are not at the start or end of a UL/OL, we have to
+               * split the node and insert the P(s) in the middle.
+               */
+              splitList(listItemElementsAfterSelection);
+
+              // Store the caret/range positioning inside of the list items so
+              // we can restore it from the newly created P elements soon
+              // afterwards.
+              selection.placeMarkers();
+
+              var documentFragment = document.createDocumentFragment();
+              selectedListItemElements.forEach(function (listItemElement) {
+                var pElement = document.createElement('p');
+                pElement.innerHTML = listItemElement.innerHTML;
+                documentFragment.appendChild(pElement);
+              });
+
+              // Insert the Ps
+              listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
+
+              // Remove the LIs
+              selectedListItemElements.forEach(function (listItemElement) {
+                listItemElement.parentNode.removeChild(listItemElement);
+              });
+            }
+
+            // If the list is now empty, clean it up.
+            if (listNode.childNodes.length === 0) {
+              listNode.parentNode.removeChild(listNode);
+            }
+
+            selection.selectMarkers();
+          }.bind(this));
+        } else {
+          scribe.api.Command.prototype.execute.call(this, value);
+        }
+      };
+
+      InsertListCommand.prototype.queryEnabled = function () {
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
+      };
+
+      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
+      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
+    };
+  };
+
+});
+
+define('plugins/core/commands/outdent',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var outdentCommand = new scribe.api.Command('outdent');
+
+      outdentCommand.queryEnabled = function () {
+        /**
+         * FIXME: If the paragraphs option is set to true, then when the
+         * list is unapplied, ensure that we enter a P element.
+         * Currently we just disable the command when the selection is inside of
+         * a list.
+         */
+        var selection = new scribe.api.Selection();
+        var listElement = selection.getContaining(function (element) {
+          return element.nodeName === 'UL' || element.nodeName === 'OL';
+        });
+
+        // FIXME: define block element rule here?
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+      };
+
+      scribe.commands.outdent = outdentCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/redo',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var redoCommand = new scribe.api.Command('redo');
+
+      redoCommand.execute = function () {
+        var historyItem = scribe.undoManager.redo();
+
+        if (typeof historyItem !== 'undefined') {
+          scribe.restoreFromHistory(historyItem);
+        }
+      };
+
+      redoCommand.queryEnabled = function () {
+        return scribe.undoManager.position < scribe.undoManager.stack.length - 1;
+      };
+
+      scribe.commands.redo = redoCommand;
+
+      scribe.el.addEventListener('keydown', function (event) {
+        if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+          event.preventDefault();
+          redoCommand.execute();
+        }
+      });
+    };
+  };
+
+});
+
+define('plugins/core/commands/subscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var subscriptCommand = new scribe.api.Command('subscript');
+
+      scribe.commands.subscript = subscriptCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/superscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var superscriptCommand = new scribe.api.Command('superscript');
+
+      scribe.commands.superscript = superscriptCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/undo',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var undoCommand = new scribe.api.Command('undo');
+
+      undoCommand.execute = function () {
+        var historyItem = scribe.undoManager.undo();
+
+        if (typeof historyItem !== 'undefined') {
+          scribe.restoreFromHistory(historyItem);
+        }
+      };
+
+      undoCommand.queryEnabled = function () {
+        return scribe.undoManager.position > 1;
+      };
+
+      scribe.commands.undo = undoCommand;
+
+      scribe.el.addEventListener('keydown', function (event) {
+        // TODO: use lib to abstract meta/ctrl keys?
+        if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+          event.preventDefault();
+          undoCommand.execute();
+        }
+      });
+    };
+  };
+
+});
+
+define('plugins/core/commands',[
+  './commands/indent',
+  './commands/insert-list',
+  './commands/outdent',
+  './commands/redo',
+  './commands/subscript',
+  './commands/superscript',
+  './commands/undo'
+], function (
+  indent,
+  insertList,
+  outdent,
+  redo,
+  subscript,
+  superscript,
+  undo
+) {
+
+  
+
+  return {
+    indent: indent,
+    insertList: insertList,
+    outdent: outdent,
+    redo: redo,
+    subscript: subscript,
+    superscript: superscript,
+    undo: undo
+  };
+
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/baseIndexOf',[], function() {
+
+  /**
+   * The base implementation of `_.indexOf` without support for binary searches
+   * or `fromIndex` constraints.
+   *
+   * @private
+   * @param {Array} array The array to search.
+   * @param {*} value The value to search for.
+   * @param {number} [fromIndex=0] The index to search from.
+   * @returns {number} Returns the index of the matched value or `-1`.
+   */
+  function baseIndexOf(array, value, fromIndex) {
+    var index = (fromIndex || 0) - 1,
+        length = array ? array.length : 0;
+
+    while (++index < length) {
+      if (array[index] === value) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  return baseIndexOf;
+});
+
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="amd" -o ./modern/`
@@ -1362,6 +1686,398 @@ define('lodash-modern/internals/baseCreateCallback',['../functions/bind', '../ut
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
+define('lodash-modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
+
+  /**
+   * Iterates over own enumerable properties of an object, executing the callback
+   * for each property. The callback is bound to `thisArg` and invoked with three
+   * arguments; (value, key, object). Callbacks may exit iteration early by
+   * explicitly returning `false`.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Objects
+   * @param {Object} object The object to iterate over.
+   * @param {Function} [callback=identity] The function called per iteration.
+   * @param {*} [thisArg] The `this` binding of `callback`.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
+   *   console.log(key);
+   * });
+   * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
+   */
+  var forOwn = function(collection, callback, thisArg) {
+    var index, iterable = collection, result = iterable;
+    if (!iterable) return result;
+    if (!objectTypes[typeof iterable]) return result;
+    callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
+      var ownIndex = -1,
+          ownProps = objectTypes[typeof iterable] && keys(iterable),
+          length = ownProps ? ownProps.length : 0;
+
+      while (++ownIndex < length) {
+        index = ownProps[ownIndex];
+        if (callback(iterable[index], index, collection) === false) return result;
+      }
+    return result
+  };
+
+  return forOwn;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/objects/isArray',['../internals/isNative'], function(isNative) {
+
+  /** `Object#toString` result shortcuts */
+  var arrayClass = '[object Array]';
+
+  /** Used for native method references */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the internal [[Class]] of values */
+  var toString = objectProto.toString;
+
+  /* Native method shortcuts for methods with the same name as other `lodash` methods */
+  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
+
+  /**
+   * Checks if `value` is an array.
+   *
+   * @static
+   * @memberOf _
+   * @type Function
+   * @category Objects
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if the `value` is an array, else `false`.
+   * @example
+   *
+   * (function() { return _.isArray(arguments); })();
+   * // => false
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   */
+  var isArray = nativeIsArray || function(value) {
+    return value && typeof value == 'object' && typeof value.length == 'number' &&
+      toString.call(value) == arrayClass || false;
+  };
+
+  return isArray;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/objects/isString',[], function() {
+
+  /** `Object#toString` result shortcuts */
+  var stringClass = '[object String]';
+
+  /** Used for native method references */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the internal [[Class]] of values */
+  var toString = objectProto.toString;
+
+  /**
+   * Checks if `value` is a string.
+   *
+   * @static
+   * @memberOf _
+   * @category Objects
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if the `value` is a string, else `false`.
+   * @example
+   *
+   * _.isString('fred');
+   * // => true
+   */
+  function isString(value) {
+    return typeof value == 'string' ||
+      value && typeof value == 'object' && toString.call(value) == stringClass || false;
+  }
+
+  return isString;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/collections/contains',['../internals/baseIndexOf', '../objects/forOwn', '../objects/isArray', '../objects/isString'], function(baseIndexOf, forOwn, isArray, isString) {
+
+  /* Native method shortcuts for methods with the same name as other `lodash` methods */
+  var nativeMax = Math.max;
+
+  /**
+   * Checks if a given value is present in a collection using strict equality
+   * for comparisons, i.e. `===`. If `fromIndex` is negative, it is used as the
+   * offset from the end of the collection.
+   *
+   * @static
+   * @memberOf _
+   * @alias include
+   * @category Collections
+   * @param {Array|Object|string} collection The collection to iterate over.
+   * @param {*} target The value to check for.
+   * @param {number} [fromIndex=0] The index to search from.
+   * @returns {boolean} Returns `true` if the `target` element is found, else `false`.
+   * @example
+   *
+   * _.contains([1, 2, 3], 1);
+   * // => true
+   *
+   * _.contains([1, 2, 3], 1, 2);
+   * // => false
+   *
+   * _.contains({ 'name': 'fred', 'age': 40 }, 'fred');
+   * // => true
+   *
+   * _.contains('pebbles', 'eb');
+   * // => true
+   */
+  function contains(collection, target, fromIndex) {
+    var index = -1,
+        indexOf = baseIndexOf,
+        length = collection ? collection.length : 0,
+        result = false;
+
+    fromIndex = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex) || 0;
+    if (isArray(collection)) {
+      result = indexOf(collection, target, fromIndex) > -1;
+    } else if (typeof length == 'number') {
+      result = (isString(collection) ? collection.indexOf(target, fromIndex) : indexOf(collection, target, fromIndex)) > -1;
+    } else {
+      forOwn(collection, function(value) {
+        if (++index >= fromIndex) {
+          return !(result = value === target);
+        }
+      });
+    }
+    return result;
+  }
+
+  return contains;
+});
+
+define('plugins/core/events',[
+  'lodash-modern/collections/contains',
+], function (
+  contains
+) {
+
+  
+
+  return function () {
+    return function (scribe) {
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside a heading to ensure a P element is created.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13) { // enter
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            var headingNode = selection.getContaining(function (node) {
+              return (/^(H[1-6])$/).test(node.nodeName);
+            });
+
+            /**
+             * If we are at the end of the heading, insert a P. Otherwise handle
+             * natively.
+             */
+            if (headingNode && range.collapsed) {
+              var contentToEndRange = range.cloneRange();
+              contentToEndRange.setEndAfter(headingNode, 0);
+
+              // Get the content from the range to the end of the heading
+              var contentToEndFragment = contentToEndRange.cloneContents();
+
+              if (contentToEndFragment.firstChild.textContent === '') {
+                event.preventDefault();
+
+                scribe.transactionManager.run(function () {
+                  // Default P
+                  // TODO: Abstract somewhere
+                  var pNode = document.createElement('p');
+                  var brNode = document.createElement('br');
+                  pNode.appendChild(brNode);
+
+                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+
+                  // Re-apply range
+                  range.setStart(pNode, 0);
+                  range.setEnd(pNode, 0);
+
+                  selection.selection.removeAllRanges();
+                  selection.selection.addRange(range);
+                });
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside list item nodes.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            if (range.collapsed) {
+              var containerLIElement = selection.getContaining(function (node) {
+                return node.nodeName === 'LI';
+              });
+              if (containerLIElement && containerLIElement.textContent.trim() === '') {
+                /**
+                 * LIs
+                 */
+
+                event.preventDefault();
+
+                var listNode = selection.getContaining(function (node) {
+                  return node.nodeName === 'UL' || node.nodeName === 'OL';
+                });
+
+                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
+
+                command.execute();
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * Run formatters on paste
+       */
+
+      /**
+       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
+       * I also don't like how it has the authority to perform `event.preventDefault`.
+       */
+
+      scribe.el.addEventListener('paste', function handlePaste(event) {
+        /**
+         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
+         * will execute the second branch here.
+         */
+        if (event.clipboardData) {
+          event.preventDefault();
+
+          if (contains(event.clipboardData.types, 'text/html')) {
+            scribe.insertHTML(event.clipboardData.getData('text/html'));
+          } else {
+            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
+          }
+        } else {
+          /**
+           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
+           * sequence of events:
+           *
+           *   - Save the text selection
+           *   - Focus another, hidden textarea so we paste there
+           *   - Copy the pasted content of said textarea
+           *   - Give focus back to the scribe
+           *   - Restore the text selection
+           *
+           * This is required because, without access to the Clipboard API, there is literally
+           * no other way to manipulate content on paste.
+           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
+           *
+           * Firefox <= 21
+           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
+           */
+
+          var selection = new scribe.api.Selection();
+
+          // Store the caret position
+          selection.placeMarkers();
+
+          var bin = document.createElement('div');
+          document.body.appendChild(bin);
+          bin.setAttribute('contenteditable', true);
+          bin.focus();
+
+          // Wait for the paste to happen (next loop?)
+          setTimeout(function () {
+            data = bin.innerHTML;
+            bin.parentNode.removeChild(bin);
+
+            // Restore the caret position
+            selection.selectMarkers();
+            /**
+             * Firefox 19 (and maybe others): even though the applied range
+             * exists within the Scribe instance, we need to focus it.
+             */
+            scribe.el.focus();
+
+            scribe.insertHTML(data);
+          }, 1);
+        }
+      });
+
+    };
+  };
+});
+
+define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
+
+  /**
+   * Chrome:
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var nbspChar = '&nbsp;|\xA0';
+      var nbspCharRegExp = new RegExp(nbspChar, 'g');
+
+      // TODO: should we be doing this on paste?
+      scribe.htmlFormatter.formatters.push(function (html) {
+        return html.replace(nbspCharRegExp, ' ');
+      });
+    };
+  };
+
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
 define('lodash-modern/objects/forIn',['../internals/baseCreateCallback', '../internals/objectTypes'], function(baseCreateCallback, objectTypes) {
 
   /**
@@ -1907,831 +2623,174 @@ define('lodash-modern/arrays/last',['../functions/createCallback', '../internals
   return last;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-modern/internals/baseIndexOf',[], function() {
-
-  /**
-   * The base implementation of `_.indexOf` without support for binary searches
-   * or `fromIndex` constraints.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {*} value The value to search for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {number} Returns the index of the matched value or `-1`.
-   */
-  function baseIndexOf(array, value, fromIndex) {
-    var index = (fromIndex || 0) - 1,
-        length = array ? array.length : 0;
-
-    while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return baseIndexOf;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
-
-  /**
-   * Iterates over own enumerable properties of an object, executing the callback
-   * for each property. The callback is bound to `thisArg` and invoked with three
-   * arguments; (value, key, object). Callbacks may exit iteration early by
-   * explicitly returning `false`.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {Object} object The object to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {*} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
-   *   console.log(key);
-   * });
-   * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
-   */
-  var forOwn = function(collection, callback, thisArg) {
-    var index, iterable = collection, result = iterable;
-    if (!iterable) return result;
-    if (!objectTypes[typeof iterable]) return result;
-    callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
-      var ownIndex = -1,
-          ownProps = objectTypes[typeof iterable] && keys(iterable),
-          length = ownProps ? ownProps.length : 0;
-
-      while (++ownIndex < length) {
-        index = ownProps[ownIndex];
-        if (callback(iterable[index], index, collection) === false) return result;
-      }
-    return result
-  };
-
-  return forOwn;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-modern/objects/isArray',['../internals/isNative'], function(isNative) {
-
-  /** `Object#toString` result shortcuts */
-  var arrayClass = '[object Array]';
-
-  /** Used for native method references */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the internal [[Class]] of values */
-  var toString = objectProto.toString;
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
-
-  /**
-   * Checks if `value` is an array.
-   *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is an array, else `false`.
-   * @example
-   *
-   * (function() { return _.isArray(arguments); })();
-   * // => false
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   */
-  var isArray = nativeIsArray || function(value) {
-    return value && typeof value == 'object' && typeof value.length == 'number' &&
-      toString.call(value) == arrayClass || false;
-  };
-
-  return isArray;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-modern/objects/isString',[], function() {
-
-  /** `Object#toString` result shortcuts */
-  var stringClass = '[object String]';
-
-  /** Used for native method references */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the internal [[Class]] of values */
-  var toString = objectProto.toString;
-
-  /**
-   * Checks if `value` is a string.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is a string, else `false`.
-   * @example
-   *
-   * _.isString('fred');
-   * // => true
-   */
-  function isString(value) {
-    return typeof value == 'string' ||
-      value && typeof value == 'object' && toString.call(value) == stringClass || false;
-  }
-
-  return isString;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-modern/collections/contains',['../internals/baseIndexOf', '../objects/forOwn', '../objects/isArray', '../objects/isString'], function(baseIndexOf, forOwn, isArray, isString) {
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeMax = Math.max;
-
-  /**
-   * Checks if a given value is present in a collection using strict equality
-   * for comparisons, i.e. `===`. If `fromIndex` is negative, it is used as the
-   * offset from the end of the collection.
-   *
-   * @static
-   * @memberOf _
-   * @alias include
-   * @category Collections
-   * @param {Array|Object|string} collection The collection to iterate over.
-   * @param {*} target The value to check for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {boolean} Returns `true` if the `target` element is found, else `false`.
-   * @example
-   *
-   * _.contains([1, 2, 3], 1);
-   * // => true
-   *
-   * _.contains([1, 2, 3], 1, 2);
-   * // => false
-   *
-   * _.contains({ 'name': 'fred', 'age': 40 }, 'fred');
-   * // => true
-   *
-   * _.contains('pebbles', 'eb');
-   * // => true
-   */
-  function contains(collection, target, fromIndex) {
-    var index = -1,
-        indexOf = baseIndexOf,
-        length = collection ? collection.length : 0,
-        result = false;
-
-    fromIndex = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex) || 0;
-    if (isArray(collection)) {
-      result = indexOf(collection, target, fromIndex) > -1;
-    } else if (typeof length == 'number') {
-      result = (isString(collection) ? collection.indexOf(target, fromIndex) : indexOf(collection, target, fromIndex)) > -1;
-    } else {
-      forOwn(collection, function(value) {
-        if (++index >= fromIndex) {
-          return !(result = value === target);
-        }
-      });
-    }
-    return result;
-  }
-
-  return contains;
-});
-
-define('plugins/core/commands/insert-html',[
+define('plugins/core/formatters/html/enforce-p-elements',[
   'lodash-modern/arrays/last',
-  'lodash-modern/collections/contains',
+  'lodash-modern/collections/contains'
 ], function (
   last,
   contains
 ) {
 
-  
-
-  return function () {
-    return function (scribe) {
-      // TODO: not exhaustive?
-      var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H2'];
-      function isBlockElement(node) {
-        return contains(blockElementNames, node.nodeName);
-      }
-
-      var insertHTMLCommand = new scribe.api.Command('insertHTML');
-
-      insertHTMLCommand.execute = function (value) {
-        if (scribe.allowsBlockElements()) {
-          /**
-           * Ensure P mode.
-           *
-           * Wrap any orphan text nodes in a P element.
-           */
-          // TODO: This should be configurable and also correct markup such as
-          // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
-          // TODO: This should probably be a part of HTML Janitor, or some other
-          // formatter.
-          scribe.transactionManager.run(function () {
-            var bin = document.createElement('div');
-            bin.innerHTML = value;
-
-            wrapChildNodes(bin);
-            traverse(bin);
-
-            var newValue = bin.innerHTML;
-
-            scribe.api.Command.prototype.execute.call(this, newValue);
-
-            /**
-             * Wrap consecutive inline elements and text nodes in a P element.
-             */
-            function wrapChildNodes(parentNode) {
-              var groups = Array.prototype.reduce.call(parentNode.childNodes, function (accumulator, binChildNode) {
-                var group = last(accumulator);
-                if (! group) {
-                  startNewGroup();
-                } else {
-                  var isBlockGroup = isBlockElement(group[0]);
-                  if (isBlockGroup === isBlockElement(binChildNode)) {
-                    group.push(binChildNode);
-                  } else {
-                    startNewGroup();
-                  }
-                }
-
-                return accumulator;
-
-                function startNewGroup() {
-                  var newGroup = [binChildNode];
-                  accumulator.push(newGroup);
-                }
-              }, []);
-
-              var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-                var isBlockGroup = isBlockElement(group[0]);
-                return ! isBlockGroup;
-              });
-
-              consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-                var pElement = document.createElement('p');
-                nodes[0].parentNode.insertBefore(pElement, nodes[0]);
-                nodes.forEach(function (node) {
-                  pElement.appendChild(node);
-                });
-              });
-
-              parentNode._isWrapped = true;
-            }
-
-            // Traverse the tree, wrapping child nodes as we go.
-            function traverse(parentNode) {
-              var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
-              var node = treeWalker.firstChild();
-
-              while (node) {
-                // TODO: At the moment we only support BLOCKQUOTEs. See failing
-                // tests.
-                if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
-                  wrapChildNodes(node);
-                  traverse(parentNode);
-                  break;
-                }
-                node = treeWalker.nextSibling();
-              }
-            }
-          }.bind(this));
-        } else {
-          scribe.api.Command.prototype.execute.call(this, value);
-        }
-      };
-
-      scribe.commands.insertHTML = insertHTMLCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/insert-list',[],function () {
-
   /**
-   * If the paragraphs option is set to true, then when the list is
-   * unapplied, ensure that we enter a P element.
+   * Chrome and Firefox: Upon pressing backspace inside of a P, the
+   * browser deletes the paragraph element, leaving the caret (and any
+   * content) outside of any P.
+   *
+   * Firefox: Erasing across multiple paragraphs, or outside of a
+   * whole paragraph (e.g. by ‘Select All’) will leave content outside
+   * of any P.
+   *
+   * Entering a new line in a pristine state state will insert
+   * `<div>`s (in Chrome) or `<br>`s (in Firefox) where previously we
+   * had `<p>`'s. This patches the behaviour of delete/backspace so
+   * that we do not end up in a pristine state.
    */
 
   
 
-  return function () {
-    return function (scribe) {
-      var InsertListCommand = function (commandName) {
-        scribe.api.Command.call(this, commandName);
-      };
 
-      InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
-      InsertListCommand.prototype.constructor = InsertListCommand;
-
-      InsertListCommand.prototype.execute = function (value) {
-        function splitList(listItemElements) {
-          if (listItemElements.length > 0) {
-            var newListNode = document.createElement(listNode.nodeName);
-
-            listItemElements.forEach(function (listItemElement) {
-              newListNode.appendChild(listItemElement);
-            });
-
-            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
-          }
-        }
-
-        if (this.queryState()) {
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var listNode = selection.getContaining(function (node) {
-            return node.nodeName === 'OL' || node.nodeName === 'UL';
-          });
-
-          var listItemElement = selection.getContaining(function (node) {
-            return node.nodeName === 'LI';
-          });
-
-          scribe.transactionManager.run(function () {
-            if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
-
-              /**
-               * If we are not at the start or end of a UL/OL, we have to
-               * split the node and insert the P(s) in the middle.
-               */
-              splitList(nextListItemElements);
-
-              /**
-               * Insert a paragraph in place of the list item.
-               */
-
-              selection.placeMarkers();
-
-              var pNode = document.createElement('p');
-              pNode.innerHTML = listItemElement.innerHTML;
-
-              listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-              listItemElement.parentNode.removeChild(listItemElement);
-            } else {
-              /**
-               * When multiple list items are selected, we replace each list
-               * item with a paragraph.
-               */
-
-              // We can't query for list items in the selection so we loop
-              // through them all and find the intersection ourselves.
-              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
-                function (listItemElement) {
-                return range.intersectsNode(listItemElement) && listItemElement;
-              }).filter(function (listItemElement) {
-                // TODO: identity
-                return listItemElement;
-              });
-              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
-
-              /**
-               * If we are not at the start or end of a UL/OL, we have to
-               * split the node and insert the P(s) in the middle.
-               */
-              splitList(listItemElementsAfterSelection);
-
-              // Store the caret/range positioning inside of the list items so
-              // we can restore it from the newly created P elements soon
-              // afterwards.
-              selection.placeMarkers();
-
-              var documentFragment = document.createDocumentFragment();
-              selectedListItemElements.forEach(function (listItemElement) {
-                var pElement = document.createElement('p');
-                pElement.innerHTML = listItemElement.innerHTML;
-                documentFragment.appendChild(pElement);
-              });
-
-              // Insert the Ps
-              listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
-
-              // Remove the LIs
-              selectedListItemElements.forEach(function (listItemElement) {
-                listItemElement.parentNode.removeChild(listItemElement);
-              });
-            }
-
-            // If the list is now empty, clean it up.
-            if (listNode.childNodes.length === 0) {
-              listNode.parentNode.removeChild(listNode);
-            }
-
-            selection.selectMarkers();
-          }.bind(this));
-        } else {
-          scribe.api.Command.prototype.execute.call(this, value);
-        }
-      };
-
-      InsertListCommand.prototype.queryEnabled = function () {
-        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
-      };
-
-      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
-      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
-    };
-  };
-
-});
-
-define('plugins/core/commands/outdent',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var outdentCommand = new scribe.api.Command('outdent');
-
-      outdentCommand.queryEnabled = function () {
-        /**
-         * FIXME: If the paragraphs option is set to true, then when the
-         * list is unapplied, ensure that we enter a P element.
-         * Currently we just disable the command when the selection is inside of
-         * a list.
-         */
-        var selection = new scribe.api.Selection();
-        var listElement = selection.getContaining(function (element) {
-          return element.nodeName === 'UL' || element.nodeName === 'OL';
-        });
-
-        // FIXME: define block element rule here?
-        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
-      };
-
-      scribe.commands.outdent = outdentCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/redo',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var redoCommand = new scribe.api.Command('redo');
-
-      redoCommand.execute = function () {
-        var historyItem = scribe.undoManager.redo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
-      };
-
-      redoCommand.queryEnabled = function () {
-        return scribe.undoManager.position < scribe.undoManager.stack.length - 1;
-      };
-
-      scribe.commands.redo = redoCommand;
-
-      scribe.el.addEventListener('keydown', function (event) {
-        if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-          event.preventDefault();
-          redoCommand.execute();
-        }
-      });
-    };
-  };
-
-});
-
-define('plugins/core/commands/subscript',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var subscriptCommand = new scribe.api.Command('subscript');
-
-      scribe.commands.subscript = subscriptCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/superscript',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var superscriptCommand = new scribe.api.Command('superscript');
-
-      scribe.commands.superscript = superscriptCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/undo',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var undoCommand = new scribe.api.Command('undo');
-
-      undoCommand.execute = function () {
-        var historyItem = scribe.undoManager.undo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
-      };
-
-      undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 1;
-      };
-
-      scribe.commands.undo = undoCommand;
-
-      scribe.el.addEventListener('keydown', function (event) {
-        // TODO: use lib to abstract meta/ctrl keys?
-        if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-          event.preventDefault();
-          undoCommand.execute();
-        }
-      });
-    };
-  };
-
-});
-
-define('plugins/core/commands',[
-  './commands/indent',
-  './commands/insert-html',
-  './commands/insert-list',
-  './commands/outdent',
-  './commands/redo',
-  './commands/subscript',
-  './commands/superscript',
-  './commands/undo'
-], function (
-  indent,
-  insertHTML,
-  insertList,
-  outdent,
-  redo,
-  subscript,
-  superscript,
-  undo
-) {
-
-  
-
-  return {
-    indent: indent,
-    insertHTML: insertHTML,
-    insertList: insertList,
-    outdent: outdent,
-    redo: redo,
-    subscript: subscript,
-    superscript: superscript,
-    undo: undo
-  };
-
-});
-
-define('plugins/core/events',[
-  'lodash-modern/collections/contains',
-], function (
-  contains
-) {
-
-  
-
-  return function () {
-    return function (scribe) {
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside a heading to ensure a P element is created.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) { // enter
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            var headingNode = selection.getContaining(function (node) {
-              return (/^(H[1-6])$/).test(node.nodeName);
-            });
-
-            /**
-             * If we are at the end of the heading, insert a P. Otherwise handle
-             * natively.
-             */
-            if (headingNode && range.collapsed) {
-              var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(headingNode, 0);
-
-              // Get the content from the range to the end of the heading
-              var contentToEndFragment = contentToEndRange.cloneContents();
-
-              if (contentToEndFragment.firstChild.textContent === '') {
-                event.preventDefault();
-
-                scribe.transactionManager.run(function () {
-                  // Default P
-                  // TODO: Abstract somewhere
-                  var pNode = document.createElement('p');
-                  var brNode = document.createElement('br');
-                  pNode.appendChild(brNode);
-
-                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
-
-                  // Re-apply range
-                  range.setStart(pNode, 0);
-                  range.setEnd(pNode, 0);
-
-                  selection.selection.removeAllRanges();
-                  selection.selection.addRange(range);
-                });
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside list item nodes.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            if (range.collapsed) {
-              var containerLIElement = selection.getContaining(function (node) {
-                return node.nodeName === 'LI';
-              });
-              if (containerLIElement && containerLIElement.textContent.trim() === '') {
-                /**
-                 * LIs
-                 */
-
-                event.preventDefault();
-
-                var listNode = selection.getContaining(function (node) {
-                  return node.nodeName === 'UL' || node.nodeName === 'OL';
-                });
-
-                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
-
-                command.execute();
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * Run formatters on paste
-       */
-
-      /**
-       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
-       * I also don't like how it has the authority to perform `event.preventDefault`.
-       */
-
-      scribe.el.addEventListener('paste', function handlePaste(event) {
-        /**
-         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
-         * will execute the second branch here.
-         */
-        if (event.clipboardData) {
-          event.preventDefault();
-
-          if (contains(event.clipboardData.types, 'text/html')) {
-            scribe.insertHTML(event.clipboardData.getData('text/html'));
-          } else {
-            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
-          }
-        } else {
-          /**
-           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
-           * sequence of events:
-           *
-           *   - Save the text selection
-           *   - Focus another, hidden textarea so we paste there
-           *   - Copy the pasted content of said textarea
-           *   - Give focus back to the scribe
-           *   - Restore the text selection
-           *
-           * This is required because, without access to the Clipboard API, there is literally
-           * no other way to manipulate content on paste.
-           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
-           *
-           * Firefox <= 21
-           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
-           */
-
-          var selection = new scribe.api.Selection();
-
-          // Store the caret position
-          selection.placeMarkers();
-
-          var bin = document.createElement('div');
-          document.body.appendChild(bin);
-          bin.setAttribute('contenteditable', true);
-          bin.focus();
-
-          // Wait for the paste to happen (next loop?)
-          setTimeout(function () {
-            data = bin.innerHTML;
-            bin.parentNode.removeChild(bin);
-
-            // Restore the caret position
-            selection.selectMarkers();
-            /**
-             * Firefox 19 (and maybe others): even though the applied range
-             * exists within the Scribe instance, we need to focus it.
-             */
-            scribe.el.focus();
-
-            scribe.insertHTML(data);
-          }, 1);
-        }
-      });
-
-    };
-  };
-});
-
-define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
+  // TODO: not exhaustive?
+  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H2'];
+  function isBlockElement(node) {
+    return contains(blockElementNames, node.nodeName);
+  }
 
   /**
-   * Chrome:
+   * Wrap consecutive inline elements and text nodes in a P element.
    */
+  function wrapChildNodes(parentNode) {
+    var groups = Array.prototype.reduce.call(parentNode.childNodes,
+                                             function (accumulator, binChildNode) {
+      var group = last(accumulator);
+      if (! group) {
+        startNewGroup();
+      } else {
+        var isBlockGroup = isBlockElement(group[0]);
+        if (isBlockGroup === isBlockElement(binChildNode)) {
+          group.push(binChildNode);
+        } else {
+          startNewGroup();
+        }
+      }
 
-  
+      return accumulator;
+
+      function startNewGroup() {
+        var newGroup = [binChildNode];
+        accumulator.push(newGroup);
+      }
+    }, []);
+
+    var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
+      var isBlockGroup = isBlockElement(group[0]);
+      return ! isBlockGroup;
+    });
+
+    consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
+      var pElement = document.createElement('p');
+      nodes[0].parentNode.insertBefore(pElement, nodes[0]);
+      nodes.forEach(function (node) {
+        pElement.appendChild(node);
+      });
+    });
+
+    parentNode._isWrapped = true;
+  }
+
+  // Traverse the tree, wrapping child nodes as we go.
+  function traverse(parentNode) {
+    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+    var node = treeWalker.firstChild();
+
+    // FIXME: does this recurse down?
+
+    while (node) {
+      // TODO: At the moment we only support BLOCKQUOTEs. See failing
+      // tests.
+      if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
+        wrapChildNodes(node);
+        traverse(parentNode);
+        break;
+      }
+      node = treeWalker.nextSibling();
+    }
+  }
+
 
   return function () {
     return function (scribe) {
-      var nbspChar = '&nbsp;|\xA0';
-      var nbspCharRegExp = new RegExp(nbspChar, 'g');
 
-      // TODO: should we be doing this on paste?
       scribe.htmlFormatter.formatters.push(function (html) {
-        return html.replace(nbspCharRegExp, ' ');
+        /**
+         * Ensure P mode.
+         *
+         * Wrap any orphan text nodes in a P element.
+         */
+        // TODO: This should be configurable and also correct markup such as
+        // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
+        // TODO: This should probably be a part of HTML Janitor, or some other
+        // formatter.
+        var bin = document.createElement('div');
+        bin.innerHTML = html;
+
+        wrapChildNodes(bin);
+        traverse(bin);
+
+        return bin.innerHTML;
       });
+
+    };
+  };
+
+});
+
+define('plugins/core/formatters/html/ensure-selectable-containers',[],function () {
+
+  /**
+   * Chrome and Firefox: Block-level elements like `<p>` or `<li>`
+   * need to contain either text or a `<br>` to remain selectable.
+   */
+
+  
+
+  function containsChild(node, elementType) {
+    // FIXME: do we need to recurse further down?
+    for (var n = node.firstChild; n; n = n.nextSibling) {
+      if (n.tagName === elementType) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function traverse(parentNode) {
+    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+    var node = treeWalker.firstChild();
+
+    while (node) {
+      // Find any block-level container that contains neither text nor a <br>
+      if ((node.nodeName === 'P' || node.nodeName === 'LI') &&
+          (node.textContent === '') &&
+          (! containsChild(node, 'BR'))) {
+        node.appendChild(document.createElement('br'));
+      }
+      node = treeWalker.nextSibling();
+    }
+  }
+
+  return function () {
+    return function (scribe) {
+
+      scribe.htmlFormatter.formatters.push(function (html) {
+        var bin = document.createElement('div');
+        bin.innerHTML = html;
+
+        traverse(bin);
+
+        return bin.innerHTML;
+      });
+
     };
   };
 
@@ -3311,88 +3370,6 @@ define('plugins/core/patches/commands/outdent',[],function () {
 
 });
 
-define('plugins/core/patches/empty-when-deleting',[],function () {
-
-  /**
-   * Chrome and Firefox: Upon pressing backspace inside of a P, the browser
-   * deletes the paragraph element, leaving the scribe in a pristine state.
-   *
-   * Firefox: Erasing the range created by ‘Select All’ will leave the scribe
-   * in a pristine state.
-   *
-   * Entering a new line in a pristine state state will insert `<div>`s where
-   * previously we had `<p>`'s. This patches the behaivour of delete/backspace
-   * so that we do not end up in a pristine state.
-   */
-
-  
-
-  return function emptyEditorWhenDeleting() {
-    return function (scribe) {
-
-      scribe.el.addEventListener('keydown', function handleKeydown(event) {
-        // Delete or backspace
-        if (event.keyCode === 8 || event.keyCode === 46) {
-          var selection = new scribe.api.Selection();
-
-          /**
-           * The second condition in this statement is only relevant for Firefox.
-           * In Firefox, erasing the range created by ‘Select All’ will leave the
-           * scribe in a pristine state. We polyfill this behaviour to match that of
-           * Chrome: that is, to default to a paragraph element.
-           *
-           * This branch need not run in Chrome upon the second condition, but it does, for now.
-           */
-
-          var collapsedSelection = selection.selection.isCollapsed;
-          var allContentSelected = isRangeAllContent(selection.range);
-
-          if ((collapsedSelection && scribe.getTextContent().trim() === '') || (! collapsedSelection && allContentSelected)) {
-            event.preventDefault();
-
-            scribe.transactionManager.run(function () {
-              scribe.setHTML('<p><em class="scribe-marker"></em><br></p>');
-              selection.selectMarkers();
-            });
-          }
-        }
-      });
-
-      /**
-       * Serialise a range into a HTML string.
-       * @param  {Range} range
-       * @return {string}
-       */
-      function serialiseRangeToHTML(range) {
-        var div = document.createElement('div');
-        var contents = range.cloneContents();
-        div.appendChild(contents);
-        return div.innerHTML;
-      }
-
-      /**
-       * Takes a range and checks whether this range represents the whole
-       * content.
-       * @param  {Range} range
-       * @return {Boolean}
-       */
-      function isRangeAllContent(range) {
-        // To compare ranges, we serialise them into HTML strings and compare
-        // them with the stricly equality operator.
-        var serialisedSelection = serialiseRangeToHTML(range);
-
-        var contentRange = document.createRange();
-        contentRange.selectNodeContents(scribe.el);
-
-        var serialisedContent = serialiseRangeToHTML(contentRange);
-
-        return serialisedSelection === serialisedContent;
-      }
-
-    };
-  };
-});
-
 define('plugins/core/patches/events',[],function () {
 
   
@@ -3487,7 +3464,6 @@ define('plugins/core/patches',[
   './patches/commands/insert-html',
   './patches/commands/insert-list',
   './patches/commands/outdent',
-  './patches/empty-when-deleting',
   './patches/events'
 ], function (
   boldCommand,
@@ -3495,7 +3471,6 @@ define('plugins/core/patches',[
   insertHTMLCommand,
   insertListCommands,
   outdentCommand,
-  emptyWhenDeleting,
   events
 ) {
 
@@ -3515,7 +3490,6 @@ define('plugins/core/patches',[
       insertList: insertListCommands,
       outdent: outdentCommand
     },
-    emptyWhenDeleting: emptyWhenDeleting,
     events: events
   };
 
@@ -4009,32 +3983,403 @@ define('undo-manager',[],function () {
 
 });
 
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/objects/isArguments',[], function() {
+
+  /** `Object#toString` result shortcuts */
+  var argsClass = '[object Arguments]';
+
+  /** Used for native method references */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the internal [[Class]] of values */
+  var toString = objectProto.toString;
+
+  /**
+   * Checks if `value` is an `arguments` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Objects
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if the `value` is an `arguments` object, else `false`.
+   * @example
+   *
+   * (function() { return _.isArguments(arguments); })(1, 2, 3);
+   * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
+   */
+  function isArguments(value) {
+    return value && typeof value == 'object' && typeof value.length == 'number' &&
+      toString.call(value) == argsClass || false;
+  }
+
+  return isArguments;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/internals/baseFlatten',['../objects/isArguments', '../objects/isArray'], function(isArguments, isArray) {
+
+  /**
+   * The base implementation of `_.flatten` without support for callback
+   * shorthands or `thisArg` binding.
+   *
+   * @private
+   * @param {Array} array The array to flatten.
+   * @param {boolean} [isShallow=false] A flag to restrict flattening to a single level.
+   * @param {boolean} [isStrict=false] A flag to restrict flattening to arrays and `arguments` objects.
+   * @param {number} [fromIndex=0] The index to start from.
+   * @returns {Array} Returns a new flattened array.
+   */
+  function baseFlatten(array, isShallow, isStrict, fromIndex) {
+    var index = (fromIndex || 0) - 1,
+        length = array ? array.length : 0,
+        result = [];
+
+    while (++index < length) {
+      var value = array[index];
+
+      if (value && typeof value == 'object' && typeof value.length == 'number'
+          && (isArray(value) || isArguments(value))) {
+        // recursively flatten arrays (susceptible to call stack limits)
+        if (!isShallow) {
+          value = baseFlatten(value, isShallow, isStrict);
+        }
+        var valIndex = -1,
+            valLength = value.length,
+            resIndex = result.length;
+
+        result.length += valLength;
+        while (++valIndex < valLength) {
+          result[resIndex++] = value[valIndex];
+        }
+      } else if (!isStrict) {
+        result.push(value);
+      }
+    }
+    return result;
+  }
+
+  return baseFlatten;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/collections/map',['../functions/createCallback', '../objects/forOwn'], function(createCallback, forOwn) {
+
+  /**
+   * Creates an array of values by running each element in the collection
+   * through the callback. The callback is bound to `thisArg` and invoked with
+   * three arguments; (value, index|key, collection).
+   *
+   * If a property name is provided for `callback` the created "_.pluck" style
+   * callback will return the property value of the given element.
+   *
+   * If an object is provided for `callback` the created "_.where" style callback
+   * will return `true` for elements that have the properties of the given object,
+   * else `false`.
+   *
+   * @static
+   * @memberOf _
+   * @alias collect
+   * @category Collections
+   * @param {Array|Object|string} collection The collection to iterate over.
+   * @param {Function|Object|string} [callback=identity] The function called
+   *  per iteration. If a property name or object is provided it will be used
+   *  to create a "_.pluck" or "_.where" style callback, respectively.
+   * @param {*} [thisArg] The `this` binding of `callback`.
+   * @returns {Array} Returns a new array of the results of each `callback` execution.
+   * @example
+   *
+   * _.map([1, 2, 3], function(num) { return num * 3; });
+   * // => [3, 6, 9]
+   *
+   * _.map({ 'one': 1, 'two': 2, 'three': 3 }, function(num) { return num * 3; });
+   * // => [3, 6, 9] (property order is not guaranteed across environments)
+   *
+   * var characters = [
+   *   { 'name': 'barney', 'age': 36 },
+   *   { 'name': 'fred',   'age': 40 }
+   * ];
+   *
+   * // using "_.pluck" callback shorthand
+   * _.map(characters, 'name');
+   * // => ['barney', 'fred']
+   */
+  function map(collection, callback, thisArg) {
+    var index = -1,
+        length = collection ? collection.length : 0;
+
+    callback = createCallback(callback, thisArg, 3);
+    if (typeof length == 'number') {
+      var result = Array(length);
+      while (++index < length) {
+        result[index] = callback(collection[index], index, collection);
+      }
+    } else {
+      result = [];
+      forOwn(collection, function(value, key, collection) {
+        result[++index] = callback(value, key, collection);
+      });
+    }
+    return result;
+  }
+
+  return map;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/arrays/flatten',['../internals/baseFlatten', '../collections/map'], function(baseFlatten, map) {
+
+  /**
+   * Flattens a nested array (the nesting can be to any depth). If `isShallow`
+   * is truey, the array will only be flattened a single level. If a callback
+   * is provided each element of the array is passed through the callback before
+   * flattening. The callback is bound to `thisArg` and invoked with three
+   * arguments; (value, index, array).
+   *
+   * If a property name is provided for `callback` the created "_.pluck" style
+   * callback will return the property value of the given element.
+   *
+   * If an object is provided for `callback` the created "_.where" style callback
+   * will return `true` for elements that have the properties of the given object,
+   * else `false`.
+   *
+   * @static
+   * @memberOf _
+   * @category Arrays
+   * @param {Array} array The array to flatten.
+   * @param {boolean} [isShallow=false] A flag to restrict flattening to a single level.
+   * @param {Function|Object|string} [callback=identity] The function called
+   *  per iteration. If a property name or object is provided it will be used
+   *  to create a "_.pluck" or "_.where" style callback, respectively.
+   * @param {*} [thisArg] The `this` binding of `callback`.
+   * @returns {Array} Returns a new flattened array.
+   * @example
+   *
+   * _.flatten([1, [2], [3, [[4]]]]);
+   * // => [1, 2, 3, 4];
+   *
+   * _.flatten([1, [2], [3, [[4]]]], true);
+   * // => [1, 2, 3, [[4]]];
+   *
+   * var characters = [
+   *   { 'name': 'barney', 'age': 30, 'pets': ['hoppy'] },
+   *   { 'name': 'fred',   'age': 40, 'pets': ['baby puss', 'dino'] }
+   * ];
+   *
+   * // using "_.pluck" callback shorthand
+   * _.flatten(characters, 'pets');
+   * // => ['hoppy', 'baby puss', 'dino']
+   */
+  function flatten(array, isShallow, callback, thisArg) {
+    // juggle arguments
+    if (typeof isShallow != 'boolean' && isShallow != null) {
+      thisArg = callback;
+      callback = (typeof isShallow != 'function' && thisArg && thisArg[isShallow] === array) ? null : isShallow;
+      isShallow = false;
+    }
+    if (callback != null) {
+      array = map(array, callback, thisArg);
+    }
+    return baseFlatten(array, isShallow);
+  }
+
+  return flatten;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/objects/values',['./keys'], function(keys) {
+
+  /**
+   * Creates an array composed of the own enumerable property values of `object`.
+   *
+   * @static
+   * @memberOf _
+   * @category Objects
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns an array of property values.
+   * @example
+   *
+   * _.values({ 'one': 1, 'two': 2, 'three': 3 });
+   * // => [1, 2, 3] (property order is not guaranteed across environments)
+   */
+  function values(object) {
+    var index = -1,
+        props = keys(object),
+        length = props.length,
+        result = Array(length);
+
+    while (++index < length) {
+      result[index] = object[props[index]];
+    }
+    return result;
+  }
+
+  return values;
+});
+
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="amd" -o ./modern/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+define('lodash-modern/collections/toArray',['../objects/isString', '../internals/slice', '../objects/values'], function(isString, slice, values) {
+
+  /**
+   * Converts the `collection` to an array.
+   *
+   * @static
+   * @memberOf _
+   * @category Collections
+   * @param {Array|Object|string} collection The collection to convert.
+   * @returns {Array} Returns the new converted array.
+   * @example
+   *
+   * (function() { return _.toArray(arguments).slice(1); })(1, 2, 3, 4);
+   * // => [2, 3, 4]
+   */
+  function toArray(collection) {
+    if (collection && typeof collection.length == 'number') {
+      return slice(collection);
+    }
+    return values(collection);
+  }
+
+  return toArray;
+});
+
+define('dom-observer',[
+  'lodash-modern/arrays/flatten',
+  'lodash-modern/collections/toArray'
+], function (
+  flatten,
+  toArray
+) {
+
+  function observeDomChanges(el, callback) {
+    function notEmptyTextNode(node) {
+      return ! (node.nodeType === Node.TEXT_NODE && node.textContent === '');
+    }
+
+    function notSelectionMarkerNode(node) {
+      return ! (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+    }
+
+    function includeRealMutations(mutations) {
+      var allChangedNodes = flatten(mutations.map(function(mutation) {
+        var added   = toArray(mutation.addedNodes);
+        var removed = toArray(mutation.removedNodes);
+        return added.concat(removed);
+      }));
+
+      var realChangedNodes = allChangedNodes.
+        filter(notEmptyTextNode).
+        filter(notSelectionMarkerNode);
+
+      return realChangedNodes.length > 0;
+    }
+
+
+    // Flag to avoid running recursively
+    var runningPostMutation = false;
+    var observer = new MutationObserver(function(mutations) {
+      if (! runningPostMutation && includeRealMutations(mutations)) {
+        runningPostMutation = true;
+
+        callback();
+
+        // We must yield to let any mutation we caused be triggered
+        // in the next cycle
+        setTimeout(function() {
+          runningPostMutation = false;
+        }, 0);
+      }
+    });
+
+    observer.observe(el, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+
+    return observer;
+  }
+
+  return observeDomChanges;
+});
+
 define('scribe',[
   'event-emitter',
   'lodash-modern/objects/defaults',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/html/enforce-p-elements',
+  './plugins/core/formatters/html/ensure-selectable-containers',
   './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
-  './undo-manager'
+  './undo-manager',
+  './dom-observer'
 ], function (
   EventEmitter,
   defaults,
   commands,
   events,
   replaceNbspCharsFormatter,
+  enforcePElements,
+  ensureSelectableContainers,
   escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager
+  buildUndoManager,
+  observeDomChanges
 ) {
 
   
@@ -4077,7 +4422,11 @@ define('scribe',[
     if (this.allowsBlockElements()) {
       // Commands assume block elements are allowed, so all we have to do is
       // set the content.
+      // TODO: replace this by initial formatter application?
       this.use(setRootPElement());
+      // Warning: enforcePElements must come before ensureSelectableContainers
+      this.use(enforcePElements());
+      this.use(ensureSelectableContainers());
     } else {
       // Commands assume block elements are allowed, so we have to set the
       // content and override some UX.
@@ -4094,13 +4443,9 @@ define('scribe',[
     this.use(patches.commands.insertHTML());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
-    if (this.allowsBlockElements()) {
-      this.use(patches.emptyWhenDeleting());
-    }
     this.use(patches.events());
 
     this.use(commands.indent());
-    this.use(commands.insertHTML());
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
@@ -4168,6 +4513,26 @@ define('scribe',[
       }
     }.bind(this));
     this.el.addEventListener('focus', pushHistoryOnFocus);
+
+
+    var applyFormatters = function() {
+      // Discard the last history item, as we're going to be adding
+      // a new clean history item next.
+      this.undoManager.undo();
+
+      // Pass content through formatters, place caret back
+      this.transactionManager.run(function () {
+        var selection = new this.api.Selection();
+        selection.placeMarkers();
+        this.setHTML(this.htmlFormatter.format(this.getHTML()));
+        selection.selectMarkers();
+      }.bind(this));
+    }.bind(this);
+
+    observeDomChanges(this.el, applyFormatters);
+
+    // TODO: disconnect on tear down:
+    // observer.disconnect();
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
