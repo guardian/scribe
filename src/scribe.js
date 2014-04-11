@@ -4,26 +4,32 @@ define([
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/html/enforce-p-elements',
+  './plugins/core/formatters/html/ensure-selectable-containers',
   './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
-  './undo-manager'
+  './undo-manager',
+  './dom-observer'
 ], function (
   EventEmitter,
   defaults,
   commands,
   events,
   replaceNbspCharsFormatter,
+  enforcePElements,
+  ensureSelectableContainers,
   escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager
+  buildUndoManager,
+  observeDomChanges
 ) {
 
   'use strict';
@@ -66,7 +72,11 @@ define([
     if (this.allowsBlockElements()) {
       // Commands assume block elements are allowed, so all we have to do is
       // set the content.
+      // TODO: replace this by initial formatter application?
       this.use(setRootPElement());
+      // Warning: enforcePElements must come before ensureSelectableContainers
+      this.use(enforcePElements());
+      this.use(ensureSelectableContainers());
     } else {
       // Commands assume block elements are allowed, so we have to set the
       // content and override some UX.
@@ -83,13 +93,9 @@ define([
     this.use(patches.commands.insertHTML());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
-    if (this.allowsBlockElements()) {
-      this.use(patches.emptyWhenDeleting());
-    }
     this.use(patches.events());
 
     this.use(commands.indent());
-    this.use(commands.insertHTML());
     this.use(commands.insertList());
     this.use(commands.outdent());
     this.use(commands.redo());
@@ -157,6 +163,26 @@ define([
       }
     }.bind(this));
     this.el.addEventListener('focus', pushHistoryOnFocus);
+
+
+    var applyFormatters = function() {
+      // Discard the last history item, as we're going to be adding
+      // a new clean history item next.
+      this.undoManager.undo();
+
+      // Pass content through formatters, place caret back
+      this.transactionManager.run(function () {
+        var selection = new this.api.Selection();
+        selection.placeMarkers();
+        this.setHTML(this.htmlFormatter.format(this.getHTML()));
+        selection.selectMarkers();
+      }.bind(this));
+    }.bind(this);
+
+    observeDomChanges(this.el, applyFormatters);
+
+    // TODO: disconnect on tear down:
+    // observer.disconnect();
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
