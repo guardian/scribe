@@ -26,14 +26,6 @@ module.exports = function (pipelines) {
       }
   });
 
-  var sanitizerPluginRequireJS = requireJS({
-      // FIXME: auto?
-      preserveLicenseComments: false,
-      paths: {
-          'html-janitor': '../../bower_components/html-janitor/src/html-janitor'
-      }
-  });
-
   var genericPluginRequireJS = requireJS({
       // FIXME: auto?
       preserveLicenseComments: false,
@@ -78,8 +70,6 @@ module.exports = function (pipelines) {
     addPluginBuildPipeline(genericPluginRequireJS)(pluginName);
   });
   addPluginBuildPipeline(genericPluginRequireJS)('scribe-plugin-formatter-plain-text-convert-new-lines-to-html', '/formatters/plain-text');
-
-  addPluginBuildPipeline(sanitizerPluginRequireJS)('scribe-plugin-sanitizer');
 
   function addPluginBuildPipeline(requireJSOperation) {
     return function (name, path) {
