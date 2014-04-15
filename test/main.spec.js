@@ -123,6 +123,9 @@ var browserBugs = {
 };
 
 var local = ! process.env.TRAVIS;
+if (process.env.RUN_IN_SAUCE_LABS) {
+  local = false;
+}
 
 if (local) {
   var server;
@@ -149,10 +152,15 @@ before(function () {
   };
 
   if (! local) {
+    if (process.env.TRAVIS) {
+      assign(capabilities, {
+        name: [browserName, browserVersion].join(' '),
+        build: process.env.TRAVIS_BUILD_NUMBER,
+        tags: [process.env.TRAVIS_NODE_VERSION, 'CI'],
+      });
+    }
+
     assign(capabilities, {
-      build: process.env.TRAVIS_BUILD_NUMBER,
-      tags: [process.env.TRAVIS_NODE_VERSION, 'CI'],
-      name: [browserName, browserVersion].join(' '),
       username: process.env.SAUCE_USERNAME,
       accessKey: process.env.SAUCE_ACCESS_KEY,
       'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
