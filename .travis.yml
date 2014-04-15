@@ -4,10 +4,8 @@ node_js:
 
 addons:
   sauce_connect:
-    username:
-      secure: TIXNBJL7NAQ3t1cykxkrBQMb8l20J0y42BvnjrBOV+PjVrJeiNkHQY6iHMZpYMxBxF7tBAPNOZD8uv76vxcFF5W+9gvZFW/PJlCLJhQDa9yKk8O9oZGQhwu+sipDtX52tSzxrZTFkEElONPa4pRqEycyaPgEsYQ2rvNbAA+hjy8=
-    access_key:
-      secure: NSyiUHs7FZVG/5v0y7hwawD8Q1LsRkjtoT3Wdaj5guxCn+7PqkgeUI3LX3xFFmv8d7jKYDFH+kfAOwu6dRt5FWYj/G03OEGs2TrJP0EFw/RQr/v0yKLv8ppbD+4HQ9RNdqx1+VL2MG7Eivr70aYrJoJbZd4UpdNuSVtCqE31NKU=
+    username: scribe-ci
+    access_key: 4be9eeed-61de-4948-b18d-f7f655e9e4b0
 env:
   matrix:
     - BROWSER_NAME='firefox' BROWSER_VERSION='21' PLATFORM='Windows XP'
