@@ -2153,7 +2153,7 @@ describe('toolbar plugin', function () {
     });
 
     it('should not disable vendor buttons', function () {
-      return driver.executeAsyncScript(function (done) {
+      return driver.executScript(function () {
         var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
         Array.prototype.forEach.call(vendorButtons, function(button) {
           if (button.hasAttribute('data-command-name')) {
@@ -2165,7 +2165,6 @@ describe('toolbar plugin', function () {
             expect(button.disabled).to.not.be.ok;
           }
         });
-        done();
       });
     });
   });
