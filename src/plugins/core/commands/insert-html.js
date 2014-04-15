@@ -83,7 +83,7 @@ define([
 
             // Traverse the tree, wrapping child nodes as we go.
             function traverse(parentNode) {
-              var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+              var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
               var node = treeWalker.firstChild();
 
               while (node) {

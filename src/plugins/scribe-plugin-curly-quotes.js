@@ -147,7 +147,7 @@ define(function () {
 
       // Apply a function on all text nodes in a container, mutating in place
       function mapTextNodes(container, func) {
-        var walker = scribe.targetWindow.document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+        var walker = scribe.targetWindow.document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
         var node = walker.firstChild();
         if (node) {
           do {

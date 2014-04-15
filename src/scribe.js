@@ -142,7 +142,7 @@ define([
       }
 
       function getFirstDeepestChild(node) {
-        var treeWalker = this.targetWindow.document.createTreeWalker(node);
+        var treeWalker = this.targetWindow.document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
         var previousNode = treeWalker.currentNode;
         if (treeWalker.firstChild()) {
           // TODO: build list of non-empty elements (used elsewhere)
@@ -201,9 +201,11 @@ define([
     if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
       var selection = new this.api.Selection();
 
-      selection.placeMarkers();
+      if (selection.rangeCount)
+        selection.placeMarkers();
       var html = this.getHTML();
-      selection.removeMarkers();
+      if (selection.rangeCount)
+        selection.removeMarkers();
 
       this.undoManager.push(html);
 

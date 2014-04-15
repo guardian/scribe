@@ -25,7 +25,7 @@ define(function () {
           sanitize(scribe.el);
 
           function sanitize(parentNode) {
-            var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+            var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
             var node = treeWalker.firstChild();
             if (!node) { return; }
 
