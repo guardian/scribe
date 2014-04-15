@@ -1,9 +1,10 @@
 {
   "name": "scribe-plugin-curly-quotes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./scribe-plugin-curly-quotes.js",
   "authors": [
-    "Oliver Joseph Ash <oliverjash@icloud.com>"
+    "Oliver Joseph Ash <oliverjash@icloud.com>",
+    "Sébastien Cevey <seb.cevey@guardian.co.uk>"
   ],
   "license": "Apache 2.0"
 }

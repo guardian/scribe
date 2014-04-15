@@ -14,6 +14,6 @@
     "commit": "85efe42af4bb9333c473f9e2c45fab744da2abd3"
   },
   "_source": "git://github.com/guardian/scribe-plugin-smart-lists.git",
-  "_target": "0.1.0",
+  "_target": "~0.1.0",
   "_originalSource": "scribe-plugin-smart-lists"
 }

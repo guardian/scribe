@@ -19,6 +19,5 @@
   },
   "_source": "git://github.com/jrburke/requirejs-bower.git",
   "_target": "~2.1.11",
-  "_originalSource": "requirejs",
-  "_direct": true
+  "_originalSource": "requirejs"
 }

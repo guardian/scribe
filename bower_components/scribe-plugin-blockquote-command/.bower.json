@@ -14,6 +14,6 @@
     "commit": "f0e0b10ebac0998f4d83e643fa053b1d17216cb7"
   },
   "_source": "git://github.com/guardian/scribe-plugin-blockquote-command.git",
-  "_target": "0.1.0",
+  "_target": "~0.1.0",
   "_originalSource": "scribe-plugin-blockquote-command"
 }

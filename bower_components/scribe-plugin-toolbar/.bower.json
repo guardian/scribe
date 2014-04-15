@@ -14,6 +14,6 @@
     "commit": "9a8279ad652c902d8b0d7378bb2d1a8a96db5345"
   },
   "_source": "git://github.com/guardian/scribe-plugin-toolbar.git",
-  "_target": "0.1.1",
+  "_target": "~0.1.1",
   "_originalSource": "scribe-plugin-toolbar"
 }

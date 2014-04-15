@@ -56,12 +56,8 @@ define('scribe-plugin-curly-quotes',[],function () {
       }
 
       function wordBeforeSelectedRange() {
-        var prevChar = charBeforeSelectedRange();
-        return (
-          prevChar !== ' ' &&
-          prevChar !== NON_BREAKING_SPACE &&
-          typeof prevChar !== 'undefined'
-        );
+        var prevChar = charBeforeSelectedRange() || '';
+        return isWordCharacter(prevChar);
       }
 
       function charBeforeSelectedRange() {
@@ -74,6 +70,10 @@ define('scribe-plugin-curly-quotes',[],function () {
         var selection = new scribe.api.Selection();
         var context = selection.range.commonAncestorContainer.textContent;
         return context[selection.range.endOffset];
+      }
+
+      function isWordCharacter(character) {
+          return /[^\s()]/.test(character);
       }
 
       /** Delete any selected text, insert text instead */
@@ -106,12 +106,22 @@ define('scribe-plugin-curly-quotes',[],function () {
         // Replace straight single and double quotes with curly
         // equivalent in the given string
         mapTextNodes(holder, function(str) {
-          return str.
-            // Use [\s\S] instead of . to match any characters _including newlines_
-            replace(/([\s\S])?'([\s\S])?/g,
-                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
-            replace(/([\s\S])?"([\s\S])?/g,
-                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
+          // Tokenise HTML elements vs text between them
+          // Note: this is escaped HTML in the text node!
+          var tokens = str.split(/(<[^>]+?>)/);
+          return tokens.map(function(token) {
+            // Only replace quotes in text between (potential) HTML elements
+            if (token[0] === '<') {
+              return token;
+            } else {
+              return token.
+                // Use [\s\S] instead of . to match any characters _including newlines_
+                replace(/([\s\S])?'([\s\S])?/g,
+                        replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
+                replace(/([\s\S])?"([\s\S])?/g,
+                        replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
+            }
+          }).join('');
         });
 
         return holder.innerHTML;
@@ -123,8 +133,8 @@ define('scribe-plugin-curly-quotes',[],function () {
           next = next || '';
           var isStart = ! prev;
           var isEnd = ! next;
-          var hasCharsBefore = /[^\s]/.test(prev);
-          var hasCharsAfter = /[^\s]/.test(next);
+          var hasCharsBefore = isWordCharacter(prev);
+          var hasCharsAfter  = isWordCharacter(next);
           // Optimistic heuristic, would need to look at DOM structure
           // (esp block vs inline elements) for more robust inference
           if (hasCharsBefore || (isStart && ! hasCharsAfter && ! isEnd)) {
