@@ -142,7 +142,7 @@ define([
       }
 
       function getFirstDeepestChild(node) {
-        var treeWalker = scribe.targetWindow.document.createTreeWalker(node);
+        var treeWalker = this.targetWindow.document.createTreeWalker(node);
         var previousNode = treeWalker.currentNode;
         if (treeWalker.firstChild()) {
           // TODO: build list of non-empty elements (used elsewhere)
