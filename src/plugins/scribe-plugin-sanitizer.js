@@ -1,5 +1,5 @@
 define([
-  'html-janitor'
+  'html-janitor-modified'
 ], function (
   HTMLJanitor
 ) {
