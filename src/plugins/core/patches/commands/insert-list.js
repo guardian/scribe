@@ -58,7 +58,7 @@ define(function () {
               // iterate over it
               var listItemElementChildNodes = Array.prototype.slice.call(listItemElement.childNodes);
               listItemElementChildNodes.forEach(function(listElementChildNode) {
-                if (listElementChildNode.nodeName === 'SPAN' && !$(node).hasClass('pplr-icon')) {
+                if (listElementChildNode.nodeName === 'SPAN' && !$(node).hasClass('pplr-icon') && !$(node).hasClass('pplr-accent')) {
                   // Unwrap any SPAN that has been inserted
                   var spanElement = listElementChildNode;
                   new scribe.api.Element(listItemElement).unwrap(spanElement);
