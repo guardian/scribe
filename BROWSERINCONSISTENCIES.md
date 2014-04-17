@@ -17,6 +17,8 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Given a non-empty P element, Chrome will merge the existing and new
     paragraph, whereas Firefox will not: http://jsbin.com/uvEdacoz/6/edit?js,output
     - TODO http://jsbin.com/uvEdacoz/4/edit
+  - Given a selection across multiple P elements, Firefox will insert
+    the content outside of any P element: http://jsbin.com/jiviniti/4/edit?js,output
 * "`formatBlock`": http://jsbin.com/UTUDaPoC/1/edit?html,js,output
 * "`bold`": http://jsbin.com/IxiSeYO/4/edit?html,js,output
 * "`outdent`":
@@ -34,6 +36,10 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Chrome adds redundant `style` attribute: http://jsbin.com/AkasOzu/1/edit?html,js,output
   - Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
   - Firefox does not perform transformation upon Ps containing BRs: http://jsbin.com/yiyaq/1/edit?js,output
+* "`delete`":
+  - Given a selection across multiple P elements, Firefox will place
+    the caret outside of any P element:
+    http://jsbin.com/xopivama/3/edit?js,output
 
 ### `Range.insertNode`
 * Chrome inserts a bogus text node: http://jsbin.com/ODapifEb/1/edit?js,console,output
