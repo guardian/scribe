@@ -30,7 +30,11 @@ define(function () {
             if (!node) { return; }
 
             do {
-              if (node.nodeName === 'SPAN' && !$(node).hasClass('pplr-icon') && !$(node).hasClass('pplr-accent')) {
+              if (node.nodeName === 'SPAN' &&
+                  node.nodeClass != 'font-size-smaller' &&
+                  node.nodeClass != 'font-size-larger' &&
+                  node.nodeClass != 'pplr-icon' &&
+                  node.nodeClass != 'pplr-accent') {
                 new scribe.api.Element(parentNode).unwrap(node);
               } else {
                 /**

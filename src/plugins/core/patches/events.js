@@ -56,7 +56,11 @@ define(function () {
                 // iterate over it
                 var pElementChildNodes = Array.prototype.slice.call(containerPElement.childNodes);
                 pElementChildNodes.forEach(function(pElementChildNode) {
-                  if (pElementChildNode.nodeName === 'SPAN' && !$(pElementChildNode).hasClass('pplr-icon') && !$(pElementChildNode).hasClass('pplr-accent')) {
+                  if (pElementChildNode.nodeName === 'SPAN' &&
+                      pElementChildNode.nodeClass != 'font-size-smaller' &&
+                      pElementChildNode.nodeClass != 'font-size-larger' &&
+                      pElementChildNode.nodeClass != 'pplr-icon' &&
+                      pElementChildNode.nodeClass != 'pplr-accent') {
                     // Unwrap any SPAN that has been inserted
                     var spanElement = pElementChildNode;
                     new scribe.api.Element(containerPElement).unwrap(spanElement);
