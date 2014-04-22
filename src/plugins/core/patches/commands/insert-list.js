@@ -59,10 +59,10 @@ define(function () {
               var listItemElementChildNodes = Array.prototype.slice.call(listItemElement.childNodes);
               listItemElementChildNodes.forEach(function(listElementChildNode) {
                 if (listElementChildNode.nodeName === 'SPAN' &&
-                    listElementChildNode.nodeClass != 'font-size-smaller' &&
-                    listElementChildNode.nodeClass != 'font-size-larger' &&
-                    listElementChildNode.nodeClass != 'pplr-icon' &&
-                    listElementChildNode.nodeClass != 'pplr-accent') {
+                    listElementChildNode.className != 'font-size-smaller' &&
+                    listElementChildNode.className != 'font-size-larger' &&
+                    listElementChildNode.className != 'pplr-icon' &&
+                    listElementChildNode.className != 'pplr-accent') {
                   // Unwrap any SPAN that has been inserted
                   var spanElement = listElementChildNode;
                   new scribe.api.Element(listItemElement).unwrap(spanElement);

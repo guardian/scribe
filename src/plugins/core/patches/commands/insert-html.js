@@ -31,10 +31,10 @@ define(function () {
 
             do {
               if (node.nodeName === 'SPAN' &&
-                  node.nodeClass != 'font-size-smaller' &&
-                  node.nodeClass != 'font-size-larger' &&
-                  node.nodeClass != 'pplr-icon' &&
-                  node.nodeClass != 'pplr-accent') {
+                  node.className != 'font-size-smaller' &&
+                  node.className != 'font-size-larger' &&
+                  node.className != 'pplr-icon' &&
+                  node.className != 'pplr-accent') {
                 new scribe.api.Element(parentNode).unwrap(node);
               } else {
                 /**
