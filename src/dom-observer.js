@@ -36,13 +36,15 @@ define([
       if (! runningPostMutation && includeRealMutations(mutations)) {
         runningPostMutation = true;
 
-        callback();
-
-        // We must yield to let any mutation we caused be triggered
-        // in the next cycle
-        setTimeout(function() {
-          runningPostMutation = false;
-        }, 0);
+        try {
+          callback();
+        } finally {
+          // We must yield to let any mutation we caused be triggered
+          // in the next cycle
+          setTimeout(function() {
+            runningPostMutation = false;
+          }, 0);
+        }
       }
     });
 
