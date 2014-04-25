@@ -2161,7 +2161,7 @@ describe('toolbar plugin', function () {
     });
 
     it('should not disable vendor buttons', function () {
-      return driver.executScript(function () {
+      return driver.executeScript(function () {
         var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
         Array.prototype.forEach.call(vendorButtons, function(button) {
           if (button.hasAttribute('data-command-name')) {
