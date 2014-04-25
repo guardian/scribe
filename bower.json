@@ -1,7 +1,6 @@
 {
   "name": "scribe",
   "dependencies": {
-    "eventEmitter": "~4.2.6",
     "html-janitor": "b73d906f2e30dbfd7d84d28305b42a91118fcd65",
     "lodash-amd": "~2.4.0"
   },

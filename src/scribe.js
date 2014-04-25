@@ -1,6 +1,6 @@
 define([
-  'event-emitter',
   'lodash-modern/objects/defaults',
+  'lodash-modern/objects/assign',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -15,8 +15,8 @@ define([
   './undo-manager',
   './dom-observer'
 ], function (
-  EventEmitter,
   defaults,
+  assign,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -33,6 +33,46 @@ define([
 ) {
 
   'use strict';
+
+  var Base = {
+    new: function () {
+      var x = Object.create(this);
+      x.init.apply(x, arguments);
+      return x;
+    },
+
+    extend: function (extensions) {
+      var x = Object.create(this);
+      assign(x, extensions);
+      return x;
+    }
+  };
+
+  // TODO: unbind, once
+  // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
+  var EventEmitter = Base.extend({
+    init: function () {
+      this._listeners = [];
+
+      // Alias (mimic Node’s `EventEmitter` API)
+      this.addListener = this.on;
+    },
+
+    on: function (eventName, callback) {
+      this._listeners.push({ eventName: eventName, callback: callback });
+    },
+
+    trigger: function (eventName, args) {
+      // TODO: `_.with`
+      var listeners = this._listeners.filter(function (listener) {
+          return (listener.eventName === eventName);
+      });
+
+      listeners.forEach(function (listener) {
+          listener.callback.apply(null, args);
+      });
+    }
+  });
 
   function Scribe(el, options) {
     this.el = el;
@@ -185,7 +225,8 @@ define([
     // observer.disconnect();
   }
 
-  Scribe.prototype = Object.create(EventEmitter.prototype);
+  var eventEmitter = EventEmitter.new();
+  Scribe.prototype = Object.create(eventEmitter);
 
   // For plugins
   // TODO: tap combinator?
