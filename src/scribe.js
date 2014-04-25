@@ -1,6 +1,7 @@
 define([
   'lodash-modern/objects/defaults',
   'lodash-modern/objects/assign',
+  'lodash-modern/collections/where',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -17,6 +18,7 @@ define([
 ], function (
   defaults,
   assign,
+  where,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -63,10 +65,7 @@ define([
     },
 
     trigger: function (eventName, args) {
-      // TODO: `_.with`
-      var listeners = this._listeners.filter(function (listener) {
-          return (listener.eventName === eventName);
-      });
+      var listeners = where(this._listeners, { eventName: eventName });
 
       listeners.forEach(function (listener) {
           listener.callback.apply(null, args);
