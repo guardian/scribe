@@ -1,3 +1,7 @@
+# 0.1.7
+
+* Prevent mutation observers from failing if an error occurs ([9c843e52](https://github.com/guardian/scribe/commit/9c843e52f7913cff9529ea0950acc0fbb78f7baa))
+
 # 0.1.6
 
 * Fix issue with breaking out of P mode in Firefox
