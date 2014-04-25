@@ -3699,7 +3699,7 @@ define('api/selection',[],function () {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
 
-      if (!this.range.collapsed) {
+      if (!this.isCollapsed) {
         // Start marker
         var rangeStart = this.range.cloneRange();
         rangeStart.collapse(true);
@@ -4326,13 +4326,15 @@ define('dom-observer',[
       if (! runningPostMutation && includeRealMutations(mutations)) {
         runningPostMutation = true;
 
-        callback();
-
-        // We must yield to let any mutation we caused be triggered
-        // in the next cycle
-        setTimeout(function() {
-          runningPostMutation = false;
-        }, 0);
+        try {
+          callback();
+        } finally {
+          // We must yield to let any mutation we caused be triggered
+          // in the next cycle
+          setTimeout(function() {
+            runningPostMutation = false;
+          }, 0);
+        }
       }
     });
 
