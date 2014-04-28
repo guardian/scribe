@@ -48,6 +48,12 @@ function initializeScribe(options) {
   });
 
   function setupTest(options, done) {
+    require.config({
+      paths: {
+        'scribe-plugin-sanitizer': '../bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer'
+      }
+    });
+
     require(['scribe'], function (Scribe) {
       'use strict';
       /**
