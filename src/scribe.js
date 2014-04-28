@@ -306,7 +306,7 @@ define([
     // Define phases
     this.formatters = {
       sanitize: [],
-      prepare: []
+      normalize: []
     }
   }
 
