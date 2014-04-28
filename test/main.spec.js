@@ -488,6 +488,42 @@ describe('formatters', function () {
         });
       });
     });
+
+    // This isn’t a unit test for the sanitizer plugin, but rather an
+    // integration test to check the formatter phases happen in the correct
+    // order.
+    describe('normalization phase', function () {
+      beforeEach(function () {
+        return driver.executeAsyncScript(function (done) {
+          require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+            window.scribe.use(scribePluginSanitizer({
+              tags: {
+                p: {}
+              }
+            }));
+            done();
+          });
+        });
+      });
+
+      when('content of "<meta><h1>1</h1>" is inserted', function () {
+        beforeEach(function () {
+          // Focus it before-hand
+          scribeNode.click();
+
+          return driver.executeScript(function () {
+            window.scribe.insertHTML('<meta><h1>1</h1>');
+          });
+        });
+
+        it('should strip non-whitelisted elements and then any text nodes in a P element', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p>');
+          });
+        });
+      });
+    });
+
   });
 });
 
