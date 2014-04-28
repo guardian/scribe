@@ -476,7 +476,7 @@ describe('formatters', function () {
 
           it('should replace the non-breaking space character with a normal space', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2</p>');
+              expect(innerHTML).to.have.html('<p>1 2<chrome-bogus-br></p>');
             });
           });
         });
