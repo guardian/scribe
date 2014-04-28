@@ -290,7 +290,6 @@ define([
   }
 
   Formatter.prototype.format = function (html) {
-    // Flatten the phases
     // Map the object to an array: Array[Formatter]
     var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
