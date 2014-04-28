@@ -2,7 +2,6 @@ define([
   'event-emitter',
   'lodash-modern/objects/defaults',
   'lodash-modern/arrays/flatten',
-  'lodash-modern/collections/map',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -20,7 +19,6 @@ define([
   EventEmitter,
   defaults,
   flatten,
-  map,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -294,7 +292,7 @@ define([
   Formatter.prototype.format = function (html) {
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
-    var formatted = flatten(map(this.formatters)).reduce(function (formattedData, formatter) {
+    var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
 
@@ -307,11 +305,22 @@ define([
     this.formatters = {
       sanitize: [],
       normalize: []
-    }
+    };
   }
 
   HTMLFormatter.prototype = Object.create(Formatter.prototype);
   HTMLFormatter.prototype.constructor = HTMLFormatter;
+
+  Formatter.prototype.format = function (html) {
+    // Flatten the phases
+    // Map the object to an array: Array[Formatter]
+    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatted = formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
+  };
 
   return Scribe;
 
