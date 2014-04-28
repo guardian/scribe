@@ -288,11 +288,11 @@ define([
   }
 
   Formatter.prototype.format = function (html) {
-    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+    var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
 
-    return formattedHTML;
+    return formatted;
   };
 
   return Scribe;
