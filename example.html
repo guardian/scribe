@@ -17,7 +17,8 @@
 require({
   paths: {
     'event-emitter': './bower_components/eventEmitter/EventEmitter',
-    'lodash-modern': './bower_components/lodash-amd/modern'
+    'lodash-modern': './bower_components/lodash-amd/modern',
+    'scribe-plugin-sanitizer': './bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer',
   },
   shim: {
     'event-emitter': {
@@ -26,14 +27,33 @@ require({
   }
 }, [
   './src/scribe',
-  './src/plugins/scribe-plugin-toolbar'
+  './src/plugins/scribe-plugin-toolbar',
+  'scribe-plugin-sanitizer'
 ], function (
   Scribe,
-  scribePluginToolbar
+  scribePluginToolbar,
+  scribePluginSanitizer
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
   scribe.setContent('<p>Hello, World!</p>');
+
+  // Formatters
+  scribe.use(scribePluginSanitizer({
+    tags: {
+      p: {},
+      br: {},
+      b: {},
+      strong: {},
+      i: {},
+      s: {},
+      blockquote: {},
+      ol: {},
+      ul: {},
+      li: {},
+      a: { href: true }
+    }
+  }));
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
 
