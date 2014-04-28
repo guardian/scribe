@@ -95,7 +95,7 @@ define([
   return function () {
     return function (scribe) {
 
-      scribe.htmlFormatter.formatters.push(function (html) {
+      scribe.htmlFormatter.formatters.prepare.push(function (html) {
         /**
          * Ensure P mode.
          *
