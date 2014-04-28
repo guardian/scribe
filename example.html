@@ -36,9 +36,23 @@ require({
   scribe.setContent('<p>Hello, World!</p>');
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+
+  scribe.on('content-changed', updateHtml);
+
+  function updateHtml() {
+    document.querySelector('.scribe-html').innerText = scribe.getHTML();
+  }
+
+  updateHtml();
 });
 </script>
 <rte-toolbar>
   <button data-command-name="bold">Bold</button>
 </rte-toolbar>
 <rte></rte>
+<section>
+  <h1>Output</h1>
+  <pre>
+    <code class="scribe-html"></code>
+  </pre>
+</section>
