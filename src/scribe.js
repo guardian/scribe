@@ -302,8 +302,12 @@ define([
   function HTMLFormatter() {
     // Object[String,Array[Formatter]]
     // Define phases
+    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
     this.formatters = {
+      // Configurable sanitization of the HTML, e.g. converting/filter/removing
+      // elements
       sanitize: [],
+      // Normalize content to ensure it is ready for interaction
       normalize: []
     };
   }
@@ -311,7 +315,7 @@ define([
   HTMLFormatter.prototype = Object.create(Formatter.prototype);
   HTMLFormatter.prototype.constructor = HTMLFormatter;
 
-  Formatter.prototype.format = function (html) {
+  HTMLFormatter.prototype.format = function (html) {
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
     var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
