@@ -25,7 +25,7 @@ define([
 
 
   // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H2'];
+  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H2', 'H1'];
   function isBlockElement(node) {
     return contains(blockElementNames, node.nodeName);
   }
