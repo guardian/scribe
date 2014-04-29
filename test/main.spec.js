@@ -490,8 +490,28 @@ describe('formatters', function () {
     });
 
     describe('setting the content', function() {
+      when('the sanitizer plugin is enabled', function () {
+        beforeEach(function () {
+          return driver.executeAsyncScript(function (done) {
+            require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+              window.scribe.use(scribePluginSanitizer({ tags: { p: {} } }));
+              done();
+            });
+          });
+        });
+
+        // Integration tests to ensure the formatters apply the correct
+        // transformation when the content is set.
+        givenContentOf('<h1>1</h1>', function () {
+          it('should not modify the HTML', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p>');
+            });
+          });
+        });
+
       // Integration tests to ensure the formatters do not incorrectly alter
-      // the content when set
+      // the content when set.
       givenContentOf('<h1>1</h1>', function () {
         it('should not modify the HTML', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
