@@ -510,6 +510,21 @@ describe('formatters', function () {
           });
         });
 
+        // Integration tests to ensure the formatters apply the correct
+        // transformation when the content is set.
+        // TODO: This should be a unit test against the `enforcePElements`
+        // formatter.
+        // TODO: Allow `enforcePElements` formatter to have configurable
+        // definition of block elements.
+        givenContentOf('<foo></foo><h1>1</h1>', function () {
+          it('should not modify the HTML', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p>');
+            });
+          });
+        });
+      });
+
       // Integration tests to ensure the formatters do not incorrectly alter
       // the content when set.
       givenContentOf('<h1>1</h1>', function () {
