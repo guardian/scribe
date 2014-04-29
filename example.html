@@ -38,24 +38,8 @@ require({
 
   scribe.setContent('<p>Hello, World!</p>');
 
-  // Formatters
-  scribe.use(scribePluginSanitizer({
-    tags: {
-      p: {},
-      br: {},
-      b: {},
-      strong: {},
-      i: {},
-      s: {},
-      blockquote: {},
-      ol: {},
-      ul: {},
-      li: {},
-      a: { href: true }
-    }
-  }));
-
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+  scribe.use(scribePluginSanitizer({ tags: { p: {}, br: {} } }));
 
   scribe.on('content-changed', updateHtml);
 
