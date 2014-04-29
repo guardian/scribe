@@ -2320,8 +2320,9 @@ function executeCommand(commandName, value) {
 function givenContentOf(content, fn) {
   given('content of "' + content + '"', function () {
     beforeEach(function () {
-      scribeNode.click();
-      return setContent(content);
+      return setContent(content).then(function () {
+        scribeNode.click();
+      });
     });
 
     fn();
