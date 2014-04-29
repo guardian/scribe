@@ -17,6 +17,10 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Given content of "<p>1|</p>", when inserting HTML of "<p>2</p>", Chrome will
     merge the inserted P element into the existing P element, whereas Firefox
     will not: http://jsbin.com/uvEdacoz/6/edit?js,output
+  - Given content of "<p>1|</p>", when inserting HTML of "<p>2<o></o></p>",
+    Chrome will merge the inserted P element into the existing P element
+    *excluding any custom elements*, whereas Firefox will not:
+    http://jsbin.com/tuleq/3/edit?js,output
   - Given content of "<p>1<br>|</p>", when inserting HTML of "2<p>3</p>", Chrome
     will append the inserted unwrapped text node immediately into the existing
     paragraph, whereas Firefox will append a BR element followed by the text
