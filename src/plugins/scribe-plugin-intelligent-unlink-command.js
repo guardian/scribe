@@ -29,6 +29,17 @@ define(function () {
             }
           }.bind(this));
         } else {
+          // if an A tag has a class, Firefox replaces the A tag with a span with the same class
+          var range, node;
+          range = selection.selection.getRangeAt(0)
+          node = range.commonAncestorContainer;
+          if (node.nodeName === 'A') node.className = null;
+          node = range.startContainer;
+          do {
+            if (node.nodeName === 'A') node.className = null;
+            node = node.nextSibling;
+          } while (node && node != range.endContainer);
+          // end:if an A tag has a class, Firefox replaces the A tag with a span with the same class
           scribe.api.Command.prototype.execute.apply(this, arguments);
         }
       };
