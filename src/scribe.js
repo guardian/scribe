@@ -1,6 +1,7 @@
 define([
   'event-emitter',
   'lodash-modern/objects/defaults',
+  'lodash-modern/arrays/flatten',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -17,6 +18,7 @@ define([
 ], function (
   EventEmitter,
   defaults,
+  flatten,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -43,7 +45,7 @@ define([
     });
     this.commandPatches = {};
     this.plainTextFormatter = new Formatter();
-    this.htmlFormatter = new Formatter();
+    this.htmlFormatter = new HTMLFormatter();
 
     this.api = new Api(this);
 
@@ -288,11 +290,39 @@ define([
   }
 
   Formatter.prototype.format = function (html) {
-    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+    // Map the object to an array: Array[Formatter]
+    var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
 
-    return formattedHTML;
+    return formatted;
+  };
+
+  function HTMLFormatter() {
+    // Object[String,Array[Formatter]]
+    // Define phases
+    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
+    this.formatters = {
+      // Configurable sanitization of the HTML, e.g. converting/filter/removing
+      // elements
+      sanitize: [],
+      // Normalize content to ensure it is ready for interaction
+      normalize: []
+    };
+  }
+
+  HTMLFormatter.prototype = Object.create(Formatter.prototype);
+  HTMLFormatter.prototype.constructor = HTMLFormatter;
+
+  HTMLFormatter.prototype.format = function (html) {
+    // Flatten the phases
+    // Map the object to an array: Array[Formatter]
+    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatted = formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
   };
 
   return Scribe;
