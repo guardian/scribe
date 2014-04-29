@@ -2302,11 +2302,6 @@ describe('toolbar plugin', function () {
 function setContent(html) {
   return driver.executeScript(function (html) {
     window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
-    if (html.match('|').length) {
-      var selection = new window.scribe.api.Selection();
-      selection.selectMarkers();
-    }
-    window.scribe.pushHistory();
   }, html);
 }
 
@@ -2322,6 +2317,12 @@ function givenContentOf(content, fn) {
     beforeEach(function () {
       return setContent(content).then(function () {
         scribeNode.click();
+        return driver.executeScript(function (content) {
+          if (content.match('|').length) {
+            var selection = new window.scribe.api.Selection();
+            selection.selectMarkers();
+          }
+        }, content);
       });
     });
 
