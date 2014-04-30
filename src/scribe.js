@@ -44,7 +44,7 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.plainTextFormatter = new Formatter();
+    this.plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
@@ -285,7 +285,7 @@ define([
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
-    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
+    this.insertHTML('<p>' + this.plainTextFormatterFactory.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
@@ -303,15 +303,15 @@ define([
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
-    this.plainTextFormatter.formatters.push(fn);
+    this.plainTextFormatterFactory.formatters.push(fn);
   };
 
   // TODO: abstract
-  function Formatter() {
+  function FormatterFactory() {
     this.formatters = [];
   }
 
-  Formatter.prototype.format = function (html) {
+  FormatterFactory.prototype.format = function (html) {
     // Map the object to an array: Array[Formatter]
     var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
@@ -333,7 +333,7 @@ define([
     };
   }
 
-  HTMLFormatterFactory.prototype = Object.create(Formatter.prototype);
+  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
   HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
 
   HTMLFormatterFactory.prototype.format = function (html) {
