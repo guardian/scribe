@@ -26,7 +26,6 @@ define(function () {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
 
             var selection = new scribe.api.Selection();
-            var range = selection.range;
 
             // Note: the range is always collapsed on keyup here
             var containerPElement = selection.getContaining(function (node) {
