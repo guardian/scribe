@@ -12,7 +12,7 @@ define(function () {
       var nbspCharRegExp = new RegExp(nbspChar, 'g');
 
       // TODO: should we be doing this on paste?
-      scribe.registerHtmlFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('normalize', function (html) {
         return html.replace(nbspCharRegExp, ' ');
       });
     };

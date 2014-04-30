@@ -36,7 +36,7 @@ define(function () {
   return function () {
     return function (scribe) {
 
-      scribe.registerHtmlFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('normalize', function (html) {
         var bin = document.createElement('div');
         bin.innerHTML = html;
 

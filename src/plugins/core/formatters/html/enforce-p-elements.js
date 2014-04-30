@@ -96,7 +96,7 @@ define([
   return function () {
     return function (scribe) {
 
-      scribe.registerHtmlFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('normalize', function (html) {
         /**
          * Ensure P mode.
          *

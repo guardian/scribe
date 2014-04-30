@@ -298,7 +298,7 @@ define([
     return this.options.debug;
   };
 
-  Scribe.prototype.registerHtmlFormatter = function (phase, fn) {
+  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
     this._htmlFormatterFactory.formatters[phase].push(fn);
   };
 
