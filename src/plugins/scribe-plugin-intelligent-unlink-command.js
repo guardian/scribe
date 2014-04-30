@@ -1,4 +1,4 @@
-define(['api/element'], function (element) {
+define(['../api/element'], function (element) {
 
   /**
    * This plugin modifies the `unlink` command so that, when the user's
