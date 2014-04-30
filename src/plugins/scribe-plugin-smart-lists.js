@@ -4,39 +4,29 @@ define(function () {
 
   return function () {
 
-    var keys = {
-      32: 'Space',
-      42: '*',
-      45: '-',
-      46: '.',
-      49: '1',
-      // Bullet insertion keycode, most likely only working on OS X...
-      8226:  '•'
-    };
+    return function (scribe) {
 
-    function isUnorderedListChar(string) {
-      return string === '*' || string === '-' || string === '•';
-    }
+      var keys = {
+        32: 'Space',
+        42: '*',
+        45: '-',
+        46: '.',
+        49: '1',
+        // Bullet insertion keycode, most likely only working on OS X...
+        8226:  '•'
+      };
 
-    function findBlockContainer(node) {
-      while (node && ! isBlockElement(node)) {
-        node = node.parentNode;
+      function isUnorderedListChar(string) {
+        return string === '*' || string === '-' || string === '•';
       }
 
-      return node;
-    }
+      function findBlockContainer(node) {
+        while (node && ! scribe.api.element.isBlockElement(node)) {
+          node = node.parentNode;
+        }
 
-    function isBlockElement(node) {
-      return (
-        node.tagName === 'P' ||
-        node.tagName === 'LI' ||
-        node.tagName === 'DIV'
-        // TODO: etc
-      );
-    }
-
-
-    return function (scribe) {
+        return node;
+      }
 
       var preLastChar, lastChar, currentChar;
 
