@@ -171,7 +171,7 @@ define([
       var selection = new this.api.Selection();
       var isEditorActive = selection.range;
 
-      var run = function () {
+      var runFormatters = function () {
         if (isEditorActive) {
           selection.placeMarkers();
         }
@@ -189,9 +189,9 @@ define([
         this.undoManager.undo();
 
         // Pass content through formatters, place caret back
-        this.transactionManager.run(run);
+        this.transactionManager.run(runFormatters);
       } else {
-        run();
+        runFormatters();
       }
     }.bind(this);
 
