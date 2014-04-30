@@ -553,13 +553,13 @@ describe('formatters', function () {
         });
       });
 
-      when('content of "<meta><h1>1</h1>" is inserted', function () {
+      when('content of "<foo><h1>1</h1>" is set', function () {
         beforeEach(function () {
           // Focus it before-hand
           scribeNode.click();
 
           return driver.executeScript(function () {
-            window.scribe.insertHTML('<meta><h1>1</h1>');
+            window.scribe.insertHTML('<foo><h1>1</h1>');
           });
         });
 
