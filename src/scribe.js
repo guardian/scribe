@@ -168,17 +168,31 @@ define([
 
 
     var applyFormatters = function() {
-      // Discard the last history item, as we're going to be adding
-      // a new clean history item next.
-      this.undoManager.undo();
+      var selection = new this.api.Selection();
+      var isEditorActive = selection.range;
 
-      // Pass content through formatters, place caret back
-      this.transactionManager.run(function () {
-        var selection = new this.api.Selection();
-        selection.placeMarkers();
+      var runFormatters = function () {
+        if (isEditorActive) {
+          selection.placeMarkers();
+        }
         this.setHTML(this.htmlFormatter.format(this.getHTML()));
         selection.selectMarkers();
-      }.bind(this));
+      }.bind(this);
+
+      // We only want to wrap the formatting in a transaction if the editor is
+      // active. If the DOM is mutated when the editor isn't active (e.g.
+      // `scribe.setContent`), we do not want to push to the history. (This
+      // happens on the first `focus` event).
+      if (isEditorActive) {
+        // Discard the last history item, as we're going to be adding
+        // a new clean history item next.
+        this.undoManager.undo();
+
+        // Pass content through formatters, place caret back
+        this.transactionManager.run(runFormatters);
+      } else {
+        runFormatters();
+      }
     }.bind(this);
 
     observeDomChanges(this.el, applyFormatters);

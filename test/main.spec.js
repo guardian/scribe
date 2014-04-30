@@ -489,6 +489,53 @@ describe('formatters', function () {
       });
     });
 
+    describe('setting the content', function() {
+      // Integration tests to ensure the formatters do not incorrectly alter
+      // the content when set.
+      givenContentOf('<h1>1</h1>', function () {
+        it('should not modify the HTML', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<h1>1</h1>');
+          });
+        });
+      });
+
+      when('the sanitizer plugin is enabled', function () {
+        beforeEach(function () {
+          return driver.executeAsyncScript(function (done) {
+            require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+              window.scribe.use(scribePluginSanitizer({ tags: { p: {} } }));
+              done();
+            });
+          });
+        });
+
+        // Integration tests to ensure the formatters apply the correct
+        // transformation when the content is set.
+        givenContentOf('<h1>1</h1>', function () {
+          it('should not modify the HTML', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p>');
+            });
+          });
+        });
+
+        // Integration tests to ensure the formatters apply the correct
+        // transformation when the content is set.
+        // TODO: This should be a unit test against the `enforcePElements`
+        // formatter.
+        // TODO: Allow `enforcePElements` formatter to have configurable
+        // definition of block elements.
+        givenContentOf('<foo></foo><h1>1</h1>', function () {
+          it('should not modify the HTML', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1</p>');
+            });
+          });
+        });
+      });
+    });
+
     // This isn’t a unit test for the sanitizer plugin, but rather an
     // integration test to check the formatter phases happen in the correct
     // order.
@@ -506,17 +553,14 @@ describe('formatters', function () {
         });
       });
 
-      when('content of "<meta><h1>1</h1>" is inserted', function () {
+      when('content of "<foo><h1>1</h1>" is set', function () {
         beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
-
           return driver.executeScript(function () {
-            window.scribe.insertHTML('<meta><h1>1</h1>');
+            window.scribe.setContent('<foo><h1>1</h1>');
           });
         });
 
-        it('should strip non-whitelisted elements and then any text nodes in a P element', function () {
+        it('should strip non-whitelisted elements and then wrap any text nodes in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p>');
           });
@@ -556,7 +600,6 @@ describe('formatters', function () {
         });
       });
     });
-
   });
 });
 
@@ -2256,11 +2299,6 @@ describe('toolbar plugin', function () {
 function setContent(html) {
   return driver.executeScript(function (html) {
     window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
-    if (html.match('|').length) {
-      var selection = new window.scribe.api.Selection();
-      selection.selectMarkers();
-    }
-    window.scribe.pushHistory();
   }, html);
 }
 
@@ -2274,8 +2312,19 @@ function executeCommand(commandName, value) {
 function givenContentOf(content, fn) {
   given('content of "' + content + '"', function () {
     beforeEach(function () {
-      scribeNode.click();
-      return setContent(content);
+      return setContent(content).then(function () {
+        return driver.executeScript(function (content) {
+          if (content.match('|').length) {
+            var selection = new window.scribe.api.Selection();
+            selection.selectMarkers();
+          }
+        }, content);
+      }).then(function () {
+        // Focus the editor now that the selection has been applied
+        return driver.executeScript(function () {
+          window.scribe.el.focus();
+        });
+      });
     });
 
     fn();
