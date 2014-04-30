@@ -279,7 +279,7 @@ define([
       content = content + '<br>';
     }
 
-    this.setHTML(this.htmlFormatter.format(content));
+    this.setHTML(content);
 
     this.trigger('content-changed');
   };
