@@ -42,8 +42,8 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.plainTextFormatter = new Formatter();
-    this.htmlFormatter = new HTMLFormatter();
+    this._plainTextFormatterFactory = new FormatterFactory();
+    this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
 
@@ -190,7 +190,7 @@ define([
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
-    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
+    this.insertHTML('<p>' + this._plainTextFormatterFactory.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
@@ -203,12 +203,20 @@ define([
     return this.options.debug;
   };
 
+  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
+    this._htmlFormatterFactory.formatters[phase].push(fn);
+  };
+
+  Scribe.prototype.registerPlainTextFormatter = function (fn) {
+    this._plainTextFormatterFactory.formatters.push(fn);
+  };
+
   // TODO: abstract
-  function Formatter() {
+  function FormatterFactory() {
     this.formatters = [];
   }
 
-  Formatter.prototype.format = function (html) {
+  FormatterFactory.prototype.format = function (html) {
     // Map the object to an array: Array[Formatter]
     var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
@@ -217,7 +225,7 @@ define([
     return formatted;
   };
 
-  function HTMLFormatter() {
+  function HTMLFormatterFactory() {
     // Object[String,Array[Formatter]]
     // Define phases
     // For a list of formatters, see https://github.com/guardian/scribe/issues/126
@@ -230,10 +238,10 @@ define([
     };
   }
 
-  HTMLFormatter.prototype = Object.create(Formatter.prototype);
-  HTMLFormatter.prototype.constructor = HTMLFormatter;
+  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
+  HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
 
-  HTMLFormatter.prototype.format = function (html) {
+  HTMLFormatterFactory.prototype.format = function (html) {
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
     var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
