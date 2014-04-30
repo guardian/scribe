@@ -176,9 +176,7 @@ define([
           selection.placeMarkers();
         }
         this.setHTML(this.htmlFormatter.format(this.getHTML()));
-        if (selection.range) {
-          selection.selectMarkers();
-        }
+        selection.selectMarkers();
       }.bind(this);
 
       // We only want to wrap the formatting in a transaction if the editor is
