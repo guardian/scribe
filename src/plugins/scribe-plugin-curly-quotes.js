@@ -22,7 +22,7 @@ define(function () {
       scribe.el.addEventListener('keypress', input);
 
       // Substitute quotes on setting content or paste
-      scribe.htmlFormatter.formatters.normalize.push(substituteCurlyQuotes);
+      scribe.registerHtmlFormatter('normalize', substituteCurlyQuotes);
 
       function input(event) {
         var curlyChar;

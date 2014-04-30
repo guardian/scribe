@@ -298,6 +298,10 @@ define([
     return this.options.debug;
   };
 
+  Scribe.prototype.registerHtmlFormatter = function (phase, fn) {
+    this.htmlFormatter.formatters[phase].push(fn);
+  };
+
   // TODO: abstract
   function Formatter() {
     this.formatters = [];
