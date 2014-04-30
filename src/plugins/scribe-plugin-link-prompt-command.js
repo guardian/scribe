@@ -23,7 +23,7 @@ define(function () {
 
         if (anchorNode) {
           range.selectNode(anchorNode);
-          selection.selection.removeAllRanges(range);
+          selection.selection.removeAllRanges();
           selection.selection.addRange(range);
         }
 
