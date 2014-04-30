@@ -85,7 +85,7 @@ define([
         }
       }
 
-      scribe.htmlFormatter.formatters.normalize.push(function (html) {
+      scribe.registerHTMLFormatter('normalize', function (html) {
         /**
          * Ensure P mode.
          *

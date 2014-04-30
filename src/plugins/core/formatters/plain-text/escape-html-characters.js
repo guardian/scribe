@@ -8,7 +8,7 @@ define([
 
   return function () {
     return function (scribe) {
-      scribe.plainTextFormatter.formatters.push(escape);
+      scribe.registerPlainTextFormatter(escape);
     };
   };
 
