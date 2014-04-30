@@ -4,7 +4,7 @@ define(function () {
 
   return function () {
     return function (scribe) {
-      scribe.plainTextFormatter.formatters.push(function (html) {
+      scribe.registerPlainTextFormatter(function (html) {
         return html.replace(/\n([ \t]*\n)+/g, '</p><p>').replace(/\n/g, '<br>');
       });
     };
