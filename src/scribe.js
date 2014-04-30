@@ -168,8 +168,10 @@ define([
 
 
     var applyFormatters = function() {
+      var selection = new this.api.Selection();
+      var isEditorActive = selection.range;
+
       var run = function () {
-        var selection = new this.api.Selection();
         if (selection.range) {
           selection.placeMarkers();
         }
@@ -179,8 +181,6 @@ define([
         }
       }.bind(this);
 
-      var selection = new this.api.Selection();
-      var isEditorActive = selection.range;
       // We only want to wrap the formatting in a transaction if the editor is
       // active. If the DOM is mutated when the editor isn't active (e.g.
       // `scribe.setContent`), we do not want to push to the history. (This
