@@ -44,7 +44,7 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.plainTextFormatterFactory = new FormatterFactory();
+    this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
@@ -285,7 +285,7 @@ define([
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
-    this.insertHTML('<p>' + this.plainTextFormatterFactory.format(plainText) + '</p>');
+    this.insertHTML('<p>' + this._plainTextFormatterFactory.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
@@ -303,7 +303,7 @@ define([
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
-    this.plainTextFormatterFactory.formatters.push(fn);
+    this._plainTextFormatterFactory.formatters.push(fn);
   };
 
   // TODO: abstract
