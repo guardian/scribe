@@ -172,7 +172,7 @@ define([
       var isEditorActive = selection.range;
 
       var run = function () {
-        if (selection.range) {
+        if (isEditorActive) {
           selection.placeMarkers();
         }
         this.setHTML(this.htmlFormatter.format(this.getHTML()));
