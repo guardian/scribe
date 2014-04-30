@@ -302,6 +302,10 @@ define([
     this._htmlFormatterFactory.formatters[phase].push(fn);
   };
 
+  Scribe.prototype.registerPlainTextFormatter = function (fn) {
+    this.plainTextFormatter.formatters.push(fn);
+  };
+
   // TODO: abstract
   function Formatter() {
     this.formatters = [];
