@@ -563,7 +563,7 @@ describe('formatters', function () {
           });
         });
 
-        it('should strip non-whitelisted elements and then any text nodes in a P element', function () {
+        it('should strip non-whitelisted elements and then wrap any text nodes in a P element', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p>');
           });
