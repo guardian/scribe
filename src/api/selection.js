@@ -71,19 +71,24 @@ define(function () {
       });
     };
 
+    // This will select markers if there are any. You will need to focus the
+    // Scribe instance’s element if it is not already for the selection to
+    // become active.
     Selection.prototype.selectMarkers = function (keepMarkers) {
       var markers = this.getMarkers();
       if (!markers.length) {
         return;
       }
 
-      this.range.setStartBefore(markers[0]);
+      var newRange = document.createRange();
+
+      newRange.setStartBefore(markers[0]);
       if (markers.length >= 2) {
-        this.range.setEndAfter(markers[1]);
+        newRange.setEndAfter(markers[1]);
       } else {
         // We always reset the end marker because otherwise it will just
         // use the current range’s end marker.
-        this.range.setEndAfter(markers[0]);
+        newRange.setEndAfter(markers[0]);
       }
 
       if (! keepMarkers) {
@@ -91,7 +96,7 @@ define(function () {
       }
 
       this.selection.removeAllRanges();
-      this.selection.addRange(this.range);
+      this.selection.addRange(newRange);
     };
 
     Selection.prototype.isCaretOnNewLine = function () {
