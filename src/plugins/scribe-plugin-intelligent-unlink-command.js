@@ -25,7 +25,7 @@ define(function () {
             });
 
             if (aNode) {
-              new scribe.api.Element(aNode.parentNode).unwrap(aNode);
+              scribe.api.element.unwrap(aNode.parentNode, aNode);
             }
           }.bind(this));
         } else {

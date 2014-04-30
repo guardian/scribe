@@ -8,7 +8,7 @@ define([
 ], function (
   buildCommandPatch,
   buildCommand,
-  Element,
+  element,
   Node,
   buildSelection,
   buildSimpleCommand
@@ -19,7 +19,7 @@ define([
   return function Api(scribe) {
     this.CommandPatch = buildCommandPatch(scribe);
     this.Command = buildCommand(scribe);
-    this.Element = Element;
+    this.element = element;
     this.Node = Node;
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);

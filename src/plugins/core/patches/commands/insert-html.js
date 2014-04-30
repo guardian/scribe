@@ -31,7 +31,7 @@ define(function () {
 
             do {
               if (node.nodeName === 'SPAN') {
-                new scribe.api.Element(parentNode).unwrap(node);
+                scribe.api.element.unwrap(parentNode, node);
               } else {
                 /**
                  * If the list item contains inline elements such as
