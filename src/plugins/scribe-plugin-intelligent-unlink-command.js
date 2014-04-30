@@ -1,4 +1,4 @@
-define(function () {
+define(['api/element'], function (element) {
 
   /**
    * This plugin modifies the `unlink` command so that, when the user's
@@ -25,7 +25,7 @@ define(function () {
             });
 
             if (aNode) {
-              new scribe.api.Element(aNode.parentNode).unwrap(aNode);
+              element.unwrap(aNode.parentNode, aNode);
             }
           }.bind(this));
         } else {
