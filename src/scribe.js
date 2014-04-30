@@ -45,7 +45,7 @@ define([
     });
     this.commandPatches = {};
     this.plainTextFormatter = new Formatter();
-    this.htmlFormatterFactory = new HTMLFormatterFactory();
+    this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
 
@@ -175,7 +175,7 @@ define([
         if (isEditorActive) {
           selection.placeMarkers();
         }
-        this.setHTML(this.htmlFormatterFactory.format(this.getHTML()));
+        this.setHTML(this._htmlFormatterFactory.format(this.getHTML()));
         selection.selectMarkers();
       }.bind(this);
 
@@ -299,7 +299,7 @@ define([
   };
 
   Scribe.prototype.registerHtmlFormatter = function (phase, fn) {
-    this.htmlFormatterFactory.formatters[phase].push(fn);
+    this._htmlFormatterFactory.formatters[phase].push(fn);
   };
 
   // TODO: abstract
