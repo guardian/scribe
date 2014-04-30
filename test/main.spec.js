@@ -2316,13 +2316,17 @@ function givenContentOf(content, fn) {
   given('content of "' + content + '"', function () {
     beforeEach(function () {
       return setContent(content).then(function () {
-        scribeNode.click();
         return driver.executeScript(function (content) {
           if (content.match('|').length) {
             var selection = new window.scribe.api.Selection();
             selection.selectMarkers();
           }
         }, content);
+      }).then(function () {
+        // Focus the editor now that the selection has been applied
+        return driver.executeScript(function () {
+          window.scribe.el.focus();
+        });
       });
     });
 
