@@ -1,32 +1,32 @@
-define(function () {
+define(['api/element'], function (element) {
 
   'use strict';
 
   return function () {
 
+    var keys = {
+      32: 'Space',
+      42: '*',
+      45: '-',
+      46: '.',
+      49: '1',
+      // Bullet insertion keycode, most likely only working on OS X...
+      8226:  '•'
+    };
+
+    function isUnorderedListChar(string) {
+      return string === '*' || string === '-' || string === '•';
+    }
+
+    function findBlockContainer(node) {
+      while (node && ! element.isBlockElement(node)) {
+        node = node.parentNode;
+      }
+
+      return node;
+    }
+
     return function (scribe) {
-
-      var keys = {
-        32: 'Space',
-        42: '*',
-        45: '-',
-        46: '.',
-        49: '1',
-        // Bullet insertion keycode, most likely only working on OS X...
-        8226:  '•'
-      };
-
-      function isUnorderedListChar(string) {
-        return string === '*' || string === '-' || string === '•';
-      }
-
-      function findBlockContainer(node) {
-        while (node && ! scribe.api.element.isBlockElement(node)) {
-          node = node.parentNode;
-        }
-
-        return node;
-      }
 
       var preLastChar, lastChar, currentChar;
 

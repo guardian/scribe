@@ -1,4 +1,4 @@
-define(function () {
+define(['api/element'], function (element) {
 
   'use strict';
 
@@ -59,7 +59,7 @@ define(function () {
                   if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
                     var spanElement = pElementChildNode;
-                    scribe.api.element.unwrap(containerPElement, spanElement);
+                    element.unwrap(containerPElement, spanElement);
                   } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
                     /**
                      * If the paragraph contains inline elements such as
