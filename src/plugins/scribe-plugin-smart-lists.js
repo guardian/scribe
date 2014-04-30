@@ -1,4 +1,4 @@
-define(function () {
+define(['api/element'], function (element) {
 
   'use strict';
 
@@ -19,22 +19,12 @@ define(function () {
     }
 
     function findBlockContainer(node) {
-      while (node && ! isBlockElement(node)) {
+      while (node && ! element.isBlockElement(node)) {
         node = node.parentNode;
       }
 
       return node;
     }
-
-    function isBlockElement(node) {
-      return (
-        node.tagName === 'P' ||
-        node.tagName === 'LI' ||
-        node.tagName === 'DIV'
-        // TODO: etc
-      );
-    }
-
 
     return function (scribe) {
 

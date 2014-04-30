@@ -25,10 +25,11 @@
 <script src="./bower_components/requirejs/require.js"></script>
 <script>
 require({
+  baseUrl: './src',
   paths: {
-    'event-emitter': './bower_components/eventEmitter/EventEmitter',
-    'lodash-modern': './bower_components/lodash-amd/modern',
-    'scribe-plugin-sanitizer': './bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer'
+    'event-emitter': '../bower_components/eventEmitter/EventEmitter',
+    'lodash-modern': '../bower_components/lodash-amd/modern',
+    'scribe-plugin-sanitizer': '../bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer'
   },
   shim: {
     'event-emitter': {
@@ -36,8 +37,8 @@ require({
     }
   }
 }, [
-  './src/scribe',
-  './src/plugins/scribe-plugin-toolbar',
+  'scribe',
+  'plugins/scribe-plugin-toolbar',
   'scribe-plugin-sanitizer'
 ], function (
   Scribe,
