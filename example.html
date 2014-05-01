@@ -21,6 +21,11 @@
     height: 300px;
     overflow: auto;
   }
+
+  .rte-output {
+    width: 100%;
+    height: 10em;
+  }
 </style>
 <script src="./bower_components/requirejs/require.js"></script>
 <script>
@@ -54,7 +59,7 @@ require({
   scribe.on('content-changed', updateHtml);
 
   function updateHtml() {
-    document.querySelector('.rte-output').innerText = scribe.getHTML();
+    document.querySelector('.rte-output').value = scribe.getHTML();
   }
 
   updateHtml();
@@ -66,5 +71,5 @@ require({
 <rte></rte>
 <section>
   <h1>Output</h1>
-  <pre><code class="rte-output"></code></pre>
+  <textarea class="rte-output" readonly></textarea>
 </section>
