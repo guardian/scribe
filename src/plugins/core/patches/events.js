@@ -1,4 +1,4 @@
-define(['api/element'], function (element) {
+define(['../../../api/element'], function (element) {
 
   'use strict';
 
