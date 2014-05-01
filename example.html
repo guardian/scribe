@@ -31,9 +31,10 @@
 <script>
 require({
   paths: {
+    'scribe-common': './bower_components/scribe-common/src',
     'event-emitter': './bower_components/eventEmitter/EventEmitter',
     'lodash-modern': './bower_components/lodash-amd/modern',
-    'html-janitor':  './bower_components/html-janitor/src/html-janitor'
+    'html-janitor':  './bower_components/html-janitor/html-janitor'
   },
   shim: {
     'event-emitter': {
@@ -42,14 +43,16 @@ require({
   }
 }, [
   './src/scribe',
-  './src/plugins/scribe-plugin-toolbar',
+  './bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
   './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
-  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
+  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
+  './bower_components/scribe-plugin-smart-lists/src/scribe-plugin-smart-lists'
 ], function (
   Scribe,
   scribePluginToolbar,
   scribePluginSanitizer,
-  scribePluginInlineStyles
+  scribePluginInlineStyles,
+  scribePluginSmartLists
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
@@ -63,6 +66,7 @@ require({
     i: {},
     br: {}
   }}));
+//  scribe.use(scribePluginSmartLists());
 
   scribe.on('content-changed', updateHtml);
 
