@@ -43,17 +43,20 @@ require({
 }, [
   './src/scribe',
   './src/plugins/scribe-plugin-toolbar',
-  './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'
+  './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
 ], function (
   Scribe,
   scribePluginToolbar,
-  scribePluginSanitizer
+  scribePluginSanitizer,
+  scribePluginInlineStyles
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
   scribe.setContent('<p>Hello, World!</p>');
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+  scribe.use(scribePluginInlineStyles());
   scribe.use(scribePluginSanitizer({ tags: {
     p: {},
     b: {},
