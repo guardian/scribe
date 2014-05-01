@@ -7,15 +7,16 @@
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
-    "scribe-plugin-blockquote-command": "~0.1.0",
-    "scribe-plugin-curly-quotes": "~0.1.0",
-    "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "~0.1.0",
-    "scribe-plugin-heading-command": "~0.1.0",
-    "scribe-plugin-intelligent-unlink-command": "~0.1.0",
-    "scribe-plugin-keyboard-shortcuts": "~0.1.0",
-    "scribe-plugin-link-prompt-command": "~0.1.0",
-    "scribe-plugin-sanitizer": "~0.1.0",
-    "scribe-plugin-smart-lists": "~0.1.0",
-    "scribe-plugin-toolbar": "~0.1.0"
+    "scribe-plugin-blockquote-command": "guardian/scribe-plugin-blockquote-command#master",
+    "scribe-plugin-curly-quotes": "guardian/scribe-plugin-curly-quotes#master",
+    "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "guardian/scribe-plugin-formatter-plain-text-convert-new-lines-to-html#master",
+    "scribe-plugin-heading-command": "guardian/scribe-plugin-heading-command#master",
+    "scribe-plugin-intelligent-unlink-command": "guardian/scribe-plugin-intelligent-unlink-command#master",
+    "scribe-plugin-keyboard-shortcuts": "guardian/scribe-plugin-keyboard-shortcuts#master",
+    "scribe-plugin-link-prompt-command": "guardian/scribe-plugin-link-prompt-command#master",
+    "scribe-plugin-sanitizer": "guardian/scribe-plugin-sanitizer#master",
+    "scribe-plugin-smart-lists": "guardian/scribe-plugin-smart-lists#master",
+    "scribe-plugin-toolbar": "guardian/scribe-plugin-toolbar#master",
+    "scribe-plugin-inline-styles-to-elements": "*"
   }
 }
