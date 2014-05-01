@@ -1,6 +1,6 @@
 define([
   'lodash-modern/arrays/last',
-  'api/element'
+  '../../../../api/element'
 ], function (
   last,
   element
