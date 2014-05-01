@@ -121,6 +121,23 @@ define([
        * We detect when this occurs and fix it by placing the caret ourselves.
        */
       var selection = new this.api.Selection();
+
+      var getFirstDeepestChild = function(node) {
+        var treeWalker = this.targetWindow.document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
+        var previousNode = treeWalker.currentNode;
+        if (treeWalker.firstChild()) {
+          // TODO: build list of non-empty elements (used elsewhere)
+          // Do not include non-empty elements
+          if (treeWalker.currentNode.nodeName === 'BR') {
+            return previousNode;
+          } else {
+            return getFirstDeepestChild(treeWalker.currentNode);
+          }
+        } else {
+          return treeWalker.currentNode;
+        }
+      }.bind(this);
+
       // In Chrome, the range is not created on or before this event loop.
       // It doesn’t matter because this is a fix for Firefox.
       if (selection.range) {
@@ -141,21 +158,6 @@ define([
         }
       }
 
-      function getFirstDeepestChild(node) {
-        var treeWalker = this.targetWindow.document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
-        var previousNode = treeWalker.currentNode;
-        if (treeWalker.firstChild()) {
-          // TODO: build list of non-empty elements (used elsewhere)
-          // Do not include non-empty elements
-          if (treeWalker.currentNode.nodeName === 'BR') {
-            return previousNode;
-          } else {
-            return getFirstDeepestChild(treeWalker.currentNode);
-          }
-        } else {
-          return treeWalker.currentNode;
-        }
-      }
     }.bind(this));
     this.el.addEventListener('focus', pushHistoryOnFocus);
   }
