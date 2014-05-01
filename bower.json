@@ -1,7 +1,7 @@
 {
   "name": "scribe",
   "dependencies": {
-    "eventEmitter": "4.2.6",
+    "eventEmitter": "4.2.7",
     "lodash-amd": "2.4.0"
   },
   "devDependencies": {
