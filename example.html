@@ -21,6 +21,11 @@
     height: 300px;
     overflow: auto;
   }
+
+  .rte-output {
+    width: 100%;
+    height: 10em;
+  }
 </style>
 <script src="./bower_components/requirejs/require.js"></script>
 <script>
@@ -28,7 +33,7 @@ require({
   paths: {
     'event-emitter': './bower_components/eventEmitter/EventEmitter',
     'lodash-modern': './bower_components/lodash-amd/modern',
-    'scribe-plugin-sanitizer': './bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer'
+    'html-janitor':  './bower_components/html-janitor/src/html-janitor'
   },
   shim: {
     'event-emitter': {
@@ -38,23 +43,31 @@ require({
 }, [
   './src/scribe',
   './src/plugins/scribe-plugin-toolbar',
-  'scribe-plugin-sanitizer'
+  './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
 ], function (
   Scribe,
   scribePluginToolbar,
-  scribePluginSanitizer
+  scribePluginSanitizer,
+  scribePluginInlineStyles
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
   scribe.setContent('<p>Hello, World!</p>');
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
-  scribe.use(scribePluginSanitizer({ tags: { p: {}, br: {} } }));
+  scribe.use(scribePluginInlineStyles());
+  scribe.use(scribePluginSanitizer({ tags: {
+    p: {},
+    b: {},
+    i: {},
+    br: {}
+  }}));
 
   scribe.on('content-changed', updateHtml);
 
   function updateHtml() {
-    document.querySelector('.rte-output').innerText = scribe.getHTML();
+    document.querySelector('.rte-output').value = scribe.getHTML();
   }
 
   updateHtml();
@@ -66,5 +79,5 @@ require({
 <rte></rte>
 <section>
   <h1>Output</h1>
-  <pre><code class="rte-output"></code></pre>
+  <textarea class="rte-output" readonly></textarea>
 </section>
