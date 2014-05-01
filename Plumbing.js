@@ -57,6 +57,7 @@ module.exports = function (pipelines) {
 
   const genericPlugins = [
     'scribe-plugin-blockquote-command',
+    'scribe-plugin-code-command',
     'scribe-plugin-curly-quotes',
     'scribe-plugin-heading-command',
     'scribe-plugin-intelligent-unlink-command',
