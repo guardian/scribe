@@ -1,5 +1,4 @@
 define([
-  'event-emitter',
   'lodash-modern/objects/defaults',
   'lodash-modern/arrays/flatten',
   './plugins/core/commands',
@@ -13,9 +12,9 @@ define([
   './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
-  './undo-manager'
+  './undo-manager',
+  './event-emitter',
 ], function (
-  EventEmitter,
   defaults,
   flatten,
   commands,
@@ -29,12 +28,15 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager
+  buildUndoManager,
+  EventEmitter
 ) {
 
   'use strict';
 
   function Scribe(el, options) {
+    EventEmitter.call(this);
+
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
