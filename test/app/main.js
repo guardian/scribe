@@ -1,5 +1,4 @@
 require({
-  baseUrl: '../../src',
   paths: {
     'scribe-common': '../../bower_components/scribe-common/src',
     'event-emitter': '../../bower_components/eventEmitter/EventEmitter',
