@@ -44,23 +44,19 @@ define([
   }
 
   EventEmitter.prototype.on = function (eventName, fn) {
-    var listeners = this._listeners[eventName];
+    var listeners = this._listeners[eventName] || [];
 
-    if (!listeners) {
-      this._listeners[eventName] = [];
-    }
+    listeners.push(fn);
 
-    this._listeners[eventName].push(fn);
+    this._listeners[eventName] = listeners;
   };
 
   EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = this._listeners[eventName];
+    var listeners = this._listeners[eventName] || [];
 
-    if (listeners) {
-      listeners.forEach(function (listener) {
-        listener.apply(null, args);
-      });
-    }
+    listeners.forEach(function (listener) {
+      listener.apply(null, args);
+    });
   };
 
   function Scribe(el, options) {
