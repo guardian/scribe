@@ -1,4 +1,10 @@
 /**
+ * IMPORTANT: FIXME: These tests are referring to the source of plugins at their
+ * master branch, so if you’re checking this out from the future, it’s probably
+ * not going to run the tests.
+ */
+
+/**
  * TODO:
  * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
  * - Move out unit tests (wherever we are testing individual methods; lots of
@@ -50,11 +56,14 @@ function initializeScribe(options) {
   function setupTest(options, done) {
     require.config({
       paths: {
-        'scribe-plugin-sanitizer': '../bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer'
+        'scribe-common': '../bower_components/scribe-common/src',
+        'event-emitter': '../bower_components/eventEmitter/EventEmitter',
+        'lodash-modern': '../bower_components/lodash-amd/modern',
+        'html-janitor':  '../bower_components/html-janitor/html-janitor'
       }
     });
 
-    require(['scribe'], function (Scribe) {
+    require(['../bower_components/scribe/src/scribe'], function (Scribe) {
       'use strict';
       /**
        * In Firefox, the options object appears to be frozen. I’m unable
@@ -423,7 +432,7 @@ describe('formatters', function () {
     describe('convert new lines to HTML', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['plugins/formatters/plain-text/scribe-plugin-formatter-plain-text-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+          require(['../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
             window.scribe.use(convertNewLinesToHtmlFormatter());
             done();
           });
@@ -503,7 +512,7 @@ describe('formatters', function () {
       when('the sanitizer plugin is enabled', function () {
         beforeEach(function () {
           return driver.executeAsyncScript(function (done) {
-            require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+            require(['../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
               window.scribe.use(scribePluginSanitizer({ tags: { p: {} } }));
               done();
             });
@@ -542,7 +551,7 @@ describe('formatters', function () {
     describe('normalization phase', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+          require(['../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: {
                 p: {}
@@ -571,7 +580,7 @@ describe('formatters', function () {
     describe('trim whitespace', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+          require(['../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: {
                 p: {}
@@ -649,7 +658,7 @@ describe('block mode', function () {
   describe('blockquotes', function () {
     beforeEach(function () {
       return driver.executeAsyncScript(function (done) {
-        require(['plugins/scribe-plugin-blockquote-command'], function (blockquoteCommand) {
+        require(['../bower_components/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'], function (blockquoteCommand) {
           window.scribe.use(blockquoteCommand());
           done();
         });
@@ -1384,7 +1393,7 @@ describe.skip('smart lists plugin', function () {
 
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
-      require(['plugins/scribe-plugin-smart-lists'], function (smartLists) {
+      require(['../bower_components/scribe-plugin-smart-lists/src/scribe-plugin-smart-lists'], function (smartLists) {
         window.scribe.use(smartLists());
         done();
       });
@@ -1877,7 +1886,7 @@ describe('curly quotes plugin', function () {
 
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
-      require(['plugins/scribe-plugin-curly-quotes'], function (curlyQuotes) {
+      require(['../bower_components/scribe-plugin-curly-quotes/src/scribe-plugin-curly-quotes'], function (curlyQuotes) {
         window.scribe.use(curlyQuotes());
         done();
       });
@@ -2265,7 +2274,7 @@ describe('toolbar plugin', function () {
       toolbarDiv.appendChild(vendorButton);
       body.appendChild(toolbarDiv);
 
-      require(['plugins/scribe-plugin-toolbar'], function (toolbarPlugin) {
+      require(['../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar'], function (toolbarPlugin) {
         window.scribe.use(toolbarPlugin(toolbarDiv));
         done();
       });
