@@ -51,8 +51,7 @@ require({
   Scribe,
   scribePluginToolbar,
   scribePluginSanitizer,
-  scribePluginInlineStyles,
-  scribePluginSmartLists
+  scribePluginInlineStyles
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
@@ -66,7 +65,6 @@ require({
     i: {},
     br: {}
   }}));
-//  scribe.use(scribePluginSmartLists());
 
   scribe.on('content-changed', updateHtml);
 
