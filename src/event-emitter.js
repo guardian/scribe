@@ -1,4 +1,4 @@
-define([], function () {
+define(['lodash-modern/arrays/pull'], function (pull) {
 
   'use strict';
 
@@ -15,6 +15,15 @@ define([], function () {
     listeners.push(fn);
 
     this._listeners[eventName] = listeners;
+  };
+
+  EventEmitter.prototype.off = function (eventName, fn) {
+    var listeners = this._listeners[eventName] || [];
+    if (fn) {
+      pull(listeners, fn);
+    } else {
+      delete this._listeners[eventName];
+    }
   };
 
   EventEmitter.prototype.trigger = function (eventName, args) {
