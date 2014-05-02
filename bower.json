@@ -5,6 +5,7 @@
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
+    "scribe": "guardian/scribe#master",
     "scribe-plugin-blockquote-command": "guardian/scribe-plugin-blockquote-command#master",
     "scribe-plugin-curly-quotes": "guardian/scribe-plugin-curly-quotes#master",
     "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "guardian/scribe-plugin-formatter-plain-text-convert-new-lines-to-html#master",
