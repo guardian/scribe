@@ -2,7 +2,7 @@ define(['lodash-modern/arrays/pull'], function (pull) {
 
   'use strict';
 
-  // TODO: unbind, once
+  // TODO: once
   // TODO: unit test
   // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
   function EventEmitter() {
