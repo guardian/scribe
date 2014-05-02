@@ -32,14 +32,8 @@
 require({
   paths: {
     'scribe-common': './bower_components/scribe-common/src',
-    'event-emitter': './bower_components/eventEmitter/EventEmitter',
     'lodash-modern': './bower_components/lodash-amd/modern',
     'html-janitor':  './bower_components/html-janitor/html-janitor'
-  },
-  shim: {
-    'event-emitter': {
-      exports: 'EventEmitter'
-    }
   }
 }, [
   './src/scribe',
@@ -51,8 +45,7 @@ require({
   Scribe,
   scribePluginToolbar,
   scribePluginSanitizer,
-  scribePluginInlineStyles,
-  scribePluginSmartLists
+  scribePluginInlineStyles
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
@@ -66,7 +59,6 @@ require({
     i: {},
     br: {}
   }}));
-//  scribe.use(scribePluginSmartLists());
 
   scribe.on('content-changed', updateHtml);
 
