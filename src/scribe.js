@@ -1,6 +1,5 @@
 define([
   'lodash-modern/objects/defaults',
-  'lodash-modern/objects/assign',
   'lodash-modern/arrays/flatten',
   './plugins/core/commands',
   './plugins/core/events',
@@ -17,7 +16,6 @@ define([
   './event-emitter',
 ], function (
   defaults,
-  assign,
   flatten,
   commands,
   events,
