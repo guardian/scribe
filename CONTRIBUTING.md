@@ -39,8 +39,15 @@ TODO: Add a script to do this for you
 * Commit using version number as the message – also add `[ci skip]` (temporary
   Travis workaround: https://github.com/travis-ci/travis-ci/issues/1468)
 * `git tag v<version number>`
-* `git push origin dist <tag name>`
+* `git push --set-upstream origin dist <tag name>`
 * Update change log in `master` branch
+* `git checkout gh-pages`
+* `git pull`
+* Update versions of `bower.json`
+* `bower install`
+* `bower prune`
+* `git add --update .`
+* Commit using version number as the message (OR plugin version)
 
 ## Conventions
 * In documentation and code, refer to nodes by their canonical node name in
