@@ -1,6 +1,7 @@
 define([
   'lodash-modern/objects/defaults',
   'lodash-modern/objects/assign',
+  'lodash-modern/arrays/flatten',
   'lodash-modern/collections/where',
   './plugins/core/commands',
   './plugins/core/events',
@@ -13,11 +14,11 @@ define([
   './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
-  './undo-manager',
-  './dom-observer'
+  './undo-manager'
 ], function (
   defaults,
   assign,
+  flatten,
   where,
   commands,
   events,
@@ -30,8 +31,7 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager,
-  observeDomChanges
+  buildUndoManager
 ) {
 
   'use strict';
@@ -81,8 +81,8 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.plainTextFormatter = new Formatter();
-    this.htmlFormatter = new Formatter();
+    this._plainTextFormatterFactory = new FormatterFactory();
+    this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
 
@@ -143,85 +143,6 @@ define([
     this.use(commands.undo());
 
     this.use(events());
-
-    var pushHistoryOnFocus = function () {
-      // Tabbing into the editor doesn't create a range immediately, so we have to
-      // wait until the next event loop.
-      setTimeout(function () {
-        this.pushHistory();
-      }.bind(this), 0);
-
-      this.el.removeEventListener('focus', pushHistoryOnFocus);
-    }.bind(this);
-
-    // TODO: abstract
-    this.el.addEventListener('focus', function placeCaretOnFocus() {
-      /**
-       * Firefox: Giving focus to a `contenteditable` will place the caret
-       * outside of any block elements. Chrome behaves correctly by placing the
-       * caret at the  earliest point possible inside the first block element.
-       * As per: http://jsbin.com/eLoFOku/1/edit?js,console,output
-       *
-       * We detect when this occurs and fix it by placing the caret ourselves.
-       */
-      var selection = new this.api.Selection();
-      // In Chrome, the range is not created on or before this event loop.
-      // It doesn’t matter because this is a fix for Firefox.
-      if (selection.range) {
-        selection.placeMarkers();
-        var isFirefoxBug = this.allowsBlockElements() && this.getHTML().match(/^<em class="scribe-marker"><\/em>/);
-        selection.removeMarkers();
-
-        if (isFirefoxBug) {
-          var focusElement = getFirstDeepestChild(this.el.firstChild);
-
-          var range = selection.range;
-
-          range.setStart(focusElement, 0);
-          range.setEnd(focusElement, 0);
-
-          selection.selection.removeAllRanges();
-          selection.selection.addRange(range);
-        }
-      }
-
-      function getFirstDeepestChild(node) {
-        var treeWalker = document.createTreeWalker(node);
-        var previousNode = treeWalker.currentNode;
-        if (treeWalker.firstChild()) {
-          // TODO: build list of non-empty elements (used elsewhere)
-          // Do not include non-empty elements
-          if (treeWalker.currentNode.nodeName === 'BR') {
-            return previousNode;
-          } else {
-            return getFirstDeepestChild(treeWalker.currentNode);
-          }
-        } else {
-          return treeWalker.currentNode;
-        }
-      }
-    }.bind(this));
-    this.el.addEventListener('focus', pushHistoryOnFocus);
-
-
-    var applyFormatters = function() {
-      // Discard the last history item, as we're going to be adding
-      // a new clean history item next.
-      this.undoManager.undo();
-
-      // Pass content through formatters, place caret back
-      this.transactionManager.run(function () {
-        var selection = new this.api.Selection();
-        selection.placeMarkers();
-        this.setHTML(this.htmlFormatter.format(this.getHTML()));
-        selection.selectMarkers();
-      }.bind(this));
-    }.bind(this);
-
-    observeDomChanges(this.el, applyFormatters);
-
-    // TODO: disconnect on tear down:
-    // observer.disconnect();
   }
 
   var eventEmitter = EventEmitter.new();
@@ -303,36 +224,72 @@ define([
       content = content + '<br>';
     }
 
-    this.setHTML(this.htmlFormatter.format(content));
+    this.setHTML(content);
 
     this.trigger('content-changed');
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
-    this.insertHTML('<p>' + this.plainTextFormatter.format(plainText) + '</p>');
+    this.insertHTML('<p>' + this._plainTextFormatterFactory.format(plainText) + '</p>');
   };
 
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
+    this.getCommand('insertHTML').execute(html);
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
     return this.options.debug;
   };
 
+  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
+    this._htmlFormatterFactory.formatters[phase].push(fn);
+  };
+
+  Scribe.prototype.registerPlainTextFormatter = function (fn) {
+    this._plainTextFormatterFactory.formatters.push(fn);
+  };
+
   // TODO: abstract
-  function Formatter() {
+  function FormatterFactory() {
     this.formatters = [];
   }
 
-  Formatter.prototype.format = function (html) {
-    var formattedHTML = this.formatters.reduce(function (formattedData, formatter) {
+  FormatterFactory.prototype.format = function (html) {
+    // Map the object to an array: Array[Formatter]
+    var formatted = this.formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
 
-    return formattedHTML;
+    return formatted;
+  };
+
+  function HTMLFormatterFactory() {
+    // Object[String,Array[Formatter]]
+    // Define phases
+    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
+    this.formatters = {
+      // Configurable sanitization of the HTML, e.g. converting/filter/removing
+      // elements
+      sanitize: [],
+      // Normalize content to ensure it is ready for interaction
+      normalize: []
+    };
+  }
+
+  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
+  HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
+
+  HTMLFormatterFactory.prototype.format = function (html) {
+    // Flatten the phases
+    // Map the object to an array: Array[Formatter]
+    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatted = formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
   };
 
   return Scribe;

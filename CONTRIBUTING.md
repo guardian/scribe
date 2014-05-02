@@ -47,3 +47,6 @@ TODO: Add a script to do this for you
   uppercase. E.g. `P`.
 * When creating variables that refer to nodes or elements, suffix them with
   `node` or `element` respectively. E.g. `pElement` or `textNode`.
+
+## Tools
+* Paste bin: http://jsfiddle.net/OliverJAsh/z8FTb/

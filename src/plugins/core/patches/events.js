@@ -1,4 +1,4 @@
-define(function () {
+define(['../../../api/element'], function (element) {
 
   'use strict';
 
@@ -26,7 +26,6 @@ define(function () {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
 
             var selection = new scribe.api.Selection();
-            var range = selection.range;
 
             // Note: the range is always collapsed on keyup here
             var containerPElement = selection.getContaining(function (node) {
@@ -59,7 +58,7 @@ define(function () {
                   if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
                     var spanElement = pElementChildNode;
-                    new scribe.api.Element(containerPElement).unwrap(spanElement);
+                    element.unwrap(containerPElement, spanElement);
                   } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
                     /**
                      * If the paragraph contains inline elements such as

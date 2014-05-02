@@ -1,4 +1,4 @@
-define(function () {
+define(['../../../../api/element'], function (element) {
 
   'use strict';
 
@@ -61,7 +61,7 @@ define(function () {
                 if (listElementChildNode.nodeName === 'SPAN') {
                   // Unwrap any SPAN that has been inserted
                   var spanElement = listElementChildNode;
-                  new scribe.api.Element(listItemElement).unwrap(spanElement);
+                  element.unwrap(listItemElement, spanElement);
                 } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
                   /**
                    * If the list item contains inline elements such as

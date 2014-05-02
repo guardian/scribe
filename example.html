@@ -11,28 +11,71 @@
   rte, rte-toolbar {
     display: block;
   }
+
+  p {
+    margin-top: 0;
+  }
+
+  rte {
+    border: 1px solid gray;
+    height: 300px;
+    overflow: auto;
+  }
+
+  .rte-output {
+    width: 100%;
+    height: 10em;
+  }
 </style>
 <script src="./bower_components/requirejs/require.js"></script>
 <script>
 require({
   paths: {
-    'lodash-modern': './bower_components/lodash-amd/modern'
+    'scribe-common': './bower_components/scribe-common/src',
+    'lodash-modern': './bower_components/lodash-amd/modern',
+    'html-janitor':  './bower_components/html-janitor/html-janitor'
   }
 }, [
   './src/scribe',
-  './src/plugins/scribe-plugin-toolbar'
+  './bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
+  './bower_components/scribe-plugin-smart-lists/src/scribe-plugin-smart-lists'
 ], function (
   Scribe,
-  scribePluginToolbar
+  scribePluginToolbar,
+  scribePluginSanitizer,
+  scribePluginInlineStyles,
+  scribePluginSmartLists
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
   scribe.setContent('<p>Hello, World!</p>');
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+  scribe.use(scribePluginInlineStyles());
+  scribe.use(scribePluginSanitizer({ tags: {
+    p: {},
+    b: {},
+    i: {},
+    br: {}
+  }}));
+//  scribe.use(scribePluginSmartLists());
+
+  scribe.on('content-changed', updateHtml);
+
+  function updateHtml() {
+    document.querySelector('.rte-output').value = scribe.getHTML();
+  }
+
+  updateHtml();
 });
 </script>
 <rte-toolbar>
   <button data-command-name="bold">Bold</button>
 </rte-toolbar>
 <rte></rte>
+<section>
+  <h1>Output</h1>
+  <textarea class="rte-output" readonly></textarea>
+</section>

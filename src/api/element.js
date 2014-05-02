@@ -1,21 +1,24 @@
-define(['./node'], function (Node) {
+define(['lodash-modern/collections/contains'], function (contains) {
 
   'use strict';
 
-  function Element(node) {
-    Node.call(this, node);
+  // TODO: not exhaustive?
+  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
+                           'H2', 'H3', 'H4', 'H5', 'H6'];
+  function isBlockElement(node) {
+    return contains(blockElementNames, node.nodeName);
   }
 
-  Element.prototype = Object.create(Node.prototype);
-  Element.prototype.constructor = Element;
-
-  Element.prototype.unwrap = function (childNode) {
+  function unwrap(node, childNode) {
     while (childNode.childNodes.length > 0) {
-      this.node.insertBefore(childNode.childNodes[0], childNode);
+      node.insertBefore(childNode.childNodes[0], childNode);
     }
-    this.node.removeChild(childNode);
-  };
+    node.removeChild(childNode);
+  }
 
-  return Element;
+  return {
+    isBlockElement: isBlockElement,
+    unwrap: unwrap
+  };
 
 });

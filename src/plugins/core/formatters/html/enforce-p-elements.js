@@ -1,9 +1,9 @@
 define([
   'lodash-modern/arrays/last',
-  'lodash-modern/collections/contains'
+  '../../../../api/element'
 ], function (
   last,
-  contains
+  element
 ) {
 
   /**
@@ -23,13 +23,6 @@ define([
 
   'use strict';
 
-
-  // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H2'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
   /**
    * Wrap consecutive inline elements and text nodes in a P element.
    */
@@ -40,8 +33,8 @@ define([
       if (! group) {
         startNewGroup();
       } else {
-        var isBlockGroup = isBlockElement(group[0]);
-        if (isBlockGroup === isBlockElement(binChildNode)) {
+        var isBlockGroup = element.isBlockElement(group[0]);
+        if (isBlockGroup === element.isBlockElement(binChildNode)) {
           group.push(binChildNode);
         } else {
           startNewGroup();
@@ -57,7 +50,7 @@ define([
     }, []);
 
     var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = isBlockElement(group[0]);
+      var isBlockGroup = element.isBlockElement(group[0]);
       return ! isBlockGroup;
     });
 
@@ -91,11 +84,10 @@ define([
     }
   }
 
-
   return function () {
     return function (scribe) {
 
-      scribe.htmlFormatter.formatters.push(function (html) {
+      scribe.registerHTMLFormatter('normalize', function (html) {
         /**
          * Ensure P mode.
          *

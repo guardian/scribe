@@ -20,14 +20,6 @@ module.exports = function (pipelines) {
       }
   });
 
-  var genericPluginRequireJS = requireJS({
-      // FIXME: auto?
-      preserveLicenseComments: false,
-      paths: {
-          'lodash-modern': '../../bower_components/lodash-amd/modern'
-      }
-  });
-
   var toBuildDir = write('./build');
   var writeBoth = all(
     [uglifyJS, toBuildDir],
@@ -43,36 +35,4 @@ module.exports = function (pipelines) {
     // Send the resource along these branches
     writeBoth
   ];
-
-  /**
-   * We define pipelines for building the non-core plugins. In the future the
-   * source files for these plugins will live in another repository.
-   */
-
-  const genericPlugins = [
-    'scribe-plugin-blockquote-command',
-    'scribe-plugin-curly-quotes',
-    'scribe-plugin-heading-command',
-    'scribe-plugin-intelligent-unlink-command',
-    'scribe-plugin-keyboard-shortcuts',
-    'scribe-plugin-link-prompt-command',
-    'scribe-plugin-smart-lists',
-    'scribe-plugin-toolbar'
-  ];
-
-  genericPlugins.forEach(function (pluginName) {
-    addPluginBuildPipeline(genericPluginRequireJS)(pluginName);
-  });
-  addPluginBuildPipeline(genericPluginRequireJS)('scribe-plugin-formatter-plain-text-convert-new-lines-to-html', '/formatters/plain-text');
-
-  function addPluginBuildPipeline(requireJSOperation) {
-    return function (name, path) {
-      pipelines['build:' + name] = [
-        glob('./src/plugins' + (path || '') + '/' + name + '.js'),
-        requireJSOperation,
-        // Send the resource along these branches
-        writeBoth
-      ];
-    };
-  }
 };

@@ -1,4 +1,4 @@
-define(function () {
+define(['../../../../api/element'], function (element) {
 
   'use strict';
 
@@ -31,7 +31,7 @@ define(function () {
 
             do {
               if (node.nodeName === 'SPAN') {
-                new scribe.api.Element(parentNode).unwrap(node);
+                element.unwrap(parentNode, node);
               } else {
                 /**
                  * If the list item contains inline elements such as
