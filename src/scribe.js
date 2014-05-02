@@ -36,44 +36,30 @@ define([
 
   'use strict';
 
-  var Base = {
-    new: function () {
-      var x = Object.create(this);
-      x.init.apply(x, arguments);
-      return x;
-    },
-
-    extend: function (extensions) {
-      var x = Object.create(this);
-      assign(x, extensions);
-      return x;
-    }
-  };
-
   // TODO: unbind, once
   // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
-  var EventEmitter = Base.extend({
-    init: function () {
-      this._listeners = [];
+  function EventEmitter() {
+    this._listeners = [];
 
-      // Alias (mimic Node’s `EventEmitter` API)
-      this.addListener = this.on;
-    },
+    // Alias (mimic Node’s `EventEmitter` API)
+    this.addListener = this.on;
+  }
 
-    on: function (eventName, callback) {
-      this._listeners.push({ eventName: eventName, callback: callback });
-    },
+  EventEmitter.prototype.on = function (eventName, callback) {
+    this._listeners.push({ eventName: eventName, callback: callback });
+  };
 
-    trigger: function (eventName, args) {
-      var listeners = where(this._listeners, { eventName: eventName });
+  EventEmitter.prototype.trigger = function (eventName, args) {
+    var listeners = where(this._listeners, { eventName: eventName });
 
-      listeners.forEach(function (listener) {
-        listener.callback.apply(null, args);
-      });
-    }
-  });
+    listeners.forEach(function (listener) {
+      listener.callback.apply(null, args);
+    });
+  };
 
   function Scribe(el, options) {
+    EventEmitter.call(this);
+
     this.el = el;
     this.commands = {};
     this.options = defaults(options || {}, {
@@ -145,8 +131,7 @@ define([
     this.use(events());
   }
 
-  var eventEmitter = EventEmitter.new();
-  Scribe.prototype = Object.create(eventEmitter);
+  Scribe.prototype = Object.create(EventEmitter.prototype);
 
   // For plugins
   // TODO: tap combinator?
