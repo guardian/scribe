@@ -13,7 +13,8 @@ define([
   './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
-  './undo-manager'
+  './undo-manager',
+  './event-emitter',
 ], function (
   defaults,
   assign,
@@ -29,35 +30,11 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager
+  buildUndoManager,
+  EventEmitter
 ) {
 
   'use strict';
-
-  // TODO: unbind, once
-  // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
-  function EventEmitter() {
-    this._listeners = [];
-
-    // Alias (mimic Node’s `EventEmitter` API)
-    this.addListener = this.on;
-  }
-
-  EventEmitter.prototype.on = function (eventName, fn) {
-    var listeners = this._listeners[eventName] || [];
-
-    listeners.push(fn);
-
-    this._listeners[eventName] = listeners;
-  };
-
-  EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = this._listeners[eventName] || [];
-
-    listeners.forEach(function (listener) {
-      listener.apply(null, args);
-    });
-  };
 
   function Scribe(el, options) {
     EventEmitter.call(this);
