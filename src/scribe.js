@@ -2,7 +2,6 @@ define([
   'lodash-modern/objects/defaults',
   'lodash-modern/objects/assign',
   'lodash-modern/arrays/flatten',
-  'lodash-modern/collections/where',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -19,7 +18,6 @@ define([
   defaults,
   assign,
   flatten,
-  where,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -45,16 +43,24 @@ define([
     this.addListener = this.on;
   }
 
-  EventEmitter.prototype.on = function (eventName, callback) {
-    this._listeners.push({ eventName: eventName, callback: callback });
+  EventEmitter.prototype.on = function (eventName, fn) {
+    var listeners = this._listeners[eventName];
+
+    if (!listeners) {
+      this._listeners[eventName] = [];
+    }
+
+    this._listeners[eventName].push(fn);
   };
 
   EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = where(this._listeners, { eventName: eventName });
+    var listeners = this._listeners[eventName];
 
-    listeners.forEach(function (listener) {
-      listener.callback.apply(null, args);
-    });
+    if (listeners) {
+      listeners.forEach(function (listener) {
+        listener.apply(null, args);
+      });
+    }
   };
 
   function Scribe(el, options) {
