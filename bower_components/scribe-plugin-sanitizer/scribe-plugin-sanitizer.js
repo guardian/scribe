@@ -129,7 +129,7 @@
   return HTMLJanitor;
 
 }));
-
+//# sourceMappingURL=html-janitor.js.map;
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="amd" -o ./modern/`
@@ -1809,7 +1809,7 @@ define('scribe-plugin-sanitizer',[
     return function (scribe) {
       var janitor = new HTMLJanitor(configAllowMarkers);
 
-      scribe.htmlFormatter.formatters.push(janitor.clean.bind(janitor));
+      scribe.registerHTMLFormatter('sanitize', janitor.clean.bind(janitor));
     };
   };
 

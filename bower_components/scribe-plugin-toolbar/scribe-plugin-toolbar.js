@@ -4,7 +4,7 @@ define('scribe-plugin-toolbar',[],function () {
 
   return function (toolbarNode) {
     return function (scribe) {
-      var buttons = toolbarNode.querySelectorAll('button');
+      var buttons = toolbarNode.querySelectorAll('button[data-command-name]');
 
       Array.prototype.forEach.call(buttons, function (button) {
         // Look for a predefined command, otherwise define one now.

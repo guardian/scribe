@@ -14,6 +14,6 @@
     "commit": "75306210007351b7ff4df2ac5a2f37677342eb94"
   },
   "_source": "git://github.com/guardian/scribe-plugin-heading-command.git",
-  "_target": "~0.1.0",
+  "_target": "0.1.0",
   "_originalSource": "scribe-plugin-heading-command"
 }
