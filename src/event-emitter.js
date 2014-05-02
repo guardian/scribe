@@ -7,9 +7,6 @@ define([], function () {
   // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
   function EventEmitter() {
     this._listeners = [];
-
-    // Alias (mimic Node’s `EventEmitter` API)
-    this.addListener = this.on;
   }
 
   EventEmitter.prototype.on = function (eventName, fn) {
