@@ -6,7 +6,7 @@ define([], function () {
   // TODO: unit test
   // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
   function EventEmitter() {
-    this._listeners = [];
+    this._listeners = {};
   }
 
   EventEmitter.prototype.on = function (eventName, fn) {
