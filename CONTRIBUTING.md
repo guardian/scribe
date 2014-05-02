@@ -19,7 +19,7 @@ TODO: Add steps for downloading Sauce Connect, i.e. https://github.com/angular/a
 ```
 ./setup.sh
 node test/server
-SAUCE_USERNAME='scribe-ci' SAUCE_ACCESS_KEY='4be9eeed-61de-4948-b18d-f7f655e9e4b0'
+export SAUCE_USERNAME='scribe-ci' SAUCE_ACCESS_KEY='4be9eeed-61de-4948-b18d-f7f655e9e4b0'
 
 # Sauce Connect v3
 java -jar ~/Downloads/Sauce-Connect-latest/Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY
