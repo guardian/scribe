@@ -68,7 +68,7 @@ define([
       var listeners = where(this._listeners, { eventName: eventName });
 
       listeners.forEach(function (listener) {
-          listener.callback.apply(null, args);
+        listener.callback.apply(null, args);
       });
     }
   });
