@@ -142,6 +142,7 @@ all of which can be seen in use in our [example][example].
 * [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
 * [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
 * [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
+* [scribe-plugin-inline-styles-to-elements](https://github.com/guardian/scribe-plugin-inline-styles-to-elements)
 * [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
 * [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
 * [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
