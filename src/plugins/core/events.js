@@ -103,7 +103,8 @@ define([
           }
 
         }
-        scribe._skipFormatters = false;
+
+        delete scribe._skipFormatters;
       }.bind(scribe);
 
       observeDomChanges(scribe.el, applyFormatters);
