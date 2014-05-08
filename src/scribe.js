@@ -117,7 +117,10 @@ define([
     return this;
   };
 
-  Scribe.prototype.setHTML = function (html) {
+  Scribe.prototype.setHTML = function (html, disableFormatters) {
+    if (disableFormatters) {
+      this._disableFormatters = true;
+    }
     this.el.innerHTML = html;
   };
 
@@ -166,12 +169,14 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem);
+    this.setHTML(historyItem, true);
 
     // Restore the selection
     var selection = new this.api.Selection();
     selection.selectMarkers();
 
+    // Because we skip the formatters, a transaction is not run, so we have to
+    // emit this event ourselves.
     this.trigger('content-changed');
   };
 
