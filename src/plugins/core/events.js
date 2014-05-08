@@ -103,7 +103,13 @@ define([
        * I also don't like how it has the authority to perform `event.preventDefault`.
        */
 
-      scribe.el.addEventListener('paste', function handlePaste(event) {
+      scribe.el.addEventListener('paste', handlePaste);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('paste', handlePaste);
+      });
+
+      function handlePaste(event) {
+
         /**
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
@@ -161,7 +167,7 @@ define([
             scribe.insertHTML(data);
           }, 1);
         }
-      });
+      }
 
     };
   };
