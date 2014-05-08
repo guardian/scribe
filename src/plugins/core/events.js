@@ -13,7 +13,8 @@ define([
        * keyboard navigation inside a heading to ensure a P element is created.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+
+        var handlePtagCreation = function(event) {
           if (event.keyCode === 13) { // enter
 
             var selection = new scribe.api.Selection();
@@ -56,6 +57,11 @@ define([
               }
             }
           }
+        };
+
+        scribe.el.addEventListener('keydown', handlePtagCreation);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keydown', handlePtagCreation);
         });
       }
 
@@ -64,7 +70,7 @@ define([
        * keyboard navigation inside list item nodes.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        var handleLItagCreation = function(event) {
           if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
             var selection = new scribe.api.Selection();
@@ -91,6 +97,11 @@ define([
               }
             }
           }
+        };
+
+        scribe.el.addEventListener('keydown', handleLItagCreation);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keydown', handleLItagCreation);
         });
       }
 

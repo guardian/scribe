@@ -20,6 +20,9 @@ define(function () {
     return function (scribe) {
       // Substitute quotes while typing
       scribe.el.addEventListener('keypress', input);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('keypress', input);
+      });
 
       // Substitute quotes on setting content or paste
       scribe.htmlFormatter.formatters.push(substituteCurlyQuotes);

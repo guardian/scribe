@@ -50,7 +50,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.el.addEventListener('input', function () {
+    var handleInput = function () {
       /**
        * This event triggers when either the user types something or a native
        * command is executed which causes the content to change (i.e.
@@ -58,7 +58,12 @@ define([
        * these actions, so instead we run the transaction in this event.
        */
       this.transactionManager.run();
-    }.bind(this), false);
+    }.bind(this);
+
+    this.el.addEventListener('input', handleInput, false);
+    this.on('deactivated', function() {
+      this.el.removeEventListener('keypress', handleInput);
+    }.bind(this));
 
     /**
      * Core Plugins
@@ -111,7 +116,7 @@ define([
     }.bind(this);
 
     // TODO: abstract
-    this.el.addEventListener('focus', function placeCaretOnFocus() {
+    var placeCaretOnFocus = function() {
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
@@ -158,8 +163,17 @@ define([
         }
       }
 
+    }.bind(this);
+
+    this.el.addEventListener('focus', placeCaretOnFocus);
+    this.on('deactivated', function() {
+      this.el.removeEventListener('focus', placeCaretOnFocus);
     }.bind(this));
+
     this.el.addEventListener('focus', pushHistoryOnFocus);
+    this.on('deactivated', function() {
+      this.el.removeEventListener('focus', pushHistoryOnFocus);
+    }.bind(this));
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);

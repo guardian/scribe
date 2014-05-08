@@ -17,7 +17,11 @@ define(function () {
   return function emptyEditorWhenDeleting() {
     return function (scribe) {
 
-      scribe.el.addEventListener('keydown', function handleKeydown(event) {
+      scribe.el.addEventListener('keydown', handleKeydown);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('keydown', handleKeydown);
+      });
+      function handleKeydown(event) {
         // Delete or backspace
         if (event.keyCode === 8 || event.keyCode === 46) {
           var selection = new scribe.api.Selection();
@@ -43,7 +47,7 @@ define(function () {
             });
           }
         }
-      });
+      }
 
       /**
        * Serialise a range into a HTML string.

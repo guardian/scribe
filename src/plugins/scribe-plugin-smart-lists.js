@@ -92,6 +92,9 @@ define(function () {
       }
 
       scribe.el.addEventListener('keypress', input);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('keypress', input);
+      });
     };
   };
 

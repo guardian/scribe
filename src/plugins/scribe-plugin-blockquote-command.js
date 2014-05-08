@@ -36,7 +36,11 @@ define(function () {
        * <enter> keypresses if the caret is on a new line.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        scribe.el.addEventListener('keydown', handleKeydown);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keydown', handleKeydown);
+        });
+        function handleKeydown(event) {
           if (event.keyCode === 13) { // enter
 
             var command = scribe.getCommand('blockquote');
@@ -48,7 +52,7 @@ define(function () {
               }
             }
           }
-        });
+        }
       }
     };
   };

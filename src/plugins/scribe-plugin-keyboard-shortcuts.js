@@ -8,7 +8,11 @@ define([
 
   return function (commandsToKeyboardShortcutsMap) {
     return function (scribe) {
-      scribe.el.addEventListener('keydown', function (event) {
+      scribe.el.addEventListener('keydown', handleKeydown);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('keydown', handleKeydown);
+      });
+      function handleKeydown(event) {
         var commandName = findKey(commandsToKeyboardShortcutsMap, function (isKeyboardShortcut) {
           return isKeyboardShortcut(event);
         });
@@ -24,7 +28,7 @@ define([
             command.execute();
           }
         }
-      });
+      }
     };
   };
 
