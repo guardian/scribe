@@ -11,7 +11,8 @@ For an introduction, you may want to read the blog post [Inside the Guardian’s
 **Please note:** There is a lot of missing documentation for Scribe and many of
 its plugins. We plan to improve this, however in the meantime we encourage
 you to look at the code. Scribe is very small in comparison to other libraries
-of its kind.
+of its kind. For now, you can join us on IRC at
+[#scribejs](irc://irc.freenode.net:6697/#scribejs).
 
 [See an example][example].
 
