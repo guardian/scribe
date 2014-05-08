@@ -2315,31 +2315,36 @@ define('plugins/core/events',[
        * Apply the formatters when there is a DOM mutation.
        */
       var applyFormatters = function() {
-        var selection = new scribe.api.Selection();
-        var isEditorActive = selection.range;
+        if (!scribe._skipFormatters) {
+          var selection = new scribe.api.Selection();
+          var isEditorActive = selection.range;
 
-        var runFormatters = function () {
+          var runFormatters = function () {
+            if (isEditorActive) {
+              selection.placeMarkers();
+            }
+            scribe.setHTML(scribe._htmlFormatterFactory.format(scribe.getHTML()));
+            selection.selectMarkers();
+          }.bind(scribe);
+
+          // We only want to wrap the formatting in a transaction if the editor is
+          // active. If the DOM is mutated when the editor isn't active (e.g.
+          // `scribe.setContent`), we do not want to push to the history. (This
+          // happens on the first `focus` event).
           if (isEditorActive) {
-            selection.placeMarkers();
+            // Discard the last history item, as we're going to be adding
+            // a new clean history item next.
+            scribe.undoManager.undo();
+
+            // Pass content through formatters, place caret back
+            scribe.transactionManager.run(runFormatters);
+          } else {
+            runFormatters();
           }
-          scribe.setHTML(scribe._htmlFormatterFactory.format(scribe.getHTML()));
-          selection.selectMarkers();
-        }.bind(scribe);
 
-        // We only want to wrap the formatting in a transaction if the editor is
-        // active. If the DOM is mutated when the editor isn't active (e.g.
-        // `scribe.setContent`), we do not want to push to the history. (This
-        // happens on the first `focus` event).
-        if (isEditorActive) {
-          // Discard the last history item, as we're going to be adding
-          // a new clean history item next.
-          scribe.undoManager.undo();
-
-          // Pass content through formatters, place caret back
-          scribe.transactionManager.run(runFormatters);
-        } else {
-          runFormatters();
         }
+
+        delete scribe._skipFormatters;
       }.bind(scribe);
 
       observeDomChanges(scribe.el, applyFormatters);
@@ -3935,7 +3940,7 @@ define('undo-manager',[],function () {
   return function (scribe) {
 
     function UndoManager() {
-      this.position = 0;
+      this.position = -1;
       this.stack = [];
       this.debug = scribe.isDebugModeEnabled();
     }
@@ -3956,13 +3961,13 @@ define('undo-manager',[],function () {
     };
 
     UndoManager.prototype.undo = function () {
-      if (this.position > 1) {
+      if (this.position > 0) {
         return this.stack[--this.position];
       }
     };
 
     UndoManager.prototype.redo = function () {
-      if (this.position < this.stack.length - 1) {
+      if (this.position < (this.stack.length - 1)) {
         return this.stack[++this.position];
       }
     };
@@ -4191,7 +4196,10 @@ define('scribe',[
     return this;
   };
 
-  Scribe.prototype.setHTML = function (html) {
+  Scribe.prototype.setHTML = function (html, skipFormatters) {
+    if (skipFormatters) {
+      this._skipFormatters = true;
+    }
     this.el.innerHTML = html;
   };
 
@@ -4240,12 +4248,14 @@ define('scribe',[
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem);
+    this.setHTML(historyItem, true);
 
     // Restore the selection
     var selection = new this.api.Selection();
     selection.selectMarkers();
 
+    // Because we skip the formatters, a transaction is not run, so we have to
+    // emit this event ourselves.
     this.trigger('content-changed');
   };
 
