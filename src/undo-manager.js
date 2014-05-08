@@ -32,7 +32,7 @@ define(function () {
     };
 
     UndoManager.prototype.redo = function () {
-      if (this.position < this.stack.length - 1) {
+      if (this.position < (this.stack.length - 1)) {
         return this.stack[++this.position];
       }
     };
