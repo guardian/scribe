@@ -271,14 +271,7 @@ describe('undo manager', function () {
         });
 
         it('should restore the caret and the content', function () {
-          return driver.executeScript(function () {
-            // Insert a marker so we can see where the caret is
-            var selection = window.getSelection();
-            var range = selection.getRangeAt(0);
-            var marker = document.createElement('em');
-            marker.classList.add('caret-position');
-            range.insertNode(marker);
-          }).then(function () {
+          return driver.executeScript(insertCaretPositionMarker).then(function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.equal('<p><em class="caret-position"></em>1</p>');
             });
@@ -291,14 +284,7 @@ describe('undo manager', function () {
           });
 
           it('should restore the caret and the content', function () {
-            return driver.executeScript(function () {
-              // Insert a marker so we can see where the caret is
-              var selection = window.getSelection();
-              var range = selection.getRangeAt(0);
-              var marker = document.createElement('em');
-              marker.classList.add('caret-position');
-              range.insertNode(marker);
-            }).then(function () {
+            return driver.executeScript(insertCaretPositionMarker).then(function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<p>2<em class="caret-position"></em>1</p>');
               });
@@ -318,14 +304,7 @@ describe('undo manager', function () {
           });
 
           it('should restore the caret and the content', function () {
-            return driver.executeScript(function () {
-              // Insert a marker so we can see where the caret is
-              var selection = window.getSelection();
-              var range = selection.getRangeAt(0);
-              var marker = document.createElement('em');
-              marker.classList.add('caret-position');
-              range.insertNode(marker);
-            }).then(function () {
+            return driver.executeScript(insertCaretPositionMarker).then(function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                 expect(innerHTML).to.equal('<p>2<em class="caret-position"></em>1</p>');
               });
@@ -338,14 +317,7 @@ describe('undo manager', function () {
             });
 
             it('should restore the caret and the content', function () {
-              return driver.executeScript(function () {
-                // Insert a marker so we can see where the caret is
-                var selection = window.getSelection();
-                var range = selection.getRangeAt(0);
-                var marker = document.createElement('em');
-                marker.classList.add('caret-position');
-                range.insertNode(marker);
-              }).then(function () {
+              return driver.executeScript(insertCaretPositionMarker).then(function () {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.equal('<p>23<em class="caret-position"></em>1</p>');
                 });
@@ -2398,4 +2370,14 @@ function givenContentOf(content, fn) {
 
     fn();
   });
+}
+
+// DOM helper
+function insertCaretPositionMarker() {
+  // Insert a marker so we can see where the caret is
+  var selection = window.getSelection();
+  var range = selection.getRangeAt(0);
+  var marker = document.createElement('em');
+  marker.classList.add('caret-position');
+  range.insertNode(marker);
 }
