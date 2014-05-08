@@ -290,8 +290,7 @@ describe('undo manager', function () {
             return executeCommand('redo');
           });
 
-          // FIXME
-          it.skip('should restore the caret and the content', function () {
+          it('should restore the caret and the content', function () {
             return driver.executeScript(function () {
               // Insert a marker so we can see where the caret is
               var selection = window.getSelection();
@@ -318,8 +317,7 @@ describe('undo manager', function () {
             return executeCommand('undo');
           });
 
-          // FIXME
-          it.skip('should restore the caret and the content', function () {
+          it('should restore the caret and the content', function () {
             return driver.executeScript(function () {
               // Insert a marker so we can see where the caret is
               var selection = window.getSelection();
@@ -339,8 +337,7 @@ describe('undo manager', function () {
               return executeCommand('redo');
             });
 
-            // FIXME
-            it.skip('should restore the caret and the content', function () {
+            it('should restore the caret and the content', function () {
               return driver.executeScript(function () {
                 // Insert a marker so we can see where the caret is
                 var selection = window.getSelection();
