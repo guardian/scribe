@@ -75,7 +75,7 @@ define([
        * Apply the formatters when there is a DOM mutation.
        */
       var applyFormatters = function() {
-        if (!scribe._disableFormatters) {
+        if (!scribe._skipFormatters) {
           var selection = new scribe.api.Selection();
           var isEditorActive = selection.range;
 
@@ -103,7 +103,7 @@ define([
           }
 
         }
-        scribe._disableFormatters = false;
+        scribe._skipFormatters = false;
       }.bind(scribe);
 
       observeDomChanges(scribe.el, applyFormatters);

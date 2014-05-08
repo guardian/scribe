@@ -117,9 +117,9 @@ define([
     return this;
   };
 
-  Scribe.prototype.setHTML = function (html, disableFormatters) {
-    if (disableFormatters) {
-      this._disableFormatters = true;
+  Scribe.prototype.setHTML = function (html, skipFormatters) {
+    if (skipFormatters) {
+      this._skipFormatters = true;
     }
     this.el.innerHTML = html;
   };
