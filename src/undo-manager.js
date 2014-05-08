@@ -5,7 +5,7 @@ define(function () {
   return function (scribe) {
 
     function UndoManager() {
-      this.position = 0;
+      this.position = -1;
       this.stack = [];
       this.debug = scribe.isDebugModeEnabled();
     }
@@ -26,13 +26,13 @@ define(function () {
     };
 
     UndoManager.prototype.undo = function () {
-      if (this.position > 1) {
+      if (this.position > 0) {
         return this.stack[--this.position];
       }
     };
 
     UndoManager.prototype.redo = function () {
-      if (this.position < this.stack.length - 1) {
+      if (this.position < (this.stack.length - 1)) {
         return this.stack[++this.position];
       }
     };
