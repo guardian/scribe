@@ -1,0 +1,11 @@
+{
+  "name": "scribe-plugin-toolbar",
+  "devDependencies": {
+    "plumber": "~0.3.0",
+    "plumber-all": "~0.3.0",
+    "plumber-glob": "~0.3.0",
+    "plumber-requirejs": "~0.3.0",
+    "plumber-uglifyjs": "~0.3.0",
+    "plumber-write": "~0.3.0"
+  }
+}
