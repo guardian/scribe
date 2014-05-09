@@ -158,6 +158,8 @@ define([
           selection.placeMarkers();
 
           var bin = scribe.targetWindow.document.createElement('div');
+          bin.style.maxHeight = '1px';
+          bin.style.overflow = 'hidden';
           scribe.targetWindow.document.body.appendChild(bin);
           bin.setAttribute('contenteditable', true);
           bin.focus();
