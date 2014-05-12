@@ -1190,7 +1190,6 @@ describe('commands', function () {
  * plugin needs to be fixed and tests re-enabled
  */
 describe.skip('smart lists plugin', function () {
-
   beforeEach(function () {
     return initializeScribe();
   });
@@ -1206,7 +1205,6 @@ describe.skip('smart lists plugin', function () {
 
   var unorderedPrefixes = ['* ', '- ', '• '];
   unorderedPrefixes.forEach(function(prefix) {
-
     when('the user types "' +prefix+ '"', function () {
       beforeEach(function () {
         return scribeNode.sendKeys(prefix);
@@ -1342,7 +1340,6 @@ describe.skip('smart lists plugin', function () {
         });
       });
     });
-
   });
 
   // TODO: reuse steps above for ordered lists?
@@ -1357,9 +1354,7 @@ describe.skip('smart lists plugin', function () {
         expect(innerHTML).to.have.html('<ol><li><bogus-br></li></ol>');
       });
     });
-
   });
-
 });
 
 describe('patches', function () {
@@ -1683,7 +1678,6 @@ describe('patches', function () {
 });
 
 describe('curly quotes plugin', function () {
-
   beforeEach(function () {
     return initializeScribe();
   });
@@ -2047,9 +2041,7 @@ describe('curly quotes plugin', function () {
       });
     });
   });
-
 });
-
 
 describe('toolbar plugin', function () {
 
