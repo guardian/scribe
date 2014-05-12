@@ -1,0 +1,14 @@
+{
+  "extends": "../.jshintrc",
+  // Allow standalone expressions (needed for expectations such as `expect(foo).to.be.undefined`)
+  // See: https://github.com/chaijs/chai/issues/41
+  "expr": true,
+  "predef": [
+    "after",
+    "afterEach",
+    "before",
+    "beforeEach",
+    "describe",
+    "it"
+  ]
+}

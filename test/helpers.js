@@ -10,7 +10,6 @@
  * - Move out unit tests (wherever we are testing individual methods; lots of
  *   places!)
  * - Abstract plugin tests
- * - .jshintrc for tests, extending from base
  */
 
 var assign = require('lodash-node/modern/objects/assign');
