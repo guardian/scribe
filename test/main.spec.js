@@ -7,6 +7,9 @@ var expect = chai.expect;
 var helpers = require('./helpers');
 var when = helpers.when;
 var given = helpers.given;
+var givenContentOf = helpers.givenContentOf;
+var executeCommand = helpers.executeCommand;
+var insertCaretPositionMarker = helpers.insertCaretPositionMarker;
 var initializeScribe = helpers.initializeScribe;
 var seleniumBugs = helpers.seleniumBugs;
 var browserBugs = helpers.browserBugs;
@@ -1187,7 +1190,6 @@ describe('commands', function () {
  * plugin needs to be fixed and tests re-enabled
  */
 describe.skip('smart lists plugin', function () {
-
   beforeEach(function () {
     return initializeScribe();
   });
@@ -1203,7 +1205,6 @@ describe.skip('smart lists plugin', function () {
 
   var unorderedPrefixes = ['* ', '- ', '• '];
   unorderedPrefixes.forEach(function(prefix) {
-
     when('the user types "' +prefix+ '"', function () {
       beforeEach(function () {
         return scribeNode.sendKeys(prefix);
@@ -1339,7 +1340,6 @@ describe.skip('smart lists plugin', function () {
         });
       });
     });
-
   });
 
   // TODO: reuse steps above for ordered lists?
@@ -1354,9 +1354,7 @@ describe.skip('smart lists plugin', function () {
         expect(innerHTML).to.have.html('<ol><li><bogus-br></li></ol>');
       });
     });
-
   });
-
 });
 
 describe('patches', function () {
@@ -1680,7 +1678,6 @@ describe('patches', function () {
 });
 
 describe('curly quotes plugin', function () {
-
   beforeEach(function () {
     return initializeScribe();
   });
@@ -2044,9 +2041,7 @@ describe('curly quotes plugin', function () {
       });
     });
   });
-
 });
-
 
 describe('toolbar plugin', function () {
 
@@ -2105,48 +2100,3 @@ describe('toolbar plugin', function () {
     });
   });
 });
-
-function setContent(html) {
-  return driver.executeScript(function (html) {
-    window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
-  }, html);
-}
-
-function executeCommand(commandName, value) {
-  return driver.executeScript(function (commandName, value) {
-    var command = window.scribe.getCommand(commandName);
-    command.execute(value);
-  }, commandName, value);
-}
-
-function givenContentOf(content, fn) {
-  given('content of "' + content + '"', function () {
-    beforeEach(function () {
-      return setContent(content).then(function () {
-        return driver.executeScript(function (content) {
-          if (content.match('|').length) {
-            var selection = new window.scribe.api.Selection();
-            selection.selectMarkers();
-          }
-        }, content);
-      }).then(function () {
-        // Focus the editor now that the selection has been applied
-        return driver.executeScript(function () {
-          window.scribe.el.focus();
-        });
-      });
-    });
-
-    fn();
-  });
-}
-
-// DOM helper
-function insertCaretPositionMarker() {
-  // Insert a marker so we can see where the caret is
-  var selection = window.getSelection();
-  var range = selection.getRangeAt(0);
-  var marker = document.createElement('em');
-  marker.classList.add('caret-position');
-  range.insertNode(marker);
-}

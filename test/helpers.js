@@ -61,6 +61,51 @@ exports.initializeScribe = function (options) {
   }
 };
 
+function setContent(html) {
+  return exports.driver.executeScript(function (html) {
+    window.scribe.setContent(html.replace(/\|/g, '<em class="scribe-marker"></em>'));
+  }, html);
+}
+
+exports.executeCommand = function (commandName, value) {
+  return exports.driver.executeScript(function (commandName, value) {
+    var command = window.scribe.getCommand(commandName);
+    command.execute(value);
+  }, commandName, value);
+};
+
+exports.givenContentOf = function (content, fn) {
+  exports.given('content of "' + content + '"', function () {
+    beforeEach(function () {
+      return setContent(content).then(function () {
+        return exports.driver.executeScript(function (content) {
+          if (content.match('|').length) {
+            var selection = new window.scribe.api.Selection();
+            selection.selectMarkers();
+          }
+        }, content);
+      }).then(function () {
+        // Focus the editor now that the selection has been applied
+        return exports.driver.executeScript(function () {
+          window.scribe.el.focus();
+        });
+      });
+    });
+
+    fn();
+  });
+};
+
+// DOM helper
+exports.insertCaretPositionMarker = function () {
+  // Insert a marker so we can see where the caret is
+  var selection = window.getSelection();
+  var range = selection.getRangeAt(0);
+  var marker = document.createElement('em');
+  marker.classList.add('caret-position');
+  range.insertNode(marker);
+};
+
 exports.browserName = process.env.BROWSER_NAME;
 exports.browserVersion = process.env.BROWSER_VERSION;
 exports.platform = process.env.PLATFORM;
