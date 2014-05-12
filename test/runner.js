@@ -34,7 +34,7 @@ var runner = mocha.run(function () {
     }
   }).then(function () {
     process.exit(hasPassed ? 0 : 1);
-  });
+  }).done();
 });
 
 runner.on('pass', function () {
