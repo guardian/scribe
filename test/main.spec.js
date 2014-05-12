@@ -169,7 +169,10 @@ before(function () {
     assign(capabilities, {
       username: process.env.SAUCE_USERNAME,
       accessKey: process.env.SAUCE_ACCESS_KEY,
-      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
+      // Additional Sauce Labs config:
+      // https://saucelabs.com/docs/additional-config
+      'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,
+      'video-upload-on-pass': false
     });
   }
 
