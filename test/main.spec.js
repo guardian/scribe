@@ -2,8 +2,6 @@ var chai = require('chai');
 var webdriver = require('selenium-webdriver');
 var expect = chai.expect;
 
-/* global describe, before, beforeEach, it */
-
 var helpers = require('./helpers');
 var when = helpers.when;
 var given = helpers.given;
