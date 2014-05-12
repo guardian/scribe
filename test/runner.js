@@ -18,6 +18,7 @@ var counts = {
 mocha.timeout(1200000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/main.spec.js');
+mocha.addFile(__dirname + '/undo-manager.spec.js');
 
 var runner = mocha.run(function () {
   // Notify Sauce Labs on whether the suite passed or failed
