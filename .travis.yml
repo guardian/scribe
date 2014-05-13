@@ -28,5 +28,4 @@ env:
 before_script:
   - npm install -g bower
   - bower install
-  - node test/server &
 script: npm test
