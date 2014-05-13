@@ -24,7 +24,6 @@ mocha.timeout(1200000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/plugins/curly-quotes-plugin.spec.js');
 mocha.addFile(__dirname + '/plugins/smart-lists-plugin.spec.js');
-mocha.addFile(__dirname + '/plugins/toolbar-plugin.spec.js');
 mocha.addFile(__dirname + '/block-mode.spec.js');
 mocha.addFile(__dirname + '/commands.spec.js');
 mocha.addFile(__dirname + '/formatters.spec.js');
