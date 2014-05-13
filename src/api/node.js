@@ -33,9 +33,10 @@ define(function () {
 
   Node.prototype.nextAll = function () {
     var all = [];
-    var el = this.node;
-    while (el = el.nextSibling) {
+    var el = this.node.nextSibling;
+    while (el) {
       all.push(el);
+      el = el.nextSibling;
     }
     return all;
   };
