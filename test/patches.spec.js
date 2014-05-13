@@ -8,7 +8,7 @@ var when = helpers.when;
 var given = helpers.given;
 var givenContentOf = helpers.givenContentOf;
 var executeCommand = helpers.executeCommand;
-var initializeScribe = helpers.initializeScribe;
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 var browserBugs = helpers.browserBugs;
 
 // Get new referenceS each time a new instance is created

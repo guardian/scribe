@@ -6,7 +6,7 @@ var helpers = require('scribe-test-harness/helpers');
 helpers.registerChai(chai);
 var when = helpers.when;
 var given = helpers.given;
-var initializeScribe = helpers.initializeScribe;
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 var seleniumBugs = helpers.seleniumBugs;
 
 // Get new referenceS each time a new instance is created

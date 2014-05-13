@@ -4,7 +4,7 @@ var expect = chai.expect;
 var helpers = require('scribe-test-harness/helpers');
 helpers.registerChai(chai);
 var when = helpers.when;
-var initializeScribe = helpers.initializeScribe;
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 
 // Get new referenceS each time a new instance is created
 var driver;

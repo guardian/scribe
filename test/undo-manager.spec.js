@@ -7,7 +7,7 @@ var when = helpers.when;
 var givenContentOf = helpers.givenContentOf;
 var executeCommand = helpers.executeCommand;
 var insertCaretPositionMarker = helpers.insertCaretPositionMarker;
-var initializeScribe = helpers.initializeScribe;
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 
 // Get new referenceS each time a new instance is created
 var driver;

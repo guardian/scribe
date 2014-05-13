@@ -7,7 +7,7 @@ helpers.registerChai(chai);
 var when = helpers.when;
 var given = helpers.given;
 var givenContentOf = helpers.givenContentOf;
-var initializeScribe = helpers.initializeScribe;
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 var seleniumBugs = helpers.seleniumBugs;
 var browserBugs = helpers.browserBugs;
 
