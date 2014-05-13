@@ -6,6 +6,7 @@
         "html-janitor": "./bower_components/html-janitor/src/html-janitor",
         "lodash-modern": "../bower_components/lodash-amd/modern"
       }
-    }
+    },
+    "node": {}
   }
 }
