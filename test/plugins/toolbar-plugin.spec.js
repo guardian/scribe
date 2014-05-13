@@ -1,7 +1,8 @@
 var chai = require('chai');
 var expect = chai.expect;
 
-var helpers = require('../helpers');
+var helpers = require('scribe-test-harness/helpers');
+helpers.registerChai(chai);
 var when = helpers.when;
 var initializeScribe = helpers.initializeScribe;
 

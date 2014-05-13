@@ -1,5 +1,16 @@
+/**
+ * IMPORTANT: FIXME: These tests are referring to the source of plugins at their
+ * master branch, so if you’re checking this out from the future, it’s probably
+ * not going to run the tests.
+ */
+
+/**
+ * TODO:
+ * - Conditional skip inside of tests: https://github.com/visionmedia/mocha/issues/591
+ */
+
 var Mocha = require('mocha');
-var createRunner = require('./create-runner');
+var createRunner = require('scribe-test-harness/create-runner');
 
 var mocha = new Mocha();
 

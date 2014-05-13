@@ -2,7 +2,8 @@ var chai = require('chai');
 var webdriver = require('selenium-webdriver');
 var expect = chai.expect;
 
-var helpers = require('../helpers');
+var helpers = require('scribe-test-harness/helpers');
+helpers.registerChai(chai);
 var when = helpers.when;
 var given = helpers.given;
 var initializeScribe = helpers.initializeScribe;
