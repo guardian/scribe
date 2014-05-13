@@ -31,7 +31,7 @@ describe('patches', function () {
 
         beforeEach(function () {
           return driver.executeScript(function () {
-            document.body.style.lineHeight = 2;
+            window.document.body.style.lineHeight = 2;
           });
         });
 
@@ -105,7 +105,7 @@ describe('patches', function () {
 
       beforeEach(function () {
         return driver.executeScript(function () {
-          document.body.style.lineHeight = 2;
+          window.document.body.style.lineHeight = 2;
         });
       });
 
@@ -225,7 +225,7 @@ describe('patches', function () {
 
       beforeEach(function () {
         return driver.executeScript(function () {
-          document.body.style.lineHeight = 2;
+          window.document.body.style.lineHeight = 2;
         });
       });
 

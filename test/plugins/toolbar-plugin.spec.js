@@ -23,18 +23,18 @@ describe('toolbar plugin', function () {
 
   beforeEach(function () {
     return driver.executeAsyncScript(function (done) {
-      var body = document.querySelector('body');
+      var body = window.document.querySelector('body');
       // Create toolbar
-      var toolbarDiv = document.createElement('div');
+      var toolbarDiv = window.document.createElement('div');
       toolbarDiv.className = 'scribe-toolbarDiv';
 
       // Create one default button
-      var defaultButton = document.createElement('button');
+      var defaultButton = window.document.createElement('button');
       defaultButton.setAttribute('data-command-name', 'removeFormat');
       defaultButton.innerText = 'Remove Format';
 
       // Create a vendor button
-      var vendorButton = document.createElement('button');
+      var vendorButton = window.document.createElement('button');
       vendorButton.innerText = 'Leave vendor alone!';
 
       // Add them to the DOM
@@ -57,7 +57,7 @@ describe('toolbar plugin', function () {
 
     it('should not disable vendor buttons', function () {
       return driver.executeScript(function () {
-        var vendorButtons = document.querySelectorAll('.scribe-toolbar button');
+        var vendorButtons = window.document.querySelectorAll('.scribe-toolbar button');
         Array.prototype.forEach.call(vendorButtons, function(button) {
           if (button.hasAttribute('data-command-name')) {
             // We have a default button, which is disabled when no text is

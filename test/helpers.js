@@ -54,7 +54,7 @@ exports.initializeScribe = function (options) {
        * We create a new object with the previous object as its prototype to
        * overcome this issue.
        */
-      window.scribe = new Scribe(document.querySelector('.scribe'), Object.create(options));
+      window.scribe = new Scribe(window.document.querySelector('.scribe'), Object.create(options));
       done();
     });
   }
@@ -100,7 +100,7 @@ exports.insertCaretPositionMarker = function () {
   // Insert a marker so we can see where the caret is
   var selection = window.getSelection();
   var range = selection.getRangeAt(0);
-  var marker = document.createElement('em');
+  var marker = window.document.createElement('em');
   marker.classList.add('caret-position');
   range.insertNode(marker);
 };
