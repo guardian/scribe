@@ -15,13 +15,16 @@ define(function () {
           var selection = new scribe.api.Selection();
           var range = selection.range;
 
+          var blockquoteNode = selection.getContaining(function (node) {
+            return node.nodeName === 'BLOCKQUOTE';
+          });
+
           if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
             /**
              * Chrome: Applying the outdent command when a whole BLOCKQUOTE is
              * selected removes the formatting of its contents.
              * As per: http://jsbin.com/okAYaHa/1/edit?html,js,output
              */
-            var blockquoteNode = range.commonAncestorContainer;
 
             // Insert a copy of the selection before the BLOCKQUOTE, and then
             // restore the selection on the copy.
@@ -49,10 +52,6 @@ define(function () {
             });
 
             if (pNode) {
-              var blockquoteNode = selection.getContaining(function (node) {
-                return node.nodeName === 'BLOCKQUOTE';
-              });
-
               /**
                * If we are not at the start of end of a BLOCKQUOTE, we have to
                * split the node and insert the P in the middle.

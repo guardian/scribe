@@ -26,6 +26,8 @@ module.exports = function (pipelines) {
     toBuildDir
   );
 
+  /* jshint -W069 */
+
   pipelines['build'] = [
     // TODO: use bower operation to find main of this component?
     // As per: https://github.com/bower/bower/issues/1090
