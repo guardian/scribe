@@ -8,7 +8,6 @@
 ## Testing Locally
 ```
 ./setup.sh
-node test/server
 BROWSER_NAME='chrome' npm test
 ```
 
@@ -18,7 +17,6 @@ You will need to [download Sauce Connect](https://saucelabs.com/docs/connect).
 TODO: Add steps for downloading Sauce Connect, i.e. https://github.com/angular/angular.js/blob/master/lib/sauce/sauce_connect_setup.sh
 ```
 ./setup.sh
-node test/server
 export SAUCE_USERNAME='scribe-ci' SAUCE_ACCESS_KEY='4be9eeed-61de-4948-b18d-f7f655e9e4b0'
 
 # Sauce Connect v3
