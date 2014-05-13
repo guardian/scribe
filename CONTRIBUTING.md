@@ -9,7 +9,7 @@
 ```
 ./setup.sh
 node test/server
-BROWSER_NAME='chrome' node test/runner.js
+BROWSER_NAME='chrome' npm test
 ```
 
 ## Testing via Sauce Labs
