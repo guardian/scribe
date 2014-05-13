@@ -1,5 +1,6 @@
 {
   "extends": "../.jshintrc",
+  "browser": false,
   // Allow standalone expressions (needed for expectations such as `expect(foo).to.be.undefined`)
   // See: https://github.com/chaijs/chai/issues/41
   "expr": true,
@@ -9,6 +10,7 @@
     "before",
     "beforeEach",
     "describe",
-    "it"
+    "it",
+    "window"
   ]
 }
