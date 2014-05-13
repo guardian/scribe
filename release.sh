@@ -25,7 +25,7 @@ then
     echo "-- Commiting update to distribution files"
     git add --update .
     git commit --message "Update distribution files"
-    MVERSION_PATH="./node_modules/.bin/mversion"
+    MVERSION_PATH="mversion"
     echo "-- Current version: `$MVERSION_PATH`"
     echo "-- Updating version"
     $MVERSION_PATH $1 -m "v%s

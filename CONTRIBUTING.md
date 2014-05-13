@@ -1,5 +1,7 @@
 # Contributing
 
+These steps also apply to plugins.
+
 * Add a failing test
 * Create isolated cases for browser inconsistencies (see https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md)
 * No assumptions should be made in the code – comment every little detail with
@@ -28,8 +30,10 @@ RUN_IN_SAUCE_LABS=true BROWSER_NAME='chrome' BROWSER_VERSION='32' PLATFORM='WIND
 ```
 
 ## Releasing
+* `npm install -g mversion`
 * Run `./release.sh <version>` where `<version>` is a version as understood by
-  [mversion](https://github.com/mikaelbr/mversion#usage-cli)
+  [mversion](https://github.com/mikaelbr/mversion#usage-cli). (If releasing a
+  plugin, run the script inside this repository from the plugin’s directory.)
 * Update change log in `master` branch
 * `git checkout gh-pages`
 * `git pull`
