@@ -1,5 +1,9 @@
 {
   "name": "scribe",
+  "main": "src/scribe.js",
+  "dependencies": {
+    "lodash-amd": "^2.4.1"
+  },
   "devDependencies": {
     "chai": "~1.9.1",
     "connect": "~2.12.0",
