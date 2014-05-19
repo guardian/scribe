@@ -16,7 +16,7 @@ module.exports = function (pipelines) {
       // FIXME: auto?
       preserveLicenseComments: false,
       paths: {
-          'lodash-modern': '../bower_components/lodash-amd/modern'
+          'lodash-amd': '../bower_components/lodash-amd'
       }
   });
 
