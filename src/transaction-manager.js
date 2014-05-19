@@ -1,4 +1,4 @@
-define(['lodash-modern/objects/assign'], function (assign) {
+define(['lodash-amd/modern/objects/assign'], function (assign) {
 
   'use strict';
 
