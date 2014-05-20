@@ -26,6 +26,10 @@
   "scripts": {
     "test": "./run-tests.sh"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/guardian/scribe.git"
+  },
   "browserify": {
     "transform": "deamdify"
   }
