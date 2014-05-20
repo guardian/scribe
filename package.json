@@ -3,7 +3,7 @@
   "version": "0.1.10",
   "main": "src/scribe.js",
   "dependencies": {
-    "lodash-amd": "^2.4.1"
+    "lodash-amd": "~2.4.1"
   },
   "devDependencies": {
     "chai": "~1.9.1",
