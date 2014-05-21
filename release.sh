@@ -33,6 +33,8 @@ then
     echo "-- Check the commit worked and then push (dist branch and new tag)"
 else
     echo "-- No updates to be committed"
+    # Clean the working tree
+    git reset --hard
 fi
 
 git checkout master
