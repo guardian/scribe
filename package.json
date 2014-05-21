@@ -1,5 +1,5 @@
 {
-  "name": "scribe",
+  "name": "scribe-editor",
   "version": "0.1.10",
   "main": "src/scribe.js",
   "dependencies": {
