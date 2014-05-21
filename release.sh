@@ -19,8 +19,7 @@ git fetch
 git reset --hard origin/dist
 yes | cp ./build/* .
 
-SRC_PATTERN="\.js$"
-git diff --name-only  | if grep "$SRC_PATTERN"
+git diff --name-only  | if (grep "\.js$" | grep -v "\.min\.js$")
 then
     echo "-- Commiting update to distribution files"
     git add --update .
