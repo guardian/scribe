@@ -1,4 +1,10 @@
-<!-- Use this example when testing -->
+<!--
+This example demonstrates how to consume the Scribe
+editor using RequireJS and the AMD module syntax.
+
+Note that you'll need to install scribe's dependencies through
+`bower install`. See http://bower.io/ if you are unfamiliar.
+-->
 <style>
   button {
     height: 3em;
@@ -27,19 +33,19 @@
     height: 10em;
   }
 </style>
-<script src="./bower_components/requirejs/require.js"></script>
+<script src="../bower_components/requirejs/require.js"></script>
 <script>
 require({
   paths: {
-    'scribe-common': './bower_components/scribe-common/src',
-    'lodash-amd': './bower_components/lodash-amd',
-    'html-janitor':  './bower_components/html-janitor/html-janitor'
+    'scribe-common': '../bower_components/scribe-common/src',
+    'lodash-amd': '../bower_components/lodash-amd',
+    'html-janitor':  '../bower_components/html-janitor/html-janitor'
   }
 }, [
-  './src/scribe',
-  './bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
-  './bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
-  './bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
+  '../src/scribe',
+  '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
 ], function (
   Scribe,
   scribePluginToolbar,
@@ -48,7 +54,7 @@ require({
 ) {
   var scribe = new Scribe(document.querySelector('rte'));
 
-  scribe.setContent('<p>Hello, World!</p>');
+  scribe.setContent('<p>Hello, World!<\/p>');
 
   scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
   scribe.use(scribePluginInlineStyles());
