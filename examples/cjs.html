@@ -1,0 +1,70 @@
+<!--
+This example demonstrates how to consume the Scribe
+editor using `browserify` and CommonJS module syntax.
+
+Note that you'll need to install scribe's dependencies
+through `npm install`. `npm` is installed with Node.js.
+See http://nodejs.org/ if you are unfamiliar.
+
+In order to compile the `build.js` file, run these commands:
+
+  $ npm install deamdify
+  $ npm install scribe-plugin-toolbar
+  $ browserify -g deamdify examples/cjs.js > examples/build.js
+
+See the `examples/cjs.js` file to see the JavaScript logic for this example.
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scribe editor example page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+      button {
+        height: 3em;
+      }
+
+      .active {
+        border-style: inset;
+      }
+
+      #editor, .toolbar {
+        display: block;
+      }
+
+      p {
+        margin-top: 0;
+      }
+
+      #editor {
+        border: 1px solid gray;
+        height: 300px;
+        overflow: auto;
+      }
+
+      .editor-output {
+        width: 100%;
+        height: 10em;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="toolbar">
+      <button data-command-name="bold">Bold</button>
+      <button data-command-name="italic">Italic</button>
+      <button data-command-name="underline">Underline</button>
+    </div>
+
+    <div id="editor" contenteditable="true"></div>
+
+    <div>
+      <h1>Output</h1>
+      <textarea class="editor-output" readonly></textarea>
+    </div>
+
+    <script src="build.js"></script>
+
+  </body>
+</html>
