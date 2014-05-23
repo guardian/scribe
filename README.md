@@ -12,7 +12,7 @@ For an introduction, you may want to read the blog post [Inside the Guardian’s
 its plugins. We plan to improve this, however in the meantime we encourage
 you to look at the code. Scribe is very small in comparison to other libraries
 of its kind. For now, you can join us on IRC at
-[#scribejs](irc://irc.freenode.net:6697/#scribejs).
+[#scribejs] on freenode.
 
 [See an example][example].
 
