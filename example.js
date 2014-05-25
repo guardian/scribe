@@ -88,7 +88,7 @@ require({
       b: {},
       strong: {},
       i: {},
-      s: {},
+      strike: {},
       blockquote: {},
       ol: {},
       ul: {},
