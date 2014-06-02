@@ -102,6 +102,23 @@ describe('commands', function () {
       });
     });
 
+    givenContentOf('<p>1<br>2|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('insertOrderedList');
+        });
+
+        // FIXME:
+        it.skip('should wrap the content in an ordered list', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            // Chrome: '<ol><li>2<br></li></ol>'
+            // Firefox: '<p>1<br></p><ol><li>2</li></ol><p><br></p>'
+            expect(innerHTML).to.have.html('<ol><li>1<chrome-bogus-br></li><li>2<chrome-bogus-br></li></ol>');
+          });
+        });
+      });
+    });
+
     /**
      * Unapplying
      */
