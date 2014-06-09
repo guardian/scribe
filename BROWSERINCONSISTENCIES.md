@@ -54,6 +54,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Chrome converts BRs to Ps: http://jsbin.com/zeti/2/edit?js,output
   - Firefox does not perform transformation upon Ps containing BRs:
     http://jsbin.com/yiyaq/1/edit?js,output
+* "`createLink`"
+  - Firefox does not create A if selection is empty:
+    http://jsbin.com/tutufi/2/edit?js,output
 * "`delete`":
   - Given a selection across multiple P elements, Firefox will place the caret
     outside of any P element: http://jsbin.com/xopivama/3/edit?js,output
