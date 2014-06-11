@@ -401,17 +401,17 @@ describe('commands', function () {
     });
   });
 
-  describe.only('createLink', function  () {
+  describe('createLink', function  () {
     given('an empty editor', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           scribeNode.click();
-          executeCommand('createLink', 'http://example.com');
+          executeCommand('createLink', '#');
         });
 
         it('should insert A with specified URL and content', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><a href="http://example.com">http://example.com</a><bogus-br></p>');
+            expect(innerHTML).to.have.html('<p><a href="#">#</a><bogus-br></p>');
           });
         });
       });
