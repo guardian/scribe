@@ -34,7 +34,7 @@ define(['../../../../api/element'], function (element) {
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
                 // Move listElement out of the block
-                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextSibling);
+                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
                 selection.selectMarkers();
                 if (listParentNode.childNodes.length === 0) {
                   listParentNode.parentNode.removeChild(listParentNode);
