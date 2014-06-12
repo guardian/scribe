@@ -32,7 +32,10 @@ define(function () {
           return null;
         };
 
-        return scribe.api.CommandPatch.prototype.execute.call(this, value);
+        scribe.api.CommandPatch.prototype.execute.call(this, value);
+
+        // Place caret at the end of link
+        selection.selection.collapseToEnd();
       };
     };
   };
