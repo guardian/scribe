@@ -14,7 +14,7 @@ Note that you'll need to install scribe's dependencies through
     border-style: inset;
   }
 
-  rte, rte-toolbar {
+  .rte, .rte-toolbar {
     display: block;
   }
 
@@ -22,7 +22,7 @@ Note that you'll need to install scribe's dependencies through
     margin-top: 0;
   }
 
-  rte {
+  .rte {
     border: 1px solid gray;
     height: 300px;
     overflow: auto;
@@ -52,11 +52,11 @@ require({
   scribePluginSanitizer,
   scribePluginInlineStyles
 ) {
-  var scribe = new Scribe(document.querySelector('rte'));
+  var scribe = new Scribe(document.querySelector('.rte'));
 
   scribe.setContent('<p>Hello, World!<\/p>');
 
-  scribe.use(scribePluginToolbar(document.querySelector('rte-toolbar')));
+  scribe.use(scribePluginToolbar(document.querySelector('.rte-toolbar')));
   scribe.use(scribePluginInlineStyles());
   scribe.use(scribePluginSanitizer({ tags: {
     p: {},
@@ -74,10 +74,10 @@ require({
   updateHtml();
 });
 </script>
-<rte-toolbar>
+<div class="rte-toolbar">
   <button data-command-name="bold">Bold</button>
-</rte-toolbar>
-<rte></rte>
+</div>
+<div class="rte"></div>
 <section>
   <h1>Output</h1>
   <textarea class="rte-output" readonly></textarea>
