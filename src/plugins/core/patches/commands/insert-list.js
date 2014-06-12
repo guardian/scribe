@@ -30,13 +30,16 @@ define(['../../../../api/element'], function (element) {
 
             if (listElement) {
               var listParentNode = listElement.parentNode;
-
               // If list is within a text block then split that block
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
-                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
+                // Move listElement out of the block
+                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextSibling);
                 selection.selectMarkers();
-                listParentNode.parentNode.removeChild(listParentNode);
+                if (listParentNode.childNodes.length === 0) {
+                  listParentNode.parentNode.removeChild(listParentNode);
+                }
+
               }
             }
 
