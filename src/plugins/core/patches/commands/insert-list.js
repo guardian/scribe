@@ -36,6 +36,7 @@ define(['../../../../api/element'], function (element) {
                 // Move listElement out of the block
                 listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
                 selection.selectMarkers();
+                // Remove the block if it's empty
                 if (listParentNode.childNodes.length === 0) {
                   listParentNode.parentNode.removeChild(listParentNode);
                 }
