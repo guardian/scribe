@@ -110,8 +110,6 @@ describe('commands', function () {
 
         it('should wrap the contents of the last line in an ordered list', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            // Chrome:  '<p>1<br></p><ol><li>2<br></li></ol>'
-            // Firefox: '<p>1<br></p><ol><li>2</li></ol><p><br></p>'
             expect(innerHTML).to.have.html('<p>1<br></p><ol><li>2<chrome-bogus-br></li></ol>');
           });
         });
