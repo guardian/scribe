@@ -24,6 +24,7 @@ env:
     - BROWSER_NAME='chrome' BROWSER_VERSION='32' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='33' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='34' PLATFORM='Windows XP'
+    - BROWSER_NAME='chrome' BROWSER_VERSION='35' PLATFORM='Windows XP'
 
 before_script:
   - npm install -g bower
