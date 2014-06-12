@@ -19,23 +19,21 @@ define(function () {
           aElement.setAttribute('href', value);
           aElement.textContent = value;
 
-          var range = selection.range.cloneRange();
-          range.insertNode(aElement);
+          selection.range.insertNode(aElement);
 
           // Place caret at the end of link
           var newRange = document.createRange();
           newRange.setStartAfter(aElement);
           newRange.setEndAfter(aElement);
+
           selection.selection.removeAllRanges();
           selection.selection.addRange(newRange);
+        } else {
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
 
-          return null;
-        };
-
-        scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-        // Place caret at the end of link
-        selection.selection.collapseToEnd();
+          // Place caret at the end of link
+          selection.selection.collapseToEnd();
+        }
       };
     };
   };
