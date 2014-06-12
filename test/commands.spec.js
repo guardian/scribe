@@ -416,5 +416,19 @@ describe('commands', function () {
         });
       });
     });
+
+    givenContentOf('<p>|1|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          executeCommand('createLink', '#');
+        });
+
+        it('should wrap selection with A', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><a href="#">1</a></p>');
+          });
+        });
+      });
+    });
   });
 });

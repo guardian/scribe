@@ -4,6 +4,7 @@ define([
   './patches/commands/insert-html',
   './patches/commands/insert-list',
   './patches/commands/outdent',
+  './patches/commands/create-link',
   './patches/events'
 ], function (
   boldCommand,
@@ -11,6 +12,7 @@ define([
   insertHTMLCommand,
   insertListCommands,
   outdentCommand,
+  createLinkCommand,
   events
 ) {
 
@@ -28,7 +30,8 @@ define([
       indent: indentCommand,
       insertHTML: insertHTMLCommand,
       insertList: insertListCommands,
-      outdent: outdentCommand
+      outdent: outdentCommand,
+      createLink: createLinkCommand,
     },
     events: events
   };
