@@ -21,18 +21,15 @@ define(function () {
 
           selection.range.insertNode(aElement);
 
-          // Place caret at the end of link
+          // Select the created link
           var newRange = document.createRange();
-          newRange.setStartAfter(aElement);
+          newRange.setStartBefore(aElement);
           newRange.setEndAfter(aElement);
 
           selection.selection.removeAllRanges();
           selection.selection.addRange(newRange);
         } else {
           scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-          // Place caret at the end of link
-          selection.selection.collapseToEnd();
         }
       };
     };
