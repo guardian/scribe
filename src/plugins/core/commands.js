@@ -1,31 +1,15 @@
-define([
-  './commands/indent',
-  './commands/insert-list',
-  './commands/outdent',
-  './commands/redo',
-  './commands/subscript',
-  './commands/superscript',
-  './commands/undo'
-], function (
-  indent,
-  insertList,
-  outdent,
-  redo,
-  subscript,
-  superscript,
-  undo
-) {
+define(function (require) {
 
   'use strict';
 
   return {
-    indent: indent,
-    insertList: insertList,
-    outdent: outdent,
-    redo: redo,
-    subscript: subscript,
-    superscript: superscript,
-    undo: undo
+    indent: require('./commands/indent'),
+    insertList: require('./commands/insert-list'),
+    outdent: require('./commands/outdent'),
+    redo: require('./commands/redo'),
+    subscript: require('./commands/subscript'),
+    superscript: require('./commands/superscript'),
+    undo: require('./commands/undo')
   };
 
 });

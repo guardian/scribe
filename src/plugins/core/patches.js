@@ -1,20 +1,4 @@
-define([
-  './patches/commands/bold',
-  './patches/commands/indent',
-  './patches/commands/insert-html',
-  './patches/commands/insert-list',
-  './patches/commands/outdent',
-  './patches/commands/create-link',
-  './patches/events'
-], function (
-  boldCommand,
-  indentCommand,
-  insertHTMLCommand,
-  insertListCommands,
-  outdentCommand,
-  createLinkCommand,
-  events
-) {
+define(function (require) {
 
   /**
    * Command patches browser inconsistencies. They do not perform core features
@@ -26,14 +10,14 @@ define([
 
   return {
     commands: {
-      bold: boldCommand,
-      indent: indentCommand,
-      insertHTML: insertHTMLCommand,
-      insertList: insertListCommands,
-      outdent: outdentCommand,
-      createLink: createLinkCommand,
+      bold: require('./patches/commands/bold'),
+      indent: require('./patches/commands/indent'),
+      insertHTML: require('./patches/commands/insert-html'),
+      insertList: require('./patches/commands/insert-list'),
+      outdent: require('./patches/commands/outdent'),
+      createLink: require('./patches/commands/create-link'),
     },
-    events: events
+    events: require('./patches/events')
   };
 
 });
