@@ -12,7 +12,7 @@ define(function () {
 
         /**
          * Firefox does not create a link when selection is collapsed
-         * so we create is manually. http://jsbin.com/tutufi/2/edit?js,output
+         * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */
         if (selection.selection.isCollapsed) {
           var aElement = document.createElement('a');
