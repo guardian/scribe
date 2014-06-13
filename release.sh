@@ -11,7 +11,7 @@ git reset --hard
 git checkout master
 
 echo "-- Building distribution files"
-plumber build
+./node_modules/.bin/plumber build
 
 echo "-- Copying distribution files to dist branch"
 git checkout dist
