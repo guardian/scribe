@@ -11,6 +11,7 @@
     "http-server": "~0.6.1",
     "lodash-node": "~2.4.1",
     "mocha": "~1.18.2",
+    "mversion": "~0.4.3",
     "plumber-cli": "~0.3.0",
     "plumber": "~0.3.0",
     "plumber-all": "~0.3.0",
