@@ -95,6 +95,7 @@ define([
     this.use(patches.commands.insertHTML());
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
+    this.use(patches.commands.createLink());
     this.use(patches.events());
 
     this.use(commands.indent());
