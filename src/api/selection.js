@@ -39,7 +39,7 @@ define(function () {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
 
-      if (!this.isCollapsed) {
+      if (! this.selection.isCollapsed) {
         // Start marker
         var rangeStart = this.range.cloneRange();
         rangeStart.collapse(true);
