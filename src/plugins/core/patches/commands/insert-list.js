@@ -30,8 +30,8 @@ define(['../../../../api/element'], function (element) {
              */
 
             if (listElement.nextElementSibling &&
-                listElement.nextElementSibling.textContent === '') {
-              listElement.nextElementSibling.parentNode.removeChild(listElement.nextElementSibling);
+                listElement.nextElementSibling.childNodes.length === 0) {
+              listElement.parentNode.removeChild(listElement.nextElementSibling);
             }
 
             /**
@@ -49,7 +49,9 @@ define(['../../../../api/element'], function (element) {
                 listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
                 selection.selectMarkers();
                 // Remove the block if it's empty
-                if (listParentNode.textContent === '') {
+                if (listParentNode.childNodes.length === 0 ||
+                   (listParentNode.childNodes.length === 1 &&
+                    listParentNode.childNodes[0].nodeName === 'BR')) {
                   listParentNode.parentNode.removeChild(listParentNode);
                 }
               }
