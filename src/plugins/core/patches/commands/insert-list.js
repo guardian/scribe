@@ -16,17 +16,29 @@ define(['../../../../api/element'], function (element) {
           scribe.api.CommandPatch.prototype.execute.call(this, value);
 
           if (this.queryState()) {
-            /**
-             * Chrome: If we apply the insertOrderedList command on an empty block, the
-             * OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
-             */
-
             var selection = new scribe.api.Selection();
 
             var listElement = selection.getContaining(function (node) {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
+
+
+            /**
+             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, a P will be inserted after the OL/UL.
+             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+             */
+
+            if (listElement.nextElementSibling &&
+                listElement.nextElementSibling.textContent === '') {
+              listElement.nextElementSibling.parentNode.removeChild(listElement.nextElementSibling);
+            }
+
+            /**
+             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, the OL/UL will be nested inside the block.
+             * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
+             */
 
             if (listElement) {
               var listParentNode = listElement.parentNode;
@@ -37,17 +49,16 @@ define(['../../../../api/element'], function (element) {
                 listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
                 selection.selectMarkers();
                 // Remove the block if it's empty
-                if (listParentNode.childNodes.length === 0) {
+                if (listParentNode.textContent === '') {
                   listParentNode.parentNode.removeChild(listParentNode);
                 }
-
               }
             }
 
             /**
              * Chrome: If a parent node has a CSS `line-height` when we apply the
-             * insert(Un)OrderedList command, Chrome appends a SPAN to LIs with
-             * inline styling replicating that `line-height`.
+             * insertOrderedList or the insertUnorderedList command, Chrome appends
+             * a SPAN to LIs with inline styling replicating that `line-height`.
              * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
              *
              * FIXME: what if the user actually wants to use SPANs? This could
