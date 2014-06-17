@@ -38,7 +38,7 @@ define(['../../../../api/element',
             /**
              * Chrome: If we apply the insertOrderedList or the insertUnorderedList
              * command on an empty block, the OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
+             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
              */
 
             if (listElement) {
