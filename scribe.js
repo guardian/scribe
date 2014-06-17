@@ -2176,23 +2176,73 @@ define('lodash-amd/modern/collections/toArray',['../objects/isString', '../inter
   return toArray;
 });
 
+define('scribe-common/element',['lodash-amd/modern/collections/contains'], function (contains) {
+
+  
+
+  // TODO: not exhaustive?
+  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
+                           'H2', 'H3', 'H4', 'H5', 'H6'];
+  function isBlockElement(node) {
+    return contains(blockElementNames, node.nodeName);
+  }
+
+  function isSelectionMarkerNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+  }
+
+  function unwrap(node, childNode) {
+    while (childNode.childNodes.length > 0) {
+      node.insertBefore(childNode.childNodes[0], childNode);
+    }
+    node.removeChild(childNode);
+  }
+
+  return {
+    isBlockElement: isBlockElement,
+    isSelectionMarkerNode: isSelectionMarkerNode,
+    unwrap: unwrap
+  };
+
+});
+
+define('scribe-common/node',[], function () {
+
+  
+
+  function isEmptyTextNode(node) {
+    return (node.nodeType === Node.TEXT_NODE && node.textContent === '');
+  }
+
+  function insertAfter(newNode, referenceNode) {
+    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
+
+  function removeNode(node) {
+    return node.parentNode.removeChild(node);
+  }
+
+  return {
+    isEmptyTextNode: isEmptyTextNode,
+    insertAfter: insertAfter,
+    removeNode: removeNode
+  };
+
+});
+
 define('dom-observer',[
   'lodash-amd/modern/arrays/flatten',
-  'lodash-amd/modern/collections/toArray'
+  'lodash-amd/modern/collections/toArray',
+  'scribe-common/element',
+  'scribe-common/node'
 ], function (
   flatten,
-  toArray
+  toArray,
+  elementHelpers,
+  nodeHelpers
 ) {
 
   function observeDomChanges(el, callback) {
-    function notEmptyTextNode(node) {
-      return ! (node.nodeType === Node.TEXT_NODE && node.textContent === '');
-    }
-
-    function notSelectionMarkerNode(node) {
-      return ! (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
-    }
-
     function includeRealMutations(mutations) {
       var allChangedNodes = flatten(mutations.map(function(mutation) {
         var added   = toArray(mutation.addedNodes);
@@ -2201,12 +2251,11 @@ define('dom-observer',[
       }));
 
       var realChangedNodes = allChangedNodes.
-        filter(notEmptyTextNode).
-        filter(notSelectionMarkerNode);
+        filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); }).
+        filter(function(n) { return ! elementHelpers.isSelectionMarkerNode(n); });
 
       return realChangedNodes.length > 0;
     }
-
 
     // Flag to avoid running recursively
     var runningPostMutation = false;
@@ -3201,7 +3250,8 @@ define('plugins/core/patches/commands/insert-html',['../../../../api/element'], 
 
 });
 
-define('plugins/core/patches/commands/insert-list',['../../../../api/element'], function (element) {
+define('plugins/core/patches/commands/insert-list',['../../../../api/element',
+        'scribe-common/node'], function (element, nodeHelpers) {
 
   
 
@@ -3219,34 +3269,58 @@ define('plugins/core/patches/commands/insert-list',['../../../../api/element'], 
           scribe.api.CommandPatch.prototype.execute.call(this, value);
 
           if (this.queryState()) {
-            /**
-             * Chrome: If we apply the insertOrderedList command on an empty block, the
-             * OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/oDOriyU/1/edit?html,js,output
-             */
-
             var selection = new scribe.api.Selection();
 
             var listElement = selection.getContaining(function (node) {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
 
+
+            /**
+             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, a P will be inserted after the OL/UL.
+             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+             */
+
+            if (listElement.nextElementSibling &&
+                listElement.nextElementSibling.childNodes.length === 0) {
+              nodeHelpers.removeNode(listElement.nextElementSibling);
+            }
+
+            /**
+             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, the OL/UL will be nested inside the block.
+             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
+             */
+
             if (listElement) {
               var listParentNode = listElement.parentNode;
-
               // If list is within a text block then split that block
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
-                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
+                // Move listElement out of the block
+                nodeHelpers.insertAfter(listElement, listParentNode);
                 selection.selectMarkers();
-                listParentNode.parentNode.removeChild(listParentNode);
+
+                /**
+                 * Chrome 27-34: An empty text node is inserted.
+                 */
+                if (listParentNode.childNodes.length === 2 &&
+                    nodeHelpers.isEmptyTextNode(listParentNode.firstChild)) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
+
+                // Remove the block if it's empty
+                if (listParentNode.childNodes.length === 0) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
               }
             }
 
             /**
              * Chrome: If a parent node has a CSS `line-height` when we apply the
-             * insert(Un)OrderedList command, Chrome appends a SPAN to LIs with
-             * inline styling replicating that `line-height`.
+             * insertOrderedList or the insertUnorderedList command, Chrome appends
+             * a SPAN to LIs with inline styling replicating that `line-height`.
              * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
              *
              * FIXME: what if the user actually wants to use SPANs? This could
@@ -3398,7 +3472,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
         /**
          * Firefox does not create a link when selection is collapsed
-         * so we create is manually. http://jsbin.com/tutufi/2/edit?js,output
+         * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */
         if (selection.selection.isCollapsed) {
           var aElement = document.createElement('a');
