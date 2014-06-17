@@ -49,9 +49,9 @@ define(['../../../../api/element'], function (element) {
                 listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
                 selection.selectMarkers();
                 // Remove the block if it's empty
-                if (listParentNode.childNodes.length === 0 ||
-                   (listParentNode.childNodes.length === 1 &&
-                    listParentNode.childNodes[0].nodeName === 'BR')) {
+                if (listParentNode.childNodes.length === 0
+                  || (listParentNode.childNodes.length === 1 && listParentNode.firstChild.nodeName === 'BR')
+                  || (listParentNode.firstChild.nodeType === Node.TEXT_NODE && listParentNode.firstChild.textContent === '')) {
                   listParentNode.parentNode.removeChild(listParentNode);
                 }
               }
