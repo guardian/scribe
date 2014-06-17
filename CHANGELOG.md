@@ -1,3 +1,6 @@
+# 0.1.12
+* Fix [Text is lost when creating a list from P element containing BR elements](https://github.com/guardian/scribe/pull/195)
+
 # 0.1.11
 * Fix [`createLink` browser inconsistency](https://github.com/guardian/scribe/commit/4c8b536b3f029e51f54de43a6df9ce07bcf63f3e) ([#190](https://github.com/guardian/scribe/pull/190))
 * Bug: Correct object reference ([517b22ab](https://github.com/guardian/scribe/commit/517b22ab88e5dfc231b10497e492a877e6a05668))
