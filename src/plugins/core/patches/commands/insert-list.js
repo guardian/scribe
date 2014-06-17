@@ -1,4 +1,5 @@
-define(['../../../../api/element'], function (element) {
+define(['../../../../api/element',
+        'scribe-common/node'], function (element, nodeHelpers) {
 
   'use strict';
 
@@ -31,7 +32,7 @@ define(['../../../../api/element'], function (element) {
 
             if (listElement.nextElementSibling &&
                 listElement.nextElementSibling.childNodes.length === 0) {
-              listElement.parentNode.removeChild(listElement.nextElementSibling);
+              nodeHelpers.removeNode(listElement.nextElementSibling);
             }
 
             /**
@@ -46,13 +47,20 @@ define(['../../../../api/element'], function (element) {
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
                 selection.placeMarkers();
                 // Move listElement out of the block
-                listParentNode.parentNode.insertBefore(listElement, listParentNode.nextElementSibling);
+                nodeHelpers.insertAfter(listElement, listParentNode);
                 selection.selectMarkers();
+
+                /**
+                 * Chrome 27-34: An empty text node is inserted.
+                 */
+                if (listParentNode.childNodes.length === 2 &&
+                    nodeHelpers.isEmptyTextNode(listParentNode.firstChild)) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
+
                 // Remove the block if it's empty
-                if (listParentNode.childNodes.length === 0
-                  || (listParentNode.childNodes.length === 1 && listParentNode.firstChild.nodeName === 'BR')
-                  || (listParentNode.firstChild.nodeType === Node.TEXT_NODE && listParentNode.firstChild.textContent === '')) {
-                  listParentNode.parentNode.removeChild(listParentNode);
+                if (listParentNode.childNodes.length === 0) {
+                  nodeHelpers.removeNode(listParentNode);
                 }
               }
             }
