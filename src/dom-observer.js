@@ -1,20 +1,16 @@
 define([
   'lodash-amd/modern/arrays/flatten',
-  'lodash-amd/modern/collections/toArray'
+  'lodash-amd/modern/collections/toArray',
+  'scribe-common/element',
+  'scribe-common/node'
 ], function (
   flatten,
-  toArray
+  toArray,
+  elementHelpers,
+  nodeHelpers
 ) {
 
   function observeDomChanges(el, callback) {
-    function notEmptyTextNode(node) {
-      return ! (node.nodeType === Node.TEXT_NODE && node.textContent === '');
-    }
-
-    function notSelectionMarkerNode(node) {
-      return ! (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
-    }
-
     function includeRealMutations(mutations) {
       var allChangedNodes = flatten(mutations.map(function(mutation) {
         var added   = toArray(mutation.addedNodes);
@@ -23,12 +19,11 @@ define([
       }));
 
       var realChangedNodes = allChangedNodes.
-        filter(notEmptyTextNode).
-        filter(notSelectionMarkerNode);
+        filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); }).
+        filter(function(n) { return ! elementHelpers.isSelectionMarkerNode(n); });
 
       return realChangedNodes.length > 0;
     }
-
 
     // Flag to avoid running recursively
     var runningPostMutation = false;

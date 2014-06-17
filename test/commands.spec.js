@@ -102,6 +102,20 @@ describe('commands', function () {
       });
     });
 
+    givenContentOf('<p>1<br>2|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('insertOrderedList');
+        });
+
+        it('should wrap the contents of the last line in an ordered list', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1<br></p><ol><li>2<chrome-bogus-br></li></ol>');
+          });
+        });
+      });
+    });
+
     /**
      * Unapplying
      */
