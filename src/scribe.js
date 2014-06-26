@@ -271,11 +271,12 @@ define([
 
     var selection = new this.api.Selection();
     var range = selection.range;
-    var div = this.targetWindow.document.createElement('DIV')
-    range.insertNode(div)
-    html = this.htmlFormatter.format(html)
-    div.appendChild(range.createContextualFragment(html))
-    new this.api.Element(div.parentNode).unwrap(div)
+    var div = this.targetWindow.document.createElement('DIV');
+    range.deleteContents();
+    range.insertNode(div);
+    html = this.htmlFormatter.format(html);
+    div.appendChild(range.createContextualFragment(html));
+    new this.api.Element(div.parentNode).unwrap(div);
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
