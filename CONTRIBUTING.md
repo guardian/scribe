@@ -26,7 +26,13 @@ java -jar ~/Downloads/Sauce-Connect-latest/Sauce-Connect.jar $SAUCE_USERNAME $SA
 # Sauce Connect v4
 ~/Downloads/sc-4.1-osx/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
 
-RUN_IN_SAUCE_LABS=true BROWSER_NAME='chrome' BROWSER_VERSION='32' PLATFORM='WINDOWS' npm test
+# Defaults: TEST_SERVER_PORT=8080
+TEST_SERVER_PORT=8080 \
+RUN_IN_SAUCE_LABS=true \
+BROWSER_NAME='chrome' \
+BROWSER_VERSION='32' \
+PLATFORM='WINDOWS' \
+npm test
 ```
 
 ## Releasing
