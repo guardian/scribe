@@ -1,5 +1,7 @@
 #!/bin/bash
 
+BASE_DIR=$(dirname $0)
+
 if [ $# -ne 1 ];
 then
     echo "Missing version argument"
@@ -11,7 +13,7 @@ git reset --hard
 git checkout master
 
 echo "-- Building distribution files"
-./node_modules/.bin/plumber build
+$BASE_DIR/node_modules/.bin/plumber build
 
 echo "-- Copying distribution files to dist branch"
 git checkout dist
@@ -24,7 +26,7 @@ then
     echo "-- Commiting update to distribution files"
     git add --update .
     git commit --message "Update distribution files"
-    MVERSION_PATH="./node_modules/.bin/mversion"
+    MVERSION_PATH="$BASE_DIR/node_modules/.bin/mversion"
     echo "-- Current version: `$MVERSION_PATH`"
     echo "-- Updating version"
     $MVERSION_PATH $1 -m "v%s
