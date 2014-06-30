@@ -16,9 +16,18 @@ define(['lodash-amd/modern/collections/contains'], function (contains) {
     node.removeChild(childNode);
   }
 
+  function createEmptyPElement () {
+    var pElement = document.createElement('p')
+    var brElement = document.createElement('br');
+    pElement.appendChild(brElement);
+
+    return pElement;
+  }
+
   return {
     isBlockElement: isBlockElement,
-    unwrap: unwrap
-  };
+    unwrap: unwrap,
+    createEmptyPElement: createEmptyPElement,
+  }
 
 });

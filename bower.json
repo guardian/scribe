@@ -17,6 +17,7 @@
     "scribe-plugin-sanitizer": "guardian/scribe-plugin-sanitizer#master",
     "scribe-plugin-smart-lists": "guardian/scribe-plugin-smart-lists#master",
     "scribe-plugin-toolbar": "guardian/scribe-plugin-toolbar#master",
-    "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master"
+    "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master",
+    "mutation-summary": "git://github.com/bliker/mutation-summary.git"
   }
 }

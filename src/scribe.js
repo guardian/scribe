@@ -1,6 +1,7 @@
 define([
   'lodash-amd/modern/objects/defaults',
   'lodash-amd/modern/arrays/flatten',
+  './plugins/core/formatters',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/inline-elements-mode',
@@ -13,6 +14,7 @@ define([
 ], function (
   defaults,
   flatten,
+  formatters,
   commands,
   events,
   inlineElementsMode,
@@ -56,6 +58,9 @@ define([
        */
       this.transactionManager.run();
     }.bind(this), false);
+
+    // Formatters
+    this.use(formatters.enforcePElements());
 
     // Command Patches
     this.use(patches.commands.bold());
