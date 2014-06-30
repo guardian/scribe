@@ -330,5 +330,37 @@ describe('formatters', function () {
         });
       });
     });
+
+
+      /*
+       * Tags in form <p><b></p> etc. should
+       * be removed
+       */
+      describe('strip ps with only b tag', function () {
+          beforeEach(function () {
+              return driver.executeAsyncScript(function (done) {
+                 require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+                      window.scribe.use(scribePluginSanitizer({
+                          tags: { p: {} } }));
+                     done();
+                  });
+             });
+          });
+
+          when('content of "<p>Something</p><p><b></p>" is inserted', function() {
+              beforeEach(function() {
+                  scribeNode.click();
+                  return driver.executeScript(function () {
+                      window.scribe.insertHTML("<p><b>Something</b></p><p><b></p>");
+                  });
+              });
+
+              it("should strip out the empty p and leave the non-empty p", function() {
+                  return scribeNode.getInnerHTML().then(function (innerHTML) {
+                      expect(innerHTML).to.have.html('<p><b>Something</b></p>');
+                  });
+              });
+          });
+      });
   });
 });
