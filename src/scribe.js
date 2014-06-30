@@ -204,7 +204,7 @@ define([
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(html);
+    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
