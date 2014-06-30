@@ -3,10 +3,6 @@ define([
   'lodash-amd/modern/arrays/flatten',
   './plugins/core/commands',
   './plugins/core/events',
-  './plugins/core/formatters/html/replace-nbsp-chars',
-  './plugins/core/formatters/html/enforce-p-elements',
-  './plugins/core/formatters/html/ensure-selectable-containers',
-  './plugins/core/formatters/plain-text/escape-html-characters',
   './plugins/core/inline-elements-mode',
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
@@ -19,10 +15,6 @@ define([
   flatten,
   commands,
   events,
-  replaceNbspCharsFormatter,
-  enforcePElements,
-  ensureSelectableContainers,
-  escapeHtmlCharactersFormatter,
   inlineElementsMode,
   patches,
   setRootPElement,
@@ -44,8 +36,6 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this._plainTextFormatterFactory = new FormatterFactory();
-    this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
 
@@ -67,29 +57,7 @@ define([
       this.transactionManager.run();
     }.bind(this), false);
 
-    /**
-     * Core Plugins
-     */
-
-    if (this.allowsBlockElements()) {
-      // Commands assume block elements are allowed, so all we have to do is
-      // set the content.
-      // TODO: replace this by initial formatter application?
-      this.use(setRootPElement());
-      // Warning: enforcePElements must come before ensureSelectableContainers
-      this.use(enforcePElements());
-      this.use(ensureSelectableContainers());
-    } else {
-      // Commands assume block elements are allowed, so we have to set the
-      // content and override some UX.
-      this.use(inlineElementsMode());
-    }
-
-    // Formatters
-    this.use(escapeHtmlCharactersFormatter());
-    this.use(replaceNbspCharsFormatter());
-
-    // Patches
+    // Command Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
     this.use(patches.commands.insertHTML());
@@ -98,6 +66,7 @@ define([
     this.use(patches.commands.createLink());
     this.use(patches.events());
 
+    // Commands
     this.use(commands.indent());
     this.use(commands.insertList());
     this.use(commands.outdent());
@@ -211,55 +180,5 @@ define([
     return this.options.debug;
   };
 
-  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
-    this._htmlFormatterFactory.formatters[phase].push(fn);
-  };
-
-  Scribe.prototype.registerPlainTextFormatter = function (fn) {
-    this._plainTextFormatterFactory.formatters.push(fn);
-  };
-
-  // TODO: abstract
-  function FormatterFactory() {
-    this.formatters = [];
-  }
-
-  FormatterFactory.prototype.format = function (html) {
-    // Map the object to an array: Array[Formatter]
-    var formatted = this.formatters.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
-
-    return formatted;
-  };
-
-  function HTMLFormatterFactory() {
-    // Object[String,Array[Formatter]]
-    // Define phases
-    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
-    this.formatters = {
-      // Configurable sanitization of the HTML, e.g. converting/filter/removing
-      // elements
-      sanitize: [],
-      // Normalize content to ensure it is ready for interaction
-      normalize: []
-    };
-  }
-
-  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
-  HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
-
-  HTMLFormatterFactory.prototype.format = function (html) {
-    // Flatten the phases
-    // Map the object to an array: Array[Formatter]
-    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
-    var formatted = formatters.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
-
-    return formatted;
-  };
-
   return Scribe;
-
 });
