@@ -212,7 +212,7 @@ describe('formatters', function () {
 
           it('should replace the non-breaking space character with a normal space', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2<chrome-bogus-br></p>');
+              expect(innerHTML).to.have.html('<p>1 2</p>');
             });
           });
         });
@@ -336,7 +336,7 @@ describe('formatters', function () {
        * Tags in form <p><b></p> etc. should
        * be removed
        */
-      describe('strip ps with only b tag', function () {
+      describe('strip ps with only b tag wtih insertHTML', function () {
           beforeEach(function () {
               return driver.executeAsyncScript(function (done) {
                  require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
@@ -347,20 +347,49 @@ describe('formatters', function () {
              });
           });
 
-          when('content of "<p><b>Something</b></p><p><b></b></p>" is inserted', function() {
+          when('content of "<b><p>Something</p></b>" is inserted', function() {
               beforeEach(function() {
                   scribeNode.click();
                   return driver.executeScript(function () {
-                      window.scribe.insertHTML("<p><b>Something</b></p><p><b></b></p>");
+                      window.scribe.insertHTML("<b><p>Something</p></b>");
                   });
               });
 
-              it.only("should strip out the empty p and leave the non-empty p", function() {
+              it("should strip out the empty p and leave the non-empty p", function() {
                   return scribeNode.getInnerHTML().then(function (innerHTML) {
-                      expect(innerHTML).to.have.html('<p><b>Something</b></p>');
+                      expect(innerHTML).to.have.html('<p>Something</p>');
                   });
               });
           });
+
+
+
+      describe('unwraps block elements inside of a b element', function () {
+        beforeEach(function () {
+          return driver.executeAsyncScript(function (done) {
+            require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+              window.scribe.use(scribePluginSanitizer({
+                tags: { p: {}, b: {}  }}));
+                done();
+              });
+            });
+         });
+
+        when('content of "<b><p>1</p>2</b>"', function () {
+          beforeEach(function() {
+            scribeNode.click();
+              return driver.executeScript(function () {
+                window.scribe.insertHTML("<b><p>1</p>2</b>");
+              });
+          });
+
+          it('should unwrap first p', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+                expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+            });
+          });
+        });
       });
+    });
   });
 });

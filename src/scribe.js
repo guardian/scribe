@@ -89,6 +89,7 @@ define([
     this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
+
     // Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
@@ -204,7 +205,7 @@ define([
   Scribe.prototype.insertHTML = function (html) {
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(this.htmlFormatter.format(html));
+    this.getCommand('insertHTML').execute(this._htmlFormatterFactory.format(html));
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
