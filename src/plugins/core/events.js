@@ -219,13 +219,13 @@ define([
 
             /**
              * When pasting text from Google Docs in both Chrome and Firefox,
-             * the resulting text will be wrapped in a <b> tag. So it would look
+             * the resulting text will be wrapped in a B tag. So it would look
              * something like <b><p>Text</p></b>, which is invalid HTML. The command
-             * insertHTML will then attempt to fix this content by moving the <b> tag
-             * inside the <p>. The result is: <p><b></b></p><p>Text</p>, which is valid
-             * but means an extra <p> is inserted into the text. To avoid this we run the
+             * insertHTML will then attempt to fix this content by moving the B tag
+             * inside the P. The result is: <p><b></b></p><p>Text</p>, which is valid
+             * but means an extra P is inserted into the text. To avoid this we run the
              * formatters before the insertHTML command as the formatter will
-             * unwrap the <p> and delete the <b> tag. It is acceptable to remove invalid
+             * unwrap the P and delete the B tag. It is acceptable to remove invalid
              * HTML as Scribe should only accept valid HTML.
              *
              **/

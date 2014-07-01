@@ -8,7 +8,7 @@ define(['../../../../api/element'], function (element) {
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
-            scribe.api.CommandPatch.prototype.execute.call(this, value);
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
 
           /**
            * Chrome: If a parent node has a CSS `line-height` when we apply the
