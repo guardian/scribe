@@ -199,7 +199,9 @@ define([
       }
 
       /**
-       * Run formatters on paste
+       * We have to hijack the paste event to ensure it uses
+       * `scribe.insertHTML`, which executes the Scribe version of the command
+       * and also runs the formatters.
        */
 
       /**
