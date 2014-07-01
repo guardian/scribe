@@ -9,8 +9,10 @@ define([
      * point.
      */
     return function (scribe) {
-        scribe.registerHTMLFormatter('sanitize', function () {
-            var bs = scribe.el.querySelectorAll('b');
+        scribe.registerHTMLFormatter('sanitize', function (html) {
+            var el = document.createElement('div');
+            el.innerHTML = html;
+            var bs = el.querySelectorAll('b');
 
             var checkChildren = function (value) {
                 if(value && value.childNodes.length === 0) {
@@ -23,10 +25,10 @@ define([
             };
 
             Array.prototype.filter.call(bs, function (value) {
-                return checkChildren(value); //value.childNodes.length === 0; //|| value.match(/^[\s ]*$/);
+                return checkChildren(value);
             }).forEach(function (element) { element.remove(); });
 
-            return scribe.el.innerHTML;
+            return el.innerHTML;
         });
     };
 });

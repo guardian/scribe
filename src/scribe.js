@@ -255,8 +255,6 @@ define([
     // Map the object to an array: Array[Formatter]
     var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
     var formatted = formatters.reduce(function (formattedData, formatter) {
-        console.log(formattedData);
-        //debugger;
       return formatter(formattedData);
     }, html);
 
