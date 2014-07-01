@@ -228,6 +228,7 @@ define([
             * unwrap the P and delete the B tag. It is acceptable to remove invalid
             * HTML as Scribe should only accept valid HTML.
             *
+            * See http://jsbin.com/cayosada/3/edit for more
             **/
 
             scribe.insertHTML(event.clipboardData.getData('text/html'));
