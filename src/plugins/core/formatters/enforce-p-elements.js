@@ -22,9 +22,20 @@ define([
               removeMozBrElements();
               recreateEmptyPElement();
             };
+
+            // Wrap non-empty text nodes in P
+            Array.prototype.forEach.call(scribe.el.childNodes, function (node) {
+              // Wrap empty text nodes in paragraphs
+              if (node.nodeType === Node.TEXT_NODE && node.data.trim().length) {
+                wrapTextNodeInParagraph(node);
+              // Remove parentless BRs
+              } else if (node.nodeName == 'BR') {
+                node.remove();
+              };
+            });
           });
         });
-      }
+      };
 
       function recreateEmptyPElement () {
         var pElement = element.createEmptyPElement();
@@ -34,17 +45,25 @@ define([
         newRange.setStartBefore(pElement.firstChild);
         selection.selection.removeAllRanges();
         selection.selection.addRange(newRange);
-      }
+      };
 
       function removeMozBrElements () {
-        Array.prototype.forEach.call(scribe.el.querySelectorAll('br[type="_moz"]'), function (br) {
+        var brElements = scribe.el.querySelectorAll('br[type="_moz"]');
+        Array.prototype.forEach.call(brElements, function (br) {
           br.remove();
         });
-      }
+      };
+
+      function wrapTextNodeInParagraph(node) {
+        var pElement = element.createEmptyPElement();
+        pElement.textContent = node.data;
+        scribe.el.replaceChild(pElement, node);
+
+      };
 
       function wasLastParagraph () {
         return !scribe.el.getElementsByTagName('p').length;
-      }
+      };
 
       new MutationSummary({
         callback: onPElementMutation,
