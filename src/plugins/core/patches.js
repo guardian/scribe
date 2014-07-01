@@ -4,16 +4,14 @@ define([
   './patches/commands/insert-html',
   './patches/commands/insert-list',
   './patches/commands/outdent',
-  './patches/commands/create-link',
-  './patches/events'
+  './patches/commands/create-link'
 ], function (
   boldCommand,
   indentCommand,
   insertHTMLCommand,
   insertListCommands,
   outdentCommand,
-  createLinkCommand,
-  events
+  createLinkCommand
 ) {
 
   /**
@@ -32,8 +30,7 @@ define([
       insertList: insertListCommands,
       outdent: outdentCommand,
       createLink: createLinkCommand,
-    },
-    events: events
+    }
   };
 
 });
