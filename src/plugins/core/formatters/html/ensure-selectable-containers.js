@@ -10,7 +10,7 @@ define(function () {
   var selfClosingTags = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
   function traverse(parentNode) {
-    // Instead of TreeWalker, which gets confused when the <br> is added to the dom,
+    // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
     var node = parentNode.firstElementChild;
