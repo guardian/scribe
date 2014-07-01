@@ -212,15 +212,7 @@ define([
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
          */
-        if (event.clipboardData) {
-          event.preventDefault();
-
-          if (contains(event.clipboardData.types, 'text/html')) {
-            scribe.insertHTML(event.clipboardData.getData('text/html'));
-          } else {
-            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
-          }
-        } else {
+        if (! event.clipboardData) {
           /**
            * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
            * sequence of events:
