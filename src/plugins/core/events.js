@@ -5,20 +5,6 @@ define(['lodash-amd/modern/collections/contains'], function (contains,observeDom
   return function () {
     return function (scribe) {
       /**
-       * Push the first history item when the editor is focused.
-       */
-      var pushHistoryOnFocus = function () {
-        // Tabbing into the editor doesn't create a range immediately, so we
-        // have to wait until the next event loop.
-        setTimeout(function () {
-          scribe.pushHistory();
-        }.bind(scribe), 0);
-
-        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
-      }.bind(scribe);
-      scribe.el.addEventListener('focus', pushHistoryOnFocus);
-
-      /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
        * caret at the  earliest point possible inside the first block element.
@@ -94,22 +80,22 @@ define(['lodash-amd/modern/collections/contains'], function (contains,observeDom
               if (contentToEndFragment.firstChild.textContent === '') {
                 event.preventDefault();
 
-                scribe.transactionManager.run(function () {
-                  // Default P
-                  // TODO: Abstract somewhere
-                  var pNode = document.createElement('p');
-                  var brNode = document.createElement('br');
-                  pNode.appendChild(brNode);
+                // scribe.transactionManager.run(function () {
+                //   // Default P
+                //   // TODO: Abstract somewhere
+                //   var pNode = document.createElement('p');
+                //   var brNode = document.createElement('br');
+                //   pNode.appendChild(brNode);
 
-                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+                //   headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
 
-                  // Re-apply range
-                  range.setStart(pNode, 0);
-                  range.setEnd(pNode, 0);
+                //   // Re-apply range
+                //   range.setStart(pNode, 0);
+                //   range.setEnd(pNode, 0);
 
-                  selection.selection.removeAllRanges();
-                  selection.selection.addRange(range);
-                });
+                //   selection.selection.removeAllRanges();
+                //   selection.selection.addRange(range);
+                // });
               }
             }
           }

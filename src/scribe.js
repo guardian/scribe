@@ -8,8 +8,6 @@ define([
   './plugins/core/patches',
   './plugins/core/set-root-p-element',
   './api',
-  './transaction-manager',
-  './undo-manager',
   './event-emitter',
 ], function (
   defaults,
@@ -21,8 +19,6 @@ define([
   patches,
   setRootPElement,
   Api,
-  buildTransactionManager,
-  buildUndoManager,
   EventEmitter
 ) {
 
@@ -41,23 +37,7 @@ define([
 
     this.api = new Api(this);
 
-    var TransactionManager = buildTransactionManager(this);
-    this.transactionManager = new TransactionManager();
-
-    var UndoManager = buildUndoManager(this);
-    this.undoManager = new UndoManager();
-
     this.el.setAttribute('contenteditable', true);
-
-    this.el.addEventListener('input', function () {
-      /**
-       * This event triggers when either the user types something or a native
-       * command is executed which causes the content to change (i.e.
-       * `document.execCommand('bold')`). We can't wrap a transaction around
-       * these actions, so instead we run the transaction in this event.
-       */
-      this.transactionManager.run();
-    }.bind(this), false);
 
     // Formatters
     this.use(formatters.enforcePElements());
@@ -69,7 +49,6 @@ define([
     this.use(patches.commands.insertList());
     this.use(patches.commands.outdent());
     this.use(patches.commands.createLink());
-    this.use(patches.events());
 
     // Commands
     this.use(commands.indent());
@@ -78,7 +57,6 @@ define([
     this.use(commands.redo());
     this.use(commands.subscript());
     this.use(commands.superscript());
-    this.use(commands.undo());
 
     this.use(events());
   }
@@ -108,51 +86,12 @@ define([
     return this.getHTML().replace(/<br>$/, '');
   };
 
-  Scribe.prototype.getTextContent = function () {
+  Scribe.prototype.getTextContensant = function () {
     return this.el.textContent;
-  };
-
-  Scribe.prototype.pushHistory = function () {
-    var previousUndoItem = this.undoManager.stack[this.undoManager.position];
-    var previousContent = previousUndoItem && previousUndoItem
-      .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
-
-    /**
-     * Chrome and Firefox: If we did push to the history, this would break
-     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
-     * This happens when doing any DOM manipulation.
-     */
-
-    // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
-      var selection = new this.api.Selection();
-
-      selection.placeMarkers();
-      var html = this.getHTML();
-      selection.removeMarkers();
-
-      this.undoManager.push(html);
-
-      return true;
-    } else {
-      return false;
-    }
   };
 
   Scribe.prototype.getCommand = function (commandName) {
     return this.commands[commandName] || this.commandPatches[commandName] || new this.api.Command(commandName);
-  };
-
-  Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem, true);
-
-    // Restore the selection
-    var selection = new this.api.Selection();
-    selection.selectMarkers();
-
-    // Because we skip the formatters, a transaction is not run, so we have to
-    // emit this event ourselves.
-    this.trigger('content-changed');
   };
 
   // This will most likely be moved to another object eventually

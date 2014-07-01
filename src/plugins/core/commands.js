@@ -4,16 +4,14 @@ define([
   './commands/outdent',
   './commands/redo',
   './commands/subscript',
-  './commands/superscript',
-  './commands/undo'
+  './commands/superscript'
 ], function (
   indent,
   insertList,
   outdent,
   redo,
   subscript,
-  superscript,
-  undo
+  superscript
 ) {
 
   'use strict';
@@ -24,8 +22,7 @@ define([
     outdent: outdent,
     redo: redo,
     subscript: subscript,
-    superscript: superscript,
-    undo: undo
+    superscript: superscript
   };
 
 });
