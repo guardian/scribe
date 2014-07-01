@@ -331,11 +331,43 @@ describe('formatters', function () {
       });
     });
 
-    describe('ensure selectable container formatter', function() {
+    describe.only('ensure selectable container', function() {
       givenContentOf('<p></p>', function () {
-        it('should insert a <br>', function() {
+        it('should insert a BR inside the P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b></b></p>', function() {
+        it('should insert a BR inside the B', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><br></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i></i></b></p>', function() {
+        it('should insert a BR inside the I', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><br></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i><strike></strike></i></b></p>', function() {
+        it('should insert a BR inside the STRIKE', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><strike><br></strike></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<div></div><p></p>', function () {
+        it('should insert a BR into both nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<div><br></div><p><br></p>');
           });
         })
       });

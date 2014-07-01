@@ -1,35 +1,28 @@
 define(function () {
 
   /**
-   * Chrome and Firefox: Block-level elements like `<p>` or `<li>`
-   * need to contain either text or a `<br>` to remain selectable.
+   * Chrome and Firefox: All elements need to contain either
+   * text or a `<br>` to remain selectable.
    */
 
   'use strict';
 
-  function containsChild(node, elementType) {
-    // FIXME: do we need to recurse further down?
-    for (var n = node.firstChild; n; n = n.nextSibling) {
-      if (n.tagName === elementType) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+  var selfClosingTags = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
   function traverse(parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
-    var node = treeWalker.firstChild();
+    // Instead of TreeWalker, which gets confused when the <br> is added to the dom,
+    // we recursively traverse the tree to look for an empty node that can have childNodes
+
+    var node = parentNode.firstElementChild;
 
     while (node) {
-      // Find any block-level container that contains neither text nor a <br>
-      if ((node.nodeName === 'P' || node.nodeName === 'LI') &&
-          (node.textContent === '') &&
-          (! containsChild(node, 'BR'))) {
+      // Find any node that contains no children
+      if (node.childNodes.length === 0 && selfClosingTags.indexOf(node.nodeName) === -1) {
         node.appendChild(document.createElement('br'));
+      } else if (node.children.length) {
+        traverse(node);
       }
-      node = treeWalker.nextSibling();
+      node = node.nextElementSibling;
     }
   }
 
