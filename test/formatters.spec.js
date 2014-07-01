@@ -330,5 +330,15 @@ describe('formatters', function () {
         });
       });
     });
+
+    describe('ensure selectable container formatter', function() {
+      givenContentOf('<p></p>', function () {
+        it('should insert a <br>', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+    });
   });
 });
