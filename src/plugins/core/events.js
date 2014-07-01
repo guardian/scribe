@@ -251,7 +251,7 @@ define([
 
           // Wait for the paste to happen (next loop?)
           setTimeout(function () {
-            data = bin.innerHTML;
+            var data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
