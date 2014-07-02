@@ -18,9 +18,10 @@ define(['scribe-common/element'], function (element) {
     while (node) {
       if (!element.isSelectionMarkerNode(node)) {
         // Find any node that contains no children, or just contains whitespace
-        if ((node.childNodes.length === 0 || node.textContent.trim() === '') &&
-          node.children.length === 0 &&
-          selfClosingTags.indexOf(node.nodeName) === -1) {
+        if (node.children.length === 0 &&
+          node.textContent.trim() === '' &&
+          selfClosingTags.indexOf(node.nodeName) === -1)
+        {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(node);
