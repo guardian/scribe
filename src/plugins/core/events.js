@@ -55,7 +55,7 @@ define([
         }
 
         function getFirstDeepestChild(node) {
-          var treeWalker = scribe.targetWindow.document.createTreeWalker(node);
+          var treeWalker = scribe.targetWindow.document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
             // TODO: build list of non-empty elements (used elsewhere)
@@ -239,6 +239,10 @@ define([
            *
            * Firefox <= 21
            * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
+           *
+           * IE <= 11
+           * The div expands with pasted content. maxHeight set to 1px and overflow to hidden
+           * to avoid this.
            */
 
           var selection = new scribe.api.Selection();
@@ -247,6 +251,8 @@ define([
           selection.placeMarkers();
 
           var bin = scribe.targetWindow.document.createElement('div');
+          bin.style.maxHeight = '1px';
+          bin.style.overflow = 'hidden';
           scribe.targetWindow.document.body.appendChild(bin);
           bin.setAttribute('contenteditable', true);
           bin.focus();

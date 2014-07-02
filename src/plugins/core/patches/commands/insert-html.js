@@ -8,7 +8,21 @@ define(['../../../../api/element'], function (element) {
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
-          scribe.api.CommandPatch.prototype.execute.call(this, value);
+          /**
+           * As of IE11, no version of IE supports insertHTML.
+           * Recreate insertHTML functionality by inserting a div node,
+           * appending a document fragment to that div, and then unwrapping
+           * the div.
+           */
+          var selection, range, div, html;
+          selection = new scribe.api.Selection();
+          range = selection.range;
+          range.deleteContents();
+          div = scribe.targetWindow.document.createElement('DIV');
+          range.insertNode(div);
+          html = scribe._htmlFormatterFactory.format(value);
+          div.appendChild(range.createContextualFragment(html));
+          element.unwrap(div.parentNode, div);
 
           /**
            * Chrome: If a parent node has a CSS `line-height` when we apply the
@@ -25,7 +39,7 @@ define(['../../../../api/element'], function (element) {
           sanitize(scribe.el);
 
           function sanitize(parentNode) {
-            var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+            var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
             var node = treeWalker.firstChild();
             if (!node) { return; }
 

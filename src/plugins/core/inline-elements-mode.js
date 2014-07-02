@@ -4,7 +4,7 @@ define(function () {
 
   // TODO: abstract
   function hasContent(rootNode) {
-    var treeWalker = scribe.targetWindow.document.createTreeWalker(rootNode);
+    var treeWalker = scribe.targetWindow.document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
