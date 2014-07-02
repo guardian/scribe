@@ -331,7 +331,7 @@ describe('formatters', function () {
       });
     });
 
-    describe.only('ensure selectable container', function() {
+    describe('ensure selectable container', function() {
       givenContentOf('<p></p>', function () {
         it('should insert a BR inside the P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
