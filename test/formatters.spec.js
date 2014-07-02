@@ -336,7 +336,7 @@ describe('formatters', function () {
      * Tags in form <p><b></p> etc. should
      * be removed
      **/
-    describe.only('remove invalid B tags wrapping block elements', function () {
+    describe('remove invalid B tags wrapping block elements', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
           /**
