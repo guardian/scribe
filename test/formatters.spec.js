@@ -364,6 +364,14 @@ describe('formatters', function () {
         })
       });
 
+      givenContentOf('<p><i><strike></strike></i><b></b></p>', function () {
+        it('should insert a BR into all empty nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><i><strike><br></strike></i><b><br></b></p>');
+          });
+        })
+      });
+
       givenContentOf('<div></div><p></p>', function () {
         it('should insert a BR into both nodes', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -397,7 +405,7 @@ describe('formatters', function () {
       });
 
       givenContentOf('<p>\n</p>', function () {
-        it('should insert a BR into the node with only hidden characters', function() {
+        it('should insert a BR into the node with only a hidden character', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>\n<br></p>');
           });
