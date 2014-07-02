@@ -332,13 +332,17 @@ describe('formatters', function () {
     });
 
 
-      /*
-       * Tags in form <p><b></p> etc. should
-       * be removed
-       */
-    describe('remove invalid B tags wrapping block elements', function () {
+    /**
+     * Tags in form <p><b></p> etc. should
+     * be removed
+     **/
+    describe.only('remove invalid B tags wrapping block elements', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
+          /**
+           * The file below contains the formatter which corrects invalid HTML,
+           * ideally it should live in core and we wouldn't need to require it
+           **/
           require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: { p: {}, b: {}  }}));
@@ -347,13 +351,22 @@ describe('formatters', function () {
         });
       });
 
+
+      helpers.wheninsertHTMLOf("<b><p><1</p></b>", function() {
+          it("should delete the wrapping B", function() {
+              return scribeNode.getInnerHTML().then(function (innerHTML) {
+                  expect(innerHTML).to.have.html('<p>1</p>');
+              });
+          });
+      });
+
       when('content of "<b><p>1</p></b>" is inserted', function() {
         beforeEach(function() {
           scribeNode.click();
-            return driver.executeScript(function () {
-              window.scribe.insertHTML("<b><p>1</p></b>");
-            });
-         });
+          return driver.executeScript(function () {
+            window.scribe.insertHTML("<b><p>1</p></b>");
+          });
+        });
 
         it("should delete the wrapping B", function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -366,12 +379,12 @@ describe('formatters', function () {
      when('content of "<b><p>1</p>2</b>"', function () {
        beforeEach(function() {
          scribeNode.click();
-           return driver.executeScript(function () {
-             window.scribe.insertHTML("<b><p>1</p>2</b>");
-           });
-        });
+         return driver.executeScript(function () {
+           window.scribe.insertHTML("<b><p>1</p>2</b>");
+         });
+       });
 
-       it('should unwrap first P, delete invalid <b> and wrap second element in a P', function () {
+       it('should delete invalid B and wrap second text node in a P', function () {
          return scribeNode.getInnerHTML().then(function (innerHTML) {
            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
          });
