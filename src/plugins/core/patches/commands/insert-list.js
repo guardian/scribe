@@ -1,5 +1,5 @@
 define(['../../../../api/element',
-        'scribe-common/node'], function (element, nodeHelpers) {
+        'scribe-common/src/node'], function (element, nodeHelpers) {
 
   'use strict';
 

@@ -1,8 +1,8 @@
 define([
   'lodash-amd/modern/arrays/flatten',
   'lodash-amd/modern/collections/toArray',
-  'scribe-common/element',
-  'scribe-common/node'
+  'scribe-common/src/element',
+  'scribe-common/src/node'
 ], function (
   flatten,
   toArray,
