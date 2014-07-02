@@ -199,10 +199,13 @@ describe('formatters', function () {
 
   describe('HTML', function () {
     describe('replace non-breaking space characters', function () {
-      whenInsertingHTMLOf('1&nbsp;2', function () {
-        it('should replace the non-breaking space character with a normal space', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1 2</p>');
+
+      given('default content', function () {
+        whenInsertingHTMLOf('1&nbsp;2', function () {
+          it('should replace the non-breaking space character with a normal space', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1 2</p>');
+            });
           });
         });
       });
@@ -334,19 +337,19 @@ describe('formatters', function () {
 
       whenInsertingHTMLOf('<b><p>1</p></b>', function() {
         it("should delete the wrapping B", function() {
-              return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.have.html('<p>1</p>');
-              });
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p>');
           });
+        });
       });
 
-     whenInsertingHTMLOf('<b><p>1</p>2</b>', function () {
-       it('should delete invalid B and wrap second text node in a P', function () {
-         return scribeNode.getInnerHTML().then(function (innerHTML) {
-           expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
-         });
-       });
-     });
+      whenInsertingHTMLOf('<b><p>1</p>2</b>', function () {
+        it('should delete invalid B and wrap second text node in a P', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
     });
   });
 });
