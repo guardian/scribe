@@ -44,6 +44,7 @@ define([
       debug: false
     });
     this.commandPatches = {};
+    this.targetWindow = options.targetWindow || window;
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
@@ -145,7 +146,7 @@ define([
 
     /**
      * Chrome and Firefox: If we did push to the history, this would break
-     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+     * browser magic around `document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
      * This happens when doing any DOM manipulation.
      */
 

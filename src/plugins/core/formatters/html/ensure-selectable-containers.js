@@ -7,37 +7,37 @@ define(function () {
 
   'use strict';
 
-  function containsChild(node, elementType) {
-    // FIXME: do we need to recurse further down?
-    for (var n = node.firstChild; n; n = n.nextSibling) {
-      if (n.tagName === elementType) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function traverse(parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
-    var node = treeWalker.firstChild();
-
-    while (node) {
-      // Find any block-level container that contains neither text nor a <br>
-      if ((node.nodeName === 'P' || node.nodeName === 'LI') &&
-          (node.textContent === '') &&
-          (! containsChild(node, 'BR'))) {
-        node.appendChild(document.createElement('br'));
-      }
-      node = treeWalker.nextSibling();
-    }
-  }
-
   return function () {
     return function (scribe) {
 
+      function containsChild(node, elementType) {
+        // FIXME: do we need to recurse further down?
+        for (var n = node.firstChild; n; n = n.nextSibling) {
+          if (n.tagName === elementType) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function traverse(parentNode) {
+        var treeWalker = scribe.targetWindow.document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+        var node = treeWalker.firstChild();
+
+        while (node) {
+          // Find any block-level container that contains neither text nor a <br>
+          if ((node.nodeName === 'P' || node.nodeName === 'LI') &&
+              (node.textContent === '') &&
+              (! containsChild(node, 'BR'))) {
+            node.appendChild(scribe.targetWindow.document.createElement('br'));
+          }
+          node = treeWalker.nextSibling();
+        }
+      }
+
       scribe.registerHTMLFormatter('normalize', function (html) {
-        var bin = document.createElement('div');
+        var bin = scribe.targetWindow.document.createElement('div');
         bin.innerHTML = html;
 
         traverse(bin);

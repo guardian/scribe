@@ -15,14 +15,14 @@ define(function () {
          * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */
         if (selection.selection.isCollapsed) {
-          var aElement = document.createElement('a');
+          var aElement = scribe.targetWindow.document.createElement('a');
           aElement.setAttribute('href', value);
           aElement.textContent = value;
 
           selection.range.insertNode(aElement);
 
           // Select the created link
-          var newRange = document.createRange();
+          var newRange = scribe.targetWindow.document.createRange();
           newRange.setStartBefore(aElement);
           newRange.setEndAfter(aElement);
 

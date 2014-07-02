@@ -4,7 +4,7 @@ define(function () {
 
   return function (scribe) {
     function Selection() {
-      this.selection = window.getSelection();
+      this.selection = scribe.targetWindow.getSelection();
 
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
@@ -19,9 +19,9 @@ define(function () {
     };
 
     Selection.prototype.placeMarkers = function () {
-      var startMarker = document.createElement('em');
+      var startMarker = scribe.targetWindow.document.createElement('em');
       startMarker.classList.add('scribe-marker');
-      var endMarker = document.createElement('em');
+      var endMarker = scribe.targetWindow.document.createElement('em');
       endMarker.classList.add('scribe-marker');
 
       // End marker
@@ -80,7 +80,7 @@ define(function () {
         return;
       }
 
-      var newRange = document.createRange();
+      var newRange = scribe.targetWindow.document.createRange();
 
       newRange.setStartBefore(markers[0]);
       if (markers.length >= 2) {
