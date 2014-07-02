@@ -59,6 +59,7 @@ npm test
 * Update `CHANGELOG.md`
 * Update the version number in `package.json`
 * Commit with message of `v<number>`
+* `git push`
 * Run `npm publish`
 
 ### Update example
