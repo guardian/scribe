@@ -43,6 +43,8 @@ PLATFORM='WINDOWS' \
 npm test
 ```
 
+## Releasing
+
 ### Bower
 * `git checkout master`
 * Run `./release.sh <version>` where `<version>` is a version as understood by
