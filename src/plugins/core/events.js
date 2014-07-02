@@ -199,7 +199,9 @@ define([
       }
 
       /**
-       * Run formatters on paste
+       * We have to hijack the paste event to ensure it uses
+       * `scribe.insertHTML`, which executes the Scribe version of the command
+       * and also runs the formatters.
        */
 
       /**
@@ -252,7 +254,7 @@ define([
 
           // Wait for the paste to happen (next loop?)
           setTimeout(function () {
-            data = bin.innerHTML;
+            var data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position

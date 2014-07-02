@@ -9,8 +9,16 @@ These steps also apply to plugins.
 
 ## Testing Locally
 ```
+# Mac only
+brew install chromedriver
+```
+
+```
 ./setup.sh
-BROWSER_NAME='chrome' npm test
+# Defaults: TEST_SERVER_PORT=8080
+TEST_SERVER_PORT=8080 \
+BROWSER_NAME='chrome' \
+npm test
 ```
 
 ## Testing via Sauce Labs
