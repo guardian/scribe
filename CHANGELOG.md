@@ -1,3 +1,6 @@
+# 0.1.14
+* Fix [Ensure selectable containers core plugin doesn't always work as desired](https://github.com/guardian/scribe/pull/214)
+
 # 0.1.12
 * Fix [Text is lost when creating a list from P element containing BR elements](https://github.com/guardian/scribe/pull/195)
 
