@@ -319,8 +319,6 @@ describe('formatters', function () {
     describe('remove invalid B tags wrapping block elements', function () {
 
       beforeEach(function () {
-        // Focus it before-hand
-        scribeNode.click();
         return driver.executeAsyncScript(function (done) {
           /**
            * The file below contains the formatter which corrects invalid HTML,
