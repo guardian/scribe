@@ -67,6 +67,7 @@ npm test
 * `bower prune`
 * `git add --update .`
 * Commit using version number as the message (OR plugin version)
+* `git push`
 
 ## Conventions
 * In documentation and code, refer to nodes by their canonical node name in
