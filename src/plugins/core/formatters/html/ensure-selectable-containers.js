@@ -1,4 +1,6 @@
-define(['scribe-common/element'], function (element) {
+define([
+    'scribe-common/element', 'lodash-amd/modern/collections/contains'
+  ], function (element, contains) {
 
   /**
    * Chrome and Firefox: All elements need to contain either
@@ -7,7 +9,8 @@ define(['scribe-common/element'], function (element) {
 
   'use strict';
 
-  var selfClosingTags = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
+  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
   function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
@@ -20,7 +23,7 @@ define(['scribe-common/element'], function (element) {
         // Find any node that contains no children, or just contains whitespace
         if (node.children.length === 0 &&
           node.textContent.trim() === '' &&
-          selfClosingTags.indexOf(node.nodeName) === -1)
+          !contains(html5VoidElements, node.nodeName))
         {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
