@@ -47,8 +47,8 @@ npm test
 
 ### Bower
 * `git checkout master`
-* Run `./release.sh <version>` where `<version>` is a version as understood by
-  [mversion](https://github.com/mikaelbr/mversion#usage-cli). (If releasing a
+* Run `./release.sh [ <newversion> | major | minor | patch | build ]` (we use
+  [mversion](https://github.com/mikaelbr/mversion#usage-cli)). (If releasing a
   plugin, run the script inside this repository from the plugin’s directory.)
 * Checkout the `dist` branch to check you're happy with the compilation result.
   If you are, run `git push; git push --tags`. (The `dist` tree is for
