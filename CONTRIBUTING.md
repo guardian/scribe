@@ -43,15 +43,26 @@ PLATFORM='WINDOWS' \
 npm test
 ```
 
-## Releasing
-* `npm install -g mversion`
+### Bower
+* `git checkout master`
 * Run `./release.sh <version>` where `<version>` is a version as understood by
   [mversion](https://github.com/mikaelbr/mversion#usage-cli). (If releasing a
   plugin, run the script inside this repository from the plugin’s directory.)
-* Update change log in `master` branch
+* Checkout the `dist` branch to check you're happy with the compilation result.
+  If you are, run `git push; git push --tags`. (The `dist` tree is for
+  distribution via Bower).
+
+### npm
+* `git checkout master`.
+* Update `CHANGELOG.md`
+* Update the version number in `package.json`
+* Commit with message of `v<number>`
+* Run `npm publish`
+
+### Update example
 * `git checkout gh-pages`
 * `git pull`
-* Update versions of `bower.json`
+* Update necessary dependency versions in `bower.json`
 * `bower install`
 * `bower prune`
 * `git add --update .`
