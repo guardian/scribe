@@ -352,7 +352,7 @@ describe('formatters', function () {
       });
 
 
-      helpers.wheninsertHTMLOf("<b><p><1</p></b>", function() {
+      helpers.whenInsertingHTMLOf("<b><p><1</p></b>", function() {
           it("should delete the wrapping B", function() {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>1</p>');
