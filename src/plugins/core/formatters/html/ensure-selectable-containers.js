@@ -14,19 +14,17 @@ define(['scribe-common/element'], function (element) {
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
     var node = parentNode.firstElementChild;
-    if (element.isSelectionMarkerNode(node)) {
-      // Ignore the scribe marker
-      return;
-    }
 
     while (node) {
-      // Find any node that contains no children
-      if ((node.childNodes.length === 0 || node.textContent.trim() === '') &&
-        node.children.length === 0 &&
-        selfClosingTags.indexOf(node.nodeName) === -1) {
-        node.appendChild(document.createElement('br'));
-      } else if (node.children.length > 0) {
-        traverse(node);
+      if (!element.isSelectionMarkerNode(node)) {
+        // Find any node that contains no children, or just contains whitespace
+        if ((node.childNodes.length === 0 || node.textContent.trim() === '') &&
+          node.children.length === 0 &&
+          selfClosingTags.indexOf(node.nodeName) === -1) {
+          node.appendChild(document.createElement('br'));
+        } else if (node.children.length > 0) {
+          traverse(node);
+        }
       }
       node = node.nextElementSibling;
     }
