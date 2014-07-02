@@ -2488,7 +2488,9 @@ define('plugins/core/events',[
       }
 
       /**
-       * Run formatters on paste
+       * We have to hijack the paste event to ensure it uses
+       * `scribe.insertHTML`, which executes the Scribe version of the command
+       * and also runs the formatters.
        */
 
       /**
@@ -2505,6 +2507,7 @@ define('plugins/core/events',[
           event.preventDefault();
 
           if (contains(event.clipboardData.types, 'text/html')) {
+
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
@@ -2540,7 +2543,7 @@ define('plugins/core/events',[
 
           // Wait for the paste to happen (next loop?)
           setTimeout(function () {
-            data = bin.innerHTML;
+            var data = bin.innerHTML;
             bin.parentNode.removeChild(bin);
 
             // Restore the caret position
@@ -4284,6 +4287,7 @@ define('scribe',[
     this.use(escapeHtmlCharactersFormatter());
     this.use(replaceNbspCharsFormatter());
 
+
     // Patches
     this.use(patches.commands.bold());
     this.use(patches.commands.indent());
@@ -4397,9 +4401,23 @@ define('scribe',[
   };
 
   Scribe.prototype.insertHTML = function (html) {
+    /**
+     * When pasting text from Google Docs in both Chrome and Firefox,
+     * the resulting text will be wrapped in a B tag. So it would look
+     * something like <b><p>Text</p></b>, which is invalid HTML. The command
+     * insertHTML will then attempt to fix this content by moving the B tag
+     * inside the P. The result is: <p><b></b></p><p>Text</p>, which is valid
+     * but means an extra P is inserted into the text. To avoid this we run the
+     * formatters before the insertHTML command as the formatter will
+     * unwrap the P and delete the B tag. It is acceptable to remove invalid
+     * HTML as Scribe should only accept valid HTML.
+     *
+     * See http://jsbin.com/cayosada/3/edit for more
+     **/
+
     // TODO: error if the selection is not within the Scribe instance? Or
     // focus the Scribe instance if it is not already focused?
-    this.getCommand('insertHTML').execute(html);
+    this.getCommand('insertHTML').execute(this._htmlFormatterFactory.format(html));
   };
 
   Scribe.prototype.isDebugModeEnabled = function () {
