@@ -1,4 +1,4 @@
-define(function () {
+define(['scribe-common/element'], function (element) {
 
   /**
    * Chrome and Firefox: All elements need to contain either
@@ -7,19 +7,25 @@ define(function () {
 
   'use strict';
 
-  var selfClosingTags = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+  var selfClosingTags = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
   function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
     var node = parentNode.firstElementChild;
+    if (element.isSelectionMarkerNode(node)) {
+      // Ignore the scribe marker
+      return;
+    }
 
     while (node) {
       // Find any node that contains no children
-      if (node.childNodes.length === 0 && selfClosingTags.indexOf(node.nodeName) === -1) {
+      if ((node.childNodes.length === 0 || node.textContent.trim() === '') &&
+        node.children.length === 0 &&
+        selfClosingTags.indexOf(node.nodeName) === -1) {
         node.appendChild(document.createElement('br'));
-      } else if (node.children.length) {
+      } else if (node.children.length > 0) {
         traverse(node);
       }
       node = node.nextElementSibling;

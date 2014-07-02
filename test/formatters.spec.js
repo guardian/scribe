@@ -331,7 +331,7 @@ describe('formatters', function () {
       });
     });
 
-    describe.only('ensure selectable container', function() {
+    describe('ensure selectable container', function() {
       givenContentOf('<p></p>', function () {
         it('should insert a BR inside the P', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -368,6 +368,46 @@ describe('formatters', function () {
         it('should insert a BR into both nodes', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<div><br></div><p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><img></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><img></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><br></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> </p>', function () {
+        it('should insert a BR into the node with only spaces', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> <br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p>\n</p>', function () {
+        it('should insert a BR into the node with only hidden characters', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>\n<br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> \n \n \n </p>', function () {
+        it('should insert a BR into the node with only hidden characters', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> \n \n \n <br></p>');
           });
         })
       });
