@@ -1,3 +1,7 @@
+# 0.1.13
+* Fix
+  [insertHTML command wraps invalid B tags in a P, leaving empty Ps behind](https://github.com/guardian/scribe/pull/212)
+
 # 0.1.12
 * Fix [Text is lost when creating a list from P element containing BR elements](https://github.com/guardian/scribe/pull/195)
 
