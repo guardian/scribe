@@ -6,6 +6,7 @@ helpers.registerChai(chai);
 var when = helpers.when;
 var given = helpers.given;
 var givenContentOf = helpers.givenContentOf;
+var whenInsertingHTMLOf = helpers.whenInsertingHTMLOf;
 var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 
 // Get new referenceS each time a new instance is created
@@ -198,22 +199,10 @@ describe('formatters', function () {
 
   describe('HTML', function () {
     describe('replace non-breaking space characters', function () {
-      given('default content', function () {
-        // i.e. paste
-        when('a non-breaking space is inserted', function () {
-          beforeEach(function () {
-            // Focus it before-hand
-            scribeNode.click();
-
-            return driver.executeScript(function () {
-              window.scribe.insertHTML('1&nbsp;2');
-            });
-          });
-
-          it('should replace the non-breaking space character with a normal space', function () {
-            return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2</p>');
-            });
+      whenInsertingHTMLOf('1&nbsp;2', function () {
+        it('should replace the non-breaking space character with a normal space', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1 2</p>');
           });
         });
       });
@@ -312,16 +301,7 @@ describe('formatters', function () {
         });
       });
 
-      when('content of "<p>1</p>\n<p>2</p>" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
-
-          return driver.executeScript(function () {
-            window.scribe.insertHTML('<p>1</p>\n<p>2</p>');
-          });
-        });
-
+      whenInsertingHTMLOf('<p>1</p>\n<p>2</p>', function () {
         it.skip('should strip the whitespace in-between the P elements and remove the HTML comment', function () {
           // Chrome and Firefox: '<p>1</p><p>\n</p><p>2</p>'
           return scribeNode.getInnerHTML().then(function (innerHTML) {
@@ -337,7 +317,10 @@ describe('formatters', function () {
      * be removed
      **/
     describe('remove invalid B tags wrapping block elements', function () {
+
       beforeEach(function () {
+        // Focus it before-hand
+        scribeNode.click();
         return driver.executeAsyncScript(function (done) {
           /**
            * The file below contains the formatter which corrects invalid HTML,
@@ -351,39 +334,15 @@ describe('formatters', function () {
         });
       });
 
-
-      helpers.whenInsertingHTMLOf("<b><p><1</p></b>", function() {
-          it("should delete the wrapping B", function() {
+      whenInsertingHTMLOf('<b><p>1</p></b>', function() {
+        it("should delete the wrapping B", function() {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
                   expect(innerHTML).to.have.html('<p>1</p>');
               });
           });
       });
 
-      when('content of "<b><p>1</p></b>" is inserted', function() {
-        beforeEach(function() {
-          scribeNode.click();
-          return driver.executeScript(function () {
-            window.scribe.insertHTML("<b><p>1</p></b>");
-          });
-        });
-
-        it("should delete the wrapping B", function() {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>1</p>');
-          });
-        });
-      });
-
-
-     when('content of "<b><p>1</p>2</b>"', function () {
-       beforeEach(function() {
-         scribeNode.click();
-         return driver.executeScript(function () {
-           window.scribe.insertHTML("<b><p>1</p>2</b>");
-         });
-       });
-
+     whenInsertingHTMLOf('<b><p>1</p>2</b>', function () {
        it('should delete invalid B and wrap second text node in a P', function () {
          return scribeNode.getInnerHTML().then(function (innerHTML) {
            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
