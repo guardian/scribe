@@ -218,6 +218,7 @@ define([
           event.preventDefault();
 
           if (contains(event.clipboardData.types, 'text/html')) {
+
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));

@@ -6,6 +6,7 @@ helpers.registerChai(chai);
 var when = helpers.when;
 var given = helpers.given;
 var givenContentOf = helpers.givenContentOf;
+var whenInsertingHTMLOf = helpers.whenInsertingHTMLOf;
 var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 
 // Get new referenceS each time a new instance is created
@@ -198,21 +199,12 @@ describe('formatters', function () {
 
   describe('HTML', function () {
     describe('replace non-breaking space characters', function () {
+
       given('default content', function () {
-        // i.e. paste
-        when('a non-breaking space is inserted', function () {
-          beforeEach(function () {
-            // Focus it before-hand
-            scribeNode.click();
-
-            return driver.executeScript(function () {
-              window.scribe.insertHTML('1&nbsp;2');
-            });
-          });
-
+        whenInsertingHTMLOf('1&nbsp;2', function () {
           it('should replace the non-breaking space character with a normal space', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2<chrome-bogus-br></p>');
+              expect(innerHTML).to.have.html('<p>1 2</p>');
             });
           });
         });
@@ -312,22 +304,141 @@ describe('formatters', function () {
         });
       });
 
-      when('content of "<p>1</p>\n<p>2</p>" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
-
-          return driver.executeScript(function () {
-            window.scribe.insertHTML('<p>1</p>\n<p>2</p>');
-          });
-        });
-
+      whenInsertingHTMLOf('<p>1</p>\n<p>2</p>', function () {
         it.skip('should strip the whitespace in-between the P elements and remove the HTML comment', function () {
           // Chrome and Firefox: '<p>1</p><p>\n</p><p>2</p>'
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p>1</p> <p>2</p>');
           });
         });
+      });
+    });
+
+
+    /**
+     * Tags in form <p><b></p> etc. should
+     * be removed
+     **/
+    describe('remove invalid B tags wrapping block elements', function () {
+
+      beforeEach(function () {
+        return driver.executeAsyncScript(function (done) {
+          /**
+           * The file below contains the formatter which corrects invalid HTML,
+           * ideally it should live in core and we wouldn't need to require it
+           **/
+          require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+            window.scribe.use(scribePluginSanitizer({
+              tags: { p: {}, b: {}  }}));
+            done();
+          });
+        });
+      });
+
+      whenInsertingHTMLOf('<b><p>1</p></b>', function() {
+        it("should delete the wrapping B", function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p>');
+          });
+        });
+      });
+
+      whenInsertingHTMLOf('<b><p>1</p>2</b>', function () {
+        it('should delete invalid B and wrap second text node in a P', function () {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1</p><p>2</p>');
+          });
+        });
+      });
+    });
+
+    describe('ensure selectable container', function() {
+      givenContentOf('<p></p>', function () {
+        it('should insert a BR inside the P', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b></b></p>', function() {
+        it('should insert a BR inside the B', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><br></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i></i></b></p>', function() {
+        it('should insert a BR inside the I', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><br></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i><strike></strike></i></b></p>', function() {
+        it('should insert a BR inside the STRIKE', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><strike><br></strike></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><i><strike></strike></i><b></b></p>', function () {
+        it('should insert a BR into all empty nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><i><strike><br></strike></i><b><br></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<div></div><p></p>', function () {
+        it('should insert a BR into both nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<div><br></div><p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><img></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><img></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><br></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> </p>', function () {
+        it('should insert a BR into the node with only spaces', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> <br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p>\n</p>', function () {
+        it('should insert a BR into the node with only a hidden character', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>\n<br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> \n \n \n </p>', function () {
+        it('should insert a BR into the node with only hidden characters', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> \n \n \n <br></p>');
+          });
+        })
       });
     });
   });
