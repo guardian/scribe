@@ -22,7 +22,7 @@ define(['../../../api/element'], function (element) {
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keyup', function (event) {
+        var handleKeyup = function(event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
 
             var selection = new scribe.api.Selection();
@@ -79,6 +79,10 @@ define(['../../../api/element'], function (element) {
               });
             }
           }
+        };
+        scribe.el.addEventListener('keyup', handleKeyup);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keyup', handleKeyup);
         });
       }
     };

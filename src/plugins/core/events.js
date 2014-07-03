@@ -13,7 +13,7 @@ define([
       /**
        * Push the first history item when the editor is focused.
        */
-      var pushHistoryOnFocus = function () {
+      var pushHistoryOnFocus = function() {
         // Tabbing into the editor doesn't create a range immediately, so we
         // have to wait until the next event loop.
         setTimeout(function () {
@@ -23,6 +23,9 @@ define([
         scribe.el.removeEventListener('focus', pushHistoryOnFocus);
       }.bind(scribe);
       scribe.el.addEventListener('focus', pushHistoryOnFocus);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
+      });
 
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
@@ -32,7 +35,7 @@ define([
        *
        * We detect when this occurs and fix it by placing the caret ourselves.
        */
-      scribe.el.addEventListener('focus', function placeCaretOnFocus() {
+      var placeCaretOnFocus = function() {
         var selection = new scribe.api.Selection();
         // In Chrome, the range is not created on or before this event loop.
         // It doesn’t matter because this is a fix for Firefox.
@@ -69,7 +72,11 @@ define([
             return treeWalker.currentNode;
           }
         }
-      }.bind(scribe));
+      }.bind(scribe);
+      scribe.el.addEventListener('focus', placeCaretOnFocus);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('focus', placeCaretOnFocus);
+      });
 
       /**
        * Apply the formatters when there is a DOM mutation.
@@ -117,7 +124,7 @@ define([
        * keyboard navigation inside a heading to ensure a P element is created.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        var handlePTagCreation = function(event) {
           if (event.keyCode === 13) { // enter
 
             var selection = new scribe.api.Selection();
@@ -160,6 +167,10 @@ define([
               }
             }
           }
+        };
+        scribe.el.addEventListener('keydown', handlePTagCreation);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keydown', handlePTagCreation);
         });
       }
 
@@ -168,7 +179,7 @@ define([
        * keyboard navigation inside list item nodes.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        var handleKeydown = function(event) {
           if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
             var selection = new scribe.api.Selection();
@@ -195,6 +206,10 @@ define([
               }
             }
           }
+        };
+        scribe.el.addEventListener('keydown', handleKeydown);
+        scribe.on('deactivated', function() {
+          scribe.el.removeEventListener('keydown', handleKeydown);
         });
       }
 
@@ -209,7 +224,11 @@ define([
        * I also don't like how it has the authority to perform `event.preventDefault`.
        */
 
-      scribe.el.addEventListener('paste', function handlePaste(event) {
+      scribe.el.addEventListener('paste', handlePaste);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('paste', handlePaste);
+      });
+      function handlePaste(event) {
         /**
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
@@ -274,7 +293,7 @@ define([
             scribe.insertHTML(data);
           }, 1);
         }
-      });
+      }
 
     };
   };
