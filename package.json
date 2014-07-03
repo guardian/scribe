@@ -1,6 +1,6 @@
 {
   "name": "scribe-editor",
-  "version": "0.1.12",
+  "version": "0.1.14",
   "main": "src/scribe.js",
   "dependencies": {
     "lodash-amd": "~2.4.1",
@@ -23,7 +23,7 @@
     "q": "~1.0.0",
     "request": "~2.33.0",
     "selenium-webdriver": "~2.41.0",
-    "scribe-test-harness": "~0.0.4"
+    "scribe-test-harness": "~0.0.5"
   },
   "scripts": {
     "test": "./run-tests.sh"
