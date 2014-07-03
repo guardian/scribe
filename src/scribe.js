@@ -44,7 +44,7 @@ define([
       debug: false
     });
     this.commandPatches = {};
-    this.targetWindow = options.targetWindow || window;
+    this.targetWindow = options.targetWindow || el.ownerDocument.defaultView;
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
