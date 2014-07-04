@@ -7,8 +7,9 @@ define([
   ) {
 
   /**
-   * Chrome and Firefox: All elements need to contain either
-   * text or a `<br>` to remain selectable.
+   * Chrome and Firefox: All elements need to contain either text or a `<br>` to
+   * remain selectable. (Unless they have a width and height explicitly set with
+   * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
    */
 
   'use strict';
