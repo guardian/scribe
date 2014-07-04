@@ -39,7 +39,7 @@ describe('undo manager', function () {
         it('should restore the caret and the content', function () {
           return driver.executeScript(insertCaretPositionMarker).then(function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.equal('<p><em class="caret-position"></em>1</p>');
+              expect(innerHTML).to.equal('<p><em class="caret-position"><br></em>1</p>');
             });
           });
         });
@@ -52,7 +52,7 @@ describe('undo manager', function () {
           it('should restore the caret and the content', function () {
             return driver.executeScript(insertCaretPositionMarker).then(function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                expect(innerHTML).to.equal('<p>2<em class="caret-position"></em>1</p>');
+                expect(innerHTML).to.equal('<p>2<em class="caret-position"><br></em>1</p>');
               });
             });
           });
@@ -72,7 +72,7 @@ describe('undo manager', function () {
           it('should restore the caret and the content', function () {
             return driver.executeScript(insertCaretPositionMarker).then(function () {
               return scribeNode.getInnerHTML().then(function (innerHTML) {
-                expect(innerHTML).to.equal('<p>2<em class="caret-position"></em>1</p>');
+                expect(innerHTML).to.equal('<p>2<em class="caret-position"><br></em>1</p>');
               });
             });
           });
@@ -85,7 +85,7 @@ describe('undo manager', function () {
             it('should restore the caret and the content', function () {
               return driver.executeScript(insertCaretPositionMarker).then(function () {
                 return scribeNode.getInnerHTML().then(function (innerHTML) {
-                  expect(innerHTML).to.equal('<p>23<em class="caret-position"></em>1</p>');
+                  expect(innerHTML).to.equal('<p>23<em class="caret-position"><br></em>1</p>');
                 });
               });
             });
