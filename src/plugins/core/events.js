@@ -55,7 +55,7 @@ define([
         }
 
         function getFirstDeepestChild(node) {
-          var treeWalker = document.createTreeWalker(node);
+          var treeWalker = scribe.targetWindow.document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
             // TODO: build list of non-empty elements (used elsewhere)
@@ -144,8 +144,8 @@ define([
                 scribe.transactionManager.run(function () {
                   // Default P
                   // TODO: Abstract somewhere
-                  var pNode = document.createElement('p');
-                  var brNode = document.createElement('br');
+                  var pNode = scribe.targetWindow.document.createElement('p');
+                  var brNode = scribe.targetWindow.document.createElement('br');
                   pNode.appendChild(brNode);
 
                   headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
@@ -240,6 +240,10 @@ define([
            *
            * Firefox <= 21
            * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
+           *
+           * IE <= 11
+           * The div expands with pasted content. maxHeight set to 1px and overflow to hidden
+           * to avoid this.
            */
 
           var selection = new scribe.api.Selection();
@@ -247,8 +251,10 @@ define([
           // Store the caret position
           selection.placeMarkers();
 
-          var bin = document.createElement('div');
-          document.body.appendChild(bin);
+          var bin = scribe.targetWindow.document.createElement('div');
+          bin.style.maxHeight = '1px';
+          bin.style.overflow = 'hidden';
+          scribe.targetWindow.document.body.appendChild(bin);
           bin.setAttribute('contenteditable', true);
           bin.focus();
 

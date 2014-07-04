@@ -9,16 +9,16 @@ define(function () {
 
     CommandPatch.prototype.execute = function (value) {
       scribe.transactionManager.run(function () {
-        document.execCommand(this.commandName, false, value || null);
+        scribe.targetWindow.document.execCommand(this.commandName, false, value || null);
       }.bind(this));
     };
 
     CommandPatch.prototype.queryState = function () {
-      return document.queryCommandState(this.commandName);
+      return scribe.targetWindow.document.queryCommandState(this.commandName);
     };
 
     CommandPatch.prototype.queryEnabled = function () {
-      return document.queryCommandEnabled(this.commandName);
+      return scribe.targetWindow.document.queryCommandEnabled(this.commandName);
     };
 
     return CommandPatch;
