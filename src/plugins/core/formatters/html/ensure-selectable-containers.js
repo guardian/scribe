@@ -1,6 +1,10 @@
 define([
-    'scribe-common/element', 'lodash-amd/modern/collections/contains'
-  ], function (element, contains) {
+    'scribe-common/element',
+    'lodash-amd/modern/collections/contains'
+  ], function (
+    element,
+    contains
+  ) {
 
   /**
    * Chrome and Firefox: All elements need to contain either
