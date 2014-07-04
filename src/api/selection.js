@@ -31,9 +31,11 @@ define(function () {
       rangeEnd.insertNode(endMarker);
 
       /**
-       * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-       * element. We just remove it.
-       * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+       * the inserted element. We just remove it. This in turn creates several
+       * bugs when perfoming commands on selections that contain an empty text
+       * node (`removeFormat`, `unlink`).
+       * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
       // TODO: abstract into polyfill for `Range.insertNode`
       if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
@@ -47,9 +49,11 @@ define(function () {
         rangeStart.insertNode(startMarker);
 
         /**
-         * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-         * element. We just remove it.
-         * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+         * the inserted element. We just remove it. This in turn creates several
+         * bugs when perfoming commands on selections that contain an empty text
+         * node (`removeFormat`, `unlink`).
+         * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
         if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {

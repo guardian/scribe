@@ -61,12 +61,6 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Given a selection across multiple P elements, Firefox will place the caret
     outside of any P element: http://jsbin.com/xopivama/3/edit?js,output
 
-### `Range.insertNode`
-* Chrome inserts a bogus text node:
-  http://jsbin.com/ODapifEb/1/edit?js,console,output
-  - This in turn creates several bugs when perfoming commands on selections that
-    contain an empty text node (`removeFormat`, `unlink`)
-
 ### `Document.queryCommandState`
 * Browser magic: Chrome and Firefox report command state to be true after
   applying a command to a collapsed selection, but why?:
