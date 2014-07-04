@@ -1,6 +1,6 @@
 var chai = require('chai');
 var expect = chai.expect;
-
+var webdriver = require('selenium-webdriver');
 var helpers = require('scribe-test-harness/helpers');
 helpers.registerChai(chai);
 var when = helpers.when;
@@ -446,21 +446,56 @@ describe('commands', function () {
     });
   });
 
-
-
   /**
-   * This bug has been fixed in Chrome Canary
+   * This is meant to test Chrome inserting erroneous text blocks into
+   * the scribe el when focus switches from a scribe.el to a button to
+   * the scribe.el. However, this is impossible to simlulate correctly
+   * in a test.
+   *
+   * This behaviour does not happen in Firefox.
+   *
+   * See http://jsbin.com/quhin/2/edit?js,output,console
+   *
+   * To reproduce the bug, follow the following steps:
+   *    1. Select text and create H2
+   *    2. Move cursor to front of text.
+   *    3. Remove the H2 by clicking the button
+   *    4. Observe that you are left with an empty H2
+   *        after the element.
+
+   * The problem is caused by the Range being different, depending on
+   * the position of the marker.
+   *
+   * Consider the following two scenarios.
+   *
+   * A)
+   *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+   *   2. Click button and click the right of to scribe.el
+   *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
+   *
+   *   This is wrong but does not cause the problem.
+   *
+   * B)
+   *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+   *   2. Click button and click to left of scribe.el
+   *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
+   *
+   * The second example sets the range in the wrong place, meaning
+   * that in the second case the formatBlock is executed on the wrong
+   * element [the text node] leaving the empty H2 behind.
    **/
   describe.only('formatBlock heading', function () {
-   givenContentOf('<h2>|1|</h2><p><br></p>', function () {
+   givenContentOf('<h2>1|</h2>', function () {
      when('the formatblock command is executed with h2', function() {
        beforeEach(function () {
-         executeCommand('formatBlock', 'P');
+         return scribeNode.sendKeys(webdriver.Key.LEFT).then(function () {
+           executeCommand('formatBlock', 'P');
          });
+       });
 
        it('should change the H2 to a P and remove the H2', function () {
          return scribeNode.getInnerHTML().then(function (innerHTML) {
-           expect(innerHTML).to.have.html('<p>1</p><p><br></p>');
+           expect(innerHTML).to.have.html('<p>1</p>');
          });
        });
      });
