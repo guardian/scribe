@@ -18,10 +18,17 @@ define([
 
     var node = parentNode.firstElementChild;
 
+    function isEmpty(node) {
+      return node.children.length === 0
+        || (node.children.length === 1
+            && node.children[0].nodeName === 'EM'
+            && contains(node.children[0].classList, 'scribe-marker'));
+    }
+
     while (node) {
       if (!element.isSelectionMarkerNode(node)) {
         // Find any node that contains no children, or just contains whitespace
-        if (node.children.length === 0 &&
+        if (isEmpty(node) &&
           node.textContent.trim() === '' &&
           !contains(html5VoidElements, node.nodeName))
         {
