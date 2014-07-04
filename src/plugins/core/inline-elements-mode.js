@@ -4,7 +4,7 @@ define(function () {
 
   // TODO: abstract
   function hasContent(rootNode) {
-    var treeWalker = document.createTreeWalker(rootNode);
+    var treeWalker = scribe.targetWindow.document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
@@ -27,7 +27,7 @@ define(function () {
        * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
        * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
        */
-      scribe.el.addEventListener('keydown', function (event) {
+      var handleKeydown = function(event) {
         if (event.keyCode === 13) { // enter
           var selection = new scribe.api.Selection();
           var range = selection.range;
@@ -49,7 +49,7 @@ define(function () {
                 scribe.el.removeChild(scribe.el.lastChild);
               }
 
-              var brNode = document.createElement('br');
+              var brNode = scribe.targetWindow.document.createElement('br');
 
               range.insertNode(brNode);
               // After inserting the BR into the range is no longer collapsed, so
@@ -87,7 +87,7 @@ define(function () {
               // If there is not already a right hand side content we need to
               // insert a bogus BR element.
               if (! hasContent(contentToEndFragment)) {
-                var bogusBrNode = document.createElement('br');
+                var bogusBrNode = scribe.targetWindow.document.createElement('br');
                 range.insertNode(bogusBrNode);
               }
 
@@ -101,7 +101,11 @@ define(function () {
             });
           }
         }
-      }.bind(this));
+      }.bind(this);
+      scribe.el.addEventListener('keydown', handleKeydown);
+      scribe.on('deactivated', function() {
+        scribe.el.removeEventListener('keydown', handleKeydown);
+      });
 
       if (scribe.getHTML().trim() === '') {
         // Bogus BR element for Firefox — see explanation above.

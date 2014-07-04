@@ -44,6 +44,7 @@ define([
       debug: false
     });
     this.commandPatches = {};
+    this.targetWindow = options.targetWindow || el.ownerDocument.defaultView;
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
@@ -57,7 +58,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.el.addEventListener('input', function () {
+    var handleInput = function() {
       /**
        * This event triggers when either the user types something or a native
        * command is executed which causes the content to change (i.e.
@@ -65,7 +66,11 @@ define([
        * these actions, so instead we run the transaction in this event.
        */
       this.transactionManager.run();
-    }.bind(this), false);
+    }.bind(this);
+    this.el.addEventListener('input', handleInput, false);
+    this.on('deactivated', function() {
+      this.el.removeEventListener('input', handleInput);
+    }.bind(this));
 
     /**
      * Core Plugins
