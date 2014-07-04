@@ -42,6 +42,8 @@ define(function () {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
 
+
+
       /**
        * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
        * the inserted element when the child element is at the start of a block
@@ -52,6 +54,47 @@ define(function () {
       if (endMarker.previousSibling && endMarker.previousSibling.nodeType === 3 && endMarker.previousSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.previousSibling);
       }
+
+
+      /**
+       * This is meant to test Chrome inserting erroneous text blocks into
+       * the scribe el when focus switches from a scribe.el to a button to
+       * the scribe.el. However, this is impossible to simlulate correctly
+       * in a test.
+       *
+       * This behaviour does not happen in Firefox.
+       *
+       * See http://jsbin.com/quhin/2/edit?js,output,console
+       *
+       * To reproduce the bug, follow the following steps:
+       *    1. Select text and create H2
+       *    2. Move cursor to front of text.
+       *    3. Remove the H2 by clicking the button
+       *    4. Observe that you are left with an empty H2
+       *        after the element.
+       *
+       * The problem is caused by the Range being different, depending on
+       * the position of the marker.
+       *
+       * Consider the following two scenarios.
+       *
+       * A)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click the right of to scribe.el
+       *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
+       *
+       *   This is wrong but does not cause the problem.
+       *
+       * B)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click to left of scribe.el
+       *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
+       *
+       * The second example sets the range in the wrong place, meaning
+       * that in the second case the formatBlock is executed on the wrong
+       * element [the text node] leaving the empty H2 behind.
+       **/
+
 
       if (! this.selection.isCollapsed) {
         // Start marker
