@@ -31,7 +31,8 @@ define([
 
     while (node) {
       if (!element.isSelectionMarkerNode(node)) {
-        // Find any node that contains no children, or just contains whitespace
+        // Find any node that contains no child *elements*, or just contains
+        // whitespace, and is not self-closing
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
           !contains(html5VoidElements, node.nodeName))
