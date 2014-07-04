@@ -117,7 +117,7 @@ describe('block mode', function () {
       });
     });
 
-    givenContentOf('<ul><li><em>|</em><br></li></ul>', function () {
+    givenContentOf('<ul><li><em>|<br></em></li></ul>', function () {
       when('the user presses <enter>', function () {
         beforeEach(function () {
           return scribeNode.sendKeys(webdriver.Key.RETURN);
@@ -125,7 +125,7 @@ describe('block mode', function () {
 
         it('should delete the list and insert an empty P element whilst retaining any empty inline elements', function () {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><em></em><bogus-br></p>');
+            expect(innerHTML).to.have.html('<p><em><bogus-br></em></p>');
           });
         });
       });
