@@ -21,8 +21,7 @@ define([
     function isEmpty(node) {
       return node.children.length === 0
         || (node.children.length === 1
-            && node.children[0].nodeName === 'EM'
-            && contains(node.children[0].classList, 'scribe-marker'));
+            && element.isSelectionMarkerNode(node.children[0]));
     }
 
     while (node) {
