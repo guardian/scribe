@@ -14,7 +14,7 @@ define(function () {
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
-            && node.node.attributes.getNamedItem('contenteditable');
+         && node.node.attributes.getNamedItem('contenteditable');
 
       return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };

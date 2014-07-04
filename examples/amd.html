@@ -46,16 +46,13 @@ require({
   '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
   '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
   '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
-  '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
-  '../bower_components/scribe-plugin-heading-command/src/scribe-plugin-heading-command'
-
+   '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements'
 ], function (
   Scribe,
   scribePluginToolbar,
   scribePluginFormatterPlainTextConvertNewLinesToHtml,
   scribePluginSanitizer,
-  scribePluginInlineStyles,
-  scribePluginHeadingCommand
+  scribePluginInlineStyles
 ) {
   var scribe = new Scribe(document.querySelector('.rte'));
   window.scribe = scribe;
@@ -65,13 +62,11 @@ require({
   scribe.use(scribePluginToolbar(document.querySelector('.rte-toolbar')));
   scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHtml());
   scribe.use(scribePluginInlineStyles());
-  scribe.use(scribePluginHeadingCommand(2));
   scribe.use(scribePluginSanitizer({ tags: {
     p: {},
     b: {},
     i: {},
-    br: {},
-    h2: {}
+    br: {}
   }}));
 
   scribe.on('content-changed', updateHtml);
@@ -85,7 +80,6 @@ require({
 </script>
 <div class="rte-toolbar">
   <button data-command-name="bold">Bold</button>
-  <button data-command-name="h2">H2</button>
 </div>
 <div class="rte"></div>
 <section>
