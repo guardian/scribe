@@ -284,7 +284,7 @@ describe('patches', function () {
     });
 
     // Equivalent to Select All (Ctrl+A)
-    givenContentOf('|<p>1</p>|', function () {
+    givenContentOf('<p>|1|</p>', function () {
       when('the user presses <delete>', function () {
         beforeEach(function () {
           return scribeNode.sendKeys(webdriver.Key.DELETE);
