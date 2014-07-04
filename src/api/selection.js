@@ -42,6 +42,17 @@ define(function () {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
 
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
+       * the inserted element when the child element is at the start of a block
+       * element. We just remove it.
+       * FIXME: Document why we need to remove this
+       * As per: http://jsbin.com/sifez/1/edit?js,console,output
+       */
+      if (endMarker.previousSibling && endMarker.previousSibling.nodeType === 3 && endMarker.previousSibling.data === '') {
+        endMarker.parentNode.removeChild(endMarker.previousSibling);
+      }
+
       if (! this.selection.isCollapsed) {
         // Start marker
         var rangeStart = this.range.cloneRange();
@@ -58,6 +69,17 @@ define(function () {
         // TODO: abstract into polyfill for `Range.insertNode`
         if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.nextSibling);
+        }
+
+        /**
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node
+         * before the inserted element when the child element is at the start of
+         * a block element. We just remove it.
+         * FIXME: Document why we need to remove this
+         * As per: http://jsbin.com/sifez/1/edit?js,console,output
+         */
+        if (startMarker.previousSibling && startMarker.previousSibling.nodeType === 3 && startMarker.previousSibling.data === '') {
+          startMarker.parentNode.removeChild(startMarker.previousSibling);
         }
       }
 
