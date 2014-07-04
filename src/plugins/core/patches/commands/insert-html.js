@@ -8,21 +8,26 @@ define(['../../../../api/element'], function (element) {
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
+          var originalHTML = scribe.el.innerHTML;
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
           /**
            * As of IE11, no version of IE supports insertHTML.
            * Recreate insertHTML functionality by inserting a div node,
            * appending a document fragment to that div, and then unwrapping
-           * the div.
+           * the div. If the insertHTML failed, then fall back to our own
+           * implementation of insertHTML.
            */
-          var selection, range, div, html;
-          selection = new scribe.api.Selection();
-          range = selection.range;
-          range.deleteContents();
-          div = scribe.targetWindow.document.createElement('DIV');
-          range.insertNode(div);
-          html = scribe._htmlFormatterFactory.format(value);
-          div.appendChild(range.createContextualFragment(html));
-          element.unwrap(div.parentNode, div);
+          if (scribe.el.innerHTML === originalHTML) {
+            var selection, range, div, html;
+            selection = new scribe.api.Selection();
+            range = selection.range;
+            range.deleteContents();
+            div = scribe.targetWindow.document.createElement('DIV');
+            range.insertNode(div);
+            html = scribe._htmlFormatterFactory.format(value);
+            div.appendChild(range.createContextualFragment(html));
+            element.unwrap(div.parentNode, div);
+          }
 
           /**
            * Chrome: If a parent node has a CSS `line-height` when we apply the
