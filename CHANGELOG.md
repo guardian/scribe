@@ -1,3 +1,6 @@
+# 0.1.14
+* Fix [Ensure selectable containers core plugin doesn't always work as desired](https://github.com/guardian/scribe/pull/214)
+
 # 0.1.13
 * Fix
   [insertHTML command wraps invalid B tags in a P, leaving empty Ps behind](https://github.com/guardian/scribe/pull/212)

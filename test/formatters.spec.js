@@ -351,5 +351,95 @@ describe('formatters', function () {
         });
       });
     });
+
+    describe('ensure selectable container', function() {
+      givenContentOf('<p></p>', function () {
+        it('should insert a BR inside the P', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b></b></p>', function() {
+        it('should insert a BR inside the B', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><br></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i></i></b></p>', function() {
+        it('should insert a BR inside the I', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><br></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><b><i><strike></strike></i></b></p>', function() {
+        it('should insert a BR inside the STRIKE', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><b><i><strike><br></strike></i></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><i><strike></strike></i><b></b></p>', function () {
+        it('should insert a BR into all empty nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><i><strike><br></strike></i><b><br></b></p>');
+          });
+        })
+      });
+
+      givenContentOf('<div></div><p></p>', function () {
+        it('should insert a BR into both nodes', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<div><br></div><p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><img></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><img></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p><br></p>', function () {
+        it('should not insert a BR into the IMG', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p><br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> </p>', function () {
+        it('should insert a BR into the node with only spaces', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> <br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p>\n</p>', function () {
+        it('should insert a BR into the node with only a hidden character', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>\n<br></p>');
+          });
+        })
+      });
+
+      givenContentOf('<p> \n \n \n </p>', function () {
+        it('should insert a BR into the node with only hidden characters', function() {
+          return scribeNode.getInnerHTML().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p> \n \n \n <br></p>');
+          });
+        })
+      });
+    });
   });
 });
