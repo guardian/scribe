@@ -19,7 +19,7 @@ define(function () {
       InsertListCommand.prototype.execute = function (value) {
         function splitList(listItemElements) {
           if (listItemElements.length > 0) {
-            var newListNode = document.createElement(listNode.nodeName);
+            var newListNode = scribe.targetWindow.document.createElement(listNode.nodeName);
 
             listItemElements.forEach(function (listItemElement) {
               newListNode.appendChild(listItemElement);
@@ -57,7 +57,7 @@ define(function () {
 
               selection.placeMarkers();
 
-              var pNode = document.createElement('p');
+              var pNode = scribe.targetWindow.document.createElement('p');
               pNode.innerHTML = listItemElement.innerHTML;
 
               listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
@@ -91,9 +91,9 @@ define(function () {
               // afterwards.
               selection.placeMarkers();
 
-              var documentFragment = document.createDocumentFragment();
+              var documentFragment = scribe.targetWindow.document.createDocumentFragment();
               selectedListItemElements.forEach(function (listItemElement) {
-                var pElement = document.createElement('p');
+                var pElement = scribe.targetWindow.document.createElement('p');
                 pElement.innerHTML = listItemElement.innerHTML;
                 documentFragment.appendChild(pElement);
               });
