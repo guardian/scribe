@@ -445,4 +445,26 @@ describe('commands', function () {
       });
     });
   });
+
+
+
+  /**
+   * This bug has been fixed in Chrome Canary
+   **/
+  describe.only('formatBlock heading', function () {
+   givenContentOf('<h2>|1|</h2><p><br></p>', function () {
+     when('the formatblock command is executed with h2', function() {
+       beforeEach(function () {
+         executeCommand('formatBlock', 'P');
+         });
+
+       it('should change the H2 to a P and remove the H2', function () {
+         return scribeNode.getInnerHTML().then(function (innerHTML) {
+           expect(innerHTML).to.have.html('<p>1</p><p><br></p>');
+         });
+       });
+     });
+   });
+  });
+
 });
