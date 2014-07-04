@@ -6,7 +6,7 @@
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseIndexOf',[], function() {
+define('lodash-amd/modern/internals/baseIndexOf',[], function() {
 
   /**
    * The base implementation of `_.indexOf` without support for binary searches
@@ -41,7 +41,7 @@ define('lodash-modern/internals/baseIndexOf',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/isNative',[], function() {
+define('lodash-amd/modern/internals/isNative',[], function() {
 
   /** Used for native method references */
   var objectProto = Object.prototype;
@@ -78,7 +78,7 @@ define('lodash-modern/internals/isNative',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/objectTypes',[], function() {
+define('lodash-amd/modern/internals/objectTypes',[], function() {
 
   /** Used to determine if values are of the language type Object */
   var objectTypes = {
@@ -101,7 +101,7 @@ define('lodash-modern/internals/objectTypes',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/isObject',['../internals/objectTypes'], function(objectTypes) {
+define('lodash-amd/modern/objects/isObject',['../internals/objectTypes'], function(objectTypes) {
 
   /**
    * Checks if `value` is the language type of Object.
@@ -142,7 +142,7 @@ define('lodash-modern/objects/isObject',['../internals/objectTypes'], function(o
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/utilities/noop',[], function() {
+define('lodash-amd/modern/utilities/noop',[], function() {
 
   /**
    * A no-operation function.
@@ -171,7 +171,7 @@ define('lodash-modern/utilities/noop',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseCreate',['./isNative', '../objects/isObject', '../utilities/noop'], function(isNative, isObject, noop) {
+define('lodash-amd/modern/internals/baseCreate',['./isNative', '../objects/isObject', '../utilities/noop'], function(isNative, isObject, noop) {
 
   /* Native method shortcuts for methods with the same name as other `lodash` methods */
   var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
@@ -213,7 +213,7 @@ define('lodash-modern/internals/baseCreate',['./isNative', '../objects/isObject'
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/setBindData',['./isNative', '../utilities/noop'], function(isNative, noop) {
+define('lodash-amd/modern/internals/setBindData',['./isNative', '../utilities/noop'], function(isNative, noop) {
 
   /** Used as the property descriptor for `__bindData__` */
   var descriptor = {
@@ -257,7 +257,7 @@ define('lodash-modern/internals/setBindData',['./isNative', '../utilities/noop']
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/slice',[], function() {
+define('lodash-amd/modern/internals/slice',[], function() {
 
   /**
    * Slices the `collection` from the `start` index up to, but not including,
@@ -298,7 +298,7 @@ define('lodash-modern/internals/slice',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseBind',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
+define('lodash-amd/modern/internals/baseBind',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
 
   /**
    * Used for `Array` method references.
@@ -359,7 +359,7 @@ define('lodash-modern/internals/baseBind',['./baseCreate', '../objects/isObject'
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseCreateWrapper',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
+define('lodash-amd/modern/internals/baseCreateWrapper',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
 
   /**
    * Used for `Array` method references.
@@ -436,7 +436,7 @@ define('lodash-modern/internals/baseCreateWrapper',['./baseCreate', '../objects/
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/isFunction',[], function() {
+define('lodash-amd/modern/objects/isFunction',[], function() {
 
   /**
    * Checks if `value` is a function.
@@ -466,7 +466,7 @@ define('lodash-modern/objects/isFunction',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/createWrapper',['./baseBind', './baseCreateWrapper', '../objects/isFunction', './slice'], function(baseBind, baseCreateWrapper, isFunction, slice) {
+define('lodash-amd/modern/internals/createWrapper',['./baseBind', './baseCreateWrapper', '../objects/isFunction', './slice'], function(baseBind, baseCreateWrapper, isFunction, slice) {
 
   /**
    * Used for `Array` method references.
@@ -571,7 +571,7 @@ define('lodash-modern/internals/createWrapper',['./baseBind', './baseCreateWrapp
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/functions/bind',['../internals/createWrapper', '../internals/slice'], function(createWrapper, slice) {
+define('lodash-amd/modern/functions/bind',['../internals/createWrapper', '../internals/slice'], function(createWrapper, slice) {
 
   /**
    * Creates a function that, when called, invokes `func` with the `this`
@@ -612,7 +612,7 @@ define('lodash-modern/functions/bind',['../internals/createWrapper', '../interna
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/utilities/identity',[], function() {
+define('lodash-amd/modern/utilities/identity',[], function() {
 
   /**
    * This method returns the first argument provided to it.
@@ -643,7 +643,7 @@ define('lodash-modern/utilities/identity',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/support',['./internals/isNative'], function(isNative) {
+define('lodash-amd/modern/support',['./internals/isNative'], function(isNative) {
 
   /** Used to detect functions containing a `this` reference */
   var reThis = /\bthis\b/;
@@ -685,7 +685,7 @@ define('lodash-modern/support',['./internals/isNative'], function(isNative) {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/baseCreateCallback',['../functions/bind', '../utilities/identity', './setBindData', '../support'], function(bind, identity, setBindData, support) {
+define('lodash-amd/modern/internals/baseCreateCallback',['../functions/bind', '../utilities/identity', './setBindData', '../support'], function(bind, identity, setBindData, support) {
 
   /** Used to detected named functions */
   var reFuncName = /^\s*function[ \n\r\t]+\w/;
@@ -764,7 +764,7 @@ define('lodash-modern/internals/baseCreateCallback',['../functions/bind', '../ut
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/internals/shimKeys',['./objectTypes'], function(objectTypes) {
+define('lodash-amd/modern/internals/shimKeys',['./objectTypes'], function(objectTypes) {
 
   /** Used for native method references */
   var objectProto = Object.prototype;
@@ -804,7 +804,7 @@ define('lodash-modern/internals/shimKeys',['./objectTypes'], function(objectType
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/keys',['../internals/isNative', './isObject', '../internals/shimKeys'], function(isNative, isObject, shimKeys) {
+define('lodash-amd/modern/objects/keys',['../internals/isNative', './isObject', '../internals/shimKeys'], function(isNative, isObject, shimKeys) {
 
   /* Native method shortcuts for methods with the same name as other `lodash` methods */
   var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
@@ -840,7 +840,7 @@ define('lodash-modern/objects/keys',['../internals/isNative', './isObject', '../
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
+define('lodash-amd/modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
 
   /**
    * Iterates over own enumerable properties of an object, executing the callback
@@ -890,7 +890,7 @@ define('lodash-modern/objects/forOwn',['../internals/baseCreateCallback', './key
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/isArray',['../internals/isNative'], function(isNative) {
+define('lodash-amd/modern/objects/isArray',['../internals/isNative'], function(isNative) {
 
   /** `Object#toString` result shortcuts */
   var arrayClass = '[object Array]';
@@ -937,7 +937,7 @@ define('lodash-modern/objects/isArray',['../internals/isNative'], function(isNat
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/objects/isString',[], function() {
+define('lodash-amd/modern/objects/isString',[], function() {
 
   /** `Object#toString` result shortcuts */
   var stringClass = '[object String]';
@@ -977,7 +977,7 @@ define('lodash-modern/objects/isString',[], function() {
  * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  * Available under MIT license <http://lodash.com/license>
  */
-define('lodash-modern/collections/contains',['../internals/baseIndexOf', '../objects/forOwn', '../objects/isArray', '../objects/isString'], function(baseIndexOf, forOwn, isArray, isString) {
+define('lodash-amd/modern/collections/contains',['../internals/baseIndexOf', '../objects/forOwn', '../objects/isArray', '../objects/isString'], function(baseIndexOf, forOwn, isArray, isString) {
 
   /* Native method shortcuts for methods with the same name as other `lodash` methods */
   var nativeMax = Math.max;
@@ -1033,7 +1033,7 @@ define('lodash-modern/collections/contains',['../internals/baseIndexOf', '../obj
   return contains;
 });
 
-define('scribe-common/element',['lodash-modern/collections/contains'], function (contains) {
+define('scribe-common/element',['lodash-amd/modern/collections/contains'], function (contains) {
 
   
 
@@ -1042,6 +1042,10 @@ define('scribe-common/element',['lodash-modern/collections/contains'], function 
                            'H2', 'H3', 'H4', 'H5', 'H6'];
   function isBlockElement(node) {
     return contains(blockElementNames, node.nodeName);
+  }
+
+  function isSelectionMarkerNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
   }
 
   function unwrap(node, childNode) {
@@ -1053,6 +1057,7 @@ define('scribe-common/element',['lodash-modern/collections/contains'], function 
 
   return {
     isBlockElement: isBlockElement,
+    isSelectionMarkerNode: isSelectionMarkerNode,
     unwrap: unwrap
   };
 

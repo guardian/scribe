@@ -7,10 +7,10 @@ define('scribe-plugin-toolbar',[],function () {
       var buttons = toolbarNode.querySelectorAll('button[data-command-name]');
 
       Array.prototype.forEach.call(buttons, function (button) {
-        // Look for a predefined command, otherwise define one now.
-        var command = scribe.getCommand(button.dataset.commandName);
-
         button.addEventListener('click', function () {
+          // Look for a predefined command.
+          var command = scribe.getCommand(button.dataset.commandName);
+
           /**
            * Focus will have been taken away from the Scribe instance when
            * clicking on a button (Chrome will return the focus automatically
@@ -40,16 +40,20 @@ define('scribe-plugin-toolbar',[],function () {
         scribe.on('content-changed', updateUi);
 
         function updateUi() {
+          // Look for a predefined command.
+          var command = scribe.getCommand(button.dataset.commandName);
+
           var selection = new scribe.api.Selection();
+
+          // TODO: Do we need to check for the selection?
+          if (selection.range && command.queryState()) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
 
           if (selection.range && command.queryEnabled()) {
             button.removeAttribute('disabled');
-
-            if (command.queryState()) {
-              button.classList.add('active');
-            } else {
-              button.classList.remove('active');
-            }
           } else {
             button.setAttribute('disabled', 'disabled');
           }

@@ -33,21 +33,25 @@ define('scribe-plugin-link-prompt-command',[],function () {
         if (link) {
           // Prepend href protocol if missing
           // For emails we just look for a `@` symbol as it is easier.
-          if (! /^mailto\:/.test(link) && /@/.test(link)) {
-            var shouldPrefixEmail = window.confirm(
-              'The URL you entered appears to be an email address. ' +
-              'Do you want to add the required “mailto:” prefix?'
-            );
-            if (shouldPrefixEmail) {
-              link = 'mailto:' + link;
-            }
-          } else if (! /^https?\:\/\//.test(link)) {
-            var shouldPrefixLink = window.confirm(
-              'The URL you entered appears to be a link. ' +
-              'Do you want to add the required “http://” prefix?'
-            );
-            if (shouldPrefixLink) {
-              link = 'http://' + link;
+          var urlProtocolRegExp = /^https?\:\/\//;
+          // We don't want to match URLs that sort of look like email addresses
+          if (! urlProtocolRegExp.test(link)) {
+            if (! /^mailto\:/.test(link) && /@/.test(link)) {
+              var shouldPrefixEmail = window.confirm(
+                'The URL you entered appears to be an email address. ' +
+                'Do you want to add the required “mailto:” prefix?'
+              );
+              if (shouldPrefixEmail) {
+                link = 'mailto:' + link;
+              }
+            } else {
+              var shouldPrefixLink = window.confirm(
+                'The URL you entered appears to be a link. ' +
+                'Do you want to add the required “http://” prefix?'
+              );
+              if (shouldPrefixLink) {
+                link = 'http://' + link;
+              }
             }
           }
 

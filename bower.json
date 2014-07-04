@@ -7,11 +7,11 @@
     "scribe-plugin-curly-quotes": "0.1.2",
     "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "0.1.1",
     "scribe-plugin-heading-command": "0.1.0",
-    "scribe-plugin-intelligent-unlink-command": "0.1.1",
-    "scribe-plugin-keyboard-shortcuts": "0.1.0",
-    "scribe-plugin-link-prompt-command": "0.1.1",
-    "scribe-plugin-sanitizer": "0.1.2",
-    "scribe-plugin-smart-lists": "0.1.1",
-    "scribe-plugin-toolbar": "0.1.2"
+    "scribe-plugin-intelligent-unlink-command": "0.1.4",
+    "scribe-plugin-keyboard-shortcuts": "0.1.1",
+    "scribe-plugin-link-prompt-command": "0.1.2",
+    "scribe-plugin-sanitizer": "0.1.4",
+    "scribe-plugin-smart-lists": "0.1.3",
+    "scribe-plugin-toolbar": "0.1.4"
   }
 }
