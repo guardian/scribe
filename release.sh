@@ -4,7 +4,7 @@ BASE_DIR=$(dirname $0)
 
 if [ $# -ne 1 ];
 then
-    echo "Usage: ./release.sh <version-number>"
+    echo "Usage: ./release.sh <version-number | major | minor | patch | build>"
     exit 1
 fi
 
