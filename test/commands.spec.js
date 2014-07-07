@@ -446,6 +446,21 @@ describe('commands', function () {
     });
   });
 
+
+  /*
+   * This test is trying to test a bug in which empty H2s are left
+   * behind after they are removed from the scribe el.
+   *
+   * It is impossible to reproduce the steps in a test, and as a result
+   * this test does not really test anything yet
+   *
+   * The steps are:
+   *     1. Click past the text and select H2
+   *     2. Click the front of the text and select H2
+   *
+   * You will be left with a P wrapping the text and an empty H2.
+   *
+   */
   describe('formatBlock heading', function () {
    givenContentOf('<h2>1|</h2>', function () {
      when('when the caret is moved to the start and then the formatBlock command is executed with a value of h2', function() {
