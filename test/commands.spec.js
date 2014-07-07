@@ -446,9 +446,9 @@ describe('commands', function () {
     });
   });
 
-  describe.only('formatBlock heading', function () {
+  describe('formatBlock heading', function () {
    givenContentOf('<h2>1|</h2>', function () {
-     when('the formatblock command is executed with h2', function() {
+     when('when the caret is moved to the start and then the formatBlock command is executed with a value of h2', function() {
        beforeEach(function () {
          return scribeNode.sendKeys(webdriver.Key.LEFT).then(function () {
            executeCommand('formatBlock', 'P');

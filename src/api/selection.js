@@ -121,7 +121,9 @@ define(function () {
          * FIXME: Document why we need to remove this
          * As per: http://jsbin.com/sifez/1/edit?js,console,output
          */
-        if (startMarker.previousSibling && startMarker.previousSibling.nodeType === 3 && startMarker.previousSibling.data === '') {
+        if (startMarker.previousSibling &&
+            startMarker.previousSibling.nodeType === Node.TEXT_NODE
+            && startMarker.previousSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.previousSibling);
         }
       }
