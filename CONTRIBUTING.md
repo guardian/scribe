@@ -65,7 +65,8 @@ npm test
 ### Update example
 * `git checkout gh-pages`
 * `git pull`
-* Update necessary dependency versions in `bower.json`
+* Update necessary dependency versions in `bower.json`. Check `bower ls` to see
+  which components need updating.
 * `bower install`
 * `bower prune`
 * `git add --update .`
