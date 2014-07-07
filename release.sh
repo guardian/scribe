@@ -2,7 +2,7 @@
 
 BASE_DIR=$(dirname $0)
 
-if [ $# -ne 1 ];
+if [ $# -ge 1 ];
 then
     echo "Missing version argument"
     exit 1
