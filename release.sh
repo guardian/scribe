@@ -2,13 +2,13 @@
 
 BASE_DIR=$(dirname $0)
 
-if [ $# -ge 1 ];
+if [ $# -le 1 ];
 then
-    echo "Missing version argument"
+    echo "Usage: ./release.sh version-number [major | minor | patch | build]"
     exit 1
 fi
 
-# Clean the working tree
+Clean the working tree
 git reset --hard
 git checkout master
 
