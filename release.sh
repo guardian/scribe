@@ -4,7 +4,7 @@ BASE_DIR=$(dirname $0)
 
 if [ $# -ne 1 ];
 then
-    echo "Missing version argument"
+    echo "Usage: ./release.sh [version-number]"
     exit 1
 fi
 
