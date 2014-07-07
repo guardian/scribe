@@ -1,3 +1,6 @@
+# 0.1.15
+* Fix [Remove erroneous blcok tags being left behind in Chrome](https://github.com/guardian/scribe/pull/223)
+
 # 0.1.14
 * Fix [Ensure selectable containers core plugin doesn't always work as desired](https://github.com/guardian/scribe/pull/214)
 
