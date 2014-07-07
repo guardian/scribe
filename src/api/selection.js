@@ -38,7 +38,9 @@ define(function () {
        * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
       // TODO: abstract into polyfill for `Range.insertNode`
-      if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
+      if (endMarker.nextSibling &&
+          endMarker.nextSibling.nodeType === Node.TEXT_NODE
+          && endMarker.nextSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
 
@@ -51,7 +53,9 @@ define(function () {
        * FIXME: Document why we need to remove this
        * As per: http://jsbin.com/sifez/1/edit?js,console,output
        */
-      if (endMarker.previousSibling && endMarker.previousSibling.nodeType === 3 && endMarker.previousSibling.data === '') {
+      if (endMarker.previousSibling &&
+          endMarker.previousSibling.nodeType === Node.TEXT_NODE
+          && endMarker.previousSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.previousSibling);
       }
 
@@ -110,7 +114,9 @@ define(function () {
          * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
-        if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
+        if (startMarker.nextSibling &&
+            startMarker.nextSibling.nodeType === Node.TEXT_NODE
+            && startMarker.nextSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.nextSibling);
         }
 
@@ -127,6 +133,7 @@ define(function () {
           startMarker.parentNode.removeChild(startMarker.previousSibling);
         }
       }
+
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
