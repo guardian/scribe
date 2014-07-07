@@ -31,14 +31,74 @@ define(function () {
       rangeEnd.insertNode(endMarker);
 
       /**
-       * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-       * element. We just remove it.
-       * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+       * the inserted element. We just remove it. This in turn creates several
+       * bugs when perfoming commands on selections that contain an empty text
+       * node (`removeFormat`, `unlink`).
+       * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
       // TODO: abstract into polyfill for `Range.insertNode`
-      if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
+      if (endMarker.nextSibling &&
+          endMarker.nextSibling.nodeType === Node.TEXT_NODE
+          && endMarker.nextSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
+
+
+
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
+       * the inserted element when the child element is at the start of a block
+       * element. We just remove it.
+       * FIXME: Document why we need to remove this
+       * As per: http://jsbin.com/sifez/1/edit?js,console,output
+       */
+      if (endMarker.previousSibling &&
+          endMarker.previousSibling.nodeType === Node.TEXT_NODE
+          && endMarker.previousSibling.data === '') {
+        endMarker.parentNode.removeChild(endMarker.previousSibling);
+      }
+
+
+      /**
+       * This is meant to test Chrome inserting erroneous text blocks into
+       * the scribe el when focus switches from a scribe.el to a button to
+       * the scribe.el. However, this is impossible to simlulate correctly
+       * in a test.
+       *
+       * This behaviour does not happen in Firefox.
+       *
+       * See http://jsbin.com/quhin/2/edit?js,output,console
+       *
+       * To reproduce the bug, follow the following steps:
+       *    1. Select text and create H2
+       *    2. Move cursor to front of text.
+       *    3. Remove the H2 by clicking the button
+       *    4. Observe that you are left with an empty H2
+       *        after the element.
+       *
+       * The problem is caused by the Range being different, depending on
+       * the position of the marker.
+       *
+       * Consider the following two scenarios.
+       *
+       * A)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click the right of to scribe.el
+       *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
+       *
+       *   This is wrong but does not cause the problem.
+       *
+       * B)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click to left of scribe.el
+       *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
+       *
+       * The second example sets the range in the wrong place, meaning
+       * that in the second case the formatBlock is executed on the wrong
+       * element [the text node] leaving the empty H2 behind.
+       **/
+
 
       if (! this.selection.isCollapsed) {
         // Start marker
@@ -47,15 +107,33 @@ define(function () {
         rangeStart.insertNode(startMarker);
 
         /**
-         * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-         * element. We just remove it.
-         * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+         * the inserted element. We just remove it. This in turn creates several
+         * bugs when perfoming commands on selections that contain an empty text
+         * node (`removeFormat`, `unlink`).
+         * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
-        if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
+        if (startMarker.nextSibling &&
+            startMarker.nextSibling.nodeType === Node.TEXT_NODE
+            && startMarker.nextSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.nextSibling);
         }
+
+        /**
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node
+         * before the inserted element when the child element is at the start of
+         * a block element. We just remove it.
+         * FIXME: Document why we need to remove this
+         * As per: http://jsbin.com/sifez/1/edit?js,console,output
+         */
+        if (startMarker.previousSibling &&
+            startMarker.previousSibling.nodeType === Node.TEXT_NODE
+            && startMarker.previousSibling.data === '') {
+          startMarker.parentNode.removeChild(startMarker.previousSibling);
+        }
       }
+
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
