@@ -8,7 +8,7 @@ then
     exit 1
 fi
 
-Clean the working tree
+# Clean the working tree
 git reset --hard
 git checkout master
 
