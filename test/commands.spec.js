@@ -462,21 +462,21 @@ describe('commands', function () {
    *
    */
   describe('formatBlock heading', function () {
-   givenContentOf('<h2>1|</h2>', function () {
-     when('when the caret is moved to the start and then the formatBlock command is executed with a value of h2', function() {
-       beforeEach(function () {
-         return scribeNode.sendKeys(webdriver.Key.LEFT).then(function () {
-           executeCommand('formatBlock', 'P');
-         });
-       });
+    givenContentOf('<h2>1|</h2>', function () {
+      when('when the caret is moved to the start and then the formatBlock command is executed with a value of h2', function() {
+        beforeEach(function () {
+          return scribeNode.sendKeys(webdriver.Key.LEFT).then(function () {
+            executeCommand('formatBlock', 'P');
+          });
+        });
 
        it('should change the H2 to a P and remove the H2', function () {
          return scribeNode.getInnerHTML().then(function (innerHTML) {
            expect(innerHTML).to.have.html('<p>1</p>');
          });
        });
-     });
-   });
+      });
+    });
   });
 
 });
