@@ -47,7 +47,7 @@ npm test
 
 ### Bower
 * `git checkout master`
-* Run `./release.sh [ <newversion> | major | minor | patch | build ]` (we use
+* Run `./release-bower.sh [ <newversion> | major | minor | patch | build ]` (we use
   [mversion](https://github.com/mikaelbr/mversion#usage-cli)). (If releasing a
   plugin, run the script inside this repository from the plugin’s directory.)
 * Checkout the `dist` branch to check you're happy with the compilation result.
@@ -55,12 +55,8 @@ npm test
   distribution via Bower).
 
 ### npm
-* `git checkout master`.
 * Update `CHANGELOG.md`
-* Update the version number in `package.json`
-* Commit with message of `v<number>`
-* `git push`
-* Run `npm publish`
+* Run `./release-npm.sh <newversion>`
 
 ### Update example
 * `git checkout gh-pages`
