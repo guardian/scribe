@@ -12,7 +12,10 @@ define(function () {
     }
 
     Selection.prototype.getContaining = function (nodeFilter) {
-      var node = new scribe.api.Node(this.range.commonAncestorContainer);
+      var range = this.range;
+      if (!range) return;
+
+      var node = new scribe.api.Node(range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
          && node.node.attributes.getNamedItem('contenteditable');
 
@@ -20,13 +23,16 @@ define(function () {
     };
 
     Selection.prototype.placeMarkers = function () {
+      var range = this.range;
+      if (!range) return;
+
       var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
       var endMarker = document.createElement('em');
       endMarker.classList.add('scribe-marker');
 
       // End marker
-      var rangeEnd = this.range.cloneRange();
+      var rangeEnd = range.cloneRange();
       rangeEnd.collapse(false);
       rangeEnd.insertNode(endMarker);
 
@@ -102,7 +108,7 @@ define(function () {
 
       if (! this.selection.isCollapsed) {
         // Start marker
-        var rangeStart = this.range.cloneRange();
+        var rangeStart = range.cloneRange();
         rangeStart.collapse(true);
         rangeStart.insertNode(startMarker);
 
@@ -136,7 +142,7 @@ define(function () {
 
 
       this.selection.removeAllRanges();
-      this.selection.addRange(this.range);
+      this.selection.addRange(range);
     };
 
     Selection.prototype.getMarkers = function () {
