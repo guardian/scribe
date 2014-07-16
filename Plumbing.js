@@ -17,7 +17,7 @@ module.exports = function (pipelines) {
       preserveLicenseComments: false,
       paths: {
           'lodash-amd': '../bower_components/lodash-amd',
-          'scribe-common': '../bower_components/scribe-common/src'
+          'scribe-common': '../bower_components/scribe-common'
       }
   });
 

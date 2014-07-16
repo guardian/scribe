@@ -1,5 +1,5 @@
 define([
-    'scribe-common/element',
+    'scribe-common/src/element',
     'lodash-amd/modern/collections/contains'
   ], function (
     element,
