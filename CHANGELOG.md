@@ -1,3 +1,6 @@
+# 0.1.16
+* Update [scribe-common includes to include src](https://github.com/guardian/scribe/pull/217)
+
 # 0.1.15
 * Fix [Remove erroneous blcok tags being left behind in Chrome](https://github.com/guardian/scribe/pull/223)
 
