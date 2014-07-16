@@ -2176,7 +2176,7 @@ define('lodash-amd/modern/collections/toArray',['../objects/isString', '../inter
   return toArray;
 });
 
-define('scribe-common/element',['lodash-amd/modern/collections/contains'], function (contains) {
+define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], function (contains) {
 
   
 
@@ -2206,7 +2206,7 @@ define('scribe-common/element',['lodash-amd/modern/collections/contains'], funct
 
 });
 
-define('scribe-common/node',[], function () {
+define('scribe-common/src/node',[], function () {
 
   
 
@@ -2233,8 +2233,8 @@ define('scribe-common/node',[], function () {
 define('dom-observer',[
   'lodash-amd/modern/arrays/flatten',
   'lodash-amd/modern/collections/toArray',
-  'scribe-common/element',
-  'scribe-common/node'
+  'scribe-common/src/element',
+  'scribe-common/src/node'
 ], function (
   flatten,
   toArray,
@@ -2673,34 +2673,9 @@ define('lodash-amd/modern/arrays/last',['../functions/createCallback', '../inter
   return last;
 });
 
-define('api/element',['lodash-amd/modern/collections/contains'], function (contains) {
-
-  
-
-  // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
-  }
-
-  return {
-    isBlockElement: isBlockElement,
-    unwrap: unwrap
-  };
-
-});
-
 define('plugins/core/formatters/html/enforce-p-elements',[
   'lodash-amd/modern/arrays/last',
-  '../../../../api/element'
+  'scribe-common/src/element'
 ], function (
   last,
   element
@@ -2812,12 +2787,17 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 });
 
 define('plugins/core/formatters/html/ensure-selectable-containers',[
-    'scribe-common/element', 'lodash-amd/modern/collections/contains'
-  ], function (element, contains) {
+    'scribe-common/src/element',
+    'lodash-amd/modern/collections/contains'
+  ], function (
+    element,
+    contains
+  ) {
 
   /**
-   * Chrome and Firefox: All elements need to contain either
-   * text or a `<br>` to remain selectable.
+   * Chrome and Firefox: All elements need to contain either text or a `<br>` to
+   * remain selectable. (Unless they have a width and height explicitly set with
+   * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
    */
 
   
@@ -2831,11 +2811,17 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
     var node = parentNode.firstElementChild;
 
+    function isEmpty(node) {
+      return node.children.length === 0
+        || (node.children.length === 1
+            && element.isSelectionMarkerNode(node.children[0]));
+    }
+
     while (node) {
       if (!element.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
         // whitespace, and is not self-closing
-        if (node.children.length === 0 &&
+        if (isEmpty(node) &&
           node.textContent.trim() === '' &&
           !contains(html5VoidElements, node.nodeName))
         {
@@ -3193,7 +3179,7 @@ define('plugins/core/patches/commands/indent',[],function () {
 
 });
 
-define('plugins/core/patches/commands/insert-html',['../../../../api/element'], function (element) {
+define('plugins/core/patches/commands/insert-html',['scribe-common/src/element'], function (element) {
 
   
 
@@ -3255,8 +3241,8 @@ define('plugins/core/patches/commands/insert-html',['../../../../api/element'], 
 
 });
 
-define('plugins/core/patches/commands/insert-list',['../../../../api/element',
-        'scribe-common/node'], function (element, nodeHelpers) {
+define('plugins/core/patches/commands/insert-list',['scribe-common/src/element',
+        'scribe-common/src/node'], function (element, nodeHelpers) {
 
   
 
@@ -3502,7 +3488,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 });
 
-define('plugins/core/patches/events',['../../../api/element'], function (element) {
+define('plugins/core/patches/events',['scribe-common/src/element'], function (element) {
 
   
 
@@ -3787,7 +3773,8 @@ define('api/selection',[],function () {
     Selection.prototype.getContaining = function (nodeFilter) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
-        && node.node.attributes.getNamedItem('contenteditable');
+         && node.node.attributes.getNamedItem('contenteditable');
+
       return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
 
@@ -3803,14 +3790,74 @@ define('api/selection',[],function () {
       rangeEnd.insertNode(endMarker);
 
       /**
-       * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-       * element. We just remove it.
-       * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+       * the inserted element. We just remove it. This in turn creates several
+       * bugs when perfoming commands on selections that contain an empty text
+       * node (`removeFormat`, `unlink`).
+       * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
       // TODO: abstract into polyfill for `Range.insertNode`
-      if (endMarker.nextSibling && endMarker.nextSibling.nodeType === 3 && endMarker.nextSibling.data === '') {
+      if (endMarker.nextSibling &&
+          endMarker.nextSibling.nodeType === Node.TEXT_NODE
+          && endMarker.nextSibling.data === '') {
         endMarker.parentNode.removeChild(endMarker.nextSibling);
       }
+
+
+
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
+       * the inserted element when the child element is at the start of a block
+       * element. We just remove it.
+       * FIXME: Document why we need to remove this
+       * As per: http://jsbin.com/sifez/1/edit?js,console,output
+       */
+      if (endMarker.previousSibling &&
+          endMarker.previousSibling.nodeType === Node.TEXT_NODE
+          && endMarker.previousSibling.data === '') {
+        endMarker.parentNode.removeChild(endMarker.previousSibling);
+      }
+
+
+      /**
+       * This is meant to test Chrome inserting erroneous text blocks into
+       * the scribe el when focus switches from a scribe.el to a button to
+       * the scribe.el. However, this is impossible to simlulate correctly
+       * in a test.
+       *
+       * This behaviour does not happen in Firefox.
+       *
+       * See http://jsbin.com/quhin/2/edit?js,output,console
+       *
+       * To reproduce the bug, follow the following steps:
+       *    1. Select text and create H2
+       *    2. Move cursor to front of text.
+       *    3. Remove the H2 by clicking the button
+       *    4. Observe that you are left with an empty H2
+       *        after the element.
+       *
+       * The problem is caused by the Range being different, depending on
+       * the position of the marker.
+       *
+       * Consider the following two scenarios.
+       *
+       * A)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click the right of to scribe.el
+       *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
+       *
+       *   This is wrong but does not cause the problem.
+       *
+       * B)
+       *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
+       *   2. Click button and click to left of scribe.el
+       *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
+       *
+       * The second example sets the range in the wrong place, meaning
+       * that in the second case the formatBlock is executed on the wrong
+       * element [the text node] leaving the empty H2 behind.
+       **/
+
 
       if (! this.selection.isCollapsed) {
         // Start marker
@@ -3819,15 +3866,33 @@ define('api/selection',[],function () {
         rangeStart.insertNode(startMarker);
 
         /**
-         * Chrome: `Range.insertNode` inserts a bogus text node after the inserted
-         * element. We just remove it.
-         * As per: http://jsbin.com/ODapifEb/1/edit?js,console,output
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+         * the inserted element. We just remove it. This in turn creates several
+         * bugs when perfoming commands on selections that contain an empty text
+         * node (`removeFormat`, `unlink`).
+         * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
-        if (startMarker.nextSibling && startMarker.nextSibling.nodeType === 3 && startMarker.nextSibling.data === '') {
+        if (startMarker.nextSibling &&
+            startMarker.nextSibling.nodeType === Node.TEXT_NODE
+            && startMarker.nextSibling.data === '') {
           startMarker.parentNode.removeChild(startMarker.nextSibling);
         }
+
+        /**
+         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node
+         * before the inserted element when the child element is at the start of
+         * a block element. We just remove it.
+         * FIXME: Document why we need to remove this
+         * As per: http://jsbin.com/sifez/1/edit?js,console,output
+         */
+        if (startMarker.previousSibling &&
+            startMarker.previousSibling.nodeType === Node.TEXT_NODE
+            && startMarker.previousSibling.data === '') {
+          startMarker.parentNode.removeChild(startMarker.previousSibling);
+        }
       }
+
 
       this.selection.removeAllRanges();
       this.selection.addRange(this.range);
