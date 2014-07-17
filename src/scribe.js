@@ -13,7 +13,7 @@ define([
   './api',
   './transaction-manager',
   './undo-manager',
-  './event-emitter',
+  './event-emitter'
 ], function (
   defaults,
   flatten,
@@ -132,7 +132,7 @@ define([
 
   Scribe.prototype.getContent = function () {
     // Remove bogus BR element for Firefox — see explanation in BR mode files.
-    return this.getHTML().replace(/<br>$/, '');
+    return this._htmlFormatterFactory.formatForExport(this.getHTML().replace(/<br>$/, ''));
   };
 
   Scribe.prototype.getTextContent = function () {
@@ -257,7 +257,8 @@ define([
       // elements
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
-      normalize: []
+      normalize: [],
+      export: []
     };
   }
 
@@ -268,6 +269,17 @@ define([
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
     var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatted = formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
+  };
+
+  HTMLFormatterFactory.prototype.formatForExport = function (html) {
+    // Flatten the phases
+    // Map the object to an array: Array[Formatter]
+    var formatters = flatten([this.formatters.export]);
     var formatted = formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
