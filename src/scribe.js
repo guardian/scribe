@@ -277,14 +277,9 @@ define([
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    // Flatten the phases
-    // Map the object to an array: Array[Formatter]
-    var formatters = flatten([this.formatters.export]);
-    var formatted = formatters.reduce(function (formattedData, formatter) {
+    return this.formatters.export.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
-
-    return formatted;
   };
 
   return Scribe;

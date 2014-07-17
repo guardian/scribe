@@ -198,14 +198,11 @@ describe('formatters', function () {
   });
 
   describe('HTML', function () {
-    describe('replace non-breaking space characters', function () {
-
-      given('default content', function () {
-        whenInsertingHTMLOf('1&nbsp;2', function () {
-          it('should replace the non-breaking space character with a normal space', function () {
-            return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2</p>');
-            });
+    describe('replace non-breaking space characters on export', function () {
+      givenContentOf('<p>1 &nbsp; &nbsp; 2</p>', function () {
+        it('should replace the non-breaking space characters with a normal space', function () {
+          return scribeNode.getContent().then(function (innerHTML) {
+            expect(innerHTML).to.have.html('<p>1 2</p>');
           });
         });
       });
