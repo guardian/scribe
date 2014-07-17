@@ -8,11 +8,11 @@ define(function () {
 
   return function () {
     return function (scribe) {
-      var nbspChar = '&nbsp;|\xA0';
+      var nbspChar = '( |&nbsp;|\xA0)+';
       var nbspCharRegExp = new RegExp(nbspChar, 'g');
 
       // TODO: should we be doing this on paste?
-      scribe.registerHTMLFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('export', function (html) {
         return html.replace(nbspCharRegExp, ' ');
       });
     };
