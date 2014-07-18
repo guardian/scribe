@@ -200,8 +200,17 @@ describe('formatters', function () {
   describe('HTML', function () {
     describe('non-breaking space characters', function () {
       given('default content', function () {
-        it('should keep the non-breaking space characters when typing', function () {
-          scribeNode.sendKeys('1     2');
+        it('should keep the non-breaking space character when typing', function () {
+          scribeNode.sendKeys('1\xa02');
+          return scribeNode.getInnerHTML().then(function(innerHtml) {
+            // Convert the &nbsp; code back into a space because .to.have.html() does it.
+            innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
+            expect(innerHtml).to.have.html('<p>1 2</p>');
+          });
+        });
+
+        it('should keep multiple space characters of different types when typing', function () {
+          scribeNode.sendKeys('1 \xa0\x20\xa0 2');
           return scribeNode.getInnerHTML().then(function(innerHtml) {
             // Convert the &nbsp; code back into a space because .to.have.html() does it.
             innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
@@ -451,3 +460,11 @@ describe('formatters', function () {
     });
   });
 });
+
+var nonWhiteSpaceCharacters = ['\x20', '\xa0'].reduce(function(acc, value) {
+  if (value.replace(/\s/g, '') !== '') {
+    acc.push(value);
+  }
+  return acc;
+}, []);
+console.log(nonWhiteSpaceCharacters);
