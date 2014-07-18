@@ -198,14 +198,14 @@ describe('formatters', function () {
   });
 
   describe('HTML', function () {
-    describe('non-breaking space characters', function () {
+    describe.only('non-breaking space characters', function () {
       given('default content', function () {
         it('should keep the non-breaking space character when typing', function () {
           scribeNode.sendKeys('1\xa02');
           return scribeNode.getInnerHTML().then(function(innerHtml) {
             // Convert the &nbsp; code back into a space because .to.have.html() does it.
             innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
-            expect(innerHtml).to.have.html('<p>1 2</p>');
+            expect(innerHtml).to.have.html('<p>1 2<firefox-bogus-br></p>');
           });
         });
 
@@ -214,7 +214,7 @@ describe('formatters', function () {
           return scribeNode.getInnerHTML().then(function(innerHtml) {
             // Convert the &nbsp; code back into a space because .to.have.html() does it.
             innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
-            expect(innerHtml).to.have.html('<p>1     2</p>');
+            expect(innerHtml).to.have.html('<p>1     2<firefox-bogus-br></p>');
           });
         });
       });
