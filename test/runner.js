@@ -15,12 +15,9 @@ var createRunner = require('scribe-test-harness/create-runner');
 var mocha = new Mocha();
 
 /**
- * FIXME: We have to set a ridiculous timeout (20 minutes) because Travis’
- * concurrent builds will sometimes exceed Sauce Labs’ concurrency. We should
- * track the following issue to add an option to Travis for limiting
- * concurrency: https://github.com/travis-ci/travis-ci/issues/1366
+ * Wait for the connection to Sauce Labs to finish.
  */
-mocha.timeout(1200000);
+mocha.timeout(15 * 1000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/block-mode.spec.js');
 mocha.addFile(__dirname + '/commands.spec.js');
