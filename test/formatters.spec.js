@@ -198,7 +198,7 @@ describe('formatters', function () {
   });
 
   describe('HTML', function () {
-    describe.only('non-breaking space characters', function () {
+    describe('non-breaking space characters', function () {
       given('default content', function () {
         it('should keep the non-breaking space character when typing', function () {
           scribeNode.sendKeys('1\xa02');
