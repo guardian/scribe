@@ -2176,7 +2176,7 @@ define('lodash-amd/modern/collections/toArray',['../objects/isString', '../inter
   return toArray;
 });
 
-define('scribe-common/element',['lodash-amd/modern/collections/contains'], function (contains) {
+define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], function (contains) {
 
   
 
@@ -2206,7 +2206,7 @@ define('scribe-common/element',['lodash-amd/modern/collections/contains'], funct
 
 });
 
-define('scribe-common/node',[], function () {
+define('scribe-common/src/node',[], function () {
 
   
 
@@ -2233,8 +2233,8 @@ define('scribe-common/node',[], function () {
 define('dom-observer',[
   'lodash-amd/modern/arrays/flatten',
   'lodash-amd/modern/collections/toArray',
-  'scribe-common/element',
-  'scribe-common/node'
+  'scribe-common/src/element',
+  'scribe-common/src/node'
 ], function (
   flatten,
   toArray,
@@ -2573,11 +2573,10 @@ define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
 
   return function () {
     return function (scribe) {
-      var nbspChar = '&nbsp;|\xA0';
-      var nbspCharRegExp = new RegExp(nbspChar, 'g');
+      var nbspCharRegExp = /(\s|&nbsp;)+/g;
 
       // TODO: should we be doing this on paste?
-      scribe.registerHTMLFormatter('normalize', function (html) {
+      scribe.registerHTMLFormatter('export', function (html) {
         return html.replace(nbspCharRegExp, ' ');
       });
     };
@@ -2673,34 +2672,9 @@ define('lodash-amd/modern/arrays/last',['../functions/createCallback', '../inter
   return last;
 });
 
-define('api/element',['lodash-amd/modern/collections/contains'], function (contains) {
-
-  
-
-  // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
-  }
-
-  return {
-    isBlockElement: isBlockElement,
-    unwrap: unwrap
-  };
-
-});
-
 define('plugins/core/formatters/html/enforce-p-elements',[
   'lodash-amd/modern/arrays/last',
-  '../../../../api/element'
+  'scribe-common/src/element'
 ], function (
   last,
   element
@@ -2812,7 +2786,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 });
 
 define('plugins/core/formatters/html/ensure-selectable-containers',[
-    'scribe-common/element',
+    'scribe-common/src/element',
     'lodash-amd/modern/collections/contains'
   ], function (
     element,
@@ -3204,7 +3178,7 @@ define('plugins/core/patches/commands/indent',[],function () {
 
 });
 
-define('plugins/core/patches/commands/insert-html',['../../../../api/element'], function (element) {
+define('plugins/core/patches/commands/insert-html',['scribe-common/src/element'], function (element) {
 
   
 
@@ -3266,8 +3240,8 @@ define('plugins/core/patches/commands/insert-html',['../../../../api/element'], 
 
 });
 
-define('plugins/core/patches/commands/insert-list',['../../../../api/element',
-        'scribe-common/node'], function (element, nodeHelpers) {
+define('plugins/core/patches/commands/insert-list',['scribe-common/src/element',
+        'scribe-common/src/node'], function (element, nodeHelpers) {
 
   
 
@@ -3513,7 +3487,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 });
 
-define('plugins/core/patches/events',['../../../api/element'], function (element) {
+define('plugins/core/patches/events',['scribe-common/src/element'], function (element) {
 
   
 
@@ -4303,7 +4277,7 @@ define('scribe',[
   './api',
   './transaction-manager',
   './undo-manager',
-  './event-emitter',
+  './event-emitter'
 ], function (
   defaults,
   flatten,
@@ -4422,7 +4396,7 @@ define('scribe',[
 
   Scribe.prototype.getContent = function () {
     // Remove bogus BR element for Firefox — see explanation in BR mode files.
-    return this.getHTML().replace(/<br>$/, '');
+    return this._htmlFormatterFactory.formatForExport(this.getHTML().replace(/<br>$/, ''));
   };
 
   Scribe.prototype.getTextContent = function () {
@@ -4547,7 +4521,8 @@ define('scribe',[
       // elements
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
-      normalize: []
+      normalize: [],
+      export: []
     };
   }
 
@@ -4563,6 +4538,12 @@ define('scribe',[
     }, html);
 
     return formatted;
+  };
+
+  HTMLFormatterFactory.prototype.formatForExport = function (html) {
+    return this.formatters.export.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
   };
 
   return Scribe;

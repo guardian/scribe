@@ -1,19 +1,19 @@
 {
   "name": "scribe",
-  "version": "0.1.15",
+  "version": "0.1.17",
   "main": "./scribe.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
   "license": "MIT",
   "homepage": "https://github.com/guardian/scribe",
-  "_release": "0.1.15",
+  "_release": "0.1.17",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.15",
-    "commit": "fc02470e23da82a1415c1dc4cf50d5e84c5aaa31"
+    "tag": "v0.1.17",
+    "commit": "53946062a97fb3362b6f8d68d63266ddeca47cea"
   },
   "_source": "git://github.com/guardian/scribe.git",
-  "_target": "0.1.15",
+  "_target": "0.1.17",
   "_originalSource": "scribe"
 }
