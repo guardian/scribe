@@ -198,14 +198,31 @@ describe('formatters', function () {
   });
 
   describe('HTML', function () {
-    describe('replace non-breaking space characters', function () {
-
+    describe('non-breaking space characters', function () {
       given('default content', function () {
-        whenInsertingHTMLOf('1&nbsp;2', function () {
-          it('should replace the non-breaking space character with a normal space', function () {
-            return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p>1 2</p>');
-            });
+        it('should keep the non-breaking space character when typing', function () {
+          scribeNode.sendKeys('1\xa02');
+          return scribeNode.getInnerHTML().then(function(innerHtml) {
+            // Convert the &nbsp; code back into a space because .to.have.html() does it.
+            innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
+            expect(innerHtml).to.have.html('<p>1 2<firefox-bogus-br></p>');
+          });
+        });
+
+        it('should keep multiple space characters of different types when typing', function () {
+          scribeNode.sendKeys('1 \xa0\x20\xa0 2');
+          return scribeNode.getInnerHTML().then(function(innerHtml) {
+            // Convert the &nbsp; code back into a space because .to.have.html() does it.
+            innerHtml = innerHtml.replace(/&nbsp;/g, ' ');
+            expect(innerHtml).to.have.html('<p>1     2<firefox-bogus-br></p>');
+          });
+        });
+      });
+
+      givenContentOf('<p>1 &nbsp; &nbsp; 2</p>', function () {
+        it('should replace the non-breaking space characters with a normal space on export', function () {
+          return scribeNode.getContent().then(function (content) {
+            expect(content).to.have.html('<p>1 2</p>');
           });
         });
       });
