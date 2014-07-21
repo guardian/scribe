@@ -460,11 +460,3 @@ describe('formatters', function () {
     });
   });
 });
-
-var nonWhiteSpaceCharacters = ['\x20', '\xa0'].reduce(function(acc, value) {
-  if (value.replace(/\s/g, '') !== '') {
-    acc.push(value);
-  }
-  return acc;
-}, []);
-console.log(nonWhiteSpaceCharacters);
