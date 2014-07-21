@@ -1,8 +1,11 @@
+# 0.1.17
+* Allow entering multiple consecutive spaces ([c4ba50eb](https://github.com/guardian/scribe/commit/c4ba50ebe457066f06daa5efe98e0a345658ac54) [#232](https://github.com/guardian/scribe/pull/232))
+
 # 0.1.16
 * Update [scribe-common includes to include src](https://github.com/guardian/scribe/pull/217)
 
 # 0.1.15
-* Fix [Remove erroneous blcok tags being left behind in Chrome](https://github.com/guardian/scribe/pull/223)
+* Fix [Remove erroneous block tags being left behind in Chrome](https://github.com/guardian/scribe/pull/223)
 
 # 0.1.14
 * Fix [Ensure selectable containers core plugin doesn't always work as desired](https://github.com/guardian/scribe/pull/214)
