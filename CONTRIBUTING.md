@@ -69,7 +69,8 @@ npm test
   which components need updating.
 * `bower install`
 * `bower prune`
-* `git add --update .`
+* `git add --update .` (don't include untracked files from source Bower
+  components)
 * Commit using version number as the message (OR plugin version)
 * `git push`
 
