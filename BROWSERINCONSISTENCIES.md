@@ -43,6 +43,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
   - Chrome removes SPAN: http://jsbin.com/abOLUNU/1/edit?html,js,output
   - Chrome tries to be clever by applying inline styles/SPANs with `line-
     height`: http://jsbin.com/OtemujAY/10/edit?html,css,js,output
+  - Chrome does not add a BR element when there is no `DOCTYPE`:
+    http://jsbin.com/sasec/1/edit?js,console,output
+    https://code.google.com/p/chromium/issues/detail?id=396654&thanks=396654&ts=1406132418
 * "`indent`":
   - Chrome nests BLOCKQUOTE inside of P:
     http://jsbin.com/oDOriyU/3/edit?html,js,output
