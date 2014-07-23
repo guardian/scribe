@@ -6,16 +6,11 @@
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
-    "scribe": "guardian/scribe#master",
     "scribe-plugin-blockquote-command": "guardian/scribe-plugin-blockquote-command#master",
-    "scribe-plugin-curly-quotes": "guardian/scribe-plugin-curly-quotes#master",
     "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "guardian/scribe-plugin-formatter-plain-text-convert-new-lines-to-html#master",
     "scribe-plugin-heading-command": "guardian/scribe-plugin-heading-command#master",
-    "scribe-plugin-intelligent-unlink-command": "guardian/scribe-plugin-intelligent-unlink-command#master",
-    "scribe-plugin-keyboard-shortcuts": "guardian/scribe-plugin-keyboard-shortcuts#master",
     "scribe-plugin-link-prompt-command": "guardian/scribe-plugin-link-prompt-command#master",
     "scribe-plugin-sanitizer": "guardian/scribe-plugin-sanitizer#master",
-    "scribe-plugin-smart-lists": "guardian/scribe-plugin-smart-lists#master",
     "scribe-plugin-toolbar": "guardian/scribe-plugin-toolbar#master",
     "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master"
   }
