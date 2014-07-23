@@ -92,6 +92,8 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * Chrome (<= 28(?)): `TreeWalker` does not work properly with
   `DocumentFragment`s: http://stackoverflow.com/questions/21803827/chrome-28
   -treewalker-not-working-with-documentfragments
+* Firefox: Selection object never gets access to text nodes, only parent
+  elements: http://jsbin.com/rotus/2/edit?js,output,console
 
 ### `Range.commonAncestorContainer`
 * Firefox: Returns `P` when a whole `SUP` is selected:
