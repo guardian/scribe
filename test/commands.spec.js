@@ -49,7 +49,7 @@ describe('commands', function () {
       });
     });
 
-    givenContentOf('<p>testing&nbsp;</p>', function () {
+    givenContentOf('<p>1&nbsp;</p>', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           return executeCommand('bold');
@@ -62,7 +62,7 @@ describe('commands', function () {
 
           it('should insert the typed characters inside of a B element, inside of a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
-              expect(innerHTML).to.have.html('<p><b>2</b>testing&nbsp;</p>');
+              expect(innerHTML).to.have.html('<p><b>2</b>1&nbsp;</p>');
             });
           });
         });

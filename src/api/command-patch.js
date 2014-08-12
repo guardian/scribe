@@ -8,7 +8,8 @@ define(function () {
     }
 
     CommandPatch.prototype.execute = function (value) {
-      if (scribe.selection === undefined) {
+      var selection = new scribe.api.Selection().selection;
+      if (selection === undefined || selection.type === 'Caret') {
         document.execCommand(this.commandName, false, value || null);
       } else {
         scribe.transactionManager.run(function () {
