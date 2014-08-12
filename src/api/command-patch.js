@@ -8,9 +8,13 @@ define(function () {
     }
 
     CommandPatch.prototype.execute = function (value) {
-      scribe.transactionManager.run(function () {
+      if (scribe.selection === undefined) {
         document.execCommand(this.commandName, false, value || null);
-      }.bind(this));
+      } else {
+        scribe.transactionManager.run(function () {
+          document.execCommand(this.commandName, false, value || null);
+        }.bind(this));
+      }
     };
 
     CommandPatch.prototype.queryState = function () {
