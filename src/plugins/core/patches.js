@@ -1,5 +1,4 @@
 define([
-  './patches/commands/bold',
   './patches/commands/indent',
   './patches/commands/insert-html',
   './patches/commands/insert-list',
@@ -7,7 +6,6 @@ define([
   './patches/commands/create-link',
   './patches/events'
 ], function (
-  boldCommand,
   indentCommand,
   insertHTMLCommand,
   insertListCommands,
@@ -26,7 +24,6 @@ define([
 
   return {
     commands: {
-      bold: boldCommand,
       indent: indentCommand,
       insertHTML: insertHTMLCommand,
       insertList: insertListCommands,
