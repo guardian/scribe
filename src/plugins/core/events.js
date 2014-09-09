@@ -55,7 +55,7 @@ define([
         }
 
         function getFirstDeepestChild(node) {
-          var treeWalker = document.createTreeWalker(node);
+          var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
             // TODO: build list of non-empty elements (used elsewhere)
