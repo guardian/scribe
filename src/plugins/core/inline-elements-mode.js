@@ -4,7 +4,7 @@ define(function () {
 
   // TODO: abstract
   function hasContent(rootNode) {
-    var treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
+    var treeWalker = document.createTreeWalker(rootNode);
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {

@@ -25,7 +25,7 @@ define(['scribe-common/src/element'], function (element) {
           sanitize(scribe.el);
 
           function sanitize(parentNode) {
-            var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
+            var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
             var node = treeWalker.firstChild();
             if (!node) { return; }
 
