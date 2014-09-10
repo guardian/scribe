@@ -1,7 +1,7 @@
 {
   "name": "scribe-editor",
   "version": "0.1.17",
-  "main": "src/scribe.js",
+  "main": "dist/scribe.js",
   "dependencies": {
     "lodash-amd": "~2.4.1",
     "scribe-common": "~0.0.4"
@@ -23,10 +23,13 @@
     "q": "~1.0.0",
     "request": "~2.33.0",
     "selenium-webdriver": "~2.41.0",
-    "scribe-test-harness": "~0.0.6"
+    "scribe-test-harness": "~0.0.6",
+    "browserify": "~4.2.3",
+    "deamdify": "~0.1.1"
   },
   "scripts": {
-    "test": "./run-tests.sh"
+    "test": "./run-tests.sh",
+    "commonjs": "./node_modules/.bin/browserify -g deamdify -s Scribe ./src/scribe > ./dist/scribe.js"
   },
   "repository": {
     "type": "git",
