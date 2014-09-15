@@ -1,4 +1,7 @@
-define(function () {
+define([
+  'scribe-common/src/element'
+],
+function (elementHelper) {
 
   'use strict';
 
@@ -179,16 +182,33 @@ define(function () {
     };
 
     Selection.prototype.isCaretOnNewLine = function () {
+      // return true if nested inline tags ultimately just contain <br> or ""
+      function isEmptyInlineElement(node) {
+        var children = node.childNodes;
+        if (children.length === 0) {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return node.textContent.trim() === '';
+          } else {
+            return node.innerHTML.trim() === '';
+          }
+        } else if (children.length === 1) {
+          if (elementHelper.isBlockElement(children[0])) {
+            return false;
+          } else {
+            return isEmptyInlineElement(children[0]);
+          }
+        } else {
+          return false;
+        }
+      };
+
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
       // We must do `innerHTML.trim()` to avoid weird Firefox bug:
       // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
       if (containerPElement) {
-        var containerPElementInnerHTML = containerPElement.innerHTML.trim();
-        return (containerPElement.nodeName === 'P'
-                && (containerPElementInnerHTML === '<br>'
-                    || containerPElementInnerHTML === ''));
+        return isEmptyInlineElement(containerPElement);
       } else {
         return false;
       }
