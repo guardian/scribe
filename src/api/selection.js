@@ -184,29 +184,35 @@ function (elementHelper) {
     Selection.prototype.isCaretOnNewLine = function () {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
-        var children = node.childNodes;
-        if (children.length === 0) {
-          if (node.nodeType === Node.TEXT_NODE) {
-            return node.textContent.trim() === '';
-          } else {
-            return node.innerHTML.trim() === '';
-          }
-        } else if (children.length === 1) {
-          if (elementHelper.isBlockElement(children[0])) {
+
+        var nodeIterator = document.createNodeIterator(
+          node,
+          NodeFilter.SHOW_ELEMENT,
+          { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
+          false
+        );
+
+        var currentNode = nodeIterator.nextNode();
+
+        while(currentNode){
+          var numberOfChildren = currentNode.childNodes.length;
+
+          // forks in the tree or text mean no new line
+          if (numberOfChildren > 1 ||
+              (numberOfChildren === 1 && currentNode.textContent.trim() != ''))
             return false;
-          } else {
-            return isEmptyInlineElement(children[0]);
-          }
-        } else {
-          return false;
-        }
+
+          if (numberOfChildren === 0) {
+            return currentNode.textContent.trim() === '';
+          };
+
+          currentNode = nodeIterator.nextNode();
+        };
       };
 
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
-      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
       if (containerPElement) {
         return isEmptyInlineElement(containerPElement);
       } else {

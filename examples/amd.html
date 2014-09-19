@@ -47,7 +47,8 @@ require({
   '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
   '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
   '../bower_components/scribe-plugin-heading-command/src/scribe-plugin-heading-command',
-  '../bower_components/scribe-plugin-link-prompt-command/src/scribe-plugin-link-prompt-command'
+  '../bower_components/scribe-plugin-link-prompt-command/src/scribe-plugin-link-prompt-command',
+  '../bower_components/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'
 
 ], function (
   Scribe,
@@ -56,7 +57,8 @@ require({
   scribePluginSanitizer,
   scribePluginInlineStyles,
   scribePluginHeadingCommand,
-  scribePluginLinkPromptCommand
+  scribePluginLinkPromptCommand,
+  scribePluginBlockquoteCommand
 ) {
   var scribe = new Scribe(document.querySelector('.rte'));
   window.scribe = scribe;
@@ -67,13 +69,15 @@ require({
   scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHtml());
   scribe.use(scribePluginInlineStyles());
   scribe.use(scribePluginHeadingCommand(2));
+  scribe.use(scribePluginBlockquoteCommand());
   scribe.use(scribePluginSanitizer({ tags: {
     p: {},
     b: {},
     i: {},
     br: {},
     h2: {},
-    a: {}
+    a: {},
+    blockquote: {}
   }}));
   scribe.use(scribePluginLinkPromptCommand());
 
@@ -90,6 +94,7 @@ require({
   <button data-command-name="bold">Bold</button>
   <button data-command-name="linkPrompt">Link</button>
   <button data-command-name="h2">H2</button>
+  <button data-command-name="blockquote">Blockquote</button>
 </div>
 <div class="rte"></div>
 <section>

@@ -19,11 +19,7 @@ before(function () {
 
 function isCaretOnNewLine() {
   return driver.executeScript(function () {
-    function onNewLine() {
      return (new window.scribe.api.Selection()).isCaretOnNewLine();
-    }
-
-    return onNewLine();
   });
 }
 
@@ -73,7 +69,7 @@ describe('selection', function () {
       });
     });
 
-    givenContentOf('<p><ul><li>First item</li><li><br>|</li></ul></p>', function () {
+    givenContentOf('<p><ul><li>1</li><li><br>|</li></ul></p>', function () {
       it('should return false when creating a list', function() {
         isCaretOnNewLine().then(function(result) {
           expect(result).to.be.false;
@@ -88,7 +84,6 @@ describe('selection', function () {
         });
       });
     });
-
 
   });
 });
