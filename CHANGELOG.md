@@ -1,3 +1,6 @@
+# 0.0.18
+* Fix [New line detection improved](https://github.com/guardian/scribe/pull/253)
+
 # 0.1.17
 * Allow entering multiple consecutive spaces ([c4ba50eb](https://github.com/guardian/scribe/commit/c4ba50ebe457066f06daa5efe98e0a345658ac54) [#232](https://github.com/guardian/scribe/pull/232))
 
