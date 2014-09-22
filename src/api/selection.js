@@ -185,28 +185,28 @@ function (elementHelper) {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
 
-        var nodeIterator = document.createNodeIterator(
+        var treeWalker = document.createTreeWalker(
           node,
           NodeFilter.SHOW_ELEMENT,
-          { acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
+          undefined,
           false
         );
+        
+        var currentNode = treeWalker.root;
 
-        var currentNode = nodeIterator.nextNode();
-
-        while(currentNode){
+        while(currentNode) {
           var numberOfChildren = currentNode.childNodes.length;
 
           // forks in the tree or text mean no new line
           if (numberOfChildren > 1 ||
-              (numberOfChildren === 1 && currentNode.textContent.trim() != ''))
+              (numberOfChildren === 1 && currentNode.textContent.trim() !== ''))
             return false;
 
           if (numberOfChildren === 0) {
             return currentNode.textContent.trim() === '';
-          };
+          }
 
-          currentNode = nodeIterator.nextNode();
+          currentNode = treeWalker.nextNode();
         };
       };
 
