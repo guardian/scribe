@@ -185,13 +185,8 @@ function (elementHelper) {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
 
-        var treeWalker = document.createTreeWalker(
-          node,
-          NodeFilter.SHOW_ELEMENT,
-          undefined,
-          false
-        );
-        
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+
         var currentNode = treeWalker.root;
 
         while(currentNode) {
