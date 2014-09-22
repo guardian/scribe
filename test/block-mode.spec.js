@@ -181,24 +181,6 @@ describe('block mode', function () {
     });
   });
 
-  describe('tables', function() {
-    // The BR node denotes where the user will type.
-    givenContentOf('<p>|<br></p><table><tbody><tr><td><br></td></tr></tbody></table>', function() {
-      when('the user presses <enter>', function() {
-        beforeEach(function() {
-          return scribeNode.sendKeys(webdriver.Key.RETURN);
-        });
-
-        it('should insert a single parapgraph', function() {
-          return scribeNode.getInnerHTML().then(function(innerHTML) {
-            console.log(innerHTML)
-            expect(innerHTML).to.have.html('<p><br></p><p><br></p><table><tbody><tr><td><br></td></tr></tbody></table>');
-          });
-        });
-      });
-    });
-  });
-
   describe('#getContent()', function () {
     it('should return an empty P element', function () {
       return driver.executeScript(function () {
