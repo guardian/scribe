@@ -3755,7 +3755,10 @@ define('api/node',[],function () {
 
 });
 
-define('api/selection',[],function () {
+define('api/selection',[
+  'scribe-common/src/element'
+],
+function (elementHelper) {
 
   
 
@@ -3936,16 +3939,34 @@ define('api/selection',[],function () {
     };
 
     Selection.prototype.isCaretOnNewLine = function () {
+      // return true if nested inline tags ultimately just contain <br> or ""
+      function isEmptyInlineElement(node) {
+
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+
+        var currentNode = treeWalker.root;
+
+        while(currentNode) {
+          var numberOfChildren = currentNode.childNodes.length;
+
+          // forks in the tree or text mean no new line
+          if (numberOfChildren > 1 ||
+              (numberOfChildren === 1 && currentNode.textContent.trim() !== ''))
+            return false;
+
+          if (numberOfChildren === 0) {
+            return currentNode.textContent.trim() === '';
+          }
+
+          currentNode = treeWalker.nextNode();
+        };
+      };
+
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
-      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
       if (containerPElement) {
-        var containerPElementInnerHTML = containerPElement.innerHTML.trim();
-        return (containerPElement.nodeName === 'P'
-                && (containerPElementInnerHTML === '<br>'
-                    || containerPElementInnerHTML === ''));
+        return isEmptyInlineElement(containerPElement);
       } else {
         return false;
       }
