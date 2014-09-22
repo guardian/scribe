@@ -2822,8 +2822,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName))
-        {
+          !contains(html5VoidElements, node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(node);
