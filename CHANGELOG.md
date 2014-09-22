@@ -1,4 +1,7 @@
-# 0.0.18
+# 0.1.18
+* Fix [Release v0.01.19 did not succeed](https://github.com/guardian/scribe/pull/253)
+
+# 0.1.18
 * Fix [New line detection improved](https://github.com/guardian/scribe/pull/253)
 
 # 0.1.17
