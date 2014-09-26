@@ -14,9 +14,6 @@ define([
 
   'use strict';
 
-  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
-  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
-
   function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
@@ -32,11 +29,15 @@ define([
     while (node) {
       if (!element.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
-        // whitespace, and is not self-closing
+        // whitespace, and is a block element.
+        //
+        // We check whether it's a block element since inserting a BR into
+        // an inline element would cause browser to render a line break,
+        // and there's no need for empty inline elements to be selectable.
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName)) {
-          node.appendChild(document.createElement('br'));
+          element.isBlockElement(node)) {
+          node.appendChild(document.createElement('BR'));
         } else if (node.children.length > 0) {
           traverse(node);
         }
