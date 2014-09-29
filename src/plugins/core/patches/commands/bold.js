@@ -15,7 +15,7 @@ define(function () {
         var headingNode = selection.getContaining(function (node) {
           return (/^(H[1-6])$/).test(node.nodeName);
         });
-
+        scribe._skipFormatters = true;
         return scribe.api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! headingNode;
       };
 

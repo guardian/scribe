@@ -28,6 +28,30 @@ describe('commands', function () {
   });
 
   describe('bold', function () {
+    givenContentOf("<p>1 |</p>", function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          scribeNode.click();
+
+          return executeCommand('bold');
+        });
+
+
+        when('the user types', function () {
+          beforeEach(function () {
+            return scribeNode.sendKeys('2');
+          });
+
+          it('should make the next text bold', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<b>2</b></p>');
+            });
+          });
+        });
+      });
+    });
+
+
     given('an empty editor', function () {
       when('the command is executed', function () {
         beforeEach(function () {
@@ -44,6 +68,31 @@ describe('commands', function () {
           it('should insert the typed characters inside of a B element, inside of a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.have.html('<p><b>1</b><firefox-bogus-br></p>');
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('italic', function () {
+    givenContentOf("<p>1 |</p>", function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          scribeNode.click();
+
+          return executeCommand('italic');
+        });
+
+
+        when('the user types', function () {
+          beforeEach(function () {
+            return scribeNode.sendKeys('2');
+          });
+
+          it('should make the next text italic', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>1<i>2</i></p>');
             });
           });
         });

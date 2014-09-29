@@ -1,5 +1,6 @@
 define([
   './patches/commands/bold',
+  './patches/commands/italic',
   './patches/commands/indent',
   './patches/commands/insert-html',
   './patches/commands/insert-list',
@@ -8,6 +9,7 @@ define([
   './patches/events'
 ], function (
   boldCommand,
+  italicCommand,
   indentCommand,
   insertHTMLCommand,
   insertListCommands,
@@ -27,6 +29,7 @@ define([
   return {
     commands: {
       bold: boldCommand,
+      italic: italicCommand,
       indent: indentCommand,
       insertHTML: insertHTMLCommand,
       insertList: insertListCommands,
