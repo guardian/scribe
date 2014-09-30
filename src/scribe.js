@@ -151,7 +151,7 @@ define([
      */
 
     // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
+    if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
       var selection = new this.api.Selection();
 
       selection.placeMarkers();
