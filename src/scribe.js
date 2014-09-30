@@ -64,6 +64,7 @@ define([
        * `document.execCommand('bold')`). We can't wrap a transaction around
        * these actions, so instead we run the transaction in this event.
        */
+        console.log("running transaction manager...");
       this.transactionManager.run();
     }.bind(this), false);
 
@@ -92,7 +93,6 @@ define([
 
     // Patches
     this.use(patches.commands.bold());
-    this.use(patches.commands.italic());
     this.use(patches.commands.indent());
     this.use(patches.commands.insertHTML());
     this.use(patches.commands.insertList());
@@ -152,7 +152,7 @@ define([
      */
 
     // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
+    if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
       var selection = new this.api.Selection();
 
       selection.placeMarkers();
@@ -259,7 +259,8 @@ define([
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
       normalize: [],
-      export: []
+      export: [],
+      html: []
     };
   }
 
@@ -278,9 +279,9 @@ define([
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    return this.formatters.export.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
+      return this.formatters.export.reduce(function (formattedData, formatter) {
+          return formatter(formattedData);
+      }, html);
   };
 
   return Scribe;

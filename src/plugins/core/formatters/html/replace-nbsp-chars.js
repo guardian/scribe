@@ -12,13 +12,7 @@ define(function () {
 
       // TODO: should we be doing this on paste?
       scribe.registerHTMLFormatter('export', function (html) {
-       /*
-       Applying the formatting if there is a space in Chrome prevents a
-       command from being executed. Italic and bold commands now enforce
-       the formatters to be skipped so that the NBSP is not replaced until
-       after the command has been executed.
-       */
-      return scribe._skipFormatters ? html : html.replace(nbspCharRegExp, ' ');
+          return html.replace(nbspCharRegExp, ' ');
       });
     };
   };

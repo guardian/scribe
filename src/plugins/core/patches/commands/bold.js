@@ -21,10 +21,6 @@ define(function () {
 
       // TODO: We can't use STRONGs because this would mean we have to
       // re-implement the `queryState` command, which would be difficult.
-      boldCommand.execute = function () {
-        scribe._skipFormatters = true;
-        return scribe.api.CommandPatch.prototype.execute.apply(this, arguments);
-      };
 
       scribe.commandPatches.bold = boldCommand;
     };
