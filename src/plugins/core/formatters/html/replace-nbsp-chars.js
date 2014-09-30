@@ -12,7 +12,7 @@ define(function () {
 
       // TODO: should we be doing this on paste?
       scribe.registerHTMLFormatter('export', function (html) {
-          return html.replace(nbspCharRegExp, ' ');
+        return html.replace(nbspCharRegExp, ' ');
       });
     };
   };

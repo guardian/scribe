@@ -64,7 +64,6 @@ define([
        * `document.execCommand('bold')`). We can't wrap a transaction around
        * these actions, so instead we run the transaction in this event.
        */
-        console.log("running transaction manager...");
       this.transactionManager.run();
     }.bind(this), false);
 
@@ -259,8 +258,7 @@ define([
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
       normalize: [],
-      export: [],
-      html: []
+      export: []
     };
   }
 
@@ -279,9 +277,9 @@ define([
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-      return this.formatters.export.reduce(function (formattedData, formatter) {
-          return formatter(formattedData);
-      }, html);
+    return this.formatters.export.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
   };
 
   return Scribe;
