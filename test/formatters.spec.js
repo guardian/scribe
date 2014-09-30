@@ -379,33 +379,25 @@ describe('formatters', function () {
       });
 
       givenContentOf('<p><b></b></p>', function() {
-        it('should insert a BR inside the B', function() {
+        it('should not insert a BR inside the B', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><b><br></b></p>');
+            expect(innerHTML).to.have.html('<p><b></b></p>');
           });
         })
       });
 
       givenContentOf('<p><b><i></i></b></p>', function() {
-        it('should insert a BR inside the I', function() {
+        it('should not insert a BR inside the I', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><b><i><br></i></b></p>');
+            expect(innerHTML).to.have.html('<p><b><i></i></b></p>');
           });
         })
       });
 
       givenContentOf('<p><b><i><strike></strike></i></b></p>', function() {
-        it('should insert a BR inside the STRIKE', function() {
+        it('should not insert a BR inside the STRIKE', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><b><i><strike><br></strike></i></b></p>');
-          });
-        })
-      });
-
-      givenContentOf('<p><i><strike></strike></i><b></b></p>', function () {
-        it('should insert a BR into all empty nodes', function() {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><i><strike><br></strike></i><b><br></b></p>');
+            expect(innerHTML).to.have.html('<p><b><i><strike></strike></i></b></p>');
           });
         })
       });
@@ -422,14 +414,6 @@ describe('formatters', function () {
         it('should not insert a BR into the IMG', function() {
           return scribeNode.getInnerHTML().then(function (innerHTML) {
             expect(innerHTML).to.have.html('<p><img></p>');
-          });
-        })
-      });
-
-      givenContentOf('<p><br></p>', function () {
-        it('should not insert a BR into the IMG', function() {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p><br></p>');
           });
         })
       });
