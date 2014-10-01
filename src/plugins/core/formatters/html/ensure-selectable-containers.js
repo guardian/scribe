@@ -16,7 +16,6 @@ define([
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
-  var inlineElements = ['B', 'I'];
 
   function parentHasNoTextContent(node) {
     return node.parentNode.textContent.trim() === '';
@@ -30,13 +29,14 @@ define([
     var node = parentNode.firstElementChild;
 
     function isEmpty(node) {
-      if ((node.children.length === 0 && !contains(inlineElements, node.nodeName))
+
+      if ((node.children.length === 0 && !element.isAllowedEmptyElement(node))
         || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
          return true;
       }
 
       // Do not insert BR in empty inline elements with parent containing text
-      if (contains(inlineElements, node.nodeName) && node.children.length === 0) {
+      if (element.isAllowedEmptyElement(node) && node.children.length === 0) {
         return parentHasNoTextContent(node);
       }
 
