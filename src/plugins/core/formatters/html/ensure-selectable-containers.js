@@ -17,6 +17,15 @@ define([
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
+  function parentHasNoTextContent(node) {
+    if (element.isCaretPositionNode(node)) {
+      return true;
+    } else {
+      return node.parentNode.textContent.trim() === '';
+    }
+  }
+
+
   function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
@@ -24,9 +33,18 @@ define([
     var node = parentNode.firstElementChild;
 
     function isEmpty(node) {
-      return node.children.length === 0
-        || (node.children.length === 1
-            && element.isSelectionMarkerNode(node.children[0]));
+
+      if ((node.children.length === 0 && element.isBlockElement(node))
+        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+         return true;
+      }
+
+      // Do not insert BR in empty non block elements with parent containing text
+      if (!element.isBlockElement(node) && node.children.length === 0) {
+        return parentHasNoTextContent(node);
+      }
+
+      return false;
     }
 
     while (node) {
