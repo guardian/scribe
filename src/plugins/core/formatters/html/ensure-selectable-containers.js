@@ -18,7 +18,11 @@ define([
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
   function parentHasNoTextContent(node) {
-    return node.parentNode.textContent.trim() === '';
+    if (element.isCaretPositionNode(node)) {
+      return true;
+    } else {
+      return node.parentNode.textContent.trim() === '';
+    }
   }
 
 
@@ -30,13 +34,13 @@ define([
 
     function isEmpty(node) {
 
-      if ((node.children.length === 0 && !element.isAllowedEmptyElement(node))
+      if ((node.children.length === 0 && element.isBlockElement(node))
         || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
          return true;
       }
 
-      // Do not insert BR in empty inline elements with parent containing text
-      if (element.isAllowedEmptyElement(node) && node.children.length === 0) {
+      // Do not insert BR in empty non block elements with parent containing text
+      if (!element.isBlockElement(node) && node.children.length === 0) {
         return parentHasNoTextContent(node);
       }
 
