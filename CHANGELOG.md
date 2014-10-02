@@ -1,3 +1,9 @@
+# 0.1.21
+* Fix [Don't insert BR in empty non block elements](https://github.com/guardian/scribe/pull/258)
+
+# 0.1.20
+* Fix [Don't strip nbsps in the transaction manger](https://github.com/guardian/scribe/pull/257)
+
 # 0.1.19
 * Fix [Release v0.01.18 did not succeed](https://github.com/guardian/scribe/pull/253)
 
