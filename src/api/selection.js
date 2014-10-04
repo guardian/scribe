@@ -7,7 +7,12 @@ function (elementHelper) {
 
   return function (scribe) {
     function Selection() {
-      this.selection = window.getSelection();
+      /**
+       * Use scribe.el.ownerDocument.getSelection() instead of
+       * window.getSelection() in case the element being edited is not in the
+       * same window context as scribe.
+       */
+      this.selection = scribe.el.ownerDocument.getSelection();
 
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
