@@ -33,25 +33,6 @@ define([
        * We detect when this occurs and fix it by placing the caret ourselves.
        */
       scribe.el.addEventListener('focus', function placeCaretOnFocus() {
-        var selection = new scribe.api.Selection();
-        // In Chrome, the range is not created on or before this event loop.
-        // It doesn’t matter because this is a fix for Firefox.
-        // We always want to do this because Chrome >= 38 does create the event
-        // loop and doesn't leave things alone
-        if (selection.range) {
-          selection.placeMarkers();
-          selection.removeMarkers();
-
-          var focusElement = getFirstDeepestChild(scribe.el.firstChild);
-
-          var range = selection.range;
-
-          range.setStart(focusElement, 0);
-          range.setEnd(focusElement, 0);
-
-          selection.selection.removeAllRanges();
-          selection.selection.addRange(range);
-        }
 
         function getFirstDeepestChild(node) {
           var treeWalker = document.createTreeWalker(node);
