@@ -1,7 +1,3 @@
-# 0.1.22
-* Fix [Make Chrome set the correct focus as well](https://github.com/guardian/scribe/pull/262)
-
-
 # 0.1.21
 * Fix [Don't insert BR in empty non block elements](https://github.com/guardian/scribe/pull/258)
 
