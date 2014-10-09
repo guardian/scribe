@@ -45,9 +45,8 @@ define([
           var focusElement = getFirstDeepestChild(scribe.el.firstChild);
 
           var range = selection.range;
-
-          range.setStart(focusElement, 0);
-          range.setEnd(focusElement, 0);
+          range.setStart(focusElement, range.startOffset);
+          range.setEnd(focusElement, range.endOffset);
 
           selection.selection.removeAllRanges();
           selection.selection.addRange(range);
