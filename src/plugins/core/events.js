@@ -39,18 +39,17 @@ define([
         // We always want to do this because Chrome >= 38 does create the event
         // loop and doesn't leave things alone
         if (selection.range) {
-          selection.placeMarkers();
-          selection.removeMarkers();
+          var isFirefoxBug = scribe.allowsBlockElements() && scribe.getHTML().match(/^<em class="scribe-marker"><\/em>/);
 
-          var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+          if (isFirefoxBug) {
+            var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+            var range = selection.range;
+            range.setStart(focusElement, 0);
+            range.setEnd(focusElement, 0);
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(range);
+          }
 
-          var range = selection.range;
-
-          range.setStart(focusElement, 0);
-          range.setEnd(focusElement, 0);
-
-          selection.selection.removeAllRanges();
-          selection.selection.addRange(range);
         }
 
         function getFirstDeepestChild(node) {
