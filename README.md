@@ -109,7 +109,7 @@ Theoretically, Scribe should work in any browser with the
 [Selection][Selection API] API, the [Range][Range API] API, and support for most
 of the non-standardised list of commands that appears in
 [this MDN article][Executing Commands]. It has been tested in Firefox >= 26,
-Chrome >= 27, and Safari 7.
+Chrome >= 27.
 
 See the [status of our integration tests](https://travis-ci.org/guardian/scribe)
 for more up-to-date support information.
