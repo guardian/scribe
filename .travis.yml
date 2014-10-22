@@ -3,9 +3,8 @@ node_js:
   - 0.10
 
 addons:
-  sauce_connect:
-    username: scribe-ci
-    access_key: 4be9eeed-61de-4948-b18d-f7f655e9e4b0
+  sauce_connect: true
+
 env:
   matrix:
     - BROWSER_NAME='firefox' BROWSER_VERSION='21' PLATFORM='Windows XP'
@@ -26,6 +25,9 @@ env:
     - BROWSER_NAME='chrome' BROWSER_VERSION='33' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='34' PLATFORM='Windows XP'
     - BROWSER_NAME='chrome' BROWSER_VERSION='35' PLATFORM='Windows XP'
+  global:
+    - secure: OaF1EHbUU+0vO3zdO70VlLVOuojRMnWhF02Lj3S7sP4+lbM3CY3JmEyB8G18G3x2aVyqgBEWLkh5WXahNuQIwnTYfidpbeJhvZD4xcP4zxgVyV6DLbxVN+lUpY2maOgCyDPGAix08HMWwuJss2Cw83bdmm0cJv/r2x6YXa/FpUA=
+    - secure: AdCl4LiKCMEOBAdltT/aAQVSmqnPZfCc/z2z7VPKCR/s1LbiD1i3ADJin5SgsglhWnmJToam5msNXEvL4gaT0dtlxtiw8ygutzQwEewPSLyekXuAF2NCt+63IdWWt6z470Cb6Nojrz0hRkiKzzeEjF2j1GFmrWkYzgYahlvi4sE=
 
 before_script:
   - npm install -g bower
