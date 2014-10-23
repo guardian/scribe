@@ -102,10 +102,6 @@ define([
       patches.events
     ];
 
-    for (var i = mandatoryPatches.length - 1; i >= 0; i--) {
-      this.use(mandatoryPatches[i]());
-    };
-
     var mandatoryCommands = [
       commands.indent,
       commands.insertList,
@@ -116,9 +112,11 @@ define([
       commands.undo,
     ];
 
-    for (var i = mandatoryCommands.length - 1; i >= 0; i--) {
-      this.use(mandatoryCommands[i]());
-    };
+    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+
+    allPlugins.forEach(function(plugin) {
+      this.use(plugin());
+    }.bind(this));
 
     this.use(events());
   }
