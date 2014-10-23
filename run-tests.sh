@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export BROWSER_NAME=${BROWSER_NAME:=chrome}
-echo $BROWSER_NAME
 
 export TEST_SERVER_PORT=${TEST_SERVER_PORT:=8880}
 
