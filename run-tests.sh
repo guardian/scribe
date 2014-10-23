@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export BROWSER_NAME=${BROWSER_NAME:=chrome}
+echo $BROWSER_NAME
+
+export TEST_SERVER_PORT=${TEST_SERVER_PORT:=8880}
+
 ./node_modules/.bin/http-server -p $TEST_SERVER_PORT --silent &
 PID=$!
 node test/runner
