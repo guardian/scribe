@@ -258,7 +258,7 @@ define([
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
       normalize: [],
-      export: []
+      'export': []
     };
   }
 
@@ -277,7 +277,7 @@ define([
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    return this.formatters.export.reduce(function (formattedData, formatter) {
+    return this.formatters['export'].reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
   };
