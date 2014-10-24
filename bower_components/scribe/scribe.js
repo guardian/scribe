@@ -2182,13 +2182,17 @@ define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], f
 
   // TODO: not exhaustive?
   var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6'];
+                           'H2', 'H3', 'H4', 'H5', 'H6', 'TABLE', 'TH', 'TD'];
   function isBlockElement(node) {
     return contains(blockElementNames, node.nodeName);
   }
 
   function isSelectionMarkerNode(node) {
     return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+  }
+
+  function isCaretPositionNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
   }
 
   function unwrap(node, childNode) {
@@ -2201,6 +2205,7 @@ define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], f
   return {
     isBlockElement: isBlockElement,
     isSelectionMarkerNode: isSelectionMarkerNode,
+    isCaretPositionNode: isCaretPositionNode,
     unwrap: unwrap
   };
 
@@ -2326,9 +2331,9 @@ define('plugins/core/events',[
         // In Chrome, the range is not created on or before this event loop.
         // It doesn’t matter because this is a fix for Firefox.
         if (selection.range) {
-          selection.placeMarkers();
-          var isFirefoxBug = scribe.allowsBlockElements() && scribe.getHTML().match(/^<em class="scribe-marker"><\/em>/);
-          selection.removeMarkers();
+
+          var isFirefoxBug = scribe.allowsBlockElements() &&
+                  selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
             var focusElement = getFirstDeepestChild(scribe.el.firstChild);
@@ -2804,6 +2809,15 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
+  function parentHasNoTextContent(node) {
+    if (element.isCaretPositionNode(node)) {
+      return true;
+    } else {
+      return node.parentNode.textContent.trim() === '';
+    }
+  }
+
+
   function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
@@ -2811,9 +2825,18 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
     var node = parentNode.firstElementChild;
 
     function isEmpty(node) {
-      return node.children.length === 0
-        || (node.children.length === 1
-            && element.isSelectionMarkerNode(node.children[0]));
+
+      if ((node.children.length === 0 && element.isBlockElement(node))
+        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+         return true;
+      }
+
+      // Do not insert BR in empty non block elements with parent containing text
+      if (!element.isBlockElement(node) && node.children.length === 0) {
+        return parentHasNoTextContent(node);
+      }
+
+      return false;
     }
 
     while (node) {
@@ -2822,8 +2845,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName))
-        {
+          !contains(html5VoidElements, node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(node);
@@ -3756,7 +3778,10 @@ define('api/node',[],function () {
 
 });
 
-define('api/selection',[],function () {
+define('api/selection',[
+  'scribe-common/src/element'
+],
+function (elementHelper) {
 
   
 
@@ -3937,16 +3962,34 @@ define('api/selection',[],function () {
     };
 
     Selection.prototype.isCaretOnNewLine = function () {
+      // return true if nested inline tags ultimately just contain <br> or ""
+      function isEmptyInlineElement(node) {
+
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+
+        var currentNode = treeWalker.root;
+
+        while(currentNode) {
+          var numberOfChildren = currentNode.childNodes.length;
+
+          // forks in the tree or text mean no new line
+          if (numberOfChildren > 1 ||
+              (numberOfChildren === 1 && currentNode.textContent.trim() !== ''))
+            return false;
+
+          if (numberOfChildren === 0) {
+            return currentNode.textContent.trim() === '';
+          }
+
+          currentNode = treeWalker.nextNode();
+        };
+      };
+
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      // We must do `innerHTML.trim()` to avoid weird Firefox bug:
-      // http://stackoverflow.com/questions/3676927/why-if-element-innerhtml-is-not-working-in-firefox
       if (containerPElement) {
-        var containerPElementInnerHTML = containerPElement.innerHTML.trim();
-        return (containerPElement.nodeName === 'P'
-                && (containerPElementInnerHTML === '<br>'
-                    || containerPElementInnerHTML === ''));
+        return isEmptyInlineElement(containerPElement);
       } else {
         return false;
       }
@@ -4415,7 +4458,7 @@ define('scribe',[
      */
 
     // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getContent() !== previousContent)) {
+    if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
       var selection = new this.api.Selection();
 
       selection.placeMarkers();

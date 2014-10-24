@@ -1,6 +1,6 @@
 {
   "name": "scribe-plugin-smart-lists",
-  "version": "0.1.4",
+  "version": "0.0.5",
   "main": "./scribe-plugin-smart-lists.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"

@@ -2,6 +2,7 @@ require({
   paths: {
     'scribe': './bower_components/scribe/scribe',
     'scribe-plugin-blockquote-command': './bower_components/scribe-plugin-blockquote-command/scribe-plugin-blockquote-command',
+    'scribe-plugin-code-command': './bower_components/scribe-plugin-code-command/scribe-plugin-code-command',
     'scribe-plugin-curly-quotes': './bower_components/scribe-plugin-curly-quotes/scribe-plugin-curly-quotes',
     'scribe-plugin-formatter-plain-text-convert-new-lines-to-html': './bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
     'scribe-plugin-heading-command': './bower_components/scribe-plugin-heading-command/scribe-plugin-heading-command',
@@ -15,6 +16,7 @@ require({
 }, [
   'scribe',
   'scribe-plugin-blockquote-command',
+  'scribe-plugin-code-command',
   'scribe-plugin-curly-quotes',
   'scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
   'scribe-plugin-heading-command',
@@ -27,6 +29,7 @@ require({
 ], function (
   Scribe,
   scribePluginBlockquoteCommand,
+  scribePluginCodeCommand,
   scribePluginCurlyQuotes,
   scribePluginFormatterPlainTextConvertNewLinesToHtml,
   scribePluginHeadingCommand,
@@ -64,7 +67,8 @@ require({
     insertUnorderedList: function (event) { return event.altKey && event.shiftKey && event.keyCode === 66; }, // b
     insertOrderedList: function (event) { return event.altKey && event.shiftKey && event.keyCode === 78; }, // n
     blockquote: function (event) { return event.altKey && event.shiftKey && event.keyCode === 87; }, // w
-    h2: function (event) { return ctrlKey(event) && event.keyCode === 50; }, // 2
+    code: function (event) { return event.metaKey && event.shiftKey && event.keyCode === 76; }, // l
+    h2: function (event) { return ctrlKey(event) && event.keyCode === 50; } // 2
   });
 
   /**
@@ -72,6 +76,7 @@ require({
    */
 
   scribe.use(scribePluginBlockquoteCommand());
+  scribe.use(scribePluginCodeCommand());
   scribe.use(scribePluginHeadingCommand(2));
   scribe.use(scribePluginIntelligentUnlinkCommand());
   scribe.use(scribePluginLinkPromptCommand());
@@ -90,6 +95,7 @@ require({
       i: {},
       strike: {},
       blockquote: {},
+      code: {},
       ol: {},
       ul: {},
       li: {},
