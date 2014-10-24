@@ -1,17 +1,18 @@
 {
   "name": "scribe-example",
   "dependencies": {
-    "requirejs": "2.1.11",
-    "scribe": "0.1.17",
+    "requirejs": "2.1.15",
+    "scribe": "0.1.23",
     "scribe-plugin-blockquote-command": "0.1.0",
-    "scribe-plugin-curly-quotes": "0.1.7",
+    "scribe-plugin-code-command": "0.1.0",
+    "scribe-plugin-curly-quotes": "0.1.8",
     "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "0.1.1",
     "scribe-plugin-heading-command": "0.1.0",
-    "scribe-plugin-intelligent-unlink-command": "0.1.4",
+    "scribe-plugin-intelligent-unlink-command": "0.1.5",
     "scribe-plugin-keyboard-shortcuts": "0.1.1",
     "scribe-plugin-link-prompt-command": "0.1.2",
     "scribe-plugin-sanitizer": "0.1.4",
-    "scribe-plugin-smart-lists": "0.1.4",
+    "scribe-plugin-smart-lists": "0.1.6",
     "scribe-plugin-toolbar": "0.1.4"
   }
 }
