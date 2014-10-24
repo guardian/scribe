@@ -33,6 +33,9 @@ define([
 
         try {
           callback();
+        }
+        catch(e){
+          //we need at least an empty catch to catch any errors
         } finally {
           // We must yield to let any mutation we caused be triggered
           // in the next cycle
