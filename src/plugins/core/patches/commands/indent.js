@@ -29,7 +29,7 @@ define(function () {
           if (isCaretOnNewLine) {
             // FIXME: this text node is left behind. Tidy it up somehow,
             // or don't use it at all.
-            var textNode = document.createTextNode(INVISIBLE_CHAR);
+            var textNode = scribe.el.ownerDocument.createTextNode(INVISIBLE_CHAR);
 
             range.insertNode(textNode);
 
