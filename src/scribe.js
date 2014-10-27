@@ -91,21 +91,32 @@ define([
 
 
     // Patches
-    this.use(patches.commands.bold());
-    this.use(patches.commands.indent());
-    this.use(patches.commands.insertHTML());
-    this.use(patches.commands.insertList());
-    this.use(patches.commands.outdent());
-    this.use(patches.commands.createLink());
-    this.use(patches.events());
 
-    this.use(commands.indent());
-    this.use(commands.insertList());
-    this.use(commands.outdent());
-    this.use(commands.redo());
-    this.use(commands.subscript());
-    this.use(commands.superscript());
-    this.use(commands.undo());
+    var mandatoryPatches = [
+      patches.commands.bold,
+      patches.commands.indent,
+      patches.commands.insertHTML,
+      patches.commands.insertList,
+      patches.commands.outdent,
+      patches.commands.createLink,
+      patches.events
+    ];
+
+    var mandatoryCommands = [
+      commands.indent,
+      commands.insertList,
+      commands.outdent,
+      commands.redo,
+      commands.subscript,
+      commands.superscript,
+      commands.undo,
+    ];
+
+    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+
+    allPlugins.forEach(function(plugin) {
+      this.use(plugin());
+    }.bind(this));
 
     this.use(events());
   }
