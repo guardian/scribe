@@ -1,3 +1,6 @@
+# 0.1.25
+* Switch from using export directly to the string alias version. [YUI Compressor changes](https://github.com/guardian/scribe/pull/279)
+
 # 0.1.24
 * Rework mandatory plugin loading [Plugin loading](https://github.com/guardian/scribe/pull/275)
 
