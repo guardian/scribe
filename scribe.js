@@ -2270,6 +2270,9 @@ define('dom-observer',[
 
         try {
           callback();
+        } catch(e) {
+          // The catch block is required but we don't want to swallow the error
+          throw e;
         } finally {
           // We must yield to let any mutation we caused be triggered
           // in the next cycle
@@ -2330,21 +2333,22 @@ define('plugins/core/events',[
         var selection = new scribe.api.Selection();
         // In Chrome, the range is not created on or before this event loop.
         // It doesn’t matter because this is a fix for Firefox.
-        // We always want to do this because Chrome >= 38 does create the event
-        // loop and doesn't leave things alone
         if (selection.range) {
-          selection.placeMarkers();
-          selection.removeMarkers();
 
-          var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+          var isFirefoxBug = scribe.allowsBlockElements() &&
+                  selection.range.startContainer === scribe.el;
 
-          var range = selection.range;
+          if (isFirefoxBug) {
+            var focusElement = getFirstDeepestChild(scribe.el.firstChild);
 
-          range.setStart(focusElement, 0);
-          range.setEnd(focusElement, 0);
+            var range = selection.range;
 
-          selection.selection.removeAllRanges();
-          selection.selection.addRange(range);
+            range.setStart(focusElement, 0);
+            range.setEnd(focusElement, 0);
+
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(range);
+          }
         }
 
         function getFirstDeepestChild(node) {
@@ -3794,6 +3798,9 @@ function (elementHelper) {
     }
 
     Selection.prototype.getContaining = function (nodeFilter) {
+      var range = this.range;
+      if (!range) { return; }
+
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
          && node.node.attributes.getNamedItem('contenteditable');
@@ -3802,6 +3809,9 @@ function (elementHelper) {
     };
 
     Selection.prototype.placeMarkers = function () {
+      var range = this.range;
+      if(!range) { return; }
+
       var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
       var endMarker = document.createElement('em');
@@ -4397,21 +4407,32 @@ define('scribe',[
 
 
     // Patches
-    this.use(patches.commands.bold());
-    this.use(patches.commands.indent());
-    this.use(patches.commands.insertHTML());
-    this.use(patches.commands.insertList());
-    this.use(patches.commands.outdent());
-    this.use(patches.commands.createLink());
-    this.use(patches.events());
 
-    this.use(commands.indent());
-    this.use(commands.insertList());
-    this.use(commands.outdent());
-    this.use(commands.redo());
-    this.use(commands.subscript());
-    this.use(commands.superscript());
-    this.use(commands.undo());
+    var mandatoryPatches = [
+      patches.commands.bold,
+      patches.commands.indent,
+      patches.commands.insertHTML,
+      patches.commands.insertList,
+      patches.commands.outdent,
+      patches.commands.createLink,
+      patches.events
+    ];
+
+    var mandatoryCommands = [
+      commands.indent,
+      commands.insertList,
+      commands.outdent,
+      commands.redo,
+      commands.subscript,
+      commands.superscript,
+      commands.undo,
+    ];
+
+    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+
+    allPlugins.forEach(function(plugin) {
+      this.use(plugin());
+    }.bind(this));
 
     this.use(events());
   }
@@ -4564,7 +4585,7 @@ define('scribe',[
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
       normalize: [],
-      export: []
+      'export': []
     };
   }
 
@@ -4583,7 +4604,7 @@ define('scribe',[
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    return this.formatters.export.reduce(function (formattedData, formatter) {
+    return this.formatters['export'].reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
   };
