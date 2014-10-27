@@ -1,3 +1,6 @@
+# 0.1.24
+* Rework mandatory plugin loading [Plugin loading](https://github.com/guardian/scribe/pull/275)
+
 # 0.1.23
 * Fix Chrome 38 focus issue [Change check for ff](https://github.com/guardian/scribe/pull/265)
 
