@@ -86,39 +86,4 @@ describe('selection', function () {
     });
 
   });
-
-  describe('with multiple documents', function() {
-    beforeEach(function() {
-      return initializeScribe().then(function() {
-        return driver.executeScript(function() {
-          require(['../../src/scribe'], function (Scribe) {
-            'use strict';
-            var iframe = window.scribe.el.ownerDocument.createElement('iframe');
-            window.scribe.el.parentElement.appendChild(iframe);
-            window.innerDocument = iframe.contentDocument;
-            window.innerDocument.body.innerHTML = '<div class=\'iframe-scribe\'></div>';
-            var innerScribe = window.innerDocument.body.querySelector('.iframe-scribe');
-            window.innerScribe = new Scribe(innerScribe);
-          });
-        });
-      });
-    });
-
-    it('should get selection', function() {
-      driver.executeScript(function() {
-        window.innerScribe.el.focus();
-        var selection = new window.innerScribe.api.Selection();
-        var isInnerDocument = selection.range.startContainer.ownerDocument === window.innerScribe.el.ownerDocument;
-        var isOriginalScribeDocument = selection.range.startContainer.ownerDocument === window.scribe.el;
-        return [selection, isInnerDocument, isOriginalScribeDocument];
-      }).then(function(params) {
-        var selection = params[0];
-        var isInnerDocument = params[1];
-        var isOriginalScribeDocument = params[2];
-        expect(selection).to.be.defined;
-        expect(isInnerDocument).to.be.true;
-        expect(isOriginalScribeDocument).to.be.false;
-      });
-    });
-  });
 });

@@ -55,7 +55,7 @@ define([
         }
 
         function getFirstDeepestChild(node) {
-          var treeWalker = scribe.el.ownerDocument.createTreeWalker(node);
+          var treeWalker = document.createTreeWalker(node);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
             // TODO: build list of non-empty elements (used elsewhere)
@@ -144,8 +144,8 @@ define([
                 scribe.transactionManager.run(function () {
                   // Default P
                   // TODO: Abstract somewhere
-                  var pNode = scribe.el.ownerDocument.createElement('p');
-                  var brNode = scribe.el.ownerDocument.createElement('br');
+                  var pNode = document.createElement('p');
+                  var brNode = document.createElement('br');
                   pNode.appendChild(brNode);
 
                   headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
@@ -247,8 +247,8 @@ define([
           // Store the caret position
           selection.placeMarkers();
 
-          var bin = scribe.el.ownerDocument.createElement('div');
-          scribe.el.ownerDocument.body.appendChild(bin);
+          var bin = document.createElement('div');
+          document.body.appendChild(bin);
           bin.setAttribute('contenteditable', true);
           bin.focus();
 
