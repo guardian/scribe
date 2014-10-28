@@ -168,6 +168,10 @@ internal CMS’ rich text editor.
 It is likely that there will be unknown edge cases, but these will be addressed
 when they are discovered.
 
+### How do I run tests?
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for information about running tests.
+
 ### Why does Scribe have a custom undo manager?
 
 The [native API for formatting content in a
