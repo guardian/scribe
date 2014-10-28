@@ -7,12 +7,7 @@ function (elementHelper) {
 
   return function (scribe) {
     function Selection() {
-      /**
-       * Use scribe.el.ownerDocument.getSelection() instead of
-       * window.getSelection() in case the element being edited is not in the
-       * same window context as scribe.
-       */
-      this.selection = scribe.el.ownerDocument.getSelection();
+      this.selection = window.getSelection();
 
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
@@ -34,9 +29,9 @@ function (elementHelper) {
       var range = this.range;
       if(!range) { return; }
 
-      var startMarker = scribe.el.ownerDocument.createElement('em');
+      var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
-      var endMarker = scribe.el.ownerDocument.createElement('em');
+      var endMarker = document.createElement('em');
       endMarker.classList.add('scribe-marker');
 
       // End marker
@@ -173,7 +168,7 @@ function (elementHelper) {
         return;
       }
 
-      var newRange = scribe.el.ownerDocument.createRange();
+      var newRange = document.createRange();
 
       newRange.setStartBefore(markers[0]);
       if (markers.length >= 2) {
@@ -196,7 +191,7 @@ function (elementHelper) {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
 
-        var treeWalker = scribe.el.ownerDocument.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
 
         var currentNode = treeWalker.root;
 
