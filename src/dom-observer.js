@@ -25,8 +25,11 @@ define([
       return realChangedNodes.length > 0;
     }
 
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    
     // Flag to avoid running recursively
     var runningPostMutation = false;
+
     var observer = new MutationObserver(function(mutations) {
       if (! runningPostMutation && includeRealMutations(mutations)) {
         runningPostMutation = true;
