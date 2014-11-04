@@ -20,12 +20,15 @@ define(function () {
 
       scribe.commands.redo = redoCommand;
 
-      scribe.el.addEventListener('keydown', function (event) {
+      scribe.el.addEventListener('keydown', function redo(event) {
         if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
           event.preventDefault();
           redoCommand.execute();
         }
       });
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('keydown', redo);
+      }.bind(this));
     };
   };
 

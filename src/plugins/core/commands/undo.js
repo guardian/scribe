@@ -20,13 +20,16 @@ define(function () {
 
       scribe.commands.undo = undoCommand;
 
-      scribe.el.addEventListener('keydown', function (event) {
+      scribe.el.addEventListener('keydown', function undo(event) {
         // TODO: use lib to abstract meta/ctrl keys?
         if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
           event.preventDefault();
           undoCommand.execute();
         }
       });
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('keydown', undo);
+      }.bind(this));
     };
   };
 

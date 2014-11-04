@@ -22,7 +22,7 @@ define(['scribe-common/src/element'], function (element) {
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keyup', function (event) {
+        scribe.el.addEventListener('keyup', function cleanupLineHeight(event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
 
             var selection = new scribe.api.Selection();
@@ -80,6 +80,9 @@ define(['scribe-common/src/element'], function (element) {
             }
           }
         });
+        scribe.on('destroy', function() {
+          scribe.el.removeEventListener('keyup', cleanupLineHeight);
+        }.bind(this));
       }
     };
   };
