@@ -248,6 +248,11 @@ define([
     this._plainTextFormatterFactory.formatters.push(fn);
   };
 
+  Scribe.prototype.destroy = function (configurePlugin) {
+    this.trigger('destroy');
+    return this;
+  };
+
   // TODO: abstract
   function FormatterFactory() {
     this.formatters = [];
