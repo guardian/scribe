@@ -57,7 +57,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.el.addEventListener('input', function () {
+    this.el.addEventListener('input', function onInput() {
       /**
        * This event triggers when either the user types something or a native
        * command is executed which causes the content to change (i.e.
@@ -66,6 +66,9 @@ define([
        */
       this.transactionManager.run();
     }.bind(this), false);
+    this.on('destroy', function() {
+      this.el.removeEventListener('input', onInput);
+    }.bind(this));
 
     /**
      * Core Plugins
@@ -243,6 +246,11 @@ define([
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
     this._plainTextFormatterFactory.formatters.push(fn);
+  };
+
+  Scribe.prototype.destroy = function (configurePlugin) {
+    this.trigger('destroy');
+    return this;
   };
 
   // TODO: abstract

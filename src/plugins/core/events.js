@@ -13,7 +13,7 @@ define([
       /**
        * Push the first history item when the editor is focused.
        */
-      var pushHistoryOnFocus = function () {
+      scribe.el.addEventListener('focus', function pushHistoryOnFocus() {
         // Tabbing into the editor doesn't create a range immediately, so we
         // have to wait until the next event loop.
         setTimeout(function () {
@@ -21,8 +21,10 @@ define([
         }.bind(scribe), 0);
 
         scribe.el.removeEventListener('focus', pushHistoryOnFocus);
-      }.bind(scribe);
-      scribe.el.addEventListener('focus', pushHistoryOnFocus);
+      }.bind(scribe));
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
+      }.bind(this));
 
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
@@ -70,6 +72,9 @@ define([
           }
         }
       }.bind(scribe));
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('focus', placeCaretOnFocus);
+      }.bind(this));
 
       /**
        * Apply the formatters when there is a DOM mutation.
@@ -117,7 +122,7 @@ define([
        * keyboard navigation inside a heading to ensure a P element is created.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        scribe.el.addEventListener('keydown', function onKeydownInHeading(event) {
           if (event.keyCode === 13) { // enter
 
             var selection = new scribe.api.Selection();
@@ -161,6 +166,9 @@ define([
             }
           }
         });
+        scribe.on('destroy', function() {
+          scribe.el.removeEventListener('focus', onKeydownInHeading);
+        }.bind(this));
       }
 
       /**
@@ -168,7 +176,7 @@ define([
        * keyboard navigation inside list item nodes.
        */
       if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
+        scribe.el.addEventListener('keydown', function onKeydownInLi(event) {
           if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
 
             var selection = new scribe.api.Selection();
@@ -196,6 +204,9 @@ define([
             }
           }
         });
+        scribe.on('destroy', function() {
+          scribe.el.removeEventListener('focus', onKeydownInLi);
+        }.bind(this));
       }
 
       /**
@@ -269,7 +280,9 @@ define([
           }, 1);
         }
       });
-
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('focus', handlePaste);
+      }.bind(this));
     };
   };
 });

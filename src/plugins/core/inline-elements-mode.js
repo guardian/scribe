@@ -27,7 +27,7 @@ define(function () {
        * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
        * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
        */
-      scribe.el.addEventListener('keydown', function (event) {
+      scribe.el.addEventListener('keydown', function removeBrOnReturn(event) {
         if (event.keyCode === 13) { // enter
           var selection = new scribe.api.Selection();
           var range = selection.range;
@@ -102,7 +102,9 @@ define(function () {
           }
         }
       }.bind(this));
-
+      scribe.on('destroy', function() {
+        scribe.el.removeEventListener('keydown', removeBrOnReturn);
+      }.bind(this));
       if (scribe.getHTML().trim() === '') {
         // Bogus BR element for Firefox — see explanation above.
         // TODO: also append when consumer sets the content manually.
