@@ -1,6 +1,6 @@
 define([
   'lodash-amd/modern/arrays/last',
-  'scribe-common/src/element'
+  '../../../../element'
 ], function (
   last,
   element

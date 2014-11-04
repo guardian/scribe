@@ -1,4 +1,4 @@
-define(['scribe-common/src/element'], function (element) {
+define(['../../../../element'], function (element) {
 
   'use strict';
 
