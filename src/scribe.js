@@ -57,7 +57,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.el.addEventListener('input', function onInput () {
+    this.el.addEventListener('input', function onInput() {
       /**
        * This event triggers when either the user types something or a native
        * command is executed which causes the content to change (i.e.
