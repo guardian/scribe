@@ -1,4 +1,4 @@
-define(['../../../element'], function (element) {
+define([], function () {
 
   'use strict';
 
@@ -21,6 +21,9 @@ define(['../../../element'], function (element) {
       // TODO: run in a transaction so as to record the change? how do
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
+
+      var element = scribe.elementHelpers;
+      
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete

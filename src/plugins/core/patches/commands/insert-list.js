@@ -1,10 +1,12 @@
-define(['../../../../element',
-        '../../../../node'], function (element, nodeHelpers) {
+define([], function () {
 
   'use strict';
 
   return function () {
     return function (scribe) {
+      var element = scribe.elementHelpers;
+      var nodeHelpers = scribe.nodeHelpers;
+
       var InsertListCommandPatch = function (commandName) {
         scribe.api.CommandPatch.call(this, commandName);
       };
