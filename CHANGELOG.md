@@ -1,3 +1,6 @@
+# 0.1.26
+* Add preliminary support for Safari 6. [Muration Observer Safari](https://github.com/guardian/scribe/pull/285)
+
 # 0.1.25
 * Switch from using export directly to the string alias version. [YUI Compressor changes](https://github.com/guardian/scribe/pull/279)
 
