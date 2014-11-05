@@ -13,7 +13,9 @@ define([
   './api',
   './transaction-manager',
   './undo-manager',
-  './event-emitter'
+  './event-emitter',
+  './element',
+  './node'
 ], function (
   defaults,
   flatten,
@@ -29,7 +31,9 @@ define([
   Api,
   buildTransactionManager,
   buildUndoManager,
-  EventEmitter
+  EventEmitter,
+  elementHelpers,
+  nodeHelpers
 ) {
 
   'use strict';
@@ -48,6 +52,9 @@ define([
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
+
+    this.nodeHelpers = nodeHelpers;
+    this.elementHelpers = elementHelpers;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();

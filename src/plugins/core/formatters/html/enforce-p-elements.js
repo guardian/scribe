@@ -1,9 +1,7 @@
 define([
-  'lodash-amd/modern/arrays/last',
-  '../../../../element'
+  'lodash-amd/modern/arrays/last'
 ], function (
-  last,
-  element
+  last
 ) {
 
   /**
@@ -26,15 +24,15 @@ define([
   /**
    * Wrap consecutive inline elements and text nodes in a P element.
    */
-  function wrapChildNodes(parentNode) {
+  function wrapChildNodes(scribe, parentNode) {
     var groups = Array.prototype.reduce.call(parentNode.childNodes,
                                              function (accumulator, binChildNode) {
       var group = last(accumulator);
       if (! group) {
         startNewGroup();
       } else {
-        var isBlockGroup = element.isBlockElement(group[0]);
-        if (isBlockGroup === element.isBlockElement(binChildNode)) {
+        var isBlockGroup = scribe.elementHelpers.isBlockElement(group[0]);
+        if (isBlockGroup === scribe.elementHelpers.isBlockElement(binChildNode)) {
           group.push(binChildNode);
         } else {
           startNewGroup();
@@ -50,7 +48,7 @@ define([
     }, []);
 
     var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = element.isBlockElement(group[0]);
+      var isBlockGroup = scribe.elementHelpers.isBlockElement(group[0]);
       return ! isBlockGroup;
     });
 
@@ -66,7 +64,7 @@ define([
   }
 
   // Traverse the tree, wrapping child nodes as we go.
-  function traverse(parentNode) {
+  function traverse(scribe, parentNode) {
     var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
     var node = treeWalker.firstChild();
 
@@ -76,8 +74,8 @@ define([
       // TODO: At the moment we only support BLOCKQUOTEs. See failing
       // tests.
       if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
-        wrapChildNodes(node);
-        traverse(parentNode);
+        wrapChildNodes(scribe, node);
+        traverse(scribe, parentNode);
         break;
       }
       node = treeWalker.nextSibling();
@@ -100,8 +98,8 @@ define([
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        wrapChildNodes(bin);
-        traverse(bin);
+        wrapChildNodes(scribe, bin);
+        traverse(scribe, bin);
 
         return bin.innerHTML;
       });
