@@ -70,7 +70,7 @@ define([
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        traverse(scribe.elementHelpers, bin);
+        traverse(scribe.element, bin);
 
         return bin.innerHTML;
       });

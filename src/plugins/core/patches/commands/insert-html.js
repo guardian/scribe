@@ -5,7 +5,7 @@ define([], function () {
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
-      var element = scribe.elementHelpers;
+      var element = scribe.element;
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {

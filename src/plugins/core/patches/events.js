@@ -22,8 +22,8 @@ define([], function () {
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
 
-      var element = scribe.elementHelpers;
-      
+      var element = scribe.element;
+
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete

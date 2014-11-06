@@ -53,8 +53,8 @@ define([
 
     this.api = new Api(this);
 
-    this.nodeHelpers = nodeHelpers;
-    this.elementHelpers = elementHelpers;
+    this.node = nodeHelpers;
+    this.element = elementHelpers;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();

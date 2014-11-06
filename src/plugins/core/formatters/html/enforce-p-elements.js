@@ -31,8 +31,8 @@ define([
       if (! group) {
         startNewGroup();
       } else {
-        var isBlockGroup = scribe.elementHelpers.isBlockElement(group[0]);
-        if (isBlockGroup === scribe.elementHelpers.isBlockElement(binChildNode)) {
+        var isBlockGroup = scribe.element.isBlockElement(group[0]);
+        if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
           group.push(binChildNode);
         } else {
           startNewGroup();
@@ -48,7 +48,7 @@ define([
     }, []);
 
     var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = scribe.elementHelpers.isBlockElement(group[0]);
+      var isBlockGroup = scribe.element.isBlockElement(group[0]);
       return ! isBlockGroup;
     });
 

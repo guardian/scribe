@@ -4,8 +4,8 @@ define([], function () {
 
   return function () {
     return function (scribe) {
-      var element = scribe.elementHelpers;
-      var nodeHelpers = scribe.nodeHelpers;
+      var element = scribe.element;
+      var nodeHelpers = scribe.node;
 
       var InsertListCommandPatch = function (commandName) {
         scribe.api.CommandPatch.call(this, commandName);
