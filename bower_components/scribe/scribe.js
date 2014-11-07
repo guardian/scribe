@@ -2176,7 +2176,7 @@ define('lodash-amd/modern/collections/toArray',['../objects/isString', '../inter
   return toArray;
 });
 
-define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], function (contains) {
+define('element',['lodash-amd/modern/collections/contains'], function (contains) {
 
   
 
@@ -2211,7 +2211,7 @@ define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], f
 
 });
 
-define('scribe-common/src/node',[], function () {
+define('node',[], function () {
 
   
 
@@ -2238,8 +2238,8 @@ define('scribe-common/src/node',[], function () {
 define('dom-observer',[
   'lodash-amd/modern/arrays/flatten',
   'lodash-amd/modern/collections/toArray',
-  'scribe-common/src/element',
-  'scribe-common/src/node'
+  './element',
+  './node'
 ], function (
   flatten,
   toArray,
@@ -2262,14 +2262,20 @@ define('dom-observer',[
       return realChangedNodes.length > 0;
     }
 
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    
     // Flag to avoid running recursively
     var runningPostMutation = false;
+
     var observer = new MutationObserver(function(mutations) {
       if (! runningPostMutation && includeRealMutations(mutations)) {
         runningPostMutation = true;
 
         try {
           callback();
+        } catch(e) {
+          // The catch block is required but we don't want to swallow the error
+          throw e;
         } finally {
           // We must yield to let any mutation we caused be triggered
           // in the next cycle
@@ -2678,11 +2684,9 @@ define('lodash-amd/modern/arrays/last',['../functions/createCallback', '../inter
 });
 
 define('plugins/core/formatters/html/enforce-p-elements',[
-  'lodash-amd/modern/arrays/last',
-  'scribe-common/src/element'
+  'lodash-amd/modern/arrays/last'
 ], function (
-  last,
-  element
+  last
 ) {
 
   /**
@@ -2705,15 +2709,15 @@ define('plugins/core/formatters/html/enforce-p-elements',[
   /**
    * Wrap consecutive inline elements and text nodes in a P element.
    */
-  function wrapChildNodes(parentNode) {
+  function wrapChildNodes(scribe, parentNode) {
     var groups = Array.prototype.reduce.call(parentNode.childNodes,
                                              function (accumulator, binChildNode) {
       var group = last(accumulator);
       if (! group) {
         startNewGroup();
       } else {
-        var isBlockGroup = element.isBlockElement(group[0]);
-        if (isBlockGroup === element.isBlockElement(binChildNode)) {
+        var isBlockGroup = scribe.element.isBlockElement(group[0]);
+        if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
           group.push(binChildNode);
         } else {
           startNewGroup();
@@ -2729,7 +2733,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
     }, []);
 
     var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = element.isBlockElement(group[0]);
+      var isBlockGroup = scribe.element.isBlockElement(group[0]);
       return ! isBlockGroup;
     });
 
@@ -2745,7 +2749,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
   }
 
   // Traverse the tree, wrapping child nodes as we go.
-  function traverse(parentNode) {
+  function traverse(scribe, parentNode) {
     var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
     var node = treeWalker.firstChild();
 
@@ -2755,8 +2759,8 @@ define('plugins/core/formatters/html/enforce-p-elements',[
       // TODO: At the moment we only support BLOCKQUOTEs. See failing
       // tests.
       if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
-        wrapChildNodes(node);
-        traverse(parentNode);
+        wrapChildNodes(scribe, node);
+        traverse(scribe, parentNode);
         break;
       }
       node = treeWalker.nextSibling();
@@ -2779,8 +2783,8 @@ define('plugins/core/formatters/html/enforce-p-elements',[
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        wrapChildNodes(bin);
-        traverse(bin);
+        wrapChildNodes(scribe, bin);
+        traverse(scribe, bin);
 
         return bin.innerHTML;
       });
@@ -2791,7 +2795,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 });
 
 define('plugins/core/formatters/html/ensure-selectable-containers',[
-    'scribe-common/src/element',
+    '../../../../element',
     'lodash-amd/modern/collections/contains'
   ], function (
     element,
@@ -2809,7 +2813,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
-  function parentHasNoTextContent(node) {
+  function parentHasNoTextContent(element, node) {
     if (element.isCaretPositionNode(node)) {
       return true;
     } else {
@@ -2818,7 +2822,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   }
 
 
-  function traverse(parentNode) {
+  function traverse(element, parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
@@ -2833,7 +2837,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
       // Do not insert BR in empty non block elements with parent containing text
       if (!element.isBlockElement(node) && node.children.length === 0) {
-        return parentHasNoTextContent(node);
+        return parentHasNoTextContent(element, node);
       }
 
       return false;
@@ -2848,7 +2852,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
           !contains(html5VoidElements, node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
-          traverse(node);
+          traverse(element, node);
         }
       }
       node = node.nextElementSibling;
@@ -2862,7 +2866,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        traverse(bin);
+        traverse(scribe.element, bin);
 
         return bin.innerHTML;
       });
@@ -3200,13 +3204,14 @@ define('plugins/core/patches/commands/indent',[],function () {
 
 });
 
-define('plugins/core/patches/commands/insert-html',['scribe-common/src/element'], function (element) {
+define('plugins/core/patches/commands/insert-html',[], function () {
 
   
 
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
+      var element = scribe.element;
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
@@ -3262,13 +3267,15 @@ define('plugins/core/patches/commands/insert-html',['scribe-common/src/element']
 
 });
 
-define('plugins/core/patches/commands/insert-list',['scribe-common/src/element',
-        'scribe-common/src/node'], function (element, nodeHelpers) {
+define('plugins/core/patches/commands/insert-list',[], function () {
 
   
 
   return function () {
     return function (scribe) {
+      var element = scribe.element;
+      var nodeHelpers = scribe.node;
+
       var InsertListCommandPatch = function (commandName) {
         scribe.api.CommandPatch.call(this, commandName);
       };
@@ -3509,7 +3516,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 });
 
-define('plugins/core/patches/events',['scribe-common/src/element'], function (element) {
+define('plugins/core/patches/events',[], function () {
 
   
 
@@ -3532,6 +3539,9 @@ define('plugins/core/patches/events',['scribe-common/src/element'], function (el
       // TODO: run in a transaction so as to record the change? how do
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
+
+      var element = scribe.element;
+
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
           if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
@@ -3779,7 +3789,7 @@ define('api/node',[],function () {
 });
 
 define('api/selection',[
-  'scribe-common/src/element'
+  '../element'
 ],
 function (elementHelper) {
 
@@ -3795,6 +3805,9 @@ function (elementHelper) {
     }
 
     Selection.prototype.getContaining = function (nodeFilter) {
+      var range = this.range;
+      if (!range) { return; }
+
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && node.node.attributes
          && node.node.attributes.getNamedItem('contenteditable');
@@ -3803,6 +3816,9 @@ function (elementHelper) {
     };
 
     Selection.prototype.placeMarkers = function () {
+      var range = this.range;
+      if(!range) { return; }
+
       var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
       var endMarker = document.createElement('em');
@@ -4320,7 +4336,9 @@ define('scribe',[
   './api',
   './transaction-manager',
   './undo-manager',
-  './event-emitter'
+  './event-emitter',
+  './element',
+  './node'
 ], function (
   defaults,
   flatten,
@@ -4336,7 +4354,9 @@ define('scribe',[
   Api,
   buildTransactionManager,
   buildUndoManager,
-  EventEmitter
+  EventEmitter,
+  elementHelpers,
+  nodeHelpers
 ) {
 
   
@@ -4355,6 +4375,9 @@ define('scribe',[
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
+
+    this.node = nodeHelpers;
+    this.element = elementHelpers;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
@@ -4398,21 +4421,32 @@ define('scribe',[
 
 
     // Patches
-    this.use(patches.commands.bold());
-    this.use(patches.commands.indent());
-    this.use(patches.commands.insertHTML());
-    this.use(patches.commands.insertList());
-    this.use(patches.commands.outdent());
-    this.use(patches.commands.createLink());
-    this.use(patches.events());
 
-    this.use(commands.indent());
-    this.use(commands.insertList());
-    this.use(commands.outdent());
-    this.use(commands.redo());
-    this.use(commands.subscript());
-    this.use(commands.superscript());
-    this.use(commands.undo());
+    var mandatoryPatches = [
+      patches.commands.bold,
+      patches.commands.indent,
+      patches.commands.insertHTML,
+      patches.commands.insertList,
+      patches.commands.outdent,
+      patches.commands.createLink,
+      patches.events
+    ];
+
+    var mandatoryCommands = [
+      commands.indent,
+      commands.insertList,
+      commands.outdent,
+      commands.redo,
+      commands.subscript,
+      commands.superscript,
+      commands.undo,
+    ];
+
+    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+
+    allPlugins.forEach(function(plugin) {
+      this.use(plugin());
+    }.bind(this));
 
     this.use(events());
   }
@@ -4565,7 +4599,7 @@ define('scribe',[
       sanitize: [],
       // Normalize content to ensure it is ready for interaction
       normalize: [],
-      export: []
+      'export': []
     };
   }
 
@@ -4584,7 +4618,7 @@ define('scribe',[
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    return this.formatters.export.reduce(function (formattedData, formatter) {
+    return this.formatters['export'].reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
   };
