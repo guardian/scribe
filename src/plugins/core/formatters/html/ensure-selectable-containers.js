@@ -1,5 +1,5 @@
 define([
-    'scribe-common/src/element',
+    '../../../../element',
     'lodash-amd/modern/collections/contains'
   ], function (
     element,
@@ -17,7 +17,7 @@ define([
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
-  function parentHasNoTextContent(node) {
+  function parentHasNoTextContent(element, node) {
     if (element.isCaretPositionNode(node)) {
       return true;
     } else {
@@ -26,7 +26,7 @@ define([
   }
 
 
-  function traverse(parentNode) {
+  function traverse(element, parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
@@ -41,7 +41,7 @@ define([
 
       // Do not insert BR in empty non block elements with parent containing text
       if (!element.isBlockElement(node) && node.children.length === 0) {
-        return parentHasNoTextContent(node);
+        return parentHasNoTextContent(element, node);
       }
 
       return false;
@@ -56,7 +56,7 @@ define([
           !contains(html5VoidElements, node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
-          traverse(node);
+          traverse(element, node);
         }
       }
       node = node.nextElementSibling;
@@ -70,7 +70,7 @@ define([
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        traverse(bin);
+        traverse(scribe.element, bin);
 
         return bin.innerHTML;
       });
