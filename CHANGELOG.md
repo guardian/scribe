@@ -1,3 +1,11 @@
+# 1.0.0
+
+This is a non-backwards compatible change as we are removing the use of Scribe Common. The Node and Element apis that were available in that project are now exposed via the *scribe* object itself (`scribe.node` and `scribe.element`).
+
+Existing plugins should not break for this release but please re-write your plugins if you use 1.0.0 as a dependency.
+
+* Merge [Scribe Common into Scribe](https://github.com/guardian/scribe/pull/287)
+
 # 0.1.26
 * Add preliminary support for Safari 6. [Muration Observer Safari](https://github.com/guardian/scribe/pull/285)
 
