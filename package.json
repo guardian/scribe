@@ -22,7 +22,7 @@
     "q": "~1.0.0",
     "request": "~2.33.0",
     "selenium-webdriver": "~2.41.0",
-    "scribe-test-harness": "~0.0.6"
+    "scribe-test-harness": "~0.0.7"
   },
   "scripts": {
     "test": "./run-tests.sh"
