@@ -15,7 +15,8 @@ define([
   './undo-manager',
   './event-emitter',
   './element',
-  './node'
+  './node',
+  'immutable/dist/immutable'
 ], function (
   defaults,
   flatten,
