@@ -58,7 +58,7 @@ define([
     this.node = nodeHelpers;
     this.element = elementHelpers;
 
-    this.Immutable = immutable;
+    this.Immutable = Immutable;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
