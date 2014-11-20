@@ -34,7 +34,8 @@ define([
   buildUndoManager,
   EventEmitter,
   elementHelpers,
-  nodeHelpers
+  nodeHelpers,
+  Immutable
 ) {
 
   'use strict';
@@ -56,6 +57,8 @@ define([
 
     this.node = nodeHelpers;
     this.element = elementHelpers;
+
+    this.Immutable = immutable;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
