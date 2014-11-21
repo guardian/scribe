@@ -1,6 +1,5 @@
 define([
   'lodash-amd/modern/objects/defaults',
-  'lodash-amd/modern/arrays/flatten',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -19,7 +18,6 @@ define([
   'immutable/dist/immutable'
 ], function (
   defaults,
-  flatten,
   commands,
   events,
   replaceNbspCharsFormatter,
