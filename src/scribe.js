@@ -276,10 +276,10 @@ define([
     this.formatters = {
       // Configurable sanitization of the HTML, e.g. converting/filter/removing
       // elements
-      sanitize: Immutable.List([]),
+      sanitize: Immutable.List(),
       // Normalize content to ensure it is ready for interaction
-      normalize: Immutable.List([]),
-      'export': Immutable.List([])
+      normalize: Immutable.List(),
+      'export': Immutable.List()
     };
   }
 
