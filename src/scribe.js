@@ -247,7 +247,8 @@ define([
   };
 
   Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
-    this._htmlFormatterFactory.formatters[phase].push(fn);
+    this._htmlFormatterFactory.formatters[phase]
+      = this._htmlFormatterFactory.formatters[phase].push(fn);
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
@@ -275,10 +276,10 @@ define([
     this.formatters = {
       // Configurable sanitization of the HTML, e.g. converting/filter/removing
       // elements
-      sanitize: [],
+      sanitize: Immutable.List([]),
       // Normalize content to ensure it is ready for interaction
-      normalize: [],
-      'export': []
+      normalize: Immutable.List([]),
+      'export': Immutable.List([])
     };
   }
 
@@ -288,8 +289,7 @@ define([
   HTMLFormatterFactory.prototype.format = function (html) {
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
-    var formatters = Immutable.List([Immutable.List(this.formatters.sanitize),
-      Immutable.List(this.formatters.normalize)]).flatten();
+    var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
     var formatted = formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
