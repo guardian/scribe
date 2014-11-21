@@ -290,7 +290,8 @@ define([
   HTMLFormatterFactory.prototype.format = function (html) {
     // Flatten the phases
     // Map the object to an array: Array[Formatter]
-    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatters = Immutable.List([Immutable.List(this.formatters.sanitize),
+      Immutable.List(this.formatters.normalize)]).flatten();
     var formatted = formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
