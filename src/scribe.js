@@ -252,12 +252,13 @@ define([
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
-    this._plainTextFormatterFactory.formatters.push(fn);
+    this._plainTextFormatterFactory.formatters
+      = this._plainTextFormatterFactory.formatters.push(fn);
   };
 
   // TODO: abstract
   function FormatterFactory() {
-    this.formatters = [];
+    this.formatters = Immutable.List();
   }
 
   FormatterFactory.prototype.format = function (html) {
@@ -270,7 +271,6 @@ define([
   };
 
   function HTMLFormatterFactory() {
-    // Object[String,Array[Formatter]]
     // Define phases
     // For a list of formatters, see https://github.com/guardian/scribe/issues/126
     this.formatters = {
@@ -287,9 +287,8 @@ define([
   HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
 
   HTMLFormatterFactory.prototype.format = function (html) {
-    // Flatten the phases
-    // Map the object to an array: Array[Formatter]
     var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
+
     var formatted = formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
