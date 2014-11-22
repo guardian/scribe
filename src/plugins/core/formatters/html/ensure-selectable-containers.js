@@ -54,7 +54,7 @@ define([
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
           !contains(html5VoidElements, node.nodeName)) {
-          node.appendChild(document.createElement('br'));
+          node.appendChild(scribe.targetDocument.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(element, node);
         }
@@ -67,7 +67,7 @@ define([
     return function (scribe) {
 
       scribe.registerHTMLFormatter('normalize', function (html) {
-        var bin = document.createElement('div');
+        var bin = scribe.targetDocument.createElement('div');
         bin.innerHTML = html;
 
         traverse(scribe.element, bin);

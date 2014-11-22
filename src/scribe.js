@@ -47,6 +47,8 @@ define([
       allowBlockElements: true,
       debug: false
     });
+    this.targetWindow = window;
+    this.targetDocument = document;
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();

@@ -53,7 +53,7 @@ define([
     });
 
     consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-      var pElement = document.createElement('p');
+      var pElement = scribe.targetDocument.createElement('p');
       nodes[0].parentNode.insertBefore(pElement, nodes[0]);
       nodes.forEach(function (node) {
         pElement.appendChild(node);
@@ -65,7 +65,7 @@ define([
 
   // Traverse the tree, wrapping child nodes as we go.
   function traverse(scribe, parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+    var treeWalker = scribe.targetDocument.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
     var node = treeWalker.firstChild();
 
     // FIXME: does this recurse down?
@@ -95,7 +95,7 @@ define([
         // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
         // TODO: This should probably be a part of HTML Janitor, or some other
         // formatter.
-        var bin = document.createElement('div');
+        var bin = scribe.targetDocument.createElement('div');
         bin.innerHTML = html;
 
         wrapChildNodes(scribe, bin);
