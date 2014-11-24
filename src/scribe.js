@@ -16,7 +16,7 @@ define([
   './element',
   './node',
   'immutable/dist/immutable',
-  './iframe'
+  './api/iframe'
 ], function (
   defaults,
   commands,
