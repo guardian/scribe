@@ -36,11 +36,11 @@ describe('iframe mode', function () {
       });
     });
 
-    it('should append scribe element to body of iframe', function () {
+    it('should set iframe body as scribe element', function () {
       return driver.executeScript(function () {
-        return document.querySelector('iframe').contentWindow.document.body.innerHTML;
+        return document.querySelector('iframe').contentWindow.document.body.isContentEditable;
       }).then(function (bodyHtml) {
-        expect(bodyHtml).to.have.html('<div class="scribe" contenteditable="true"><p><br></p></div>');
+        expect(bodyHtml).to.be.true;
       });
     });
   });

@@ -5,7 +5,7 @@ define(function () {
   return function (scribe) {
     var iframe = document.createElement('iframe');
     iframe.className = 'scribe-rte-iframe';
-    scribe.el.parentNode.insertBefore(iframe, scribe.el);
+    scribe.el.appendChild(iframe);
 
     var html = '<!DOCTYPE html>';
     html += '<html><head>';
@@ -20,7 +20,9 @@ define(function () {
     iframe.contentWindow.document.open();
     iframe.contentWindow.document.write(html);
     iframe.contentWindow.document.close();
-    iframe.contentWindow.document.body.appendChild(scribe.el);
+
+    scribe.el = iframe.contentWindow.document.body;
+    scribe.el.className = scribe.options.iframe.elClass || 'scribe';
 
     scribe.targetWindow = iframe.contentWindow;
     scribe.targetDocument = iframe.contentWindow.document;
