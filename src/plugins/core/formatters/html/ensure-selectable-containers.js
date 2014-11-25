@@ -54,7 +54,7 @@ define([
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
           !contains(html5VoidElements, node.nodeName)) {
-          node.appendChild(scribe.targetDocument.createElement('br'));
+          node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(element, node);
         }

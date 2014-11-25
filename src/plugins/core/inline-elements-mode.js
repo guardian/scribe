@@ -3,7 +3,7 @@ define(function () {
   'use strict';
 
   // TODO: abstract
-  function hasContent(rootNode) {
+  function hasContent(rootNode, scribe) {
     var treeWalker = scribe.targetDocument.createTreeWalker(rootNode);
 
     while (treeWalker.nextNode()) {
@@ -86,7 +86,7 @@ define(function () {
 
               // If there is not already a right hand side content we need to
               // insert a bogus BR element.
-              if (! hasContent(contentToEndFragment)) {
+              if (! hasContent(contentToEndFragment, scribe)) {
                 var bogusBrNode = scribe.targetDocument.createElement('br');
                 range.insertNode(bogusBrNode);
               }
