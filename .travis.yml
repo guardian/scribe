@@ -5,6 +5,11 @@ node_js:
 
 sudo: false
 
+cache:
+  directories:
+    - node_modules
+    - bower_components
+
 addons:
   sauce_connect: true
 
