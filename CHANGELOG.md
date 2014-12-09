@@ -1,3 +1,9 @@
+# 1.1.0
+
+Introduces [ImmutableJS](https://github.com/facebook/immutable-js) (which is also exposed via scribe.immutable) and starts to convert some the internal workings of Scribe to use immutable data structures.
+
+Adds 55K of needless bloat according to @theefer but I am heartless and laugh at his tears.
+
 # 1.0.0
 
 This is a non-backwards compatible change as we are removing the use of Scribe Common. The Node and Element apis that were available in that project are now exposed via the *scribe* object itself (`scribe.node` and `scribe.element`).
