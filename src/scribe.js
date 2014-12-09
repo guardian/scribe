@@ -1,6 +1,5 @@
 define([
   'lodash-amd/modern/objects/defaults',
-  'lodash-amd/modern/arrays/flatten',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -15,10 +14,10 @@ define([
   './undo-manager',
   './event-emitter',
   './element',
-  './node'
+  './node',
+  'immutable/dist/immutable'
 ], function (
   defaults,
-  flatten,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -33,7 +32,8 @@ define([
   buildUndoManager,
   EventEmitter,
   elementHelpers,
-  nodeHelpers
+  nodeHelpers,
+  Immutable
 ) {
 
   'use strict';
@@ -55,6 +55,8 @@ define([
 
     this.node = nodeHelpers;
     this.element = elementHelpers;
+
+    this.Immutable = Immutable;
 
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
@@ -245,16 +247,18 @@ define([
   };
 
   Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
-    this._htmlFormatterFactory.formatters[phase].push(fn);
+    this._htmlFormatterFactory.formatters[phase]
+      = this._htmlFormatterFactory.formatters[phase].push(fn);
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (fn) {
-    this._plainTextFormatterFactory.formatters.push(fn);
+    this._plainTextFormatterFactory.formatters
+      = this._plainTextFormatterFactory.formatters.push(fn);
   };
 
   // TODO: abstract
   function FormatterFactory() {
-    this.formatters = [];
+    this.formatters = Immutable.List();
   }
 
   FormatterFactory.prototype.format = function (html) {
@@ -267,16 +271,15 @@ define([
   };
 
   function HTMLFormatterFactory() {
-    // Object[String,Array[Formatter]]
     // Define phases
     // For a list of formatters, see https://github.com/guardian/scribe/issues/126
     this.formatters = {
       // Configurable sanitization of the HTML, e.g. converting/filter/removing
       // elements
-      sanitize: [],
+      sanitize: Immutable.List(),
       // Normalize content to ensure it is ready for interaction
-      normalize: [],
-      'export': []
+      normalize: Immutable.List(),
+      'export': Immutable.List()
     };
   }
 
@@ -284,9 +287,8 @@ define([
   HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
 
   HTMLFormatterFactory.prototype.format = function (html) {
-    // Flatten the phases
-    // Map the object to an array: Array[Formatter]
-    var formatters = flatten([this.formatters.sanitize, this.formatters.normalize]);
+    var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
+
     var formatted = formatters.reduce(function (formattedData, formatter) {
       return formatter(formattedData);
     }, html);
