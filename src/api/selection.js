@@ -6,6 +6,9 @@ function (elementHelper) {
   'use strict';
 
   return function (scribe) {
+    /**
+     * Wrapper for object holding currently selected text.
+     */
     function Selection() {
       this.selection = window.getSelection();
 
@@ -13,7 +16,10 @@ function (elementHelper) {
         this.range = this.selection.getRangeAt(0);
       }
     }
-
+    
+    /**
+     * @returns Closest ancestor Node satisfying nodeFilter. Undefined if none exist before reaching Scribe container.
+     */
     Selection.prototype.getContaining = function (nodeFilter) {
       var range = this.range;
       if (!range) { return; }
