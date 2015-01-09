@@ -8,40 +8,8 @@ These steps also apply to plugins.
   references to isolated cases (when dealing with browser inconsistencies)
 
 ## Testing Locally
-```
-# Mac only
-brew install chromedriver
-```
+Please see the [wiki](https://github.com/guardian/scribe/wiki/Testing) for details of how to run the scribe test suite.
 
-```
-./setup.sh
-# Defaults: TEST_SERVER_PORT=8080
-TEST_SERVER_PORT=8080 \
-BROWSER_NAME='chrome' \
-npm test
-```
-
-## Testing via Sauce Labs
-You will need to [download Sauce Connect](https://saucelabs.com/docs/connect).
-
-TODO: Add steps for downloading Sauce Connect, i.e. https://github.com/angular/angular.js/blob/master/lib/sauce/sauce_connect_setup.sh
-```
-./setup.sh
-export SAUCE_USERNAME='scribe-ci' SAUCE_ACCESS_KEY='4be9eeed-61de-4948-b18d-f7f655e9e4b0'
-
-# Sauce Connect v3
-java -jar ~/Downloads/Sauce-Connect-latest/Sauce-Connect.jar $SAUCE_USERNAME $SAUCE_ACCESS_KEY
-# Sauce Connect v4
-~/Downloads/sc-4.1-osx/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
-
-# Defaults: TEST_SERVER_PORT=8080
-TEST_SERVER_PORT=8080 \
-RUN_IN_SAUCE_LABS=true \
-BROWSER_NAME='chrome' \
-BROWSER_VERSION='32' \
-PLATFORM='WINDOWS' \
-npm test
-```
 
 ## Releasing
 
