@@ -15,7 +15,7 @@ define([
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable'
+  'bower_components/immutable/dist/immutable'
 ], function (
   defaults,
   commands,
