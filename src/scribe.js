@@ -122,14 +122,14 @@ define([
     ];
 
     var mandatoryCommands = [
-      commands.indent,
-      commands.insertList,
-      commands.outdent,
-      commands.redo,
-      commands.subscript,
-      commands.superscript,
-      commands.undo,
-    ];
+      'indent',
+      'insertList',
+      'outdent',
+      'redo',
+      'subscript',
+      'superscript',
+      'undo',
+    ].map(function(command) { return commands[command]; });
 
     var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
 

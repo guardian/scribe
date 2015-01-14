@@ -4,7 +4,7 @@
   "main": "src/scribe.js",
   "dependencies": {
     "lodash-amd": "~2.4.1",
-    "immutable" : "~3.2.1"
+    "immutable" : "~3.6.2"
   },
   "devDependencies": {
     "chai": "~1.9.1",
