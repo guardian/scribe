@@ -111,30 +111,30 @@ define([
 
     // Patches
 
-    var mandatoryPatches = [
+    var mandatoryPatches = Immutable.List.of(
       patches.events
-    ];
+    );
 
-    var mandatoryCommandPatches = [
+    var mandatoryCommandPatches = Immutable.List.of(
       'bold',
       'indent',
       'insertHTML',
       'insertList',
       'outdent',
-      'createLink',
-    ].map(function(patch) { return patches.commands[patch]; });
+      'createLink'
+    ).map(function(patch) { return patches.commands[patch]; });
 
-    var mandatoryCommands = [
+    var mandatoryCommands = Immutable.List.of(
       'indent',
       'insertList',
       'outdent',
       'redo',
       'subscript',
       'superscript',
-      'undo',
-    ].map(function(command) { return commands[command]; });
+      'undo'
+    ).map(function(command) { return commands[command]; });
 
-    var allPlugins = [].concat(mandatoryPatches, mandatoryCommandPatches, mandatoryCommands);
+    var allPlugins = Immutable.List().concat(mandatoryPatches, mandatoryCommandPatches, mandatoryCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
