@@ -112,6 +112,10 @@ define([
     // Patches
 
     var mandatoryPatches = [
+      patches.events
+    ];
+
+    var mandatoryCommandPatches = [
       'bold',
       'indent',
       'insertHTML',
@@ -130,7 +134,7 @@ define([
       'undo',
     ].map(function(command) { return commands[command]; });
 
-    var allPlugins = [patches.events].concat(mandatoryPatches, mandatoryCommands);
+    var allPlugins = [].concat(mandatoryPatches, mandatoryCommandPatches, mandatoryCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
