@@ -279,8 +279,8 @@ define([
       sanitize: Immutable.List(),
       // Normalize content to ensure it is ready for interaction
       normalize: Immutable.List(),
-      paste: [],
-      export: []
+      paste: Immutable.List(),
+      'export': Immutable.List()
     };
   }
 
