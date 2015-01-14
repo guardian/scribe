@@ -113,11 +113,11 @@ define([
 
     // Patches
 
-    var mandatoryPatches = Immutable.List.of(
+    var defaultPatches = Immutable.List.of(
       patches.events
     );
 
-    var mandatoryCommandPatches = Immutable.List.of(
+    var defaultCommandPatches = Immutable.List.of(
       'bold',
       'indent',
       'insertHTML',
@@ -126,7 +126,7 @@ define([
       'createLink'
     ).map(function(patch) { return patches.commands[patch]; });
 
-    var mandatoryCommands = Immutable.List.of(
+    var defaultCommands = Immutable.List.of(
       'indent',
       'insertList',
       'outdent',
@@ -138,9 +138,9 @@ define([
 
     var allPlugins = Immutable.List().concat(
       defaultFormatters,
-      mandatoryPatches,
-      mandatoryCommandPatches,
-      mandatoryCommands);
+      defaultPatches,
+      defaultCommandPatches,
+      defaultCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
