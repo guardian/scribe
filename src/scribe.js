@@ -15,8 +15,7 @@ define([
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable',
-  './api/iframe'
+  'immutable/dist/immutable'
 ], function (
   defaults,
   commands,
@@ -34,8 +33,7 @@ define([
   EventEmitter,
   elementHelpers,
   nodeHelpers,
-  Immutable,
-  buildIframe
+  Immutable
 ) {
 
   'use strict';
@@ -47,16 +45,8 @@ define([
     this.commands = {};
     this.options = defaults(options || {}, {
       allowBlockElements: true,
-      debug: false,
-      iframe: false
+      debug: false
     });
-    this.targetWindow = window;
-    this.targetDocument = document;
-
-    if (this.options.iframe) {
-      buildIframe(this);
-    }
-
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();

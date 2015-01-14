@@ -60,7 +60,7 @@ define(function () {
               var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
 
               if (nextSiblingNodes.length) {
-                var newContainerNode = scribe.targetDocument.createElement(blockquoteNode.nodeName);
+                var newContainerNode = document.createElement(blockquoteNode.nodeName);
 
                 nextSiblingNodes.forEach(function (siblingNode) {
                   newContainerNode.appendChild(siblingNode);

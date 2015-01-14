@@ -10,7 +10,7 @@ function (elementHelper) {
      * Wrapper for object holding currently selected text.
      */
     function Selection() {
-      this.selection = scribe.targetWindow.getSelection();
+      this.selection = window.getSelection();
 
       if (this.selection.rangeCount) {
         this.range = this.selection.getRangeAt(0);
@@ -35,9 +35,9 @@ function (elementHelper) {
       var range = this.range;
       if(!range) { return; }
 
-      var startMarker = scribe.targetDocument.createElement('em');
+      var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
-      var endMarker = scribe.targetDocument.createElement('em');
+      var endMarker = document.createElement('em');
       endMarker.classList.add('scribe-marker');
 
       // End marker
@@ -174,7 +174,7 @@ function (elementHelper) {
         return;
       }
 
-      var newRange = scribe.targetDocument.createRange();
+      var newRange = document.createRange();
 
       newRange.setStartBefore(markers[0]);
       if (markers.length >= 2) {
@@ -197,7 +197,7 @@ function (elementHelper) {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
 
-        var treeWalker = scribe.targetDocument.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
 
         var currentNode = treeWalker.root;
 
