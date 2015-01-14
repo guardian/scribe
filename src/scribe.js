@@ -105,8 +105,10 @@ define([
     }
 
     // Formatters
-    this.use(escapeHtmlCharactersFormatter());
-    this.use(replaceNbspCharsFormatter());
+    var defaultFormatters = Immutable.List.of(
+      escapeHtmlCharactersFormatter,
+      replaceNbspCharsFormatter
+    );
 
 
     // Patches
@@ -134,7 +136,11 @@ define([
       'undo'
     ).map(function(command) { return commands[command]; });
 
-    var allPlugins = Immutable.List().concat(mandatoryPatches, mandatoryCommandPatches, mandatoryCommands);
+    var allPlugins = Immutable.List().concat(
+      defaultFormatters,
+      mandatoryPatches,
+      mandatoryCommandPatches,
+      mandatoryCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
