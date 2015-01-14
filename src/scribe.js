@@ -112,14 +112,13 @@ define([
     // Patches
 
     var mandatoryPatches = [
-      patches.commands.bold,
-      patches.commands.indent,
-      patches.commands.insertHTML,
-      patches.commands.insertList,
-      patches.commands.outdent,
-      patches.commands.createLink,
-      patches.events
-    ];
+      'bold',
+      'indent',
+      'insertHTML',
+      'insertList',
+      'outdent',
+      'createLink',
+    ].map(function(patch) { return patches.commands[patch]; });
 
     var mandatoryCommands = [
       'indent',
@@ -131,7 +130,7 @@ define([
       'undo',
     ].map(function(command) { return commands[command]; });
 
-    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+    var allPlugins = [patches.events].concat(mandatoryPatches, mandatoryCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
