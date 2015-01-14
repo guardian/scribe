@@ -26,7 +26,7 @@ define([
     }
 
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
+    
     // Flag to avoid running recursively
     var runningPostMutation = false;
 
