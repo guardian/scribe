@@ -13,7 +13,7 @@ define(function () {
         this.patch.execute(value);
       } else {
         scribe.transactionManager.run(function () {
-          document.execCommand(this.commandName, false, value || null);
+          scribe.targetDocument.execCommand(this.commandName, false, value || null);
         }.bind(this));
       }
     };
@@ -22,7 +22,7 @@ define(function () {
       if (this.patch) {
         return this.patch.queryState();
       } else {
-        return document.queryCommandState(this.commandName);
+        return scribe.targetDocument.queryCommandState(this.commandName);
       }
     };
 
@@ -30,7 +30,7 @@ define(function () {
       if (this.patch) {
         return this.patch.queryEnabled();
       } else {
-        return document.queryCommandEnabled(this.commandName);
+        return scribe.targetDocument.queryCommandEnabled(this.commandName);
       }
     };
 
