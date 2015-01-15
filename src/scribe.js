@@ -43,10 +43,20 @@ define([
 
     this.el = el;
     this.commands = {};
+
     this.options = defaults(options || {}, {
       allowBlockElements: true,
-      debug: false
+      debug: false,
+      defaultCommandPatches: [
+        'bold',
+        'indent',
+        'insertHTML',
+        'insertList',
+        'outdent',
+        'createLink'
+      ]
     });
+
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
@@ -107,14 +117,7 @@ define([
       patches.events
     );
 
-    var defaultCommandPatches = Immutable.List.of(
-      'bold',
-      'indent',
-      'insertHTML',
-      'insertList',
-      'outdent',
-      'createLink'
-    ).map(function(patch) { return patches.commands[patch]; });
+    var defaultCommandPatches = Immutable.List(options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
 
     var defaultCommands = Immutable.List.of(
       'indent',
