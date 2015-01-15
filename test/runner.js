@@ -22,6 +22,7 @@ mocha.reporter('spec');
 mocha.addFile(__dirname + '/block-mode.spec.js');
 mocha.addFile(__dirname + '/commands.spec.js');
 mocha.addFile(__dirname + '/formatters.spec.js');
+mocha.addFile(__dirname + '/paste-formatters.spec.js');
 mocha.addFile(__dirname + '/inline-elements-mode.spec.js');
 mocha.addFile(__dirname + '/patches.spec.js');
 mocha.addFile(__dirname + '/undo-manager.spec.js');
