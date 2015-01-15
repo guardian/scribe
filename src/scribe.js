@@ -279,7 +279,6 @@ define([
       sanitize: Immutable.List(),
       // Normalize content to ensure it is ready for interaction
       normalize: Immutable.List(),
-      paste: Immutable.List(),
       'export': Immutable.List()
     };
   }
@@ -295,12 +294,6 @@ define([
     }, html);
 
     return formatted;
-  };
-
-  HTMLFormatterFactory.prototype.formatPaste = function (html) {
-    return this.formatters.paste.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
   };
 
   HTMLFormatterFactory.prototype.formatForExport = function (html) {
