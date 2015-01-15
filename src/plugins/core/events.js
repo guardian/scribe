@@ -218,8 +218,9 @@ define([
           event.preventDefault();
 
           if (contains(event.clipboardData.types, 'text/html')) {
-
-            scribe.insertHTML(event.clipboardData.getData('text/html'));
+            var html = event.clipboardData.getData('text/html');
+            html = scribe._htmlFormatterFactory.formatPaste(html);
+            scribe.insertHTML(html);
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
           }
@@ -265,6 +266,7 @@ define([
              */
             scribe.el.focus();
 
+            data = scribe._htmlFormatterFactory.formatPaste(data);
             scribe.insertHTML(data);
           }, 1);
         }
