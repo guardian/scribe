@@ -43,10 +43,20 @@ define([
 
     this.el = el;
     this.commands = {};
+
     this.options = defaults(options || {}, {
       allowBlockElements: true,
-      debug: false
+      debug: false,
+      defaultCommandPatches: [
+        'bold',
+        'indent',
+        'insertHTML',
+        'insertList',
+        'outdent',
+        'createLink'
+      ]
     });
+
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
     this._htmlFormatterFactory = new HTMLFormatterFactory();
@@ -95,33 +105,35 @@ define([
     }
 
     // Formatters
-    this.use(escapeHtmlCharactersFormatter());
-    this.use(replaceNbspCharsFormatter());
+    var defaultFormatters = Immutable.List.of(
+      escapeHtmlCharactersFormatter,
+      replaceNbspCharsFormatter
+    );
 
 
     // Patches
 
-    var mandatoryPatches = [
-      patches.commands.bold,
-      patches.commands.indent,
-      patches.commands.insertHTML,
-      patches.commands.insertList,
-      patches.commands.outdent,
-      patches.commands.createLink,
+    var defaultPatches = Immutable.List.of(
       patches.events
-    ];
+    );
 
-    var mandatoryCommands = [
-      commands.indent,
-      commands.insertList,
-      commands.outdent,
-      commands.redo,
-      commands.subscript,
-      commands.superscript,
-      commands.undo,
-    ];
+    var defaultCommandPatches = Immutable.List(options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
 
-    var allPlugins = [].concat(mandatoryPatches, mandatoryCommands);
+    var defaultCommands = Immutable.List.of(
+      'indent',
+      'insertList',
+      'outdent',
+      'redo',
+      'subscript',
+      'superscript',
+      'undo'
+    ).map(function(command) { return commands[command]; });
+
+    var allPlugins = Immutable.List().concat(
+      defaultFormatters,
+      defaultPatches,
+      defaultCommandPatches,
+      defaultCommands);
 
     allPlugins.forEach(function(plugin) {
       this.use(plugin());
