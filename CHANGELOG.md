@@ -1,3 +1,7 @@
+# 1.2.0
+
+Allows the default command patches to be over-ridden in the options. This will allow users to customise what gets loaded to address issues like [the behaviour of the bold patch](https://github.com/guardian/scribe/pull/250) where the default behaviour is not what is required.
+
 # 1.1.0
 
 Introduces [ImmutableJS](https://github.com/facebook/immutable-js) (which is also exposed via scribe.immutable) and starts to convert some the internal workings of Scribe to use immutable data structures.

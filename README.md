@@ -48,6 +48,8 @@ Alternatively, you can [access the distribution files through GitHub releases](h
 <dl>
   <dt><pre>allowBlockElements</pre></dt>
   <dd>Enable/disable block element mode (enabled by default)</dd>
+  <dt><pre>defaultCommandPatches</pre></dt>
+  <dd>Defines which command patches should be loaded by default</dd> 
 </dl>
 
 ## Usage Example
