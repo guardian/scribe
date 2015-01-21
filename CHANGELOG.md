@@ -1,3 +1,7 @@
+# 1.2.1
+
+Fixes a typo with the use of options in the default command patches that was breaking Browserify
+
 # 1.2.0
 
 Allows the default command patches to be over-ridden in the options. This will allow users to customise what gets loaded to address issues like [the behaviour of the bold patch](https://github.com/guardian/scribe/pull/250) where the default behaviour is not what is required.
