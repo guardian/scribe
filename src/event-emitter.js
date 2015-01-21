@@ -12,6 +12,12 @@ define(['lodash-amd/modern/arrays/pull'], function (pull) {
   EventEmitter.prototype.on = function (eventName, fn) {
     var listeners = this._listeners[eventName] || [];
 
+    listeners.forEach(function(listener){
+      if(listener === fn){
+        return;
+      }
+    });
+
     listeners.push(fn);
 
     this._listeners[eventName] = listeners;
