@@ -9312,7 +9312,7 @@ define('scribe',[
       patches.events
     );
 
-    var defaultCommandPatches = Immutable.List(options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
+    var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
 
     var defaultCommands = Immutable.List.of(
       'indent',
