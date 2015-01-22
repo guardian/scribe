@@ -10,7 +10,7 @@ define(['lodash-amd/modern/arrays/pull', 'immutable/dist/immutable'], function (
   }
 
   EventEmitter.prototype.on = function (eventName, fn) {
-    var listeners = this._listeners[eventName] || new Immutable.Set();
+    var listeners = (this._listeners[eventName] || new Immutable.Set());
     this._listeners[eventName] = listeners.add(fn);
   };
 
@@ -24,7 +24,7 @@ define(['lodash-amd/modern/arrays/pull', 'immutable/dist/immutable'], function (
   };
 
   EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = this._listeners[eventName] || new Immutable.Set();
+    var listeners = (this._listeners[eventName] || new Immutable.Set());
 
     listeners.forEach(function (listener) {
       listener.apply(null, args);
