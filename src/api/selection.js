@@ -16,7 +16,7 @@ function (elementHelper) {
         this.range = this.selection.getRangeAt(0);
       }
     }
-    
+
     /**
      * @returns Closest ancestor Node satisfying nodeFilter. Undefined if none exist before reaching Scribe container.
      */
@@ -34,6 +34,13 @@ function (elementHelper) {
     Selection.prototype.placeMarkers = function () {
       var range = this.range;
       if(!range) { return; }
+
+      var scribeNodeRange = document.createRange();
+      scribeNodeRange.selectNodeContents(scribe.el);
+      //check if the END of the current selection is within the scribe node
+      if (scribeNodeRange.compareBoundaryPoints(Range.START_TO_END, this.range) < 0){
+        return;
+      }
 
       var startMarker = document.createElement('em');
       startMarker.classList.add('scribe-marker');
