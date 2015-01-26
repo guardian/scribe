@@ -33,18 +33,26 @@ function (elementHelper) {
 
     Selection.prototype.placeMarkers = function () {
       var range = this.range;
-      if(!range) { return; }
+      if (!range) {
+        return;
+      }
 
-      var scribeNodeRange = document.createRange();
-      scribeNodeRange.selectNodeContents(scribe.el);
+      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
+      //one way to do this is to check if it's visible (is this the best way?).
+      if (!scribe.el.offsetParent) {
+        return;
+      }
 
       //we want to ensure that the current selection is within the current scribe node
       //if this isn't true scribe will place markers within the selections parent
       //we want to ensure that scribe ONLY places markers within it's own element
+      var scribeNodeRange = document.createRange();
+      scribeNodeRange.selectNodeContents(scribe.el);
+
       var selectionStartWithinScribeElementStart = this.range.compareBoundaryPoints(Range.START_TO_START, scribeNodeRange) >= 0;
       var selectionEndWithinScribeElementEnd = this.range.compareBoundaryPoints(Range.END_TO_END, scribeNodeRange) <= 0;
 
-      if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd){
+      if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd) {
 
         var startMarker = document.createElement('em');
         startMarker.classList.add('scribe-marker');
