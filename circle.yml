@@ -20,5 +20,5 @@ test:
         pwd: sc-*-linux
     # Wait for tunnel to be ready
     - while [ ! -e ~/sc_ready ]; do sleep 1; done
-    - ./circle-ci-parallel.sh
+    - ./circle-ci-parallel.sh:
         parallel: true
