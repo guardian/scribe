@@ -1,6 +1,24 @@
+machine:
+  node:
+    version: 0.10.35
 
 dependencies:
-    pre:
-        - npm install -g bower
-        - bower install
-        - ./setup.sh
+  cache_directories:
+    - "bower_components"
+    - "node_modules"
+  pre:
+    - npm install -g bower
+    - ./setup.sh
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
+
+test:
+  override:
+    - ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY -f ~/sc_ready:
+        background: true
+        pwd: sc-*-linux
+    # Wait for tunnel to be ready
+    - while [ ! -e ~/sc_ready ]; do sleep 1; done
+    - ./circle-ci-parallel.sh
+        parallel: true
