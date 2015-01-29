@@ -4309,46 +4309,6 @@ define('lodash-amd/modern/arrays/pull',[], function() {
   return pull;
 });
 
-define('event-emitter',['lodash-amd/modern/arrays/pull'], function (pull) {
-
-  
-
-  // TODO: once
-  // TODO: unit test
-  // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
-  function EventEmitter() {
-    this._listeners = {};
-  }
-
-  EventEmitter.prototype.on = function (eventName, fn) {
-    var listeners = this._listeners[eventName] || [];
-
-    listeners.push(fn);
-
-    this._listeners[eventName] = listeners;
-  };
-
-  EventEmitter.prototype.off = function (eventName, fn) {
-    var listeners = this._listeners[eventName] || [];
-    if (fn) {
-      pull(listeners, fn);
-    } else {
-      delete this._listeners[eventName];
-    }
-  };
-
-  EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = this._listeners[eventName] || [];
-
-    listeners.forEach(function (listener) {
-      listener.apply(null, args);
-    });
-  };
-
-  return EventEmitter;
-
-});
-
 /**
  *  Copyright (c) 2014, Facebook, Inc.
  *  All rights reserved.
@@ -9213,6 +9173,45 @@ define('event-emitter',['lodash-amd/modern/arrays/pull'], function (pull) {
   return Immutable;
 
 }));
+define('event-emitter',['lodash-amd/modern/arrays/pull',
+  'immutable/dist/immutable'], function (pull, Immutable) {
+
+  
+
+  // TODO: once
+  // TODO: unit test
+  // Good example of a complete(?) implementation: https://github.com/Wolfy87/EventEmitter
+  function EventEmitter() {
+    this._listeners = {};
+  }
+
+  EventEmitter.prototype.on = function (eventName, fn) {
+    var listeners = this._listeners[eventName] || Immutable.Set();
+
+    this._listeners[eventName] = listeners.add(fn);
+  };
+
+  EventEmitter.prototype.off = function (eventName, fn) {
+    var listeners = this._listeners[eventName] || Immutable.Set();
+    if (fn) {
+      listeners = listeners.delete(fn);
+    } else {
+      listeners = listeners.clear();
+    }
+  };
+
+  EventEmitter.prototype.trigger = function (eventName, args) {
+    var listeners = this._listeners[eventName] || Immutable.Set();
+
+    listeners.forEach(function (listener) {
+      listener.apply(null, args);
+    });
+  };
+
+  return EventEmitter;
+
+});
+
 define('scribe',[
   'lodash-amd/modern/objects/defaults',
   './plugins/core/commands',
