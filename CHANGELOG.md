@@ -1,3 +1,7 @@
+# 1.2.3
+
+Changes the EventEmitter to store callbacks in sets to enforce uniqueness and avoid duplicate calls
+
 # 1.2.1
 
 Fixes a typo with the use of options in the default command patches that was breaking Browserify
