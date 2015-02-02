@@ -9,10 +9,9 @@ define(function () {
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
   // TODO: write tests. unit or integration?
-  Node.prototype.getAncestor = function (nodeFilter) {
+  Node.prototype.getAncestor = function (rootElement, nodeFilter) {
     var isTopContainerElement = function (element) {
-      return element && element.attributes
-        && element.attributes.getNamedItem('contenteditable');
+      return rootElement === element;
     };
     // TODO: should this happen here?
     if (isTopContainerElement(this.node)) {

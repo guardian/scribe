@@ -27,7 +27,7 @@ function (elementHelper) {
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
       var isTopContainerElement = node.node && scribe.el === node.node;
 
-      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
+      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(scribe.el, nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
