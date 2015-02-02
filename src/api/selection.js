@@ -25,8 +25,7 @@ function (elementHelper) {
       if (!range) { return; }
 
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      var isTopContainerElement = node.node && node.node.attributes
-         && node.node.attributes.getNamedItem('contenteditable');
+      var isTopContainerElement = node.node && scribe.el === node.node;
 
       return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
     };
