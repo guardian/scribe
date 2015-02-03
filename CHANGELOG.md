@@ -1,3 +1,7 @@
+# 1.2.4
+
+Changes the way that root nodes are detected, the code now uses the element that the Scribe instance is bound to rather than looking for contenteditable attributes.
+
 # 1.2.3
 
 Changes the EventEmitter to store callbacks in sets to enforce uniqueness and avoid duplicate calls
