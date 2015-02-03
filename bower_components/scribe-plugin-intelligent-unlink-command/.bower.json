@@ -1,19 +1,19 @@
 {
   "name": "scribe-plugin-intelligent-unlink-command",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./scribe-plugin-intelligent-unlink-command.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
   "license": "Apache 2.0",
   "homepage": "https://github.com/guardian/scribe-plugin-intelligent-unlink-command",
-  "_release": "0.1.5",
+  "_release": "0.1.6",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.5",
-    "commit": "2e241199f09be901dfa5ce92936a12bc8372f569"
+    "tag": "v0.1.6",
+    "commit": "3a70e603a1a5b7d572fc73c1bab0fe0eea21931f"
   },
   "_source": "git://github.com/guardian/scribe-plugin-intelligent-unlink-command.git",
-  "_target": "0.1.5",
+  "_target": "0.1.6",
   "_originalSource": "scribe-plugin-intelligent-unlink-command"
 }
