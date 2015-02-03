@@ -3754,10 +3754,9 @@ define('api/node',[],function () {
   // TODO: should the return value be wrapped in one of our APIs?
   // Node or Selection?
   // TODO: write tests. unit or integration?
-  Node.prototype.getAncestor = function (nodeFilter) {
+  Node.prototype.getAncestor = function (rootElement, nodeFilter) {
     var isTopContainerElement = function (element) {
-      return element && element.attributes
-        && element.attributes.getNamedItem('contenteditable');
+      return rootElement === element;
     };
     // TODO: should this happen here?
     if (isTopContainerElement(this.node)) {
@@ -3817,10 +3816,9 @@ function (elementHelper) {
       if (!range) { return; }
 
       var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      var isTopContainerElement = node.node && node.node.attributes
-         && node.node.attributes.getNamedItem('contenteditable');
+      var isTopContainerElement = node.node && scribe.el === node.node;
 
-      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(nodeFilter);
+      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(scribe.el, nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
