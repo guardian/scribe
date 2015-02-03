@@ -10,10 +10,26 @@ function (elementHelper) {
      * Wrapper for object holding currently selected text.
      */
     function Selection() {
-      this.selection = window.getSelection();
+      var rootDoc = document;
 
+      // find the parent document or document fragment
+      var currentElement = scribe.el.parentNode;
+      while(currentElement && currentElement.nodeType !== 11 && currentElement.nodeType !== 9) { // 11 = DOCUMENT_FRAGMENT_NODE, 9 = DOCUMENT
+        currentElement = currentElement.parentNode;
+      }
+
+      // if we found a document fragment and it has a getSelection method, set it to the root doc
+      if (currentElement.nodeType === 11 && currentElement.getSelection) {
+        rootDoc = currentElement;
+      }
+
+      this.selection = rootDoc.getSelection();
       if (this.selection.rangeCount) {
-        this.range = this.selection.getRangeAt(0);
+        // create the range to avoid chrome bug from getRangeAt / window.getSelection()
+        // https://code.google.com/p/chromium/issues/detail?id=380690
+        this.range = document.createRange();
+        this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
+        this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
       }
     }
 
