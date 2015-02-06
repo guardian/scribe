@@ -100,7 +100,8 @@ require({
       ul: {},
       li: {},
       a: { href: true },
-      h2: {}
+      h2: {},
+      u: {}
     }
   }));
   scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHtml());
