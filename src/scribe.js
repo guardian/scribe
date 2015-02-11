@@ -155,7 +155,7 @@ define([
     if (skipFormatters) {
       this._skipFormatters = true;
     }
-    this.el.innerHTML = html;
+    if (this.el.innerHTML !== html) this.el.innerHTML = html;
   };
 
   Scribe.prototype.getHTML = function () {
