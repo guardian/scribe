@@ -148,8 +148,8 @@ function (elementHelper) {
          * element [the text node] leaving the empty H2 behind.
          **/
 
-
-        if (! this.selection.isCollapsed) {
+        // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
+        if (! this.range.collapsed) {
           // Start marker
           var rangeStart = this.range.cloneRange();
           rangeStart.collapse(true);
