@@ -1,3 +1,7 @@
+# 1.2.5
+
+IE11 compatiability changes from [Deains](https://github.com/deains), thank you
+
 # 1.2.4
 
 Changes the way that root nodes are detected, the code now uses the element that the Scribe instance is bound to rather than looking for contenteditable attributes.
