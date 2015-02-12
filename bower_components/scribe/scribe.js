@@ -2357,7 +2357,7 @@ define('plugins/core/events',[
         }
 
         function getFirstDeepestChild(node) {
-          var treeWalker = document.createTreeWalker(node);
+          var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
             // TODO: build list of non-empty elements (used elsewhere)
@@ -2752,7 +2752,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 
   // Traverse the tree, wrapping child nodes as we go.
   function traverse(scribe, parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
     var node = treeWalker.firstChild();
 
     // FIXME: does this recurse down?
@@ -3000,7 +3000,7 @@ define('plugins/core/inline-elements-mode',[],function () {
 
   // TODO: abstract
   function hasContent(rootNode) {
-    var treeWalker = document.createTreeWalker(rootNode);
+    var treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
@@ -3234,7 +3234,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
           sanitize(scribe.el);
 
           function sanitize(parentNode) {
-            var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT);
+            var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
             var node = treeWalker.firstChild();
             if (!node) { return; }
 
@@ -4007,7 +4007,7 @@ function (elementHelper) {
       // return true if nested inline tags ultimately just contain <br> or ""
       function isEmptyInlineElement(node) {
 
-        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT);
+        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
 
         var currentNode = treeWalker.root;
 
