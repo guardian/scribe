@@ -26,11 +26,18 @@ define(['lodash-amd/modern/arrays/pull',
   };
 
   EventEmitter.prototype.trigger = function (eventName, args) {
-    var listeners = this._listeners[eventName] || Immutable.Set();
 
-    listeners.forEach(function (listener) {
-      listener.apply(null, args);
-    });
+    //fire events like my:custom:event -> my:custom -> my
+    var events = eventName.split(':');
+    while(events.length){
+      var currentEvent = events.join(':');
+      var listeners = this._listeners[currentEvent] || Immutable.Set();
+      //trigger handles
+      listeners.forEach(function (listener) {
+        listener.apply(null, args);
+      });
+      events.splice((events.length - 1), 1);
+    }
   };
 
   return EventEmitter;
