@@ -56,7 +56,6 @@ describe('commands', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           scribeNode.click();
-
           return executeCommand('bold');
         });
 
@@ -68,6 +67,26 @@ describe('commands', function () {
           it('should insert the typed characters inside of a B element, inside of a P element', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.have.html('<p><b>1</b><firefox-bogus-br></p>');
+            });
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>1&nbsp;</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('bold');
+        });
+
+        when('the user types', function () {
+          beforeEach(function () {
+            return scribeNode.sendKeys('2');
+          });
+
+          it('should insert the typed characters inside of a B element, inside of a P element', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p><b>2</b>1&nbsp;</p>');
             });
           });
         });
