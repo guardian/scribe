@@ -155,7 +155,10 @@ define([
     if (skipFormatters) {
       this._skipFormatters = true;
     }
-    this.el.innerHTML = html;
+    // IE11: Setting HTML to the value it already has causes breakages elsewhere (see #336)
+    if (this.el.innerHTML !== html) {
+      this.el.innerHTML = html;
+    }
   };
 
   Scribe.prototype.getHTML = function () {
