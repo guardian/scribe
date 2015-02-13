@@ -14,12 +14,12 @@ function (elementHelper) {
 
       // find the parent document or document fragment
       var currentElement = scribe.el.parentNode;
-      while(currentElement && currentElement.nodeType !== 11 && currentElement.nodeType !== 9) { // 11 = DOCUMENT_FRAGMENT_NODE, 9 = DOCUMENT
+      while(currentElement && currentElement.nodeType !== Node.DOCUMENT_FRAGMENT_NODE && currentElement.nodeType !== Node.DOCUMENT_NODE) {
         currentElement = currentElement.parentNode;
       }
 
       // if we found a document fragment and it has a getSelection method, set it to the root doc
-      if (currentElement.nodeType === 11 && currentElement.getSelection) {
+      if (currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
         rootDoc = currentElement;
       }
 

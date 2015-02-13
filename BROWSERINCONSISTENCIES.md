@@ -98,3 +98,14 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 ### `Range.commonAncestorContainer`
 * Firefox: Returns `P` when a whole `SUP` is selected:
   http://jsbin.com/xoqul/1/edit?js,console,output
+
+### `Selection.getRangeAt`
+* Chrome (< 42): Selection.getRangeAt() returns an incorrect range when in shadow DOM
+  https://code.google.com/p/chromium/issues/detail?id=380690
+
+### `Selection.isCollapsed`
+* Chrome: Selection.isCollapsed is incorrect when in shadow DOM
+  https://code.google.com/p/chromium/issues/detail?id=447523
+  http://jsfiddle.net/7zgegoda/2/
+
+
