@@ -4,4 +4,4 @@
 /vendor/
 /examples/build.js
 .tern-port
-.npm-degub.log
+.npm-debug.log
