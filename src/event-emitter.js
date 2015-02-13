@@ -29,7 +29,7 @@ define(['lodash-amd/modern/arrays/pull',
 
     //fire events like my:custom:event -> my:custom -> my
     var events = eventName.split(':');
-    while(events.length){
+    while(!!events.length){
       var currentEvent = events.join(':');
       var listeners = this._listeners[currentEvent] || Immutable.Set();
       //trigger handles
