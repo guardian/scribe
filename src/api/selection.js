@@ -19,7 +19,7 @@ function (elementHelper) {
       }
 
       // if we found a document fragment and it has a getSelection method, set it to the root doc
-      if (currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
+      if (currentElement && currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
         rootDoc = currentElement;
       }
 
