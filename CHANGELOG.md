@@ -1,3 +1,7 @@
+# 1.2.7
+
+ShadowDOM fixes for Chrome from [ShaunNetherby](https://github.com/shaunnetherby), thanks
+
 # 1.2.5
 
 IE11 compatiability changes from [Deains](https://github.com/deains), thank you
