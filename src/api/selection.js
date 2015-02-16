@@ -10,10 +10,26 @@ function (elementHelper) {
      * Wrapper for object holding currently selected text.
      */
     function Selection() {
-      this.selection = window.getSelection();
+      var rootDoc = document;
 
+      // find the parent document or document fragment
+      var currentElement = scribe.el.parentNode;
+      while(currentElement && currentElement.nodeType !== Node.DOCUMENT_FRAGMENT_NODE && currentElement.nodeType !== Node.DOCUMENT_NODE) {
+        currentElement = currentElement.parentNode;
+      }
+
+      // if we found a document fragment and it has a getSelection method, set it to the root doc
+      if (currentElement && currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
+        rootDoc = currentElement;
+      }
+
+      this.selection = rootDoc.getSelection();
       if (this.selection.rangeCount) {
-        this.range = this.selection.getRangeAt(0);
+        // create the range to avoid chrome bug from getRangeAt / window.getSelection()
+        // https://code.google.com/p/chromium/issues/detail?id=380690
+        this.range = document.createRange();
+        this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
+        this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
       }
     }
 
@@ -132,8 +148,8 @@ function (elementHelper) {
          * element [the text node] leaving the empty H2 behind.
          **/
 
-
-        if (! this.selection.isCollapsed) {
+        // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
+        if (! this.range.collapsed) {
           // Start marker
           var rangeStart = this.range.cloneRange();
           rangeStart.collapse(true);
