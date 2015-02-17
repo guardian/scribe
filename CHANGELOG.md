@@ -1,3 +1,6 @@
+# 1.3.8
+Event waterfall / [Event Namespacing](https://github.com/guardian/scribe/pull/337)
+
 # 1.2.7
 
 ShadowDOM fixes for Chrome from [ShaunNetherby](https://github.com/shaunnetherby), thanks
