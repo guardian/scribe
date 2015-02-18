@@ -260,7 +260,12 @@ define([
   Scribe.prototype.isDebugModeEnabled = function () {
     return this.options.debug;
   };
-
+  
+  /**
+   * Applies HTML formatting to all editor text.
+   * @param {String} phase sanitize/normalize/export are the standard phases
+   * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
+   */
   Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
     this._htmlFormatterFactory.formatters[phase]
       = this._htmlFormatterFactory.formatters[phase].push(fn);
