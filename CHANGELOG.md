@@ -1,4 +1,9 @@
-# 1.3.8
+# 1.2.9
+
+Clarifies the use of nodeName in the Command implementation. Thanks [Christopher Liu](https://github.com/christopherliu)
+
+# 1.2.8
+
 Event waterfall / [Event Namespacing](https://github.com/guardian/scribe/pull/337)
 
 # 1.2.7
