@@ -4067,7 +4067,7 @@ define('api/simple-command',[],function () {
     function SimpleCommand(commandName, nodeName) {
       scribe.api.Command.call(this, commandName);
 
-      this.nodeName = nodeName;
+      this._nodeName = nodeName;
     }
 
     SimpleCommand.prototype = Object.create(api.Command.prototype);
@@ -4076,7 +4076,7 @@ define('api/simple-command',[],function () {
     SimpleCommand.prototype.queryState = function () {
       var selection = new scribe.api.Selection();
       return scribe.api.Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
-        return node.nodeName === this.nodeName;
+        return node.nodeName === this._nodeName;
       }.bind(this));
     };
 
@@ -9496,7 +9496,12 @@ define('scribe',[
   Scribe.prototype.isDebugModeEnabled = function () {
     return this.options.debug;
   };
-
+  
+  /**
+   * Applies HTML formatting to all editor text.
+   * @param {String} phase sanitize/normalize/export are the standard phases
+   * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
+   */
   Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
     this._htmlFormatterFactory.formatters[phase]
       = this._htmlFormatterFactory.formatters[phase].push(fn);

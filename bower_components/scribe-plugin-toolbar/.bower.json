@@ -1,19 +1,19 @@
 {
   "name": "scribe-plugin-toolbar",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "./scribe-plugin-toolbar.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
   "license": "Apache 2.0",
   "homepage": "https://github.com/guardian/scribe-plugin-toolbar",
-  "_release": "0.1.4",
+  "_release": "0.1.5",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.4",
-    "commit": "441fa9060657b697673c764379ef84919aef922b"
+    "tag": "v0.1.5",
+    "commit": "915610ae46a2a0ce968b3fc5ae40073f106d62a2"
   },
   "_source": "git://github.com/guardian/scribe-plugin-toolbar.git",
-  "_target": "0.1.4",
+  "_target": "0.1.5",
   "_originalSource": "scribe-plugin-toolbar"
 }
