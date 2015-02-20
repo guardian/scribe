@@ -266,14 +266,14 @@ define([
    * @param {String} phase sanitize/normalize/export are the standard phases
    * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
    */
-  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
+  Scribe.prototype.registerHTMLFormatter = function (phase, formatter) {
     this._htmlFormatterFactory.formatters[phase]
-      = this._htmlFormatterFactory.formatters[phase].push(fn);
+      = this._htmlFormatterFactory.formatters[phase].push(formatter);
   };
 
-  Scribe.prototype.registerPlainTextFormatter = function (fn) {
+  Scribe.prototype.registerPlainTextFormatter = function (formatter) {
     this._plainTextFormatterFactory.formatters
-      = this._plainTextFormatterFactory.formatters.push(fn);
+      = this._plainTextFormatterFactory.formatters.push(formatter);
   };
 
   // TODO: abstract
