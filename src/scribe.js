@@ -72,7 +72,7 @@ define([
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
 
-    if(this.options.shouldUndo){
+    if (this.options.shouldUndo) {
       var UndoManager = buildUndoManager(this);
       this.undoManager = new UndoManager();
     }
@@ -178,7 +178,7 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    if(this.options.shouldUndo){
+    if (this.options.shouldUndo) {
       var previousUndoItem = this.undoManager.stack[this.undoManager.position];
       var previousContent = previousUndoItem && previousUndoItem
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');

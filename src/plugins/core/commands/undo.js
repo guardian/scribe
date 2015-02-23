@@ -20,7 +20,7 @@ define(function () {
 
       scribe.commands.undo = undoCommand;
 
-      if(scribe.options.shouldUndo){
+      if (scribe.options.shouldUndo) {
         scribe.el.addEventListener('keydown', function (event) {
           // TODO: use lib to abstract meta/ctrl keys?
           if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
