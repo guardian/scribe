@@ -3820,8 +3820,19 @@ function (elementHelper) {
         // create the range to avoid chrome bug from getRangeAt / window.getSelection()
         // https://code.google.com/p/chromium/issues/detail?id=380690
         this.range = document.createRange();
+        var reverseRange = document.createRange();
+
         this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
-        this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
+        reverseRange.setStart(this.selection.focusNode, this.selection.focusOffset);
+
+        // Check if anchorNode is before focusNode, use reverseRange if not
+        if (this.range.compareBoundaryPoints(Range.START_TO_START, reverseRange) <= 0) {
+          this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
+        }
+        else {
+          this.range = reverseRange;
+          this.range.setEnd(this.selection.anchorNode, this.selection.anchorOffset);
+        }
       }
     }
 
@@ -9502,14 +9513,14 @@ define('scribe',[
    * @param {String} phase sanitize/normalize/export are the standard phases
    * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
    */
-  Scribe.prototype.registerHTMLFormatter = function (phase, fn) {
+  Scribe.prototype.registerHTMLFormatter = function (phase, formatter) {
     this._htmlFormatterFactory.formatters[phase]
-      = this._htmlFormatterFactory.formatters[phase].push(fn);
+      = this._htmlFormatterFactory.formatters[phase].push(formatter);
   };
 
-  Scribe.prototype.registerPlainTextFormatter = function (fn) {
+  Scribe.prototype.registerPlainTextFormatter = function (formatter) {
     this._plainTextFormatterFactory.formatters
-      = this._plainTextFormatterFactory.formatters.push(fn);
+      = this._plainTextFormatterFactory.formatters.push(formatter);
   };
 
   // TODO: abstract
