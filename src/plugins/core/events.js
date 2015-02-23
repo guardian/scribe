@@ -94,7 +94,9 @@ define([
           if (isEditorActive) {
             // Discard the last history item, as we're going to be adding
             // a new clean history item next.
-            scribe.undoManager.undo();
+            if (scribe.options.shouldUndo) {
+              scribe.undoManager.undo();
+            }
 
             // Pass content through formatters, place caret back
             scribe.transactionManager.run(runFormatters);

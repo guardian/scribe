@@ -47,7 +47,9 @@ define([], function () {
                * it's too late to cancel it at this stage (and it's
                * not happened yet at keydown time).
                */
-              scribe.undoManager.undo();
+              if (scribe.options.shouldUndo) {
+                scribe.undoManager.undo();
+              }
 
               scribe.transactionManager.run(function () {
                 // Store the caret position
