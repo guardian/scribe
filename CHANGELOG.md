@@ -1,3 +1,7 @@
+# 1.2.10
+
+Bugfixes for selections that are 'reversed' (i.e. selected from right to left) from [Deains](https://github.com/deains). Thanks
+
 # 1.2.9
 
 Clarifies the use of nodeName in the Command implementation. Thanks [Christopher Liu](https://github.com/christopherliu)
