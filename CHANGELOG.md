@@ -1,3 +1,7 @@
+# 1.2.11
+
+Added configuration for removing `scribe.undoManager`
+
 # 1.2.10
 
 Bugfixes for selections that are 'reversed' (i.e. selected from right to left) from [Deains](https://github.com/deains). Thanks
