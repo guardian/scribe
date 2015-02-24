@@ -49,7 +49,9 @@ Alternatively, you can [access the distribution files through GitHub releases](h
   <dt><pre>allowBlockElements</pre></dt>
   <dd>Enable/disable block element mode (enabled by default)</dd>
   <dt><pre>defaultCommandPatches</pre></dt>
-  <dd>Defines which command patches should be loaded by default</dd> 
+  <dd>Defines which command patches should be loaded by default</dd>
+  <dt><pre>undo: { enabled: false }</pre></dt>
+  <dd>Enable/disable Scribe's custom undo manager</dd>
 </dl>
 
 ## Usage Example
@@ -185,6 +187,15 @@ this behaviour Scribe needs to manipulate the DOM once again.
 
 The undo stack breaks whenever DOM manipulation is used instead of the native
 command API, therefore we have to use our own.
+
+Scribe's undo manager can be turned off by configuration eg:
+``` js
+var scribe = new Scribe(scribeElement, {
+  undo: {
+    enabled: false
+  }
+})
+```
 
 [browser inconsistencies]: https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md
 [Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands
