@@ -47,6 +47,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
+      undo: { enabled: true },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -71,8 +72,12 @@ define([
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
 
-    var UndoManager = buildUndoManager(this);
-    this.undoManager = new UndoManager();
+    //added for explicit checking later eg if (scribe.undoManager) { ... }
+    this.undoManager = false;
+    if (this.options.undo.enabled) {
+      var UndoManager = buildUndoManager(this);
+      this.undoManager = new UndoManager();
+    }
 
     this.el.setAttribute('contenteditable', true);
 
@@ -175,30 +180,35 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    var previousUndoItem = this.undoManager.stack[this.undoManager.position];
-    var previousContent = previousUndoItem && previousUndoItem
-      .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
+    if (this.options.undo.enabled) {
+      var previousUndoItem = this.undoManager.stack[this.undoManager.position];
+      var previousContent = previousUndoItem && previousUndoItem
+        .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-    /**
-     * Chrome and Firefox: If we did push to the history, this would break
-     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
-     * This happens when doing any DOM manipulation.
-     */
+      /**
+       * Chrome and Firefox: If we did push to the history, this would break
+       * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+       * This happens when doing any DOM manipulation.
+       */
 
-    // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
-      var selection = new this.api.Selection();
+      // We only want to push the history if the content actually changed.
+      if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
+        var selection = new this.api.Selection();
 
-      selection.placeMarkers();
-      var html = this.getHTML();
-      selection.removeMarkers();
+        selection.placeMarkers();
+        var html = this.getHTML();
+        selection.removeMarkers();
 
-      this.undoManager.push(html);
+        this.undoManager.push(html);
 
-      return true;
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
+
   };
 
   Scribe.prototype.getCommand = function (commandName) {
@@ -260,7 +270,7 @@ define([
   Scribe.prototype.isDebugModeEnabled = function () {
     return this.options.debug;
   };
-  
+
   /**
    * Applies HTML formatting to all editor text.
    * @param {String} phase sanitize/normalize/export are the standard phases
