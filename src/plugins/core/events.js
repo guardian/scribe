@@ -92,7 +92,7 @@ define([
           // `scribe.setContent`), we do not want to push to the history. (This
           // happens on the first `focus` event).
           if (isEditorActive) {
-            if (scribe.options.shouldUndo) {
+            if (scribe.undoManager) {
               // Discard the last history item, as we're going to be adding
               // a new clean history item next.
               scribe.undoManager.undo();

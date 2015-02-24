@@ -47,7 +47,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      shouldUndo: true,
+      undo: { enabled: true },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -72,7 +72,9 @@ define([
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
 
-    if (this.options.shouldUndo) {
+    //added for explicit checking later eg if (scribe.undoManager) { ... }
+    this.undoManager = false;
+    if (this.options.undo.enabled) {
       var UndoManager = buildUndoManager(this);
       this.undoManager = new UndoManager();
     }
@@ -178,7 +180,7 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    if (this.options.shouldUndo) {
+    if (this.options.undo.enabled) {
       var previousUndoItem = this.undoManager.stack[this.undoManager.position];
       var previousContent = previousUndoItem && previousUndoItem
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');

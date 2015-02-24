@@ -47,7 +47,7 @@ define([], function () {
                * it's too late to cancel it at this stage (and it's
                * not happened yet at keydown time).
                */
-              if (scribe.options.shouldUndo) {
+              if (scribe.undoManager) {
                 scribe.undoManager.undo();
               }
 
