@@ -19,7 +19,7 @@ define('scribe-plugin-toolbar',[],function () {
            * the command, because it might rely on selection data.
            */
           scribe.el.focus();
-          command.execute();
+          command.execute(button.dataset.commandValue);
           /**
            * Chrome has a bit of magic to re-focus the `contenteditable` when a
            * command is executed.
@@ -46,7 +46,7 @@ define('scribe-plugin-toolbar',[],function () {
           var selection = new scribe.api.Selection();
 
           // TODO: Do we need to check for the selection?
-          if (selection.range && command.queryState()) {
+          if (selection.range && command.queryState(button.dataset.commandValue)) {
             button.classList.add('active');
           } else {
             button.classList.remove('active');
