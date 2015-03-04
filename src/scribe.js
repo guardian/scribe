@@ -29,7 +29,7 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager,
+  UndoManager,
   EventEmitter,
   elementHelpers,
   nodeHelpers,
@@ -37,6 +37,9 @@ define([
 ) {
 
   'use strict';
+
+  var intervalTimer = 0;
+  var merge = false;
 
   function Scribe(el, options) {
     EventEmitter.call(this);
@@ -47,7 +50,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true },
+      undo: { enabled: true, interval: 1000 },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -75,8 +78,7 @@ define([
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
     if (this.options.undo.enabled) {
-      var UndoManager = buildUndoManager(this);
-      this.undoManager = new UndoManager();
+      this.undoManager = new UndoManager(100, this.el);
     }
 
     this.el.setAttribute('contenteditable', true);
@@ -179,10 +181,19 @@ define([
     return this.el.textContent;
   };
 
+  /**
+   * Replace the current undo manager. Can be used by undo manager plugins or directly by the user.
+   * @param {Object} undoManager The undo manager instance to be used by the current editor.
+   */
+  Scribe.prototype.setUndoManager = function (undoManager) {
+	  this.undoManager = undoManager;
+  };
+
   Scribe.prototype.pushHistory = function () {
     if (this.options.undo.enabled) {
-      var previousUndoItem = this.undoManager.stack[this.undoManager.position];
-      var previousContent = previousUndoItem && previousUndoItem
+      var previousUndoItem = this.undoManager.item(this.undoManager.position);
+      var previousContent = previousUndoItem && previousUndoItem[previousUndoItem.length - 1].content;
+      var previousContentNoMarker = previousContent && previousContent
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
       /**
@@ -192,14 +203,28 @@ define([
        */
 
       // We only want to push the history if the content actually changed.
-      if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
+      if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContentNoMarker)) {
         var selection = new this.api.Selection();
 
         selection.placeMarkers();
         var html = this.getHTML();
         selection.removeMarkers();
 
-        this.undoManager.push(html);
+        // Register a new change transaction.
+        var scribe = this;
+        this.undoManager.transact({
+          previousContent: previousContent,
+          content: html,
+		  scribe: scribe,
+          execute: function () { },
+          undo: function () { this.scribe.restoreFromHistory(this.previousContent); },
+          redo: function () { this.scribe.restoreFromHistory(this.content); }
+        }, merge);
+
+        // Merge next transaction if it happens before the interval option, otherwise don't merge.
+        clearTimeout(intervalTimer);
+        merge = true;
+        intervalTimer = setTimeout(function() { merge = false; }, this.options.undo.interval);
 
         return true;
       } else {
