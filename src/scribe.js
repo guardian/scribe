@@ -204,7 +204,7 @@ define([
 
         // Register a new change transaction.
         var scribe = this;
-        this.undoManager.transact({
+        scribe.undoManager.transact({
           previousContent: previousContent,
           content: html,
           scribe: scribe,
