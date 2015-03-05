@@ -181,14 +181,6 @@ define([
     return this.el.textContent;
   };
 
-  /**
-   * Replace the current undo manager. Can be used by undo manager plugins or directly by the user.
-   * @param {Object} undoManager The undo manager instance to be used by the current editor.
-   */
-  Scribe.prototype.setUndoManager = function (undoManager) {
-	  this.undoManager = undoManager;
-  };
-
   Scribe.prototype.pushHistory = function () {
     if (this.options.undo.enabled) {
       var previousUndoItem = this.undoManager.item(this.undoManager.position);
@@ -215,7 +207,7 @@ define([
         this.undoManager.transact({
           previousContent: previousContent,
           content: html,
-		  scribe: scribe,
+          scribe: scribe,
           execute: function () { },
           undo: function () { this.scribe.restoreFromHistory(this.previousContent); },
           redo: function () { this.scribe.restoreFromHistory(this.content); }
