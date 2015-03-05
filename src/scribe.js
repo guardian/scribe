@@ -50,7 +50,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true, interval: 1000 },
+      undo: { enabled: true, interval: 0, limit: 100 },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -78,7 +78,7 @@ define([
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
     if (this.options.undo.enabled) {
-      this.undoManager = new UndoManager(100, this.el);
+      this.undoManager = new UndoManager(this.options.undo.limit, this.el);
     }
 
     this.el.setAttribute('contenteditable', true);
@@ -195,7 +195,7 @@ define([
        */
 
       // We only want to push the history if the content actually changed.
-      if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContentNoMarker)) {
+      if (this.undoManager.length == 0 || this.getHTML() !== previousContentNoMarker) {
         var selection = new this.api.Selection();
 
         selection.placeMarkers();
