@@ -50,7 +50,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true, interval: 0, limit: 100 },
+      undo: { enabled: true, interval: 50, limit: 100 },
       defaultCommandPatches: [
         'bold',
         'indent',
