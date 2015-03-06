@@ -38,9 +38,6 @@ define([
 
   'use strict';
 
-  var intervalTimer = 0;
-  var merge = false;
-
   function Scribe(el, options) {
     EventEmitter.call(this);
 
@@ -50,7 +47,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true, interval: 50, limit: 100 },
+      undo: { enabled: true, limit: 100, interval: 1000 },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -79,6 +76,10 @@ define([
     this.undoManager = false;
     if (this.options.undo.enabled) {
       this.undoManager = new UndoManager(this.options.undo.limit, this.el);
+      this._merge = false;
+      this._forceMerge = false;
+      this._mergeTimer = 0;
+      this._previousContent = this.getHTML();
     }
 
     this.el.setAttribute('contenteditable', true);
@@ -182,50 +183,61 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    if (this.options.undo.enabled) {
-      var previousUndoItem = this.undoManager.item(this.undoManager.position);
-      var previousContent = previousUndoItem && previousUndoItem[previousUndoItem.length - 1].content;
+    /**
+     * Chrome and Firefox: If we did push to the history, this would break
+     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+     * This happens when doing any DOM manipulation.
+     */
+    var scribe = this;
+
+    if (scribe.options.undo.enabled) {
+      // Get scribe previous content, and strip markers.
+      var previousContent = scribe._previousContent;
       var previousContentNoMarker = previousContent && previousContent
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-      /**
-       * Chrome and Firefox: If we did push to the history, this would break
-       * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
-       * This happens when doing any DOM manipulation.
-       */
-
       // We only want to push the history if the content actually changed.
-      if (this.undoManager.length == 0 || this.getHTML() !== previousContentNoMarker) {
-        var selection = new this.api.Selection();
+      if (scribe.getHTML() !== previousContentNoMarker) {
+        var selection = new scribe.api.Selection();
 
         selection.placeMarkers();
-        var html = this.getHTML();
+        var content = scribe.getHTML();
         selection.removeMarkers();
 
-        // Register a new change transaction.
-        var scribe = this;
-        scribe.undoManager.transact({
-          previousContent: previousContent,
-          content: html,
-          scribe: scribe,
-          execute: function () { },
-          undo: function () { this.scribe.restoreFromHistory(this.previousContent); },
-          redo: function () { this.scribe.restoreFromHistory(this.content); }
-        }, merge);
+        // Checking if there is a need to merge, there is an item to merge with,
+        // and the last item is a scribe transaction of the same source.
+        // It is possible the last transaction is not for the same instance, or
+        // even not a scribe transaction (e.g. when using a shared undo manager).
+
+        var lastItem = scribe.undoManager.item(scribe.undoManager.position);
+        if ((scribe._merge || scribe._forceMerge) && lastItem && scribe == lastItem[0].scribe) {
+          // Merge manually with the last item to save more memory space.
+          lastItem[0].content = content;
+
+        }
+        else {
+          // Otherwise, register a new transaction.
+          scribe.undoManager.transact({
+            previousContent: previousContent,
+            content: content,
+            scribe: scribe,
+            execute: function () { },
+            undo: function () { this.scribe.restoreFromHistory(this.previousContent); },
+            redo: function () { this.scribe.restoreFromHistory(this.content); }
+          }, false);
+        }
+        scribe._previousContent = content;
 
         // Merge next transaction if it happens before the interval option, otherwise don't merge.
-        clearTimeout(intervalTimer);
-        merge = true;
-        intervalTimer = setTimeout(function() { merge = false; }, this.options.undo.interval);
+        clearTimeout(scribe._mergeTimer);
+        scribe._merge = true;
+        scribe._mergeTimer = setTimeout(function() { scribe._merge = false; }, scribe.options.undo.interval);
 
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
 
+    return false;
   };
 
   Scribe.prototype.getCommand = function (commandName) {
@@ -256,6 +268,7 @@ define([
     }
 
     this.setHTML(content);
+    this._previousContent = content;
 
     this.trigger('content-changed');
   };
