@@ -47,7 +47,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true, limit: 100, interval: 1000 },
+      undo: { manager: null, enabled: true, limit: 100, interval: 1000 },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -75,11 +75,18 @@ define([
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
     if (this.options.undo.enabled) {
-      this.undoManager = new UndoManager(this.options.undo.limit, this.el);
+      if (this.options.undo.manager) {
+        this.undoManager = this.options.undo.manager;
+      }
+      else {
+        this.undoManager = new UndoManager(this.options.undo.limit, this.el);
+      }
       this._merge = false;
       this._forceMerge = false;
       this._mergeTimer = 0;
     }
+
+    this.setHTML(this.getHTML());
 
     this.el.setAttribute('contenteditable', true);
 
@@ -168,7 +175,6 @@ define([
     }
 
     this._previousContent = this.getHTML();
-    console.log(this._previousContent);
   };
 
   Scribe.prototype.getHTML = function () {
