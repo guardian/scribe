@@ -38,9 +38,9 @@ define([], function () {
               /**
                * The 'input' event listener has already triggered
                * and recorded the faulty content as an item in the
-               * UndoManager.  We interfere with the undoManager
-               * here to discard that history item, and let the next
-               * transaction run produce a clean one instead.
+               * UndoManager. We interfere with the undoManager
+               * by force merging that transaction with the next
+               * transaction which produce a clean one instead.
                *
                * FIXME: ideally we would not trigger a
                * 'content-changed' event with faulty HTML at all, but
@@ -78,7 +78,7 @@ define([], function () {
                 });
 
                 selection.selectMarkers();
-              });
+              }, true);
             }
           }
         });
