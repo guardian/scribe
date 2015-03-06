@@ -25,7 +25,7 @@
     "q": "~1.0.0",
     "request": "~2.33.0",
     "scribe-test-harness": "~0.0.17",
-    "selenium-webdriver": "~2.41.0",
+    "selenium-webdriver": "~2.45.1",
     "sinon": "^1.12.2"
   },
   "scripts": {
