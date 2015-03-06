@@ -91,13 +91,14 @@ define([
           // active. If the DOM is mutated when the editor isn't active (e.g.
           // `scribe.setContent`), we do not want to push to the history. (This
           // happens on the first `focus` event).
-          if (isEditorActive) {
-            // Pass content through formatters, place caret back
-            scribe.transactionManager.run(runFormatters);
-          } else {
-            runFormatters();
-          }
 
+          // The previous check is no longer needed, and the above comments are no longer valid.
+          // Now `scribe.setContent` updates the content manually, and `scribe.pushHistory`
+          // will not detect any changes, and nothing will be push into the history.
+          // Any mutations made without `scribe.getContent` will be pushed into the history normally.
+
+          // Pass content through formatters, place caret back
+          scribe.transactionManager.run(runFormatters);
         }
 
         delete scribe._skipFormatters;
