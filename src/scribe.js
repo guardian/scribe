@@ -79,7 +79,6 @@ define([
       this._merge = false;
       this._forceMerge = false;
       this._mergeTimer = 0;
-      this._previousContent = this.getHTML();
     }
 
     this.el.setAttribute('contenteditable', true);
@@ -167,6 +166,9 @@ define([
     if (this.el.innerHTML !== html) {
       this.el.innerHTML = html;
     }
+
+    this._previousContent = this.getHTML();
+    console.log(this._previousContent);
   };
 
   Scribe.prototype.getHTML = function () {
@@ -193,11 +195,11 @@ define([
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
       var previousContent = scribe._previousContent;
-      var previousContentNoMarker = previousContent && previousContent
+      var previousContentNoMarkers = previousContent && previousContent
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
-      if (scribe.getHTML() !== previousContentNoMarker) {
+      if (scribe.getHTML() !== previousContentNoMarkers) {
         var selection = new scribe.api.Selection();
 
         selection.placeMarkers();
@@ -213,7 +215,6 @@ define([
         if ((scribe._merge || scribe._forceMerge) && lastItem && scribe == lastItem[0].scribe) {
           // Merge manually with the last item to save more memory space.
           lastItem[0].content = content;
-
         }
         else {
           // Otherwise, register a new transaction.
@@ -226,7 +227,6 @@ define([
             redo: function () { this.scribe.restoreFromHistory(this.content); }
           }, false);
         }
-        scribe._previousContent = content;
 
         // Merge next transaction if it happens before the interval option, otherwise don't merge.
         clearTimeout(scribe._mergeTimer);
@@ -268,7 +268,6 @@ define([
     }
 
     this.setHTML(content);
-    this._previousContent = content;
 
     this.trigger('content-changed');
   };
