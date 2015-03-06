@@ -11,20 +11,6 @@ define([
   return function () {
     return function (scribe) {
       /**
-       * Push the first history item when the editor is focused.
-       */
-      var pushHistoryOnFocus = function () {
-        // Tabbing into the editor doesn't create a range immediately, so we
-        // have to wait until the next event loop.
-        setTimeout(function () {
-          scribe.pushHistory();
-        }.bind(scribe), 0);
-
-        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
-      }.bind(scribe);
-      scribe.el.addEventListener('focus', pushHistoryOnFocus);
-
-      /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
        * caret at the  earliest point possible inside the first block element.
