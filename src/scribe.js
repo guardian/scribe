@@ -84,6 +84,7 @@ define([
       this._merge = false;
       this._forceMerge = false;
       this._mergeTimer = 0;
+      this._lastItem = {content: ''};
     }
 
     this.setHTML(this.getHTML());
@@ -166,6 +167,8 @@ define([
   };
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
+    this._lastItem.content = html;
+
     if (skipFormatters) {
       this._skipFormatters = true;
     }
@@ -173,8 +176,6 @@ define([
     if (this.el.innerHTML !== html) {
       this.el.innerHTML = html;
     }
-
-    this._previousContent = this.getHTML();
   };
 
   Scribe.prototype.getHTML = function () {
@@ -200,38 +201,38 @@ define([
 
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
-      var previousContent = scribe._previousContent;
-      var previousContentNoMarkers = previousContent && previousContent
+      var lastContentNoMarkers = scribe._lastItem.content
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
-      if (scribe.getHTML() !== previousContentNoMarkers) {
+      if (scribe.getHTML() !== lastContentNoMarkers) {
         var selection = new scribe.api.Selection();
 
         selection.placeMarkers();
         var content = scribe.getHTML();
         selection.removeMarkers();
 
-        // Checking if there is a need to merge, there is an item to merge with,
-        // and the last item is a scribe transaction of the same source.
+        // Checking if there is a need to merge, and that the previous history item
+        // is the last history item of the same scribe instance.
         // It is possible the last transaction is not for the same instance, or
         // even not a scribe transaction (e.g. when using a shared undo manager).
-
-        var lastItem = scribe.undoManager.item(scribe.undoManager.position);
-        if ((scribe._merge || scribe._forceMerge) && lastItem && scribe == lastItem[0].scribe) {
-          // Merge manually with the last item to save more memory space.
-          lastItem[0].content = content;
+        var previousItem = scribe.undoManager.item(scribe.undoManager.position);
+        if ((scribe._merge || scribe._forceMerge) && previousItem && scribe._lastItem == previousItem[0]) {
+          // If so, merge manually with the last item to save more memory space.
+          scribe._lastItem.content = content;
         }
         else {
-          // Otherwise, register a new transaction.
-          scribe.undoManager.transact({
-            previousContent: previousContent,
+          // Otherwise, create a new history item, and register it as a new transaction
+          scribe._lastItem = {
+            previousItem: scribe._lastItem,
             content: content,
             scribe: scribe,
             execute: function () { },
-            undo: function () { this.scribe.restoreFromHistory(this.previousContent); },
-            redo: function () { this.scribe.restoreFromHistory(this.content); }
-          }, false);
+            undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
+            redo: function () { this.scribe.restoreFromHistory(this); }
+          };
+
+          scribe.undoManager.transact(scribe._lastItem, false);
         }
 
         // Merge next transaction if it happens before the interval option, otherwise don't merge.
@@ -251,7 +252,9 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem, true);
+    this._lastItem = historyItem;
+
+    this.setHTML(historyItem.content, true);
 
     // Restore the selection
     var selection = new this.api.Selection();
