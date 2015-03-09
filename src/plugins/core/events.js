@@ -11,6 +11,20 @@ define([
   return function () {
     return function (scribe) {
       /**
+       * Push the first history item when the editor is focused.
+       */
+      var pushHistoryOnFocus = function () {
+        // Tabbing into the editor doesn't create a range immediately, so we
+        // have to wait until the next event loop.
+        setTimeout(function () {
+          scribe.pushHistory();
+        }.bind(scribe), 0);
+
+        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
+      }.bind(scribe);
+      scribe.el.addEventListener('focus', pushHistoryOnFocus);
+
+      /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
        * caret at the  earliest point possible inside the first block element.
@@ -77,14 +91,19 @@ define([
           // active. If the DOM is mutated when the editor isn't active (e.g.
           // `scribe.setContent`), we do not want to push to the history. (This
           // happens on the first `focus` event).
+          if (isEditorActive) {
+            if (scribe.undoManager) {
+              // Discard the last history item, as we're going to be adding
+              // a new clean history item next.
+              scribe.undoManager.undo();
+            }
 
-          // The previous check is no longer needed, and the above comments are no longer valid.
-          // Now `scribe.setContent` updates the content manually, and `scribe.pushHistory`
-          // will not detect any changes, and nothing will be push into the history.
-          // Any mutations made without `scribe.getContent` will be pushed into the history normally.
+            // Pass content through formatters, place caret back
+            scribe.transactionManager.run(runFormatters);
+          } else {
+            runFormatters();
+          }
 
-          // Pass content through formatters, place caret back
-          scribe.transactionManager.run(runFormatters);
         }
 
         delete scribe._skipFormatters;

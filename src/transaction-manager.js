@@ -21,7 +21,7 @@ define(['lodash-amd/modern/objects/assign'], function (assign) {
         }
       },
 
-      run: function (transaction, forceMerge) {
+      run: function (transaction) {
         this.start();
         // If there is an error, don't prevent the transaction from ending.
         try {
@@ -29,9 +29,7 @@ define(['lodash-amd/modern/objects/assign'], function (assign) {
             transaction();
           }
         } finally {
-          scribe._forceMerge = forceMerge === true;
           this.end();
-          scribe._forceMerge = false;
         }
       }
     });
