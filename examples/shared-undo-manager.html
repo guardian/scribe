@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Shared UndoManager</title>
+  <style>
+  #wrapper {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  #editor1, #editor2, #output, #stack {
+    display: block;
+    border: 1px solid gray;
+    height: 100px;
+    width: 100%;
+    padding: 5px;
+    overflow: auto;
+    resize: none;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <h2>Editor 1</h2>
+    <div id="editor1"></div>
+    <h2>Editor 2</h2>
+    <div id="editor2"></div>
+    <h2>Output</h2>
+    <textarea id="output" readonly></textarea>
+    <h2>UndoManager Stack</h2>
+    <textarea id="stack" readonly></textarea>
+  </div>
+  <script src="../bower_components/requirejs/require.js"></script>
+  <script>
+  require({
+    paths: {
+      'lodash-amd': '../bower_components/lodash-amd',
+      'immutable': '../bower_components/immutable'
+    }
+  }, [
+    '../src/scribe',
+    '../src/undo-manager'
+  ], function (
+    Scribe,
+    UndoManager
+  ) {
+    var editor1 = document.querySelector('#editor1');
+    var editor2 = document.querySelector('#editor2');
+    var output = document.querySelector('#output');
+    var stack = document.querySelector('#stack');
+
+    var undoManager = new UndoManager(40, document);
+    document.addEventListener('DOMTransaction', update);
+    document.addEventListener('undo', update);
+    document.addEventListener('redo', update);
+
+
+    var scribe1 = new Scribe(editor1, {undo: {enabled: true, manager: undoManager, interval: 1000}});
+    scribe1.on('content-changed', update);
+
+    var scribe2 = new Scribe(editor2, {undo: {enabled: true, manager: undoManager, interval: 1000}});
+    scribe2.on('content-changed', update);
+
+    function update() {
+      output.value = 'Edit 1:\n' + scribe1.getHTML() + '\n\nEdit 2:\n' + scribe2.getHTML();
+      // for debugging
+      stack.value = '';
+      for (var i = 0; i <= undoManager.length; i++) {
+        stack.value += (undoManager.position == i ? '> ' : '  ');
+        if (i < undoManager.length) {
+          var item = undoManager.item(i)[0];
+          stack.value += '[' + (item.scribe == scribe1 ? 'editor1' : 'editor2');
+          stack.value += ': ' + item.content.replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '|') + ']\n';
+        }
+        else if (i == undoManager.length) {
+          var item = undoManager.item(i - 1)[0];
+          stack.value += '[' + (item.scribe == scribe1 ? 'editor1' : 'editor2');
+          stack.value += ': ' + item.previousItem.content.replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '|') + ']\n';
+        }
+      }
+    }
+
+    update();
+  });
+  </script>
+</body>
+</html>
