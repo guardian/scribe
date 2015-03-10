@@ -7,7 +7,7 @@ var when = helpers.when;
 var givenContentOf = helpers.givenContentOf;
 var executeCommand = helpers.executeCommand;
 var insertCaretPositionMarker = helpers.insertCaretPositionMarker;
-var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe', {undo: {enabled: true, limit: 100, interval: 0}});
+var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 
 // Get new referenceS each time a new instance is created
 var driver;
@@ -23,6 +23,14 @@ beforeEach(function () {
 describe('undo manager', function () {
   beforeEach(function () {
     return initializeScribe();
+  });
+  
+  // Undo manager merge interval set to 0ms (default is 1000ms).
+  // This will avoid merging instant typing transactions as performed by these automated tests.
+  beforeEach(function () {
+    return driver.executeScript(function () {
+      window.scribe.options.undo.interval = 0;
+    });
   });
 
   givenContentOf('<p>|1</p>', function () {
