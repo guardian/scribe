@@ -24,6 +24,14 @@ describe('undo manager', function () {
   beforeEach(function () {
     return initializeScribe();
   });
+  
+  // Undo manager merge interval set to 0ms (default is 1000ms).
+  // This will avoid merging instant typing transactions as performed by these automated tests.
+  beforeEach(function () {
+    return driver.executeScript(function () {
+      window.scribe.options.undo.interval = 0;
+    });
+  });
 
   givenContentOf('<p>|1</p>', function () {
     when('the user types', function () {
