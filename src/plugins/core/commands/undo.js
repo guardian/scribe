@@ -7,15 +7,11 @@ define(function () {
       var undoCommand = new scribe.api.Command('undo');
 
       undoCommand.execute = function () {
-        var historyItem = scribe.undoManager.undo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
+        scribe.undoManager.undo();
       };
 
       undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 1;
+        return scribe.undoManager.position < scribe.undoManager.length;
       };
 
       scribe.commands.undo = undoCommand;

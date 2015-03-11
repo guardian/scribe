@@ -29,7 +29,7 @@ define([
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager,
+  UndoManager,
   EventEmitter,
   elementHelpers,
   nodeHelpers,
@@ -47,7 +47,7 @@ define([
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
-      undo: { enabled: true },
+      undo: { manager: null, enabled: true, limit: 100, interval: 1000 },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -75,9 +75,19 @@ define([
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
     if (this.options.undo.enabled) {
-      var UndoManager = buildUndoManager(this);
-      this.undoManager = new UndoManager();
+      if (this.options.undo.manager) {
+        this.undoManager = this.options.undo.manager;
+      }
+      else {
+        this.undoManager = new UndoManager(this.options.undo.limit, this.el);
+      }
+      this._merge = false;
+      this._forceMerge = false;
+      this._mergeTimer = 0;
+      this._lastItem = {content: ''};
     }
+
+    this.setHTML(this.getHTML());
 
     this.el.setAttribute('contenteditable', true);
 
@@ -157,6 +167,8 @@ define([
   };
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
+    this._lastItem.content = html;
+
     if (skipFormatters) {
       this._skipFormatters = true;
     }
@@ -180,35 +192,59 @@ define([
   };
 
   Scribe.prototype.pushHistory = function () {
-    if (this.options.undo.enabled) {
-      var previousUndoItem = this.undoManager.stack[this.undoManager.position];
-      var previousContent = previousUndoItem && previousUndoItem
+    /**
+     * Chrome and Firefox: If we did push to the history, this would break
+     * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
+     * This happens when doing any DOM manipulation.
+     */
+    var scribe = this;
+
+    if (scribe.options.undo.enabled) {
+      // Get scribe previous content, and strip markers.
+      var lastContentNoMarkers = scribe._lastItem.content
         .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-      /**
-       * Chrome and Firefox: If we did push to the history, this would break
-       * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
-       * This happens when doing any DOM manipulation.
-       */
-
       // We only want to push the history if the content actually changed.
-      if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
-        var selection = new this.api.Selection();
+      if (scribe.getHTML() !== lastContentNoMarkers) {
+        var selection = new scribe.api.Selection();
 
         selection.placeMarkers();
-        var html = this.getHTML();
+        var content = scribe.getHTML();
         selection.removeMarkers();
 
-        this.undoManager.push(html);
+        // Checking if there is a need to merge, and that the previous history item
+        // is the last history item of the same scribe instance.
+        // It is possible the last transaction is not for the same instance, or
+        // even not a scribe transaction (e.g. when using a shared undo manager).
+        var previousItem = scribe.undoManager.item(scribe.undoManager.position);
+        if ((scribe._merge || scribe._forceMerge) && previousItem && scribe._lastItem == previousItem[0]) {
+          // If so, merge manually with the last item to save more memory space.
+          scribe._lastItem.content = content;
+        }
+        else {
+          // Otherwise, create a new history item, and register it as a new transaction
+          scribe._lastItem = {
+            previousItem: scribe._lastItem,
+            content: content,
+            scribe: scribe,
+            execute: function () { },
+            undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
+            redo: function () { this.scribe.restoreFromHistory(this); }
+          };
+
+          scribe.undoManager.transact(scribe._lastItem, false);
+        }
+
+        // Merge next transaction if it happens before the interval option, otherwise don't merge.
+        clearTimeout(scribe._mergeTimer);
+        scribe._merge = true;
+        scribe._mergeTimer = setTimeout(function() { scribe._merge = false; }, scribe.options.undo.interval);
 
         return true;
-      } else {
-        return false;
       }
-    } else {
-      return false;
     }
 
+    return false;
   };
 
   Scribe.prototype.getCommand = function (commandName) {
@@ -216,7 +252,9 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem, true);
+    this._lastItem = historyItem;
+
+    this.setHTML(historyItem.content, true);
 
     // Restore the selection
     var selection = new this.api.Selection();

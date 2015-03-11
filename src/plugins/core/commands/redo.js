@@ -7,16 +7,11 @@ define(function () {
       var redoCommand = new scribe.api.Command('redo');
 
       redoCommand.execute = function () {
-
-        var historyItem = scribe.undoManager.redo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
+        scribe.undoManager.redo();
       };
 
       redoCommand.queryEnabled = function () {
-        return scribe.undoManager.position < scribe.undoManager.stack.length - 1;
+        return scribe.undoManager.position > 0;
       };
 
       scribe.commands.redo = redoCommand;
