@@ -430,25 +430,24 @@ define('plugins/core/commands/redo',[],function () {
       var redoCommand = new scribe.api.Command('redo');
 
       redoCommand.execute = function () {
-        var historyItem = scribe.undoManager.redo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
+        scribe.undoManager.redo();
       };
 
       redoCommand.queryEnabled = function () {
-        return scribe.undoManager.position < scribe.undoManager.stack.length - 1;
+        return scribe.undoManager.position > 0;
       };
 
       scribe.commands.redo = redoCommand;
 
-      scribe.el.addEventListener('keydown', function (event) {
-        if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-          event.preventDefault();
-          redoCommand.execute();
-        }
-      });
+      //is scribe is configured to undo assign listener
+      if (scribe.options.undo.enabled) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+            event.preventDefault();
+            redoCommand.execute();
+          }
+        });
+      }
     };
   };
 
@@ -491,26 +490,24 @@ define('plugins/core/commands/undo',[],function () {
       var undoCommand = new scribe.api.Command('undo');
 
       undoCommand.execute = function () {
-        var historyItem = scribe.undoManager.undo();
-
-        if (typeof historyItem !== 'undefined') {
-          scribe.restoreFromHistory(historyItem);
-        }
+        scribe.undoManager.undo();
       };
 
       undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 1;
+        return scribe.undoManager.position < scribe.undoManager.length;
       };
 
       scribe.commands.undo = undoCommand;
 
-      scribe.el.addEventListener('keydown', function (event) {
-        // TODO: use lib to abstract meta/ctrl keys?
-        if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-          event.preventDefault();
-          undoCommand.execute();
-        }
-      });
+      if (scribe.options.undo.enabled) {
+        scribe.el.addEventListener('keydown', function (event) {
+          // TODO: use lib to abstract meta/ctrl keys?
+          if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+            event.preventDefault();
+            undoCommand.execute();
+          }
+        });
+      }
     };
   };
 
@@ -2313,20 +2310,6 @@ define('plugins/core/events',[
   return function () {
     return function (scribe) {
       /**
-       * Push the first history item when the editor is focused.
-       */
-      var pushHistoryOnFocus = function () {
-        // Tabbing into the editor doesn't create a range immediately, so we
-        // have to wait until the next event loop.
-        setTimeout(function () {
-          scribe.pushHistory();
-        }.bind(scribe), 0);
-
-        scribe.el.removeEventListener('focus', pushHistoryOnFocus);
-      }.bind(scribe);
-      scribe.el.addEventListener('focus', pushHistoryOnFocus);
-
-      /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
        * caret at the  earliest point possible inside the first block element.
@@ -2393,17 +2376,14 @@ define('plugins/core/events',[
           // active. If the DOM is mutated when the editor isn't active (e.g.
           // `scribe.setContent`), we do not want to push to the history. (This
           // happens on the first `focus` event).
-          if (isEditorActive) {
-            // Discard the last history item, as we're going to be adding
-            // a new clean history item next.
-            scribe.undoManager.undo();
 
-            // Pass content through formatters, place caret back
-            scribe.transactionManager.run(runFormatters);
-          } else {
-            runFormatters();
-          }
+          // The previous check is no longer needed, and the above comments are no longer valid.
+          // Now `scribe.setContent` updates the content manually, and `scribe.pushHistory`
+          // will not detect any changes, and nothing will be push into the history.
+          // Any mutations made without `scribe.getContent` will be pushed into the history normally.
 
+          // Pass content through formatters, place caret back
+          scribe.transactionManager.run(runFormatters);
         }
 
         delete scribe._skipFormatters;
@@ -3559,16 +3539,15 @@ define('plugins/core/patches/events',[], function () {
               /**
                * The 'input' event listener has already triggered
                * and recorded the faulty content as an item in the
-               * UndoManager.  We interfere with the undoManager
-               * here to discard that history item, and let the next
-               * transaction run produce a clean one instead.
+               * UndoManager. We interfere with the undoManager
+               * by force merging that transaction with the next
+               * transaction which produce a clean one instead.
                *
                * FIXME: ideally we would not trigger a
                * 'content-changed' event with faulty HTML at all, but
                * it's too late to cancel it at this stage (and it's
                * not happened yet at keydown time).
                */
-              scribe.undoManager.undo();
 
               scribe.transactionManager.run(function () {
                 // Store the caret position
@@ -3600,7 +3579,7 @@ define('plugins/core/patches/events',[], function () {
                 });
 
                 selection.selectMarkers();
-              });
+              }, true);
             }
           }
         });
@@ -4214,7 +4193,7 @@ define('transaction-manager',['lodash-amd/modern/objects/assign'], function (ass
         }
       },
 
-      run: function (transaction) {
+      run: function (transaction, forceMerge) {
         this.start();
         // If there is an error, don't prevent the transaction from ending.
         try {
@@ -4222,7 +4201,9 @@ define('transaction-manager',['lodash-amd/modern/objects/assign'], function (ass
             transaction();
           }
         } finally {
+          scribe._forceMerge = forceMerge === true;
           this.end();
+          scribe._forceMerge = false;
         }
       }
     });
@@ -4232,48 +4213,92 @@ define('transaction-manager',['lodash-amd/modern/objects/assign'], function (ass
 });
 
 define('undo-manager',[],function () {
-
   
 
-  return function (scribe) {
+  function UndoManager(limit, undoScopeHost) {
+    this._stack = [];
+    this._limit = limit;
+    this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
+    this._ush = undoScopeHost;
 
-    function UndoManager() {
-      this.position = -1;
-      this.stack = [];
-      this.debug = scribe.isDebugModeEnabled();
+    this.position = 0;
+    this.length = 0;
+  }
+
+  UndoManager.prototype.transact = function (transaction, merge) {
+    if (arguments.length < 2) {
+      throw new TypeError('Not enough arguments to UndoManager.transact.');
     }
 
-    UndoManager.prototype.maxStackSize = 100;
+    transaction.execute();
 
-    UndoManager.prototype.push = function (item) {
-      if (this.debug) {
-        console.log('UndoManager.push: %s', item);
-      }
-      this.stack.length = ++this.position;
-      this.stack.push(item);
+    this._stack.splice(0, this.position);
+    if (merge && this.length) {
+      this._stack[0].push(transaction);
+    }
+    else {
+      this._stack.unshift([transaction]);
+    }
+    this.position = 0;
 
-      while (this.stack.length > this.maxStackSize) {
-        this.stack.shift();
-        --this.position;
-      }
-    };
+    if (this._limit && this._stack.length > this._limit) {
+      this.length = this._stack.length = this._limit;
+    }
+    else {
+      this.length = this._stack.length;
+    }
 
-    UndoManager.prototype.undo = function () {
-      if (this.position > 0) {
-        return this.stack[--this.position];
-      }
-    };
-
-    UndoManager.prototype.redo = function () {
-      if (this.position < (this.stack.length - 1)) {
-        return this.stack[++this.position];
-      }
-    };
-
-    return UndoManager;
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
+    }
   };
 
+  UndoManager.prototype.undo = function () {
+    if (this.position < this.length) {
+      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
+        this._stack[this.position][i].undo();
+      }
+      this.position++;
+
+      if (this._fireEvent) {
+        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
+      }
+    }
+  };
+
+  UndoManager.prototype.redo = function () {
+    if (this.position > 0) {
+      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
+        this._stack[this.position - 1][i].redo();
+      }
+      this.position--;
+
+      if (this._fireEvent) {
+        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
+      }
+    }
+  };
+
+  UndoManager.prototype.item = function (index) {
+    if (index >= 0 && index < this.length) {
+      return this._stack[index].slice();
+    }
+    return null;
+  };
+
+  UndoManager.prototype.clearUndo = function () {
+    this._stack.length = this.length = this.position;
+  };
+
+  UndoManager.prototype.clearRedo = function () {
+    this._stack.splice(0, this.position);
+    this.position = 0;
+    this.length = this._stack.length;
+  };
+
+  return UndoManager;
 });
+
 
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
@@ -9276,7 +9301,7 @@ define('scribe',[
   setRootPElement,
   Api,
   buildTransactionManager,
-  buildUndoManager,
+  UndoManager,
   EventEmitter,
   elementHelpers,
   nodeHelpers,
@@ -9294,6 +9319,12 @@ define('scribe',[
     this.options = defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
+      undo: {
+        manager: false,
+        enabled: true,
+        limit: 100,
+        interval: 250
+      },
       defaultCommandPatches: [
         'bold',
         'indent',
@@ -9318,8 +9349,22 @@ define('scribe',[
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
 
-    var UndoManager = buildUndoManager(this);
-    this.undoManager = new UndoManager();
+    //added for explicit checking later eg if (scribe.undoManager) { ... }
+    this.undoManager = false;
+    if (this.options.undo.enabled) {
+      if (this.options.undo.manager) {
+        this.undoManager = this.options.undo.manager;
+      }
+      else {
+        this.undoManager = new UndoManager(this.options.undo.limit, this.el);
+      }
+      this._merge = false;
+      this._forceMerge = false;
+      this._mergeTimer = 0;
+      this._lastItem = {content: ''};
+    }
+
+    this.setHTML(this.getHTML());
 
     this.el.setAttribute('contenteditable', true);
 
@@ -9399,6 +9444,8 @@ define('scribe',[
   };
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
+    this._lastItem.content = html;
+
     if (skipFormatters) {
       this._skipFormatters = true;
     }
@@ -9422,30 +9469,59 @@ define('scribe',[
   };
 
   Scribe.prototype.pushHistory = function () {
-    var previousUndoItem = this.undoManager.stack[this.undoManager.position];
-    var previousContent = previousUndoItem && previousUndoItem
-      .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
-
     /**
      * Chrome and Firefox: If we did push to the history, this would break
      * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
      * This happens when doing any DOM manipulation.
      */
+    var scribe = this;
 
-    // We only want to push the history if the content actually changed.
-    if (! previousUndoItem || (previousUndoItem && this.getHTML() !== previousContent)) {
-      var selection = new this.api.Selection();
+    if (scribe.options.undo.enabled) {
+      // Get scribe previous content, and strip markers.
+      var lastContentNoMarkers = scribe._lastItem.content
+        .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
 
-      selection.placeMarkers();
-      var html = this.getHTML();
-      selection.removeMarkers();
+      // We only want to push the history if the content actually changed.
+      if (scribe.getHTML() !== lastContentNoMarkers) {
+        var selection = new scribe.api.Selection();
 
-      this.undoManager.push(html);
+        selection.placeMarkers();
+        var content = scribe.getHTML();
+        selection.removeMarkers();
 
-      return true;
-    } else {
-      return false;
+        // Checking if there is a need to merge, and that the previous history item
+        // is the last history item of the same scribe instance.
+        // It is possible the last transaction is not for the same instance, or
+        // even not a scribe transaction (e.g. when using a shared undo manager).
+        var previousItem = scribe.undoManager.item(scribe.undoManager.position);
+        if ((scribe._merge || scribe._forceMerge) && previousItem && scribe._lastItem == previousItem[0]) {
+          // If so, merge manually with the last item to save more memory space.
+          scribe._lastItem.content = content;
+        }
+        else {
+          // Otherwise, create a new history item, and register it as a new transaction
+          scribe._lastItem = {
+            previousItem: scribe._lastItem,
+            content: content,
+            scribe: scribe,
+            execute: function () { },
+            undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
+            redo: function () { this.scribe.restoreFromHistory(this); }
+          };
+
+          scribe.undoManager.transact(scribe._lastItem, false);
+        }
+
+        // Merge next transaction if it happens before the interval option, otherwise don't merge.
+        clearTimeout(scribe._mergeTimer);
+        scribe._merge = true;
+        scribe._mergeTimer = setTimeout(function() { scribe._merge = false; }, scribe.options.undo.interval);
+
+        return true;
+      }
     }
+
+    return false;
   };
 
   Scribe.prototype.getCommand = function (commandName) {
@@ -9453,7 +9529,9 @@ define('scribe',[
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this.setHTML(historyItem, true);
+    this._lastItem = historyItem;
+
+    this.setHTML(historyItem.content, true);
 
     // Restore the selection
     var selection = new this.api.Selection();
@@ -9507,7 +9585,7 @@ define('scribe',[
   Scribe.prototype.isDebugModeEnabled = function () {
     return this.options.debug;
   };
-  
+
   /**
    * Applies HTML formatting to all editor text.
    * @param {String} phase sanitize/normalize/export are the standard phases
