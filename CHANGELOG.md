@@ -1,3 +1,7 @@
+# 1.3.0
+
+Introduces a new time-based undo manager and improvements to allow multiple Scribe instances to share or have a separate undo manager. Thanks to [Abdulrahman Alsaleh](https://github.com/aaalsaleh) for providing the code and spending a lot of time working with us on the tests.
+
 # 1.2.11
 
 Added configuration for removing `scribe.undoManager`
