@@ -27,5 +27,6 @@ mocha.addFile(__dirname + '/patches.spec.js');
 mocha.addFile(__dirname + '/undo-manager.spec.js');
 mocha.addFile(__dirname + '/selection.spec.js');
 mocha.addFile(__dirname + '/unit/event-emitter.spec.js');
+mocha.addFile(__dirname + '/unit/config.spec.js');
 
 createRunner(mocha);
