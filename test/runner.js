@@ -17,7 +17,7 @@ var mocha = new Mocha();
 /**
  * Wait for the connection to Sauce Labs to finish.
  */
-mocha.timeout(10 * 1000);
+mocha.timeout(15 * 1000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/block-mode.spec.js');
 mocha.addFile(__dirname + '/commands.spec.js');
