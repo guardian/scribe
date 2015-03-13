@@ -46,24 +46,7 @@ define([
     this.el = el;
     this.commands = {};
 
-    this.options = Object.freeze(defaults(options || {}, {
-      allowBlockElements: true,
-      debug: false,
-      undo: {
-        manager: false,
-        enabled: true,
-        limit: 100,
-        interval: 250
-      },
-      defaultCommandPatches: [
-        'bold',
-        'indent',
-        'insertHTML',
-        'insertList',
-        'outdent',
-        'createLink'
-      ]
-    }));
+    this.options = config.checkOptions(options);
 
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
