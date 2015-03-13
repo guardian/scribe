@@ -1,5 +1,4 @@
 define([
-  'lodash-amd/modern/objects/defaults',
   './plugins/core/commands',
   './plugins/core/events',
   './plugins/core/formatters/html/replace-nbsp-chars',
@@ -15,9 +14,9 @@ define([
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable'
+  'immutable/dist/immutable',
+  './config'
 ], function (
-  defaults,
   commands,
   events,
   replaceNbspCharsFormatter,
@@ -33,7 +32,8 @@ define([
   EventEmitter,
   elementHelpers,
   nodeHelpers,
-  Immutable
+  Immutable,
+  config
 ) {
 
   'use strict';
@@ -44,26 +44,7 @@ define([
     this.el = el;
     this.commands = {};
 
-    var defaultOptions = {
-      allowBlockElements: true,
-      debug: false,
-      undo: {
-        manager: false,
-        enabled: true,
-        limit: 100,
-        interval: 250
-      },
-      defaultCommandPatches: [
-        'bold',
-        'indent',
-        'insertHTML',
-        'insertList',
-        'outdent',
-        'createLink'
-      ]
-    };
-
-    this.options = Object.freeze(defaults(options || {}, defaultOptions));
+    this.options = config.checkOptions(options);
 
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
