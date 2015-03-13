@@ -44,7 +44,7 @@ define([
     this.el = el;
     this.commands = {};
 
-    this.options = defaults(options || {}, {
+    this.options = Object.freeze(defaults(options || {}, {
       allowBlockElements: true,
       debug: false,
       undo: {
@@ -61,7 +61,7 @@ define([
         'outdent',
         'createLink'
       ]
-    });
+    }));
 
     this.commandPatches = {};
     this._plainTextFormatterFactory = new FormatterFactory();
