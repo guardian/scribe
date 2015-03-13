@@ -23,7 +23,7 @@ define(['lodash-amd/modern/objects/defaults',], function (defaults) {
   function checkOptions(userSuppliedOptions) {
     var options = userSuppliedOptions || {};
 
-    return Object.freeze(defaults(options, defaultOptions));
+    return defaults(options, defaultOptions);
   }
 
   return {
