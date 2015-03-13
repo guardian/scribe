@@ -1,6 +1,6 @@
 define(['lodash-amd/modern/objects/defaults',], function (defaults) {
 
-	var defaultOptions = {
+    var defaultOptions = {
       allowBlockElements: true,
       debug: false,
       undo: {
