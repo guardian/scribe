@@ -17,7 +17,7 @@ var mocha = new Mocha();
 /**
  * Wait for the connection to Sauce Labs to finish.
  */
-mocha.timeout(15 * 1000);
+mocha.timeout(5 * 1000);
 mocha.reporter('spec');
 mocha.addFile(__dirname + '/block-mode.spec.js');
 mocha.addFile(__dirname + '/commands.spec.js');
@@ -27,5 +27,6 @@ mocha.addFile(__dirname + '/patches.spec.js');
 mocha.addFile(__dirname + '/undo-manager.spec.js');
 mocha.addFile(__dirname + '/selection.spec.js');
 mocha.addFile(__dirname + '/unit/event-emitter.spec.js');
+mocha.addFile(__dirname + '/unit/config.spec.js');
 
 createRunner(mocha);
