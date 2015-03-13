@@ -15,7 +15,8 @@ define([
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable'
+  'immutable/dist/immutable',
+  './config'
 ], function (
   defaults,
   commands,
@@ -33,7 +34,8 @@ define([
   EventEmitter,
   elementHelpers,
   nodeHelpers,
-  Immutable
+  Immutable,
+  config
 ) {
 
   'use strict';
