@@ -16,6 +16,18 @@ define(['lodash-amd/modern/objects/defaults',], function (defaults) {
       'insertList',
       'outdent',
       'createLink'
+    ],
+
+    defaultPlugins: [
+      'setRootPElement',
+      'enforcePElements',
+      'ensureSelectableContainers',
+      'inlineElementsMode'
+    ],
+
+    defaultFormatters: [
+      'escapeHtmlCharactersFormatter',
+      'replaceNbspCharsFormatter'
     ]
   };
 

@@ -1,13 +1,10 @@
 define([
+  'lodash-amd/modern/arrays/difference',
+  './plugins/core/plugins',
   './plugins/core/commands',
+  './plugins/core/formatters',
   './plugins/core/events',
-  './plugins/core/formatters/html/replace-nbsp-chars',
-  './plugins/core/formatters/html/enforce-p-elements',
-  './plugins/core/formatters/html/ensure-selectable-containers',
-  './plugins/core/formatters/plain-text/escape-html-characters',
-  './plugins/core/inline-elements-mode',
   './plugins/core/patches',
-  './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
   './undo-manager',
@@ -17,15 +14,12 @@ define([
   'immutable/dist/immutable',
   './config'
 ], function (
+  difference,
+  plugins,
   commands,
+  formatters,
   events,
-  replaceNbspCharsFormatter,
-  enforcePElements,
-  ensureSelectableContainers,
-  escapeHtmlCharactersFormatter,
-  inlineElementsMode,
   patches,
-  setRootPElement,
   Api,
   buildTransactionManager,
   UndoManager,
@@ -92,27 +86,40 @@ define([
     /**
      * Core Plugins
      */
+    var inlineElementPlugins = [
+      'inlineElementsMode'
+    ],
+    blockElementPlugins = difference(this.options.defaultPlugins, inlineElementPlugins),
+    corePlugins;
+
+    // Get inline element plugins with overrides
+    inlineElementPlugins = difference(this.options.defaultPlugins, blockElementPlugins);
 
     if (this.allowsBlockElements()) {
-      // Commands assume block elements are allowed, so all we have to do is
-      // set the content.
-      // TODO: replace this by initial formatter application?
-      this.use(setRootPElement());
-      // Warning: enforcePElements must come before ensureSelectableContainers
-      this.use(enforcePElements());
-      this.use(ensureSelectableContainers());
+      /**
+       * Warning: enforcePElements must come before ensureSelectableContainers
+       *
+       * Commands assume block elements are allowed, so all we have to do is
+       * set the content.
+       */
+      corePlugins = Immutable.List(blockElementPlugins);
     } else {
       // Commands assume block elements are allowed, so we have to set the
       // content and override some UX.
-      this.use(inlineElementsMode());
+      corePlugins = Immutable.List(inlineElementPlugins);
     }
 
-    // Formatters
-    var defaultFormatters = Immutable.List.of(
-      escapeHtmlCharactersFormatter,
-      replaceNbspCharsFormatter
-    );
+    corePlugins
+      .map(function (plugin) {
+        return plugins[plugin];
+      })
+      .forEach(function (plugin) {
+        this.use(plugin());
+      }.bind(this));
 
+    // Formatters
+    var defaultFormatters = Immutable.List(this.options.defaultFormatters)
+    .map(function (formatter) { return formatters[formatter]; });
 
     // Patches
 
