@@ -7,6 +7,7 @@ require('node-amd-require')({
 });
 
 var config = require('../../src/config');
+var Immutable = require('immutable');
 
 var chai = require('chai');
 var expect = chai.expect;
@@ -27,6 +28,34 @@ describe('config', function(){
       var checkedOptions = config.checkOptions({});
 
       expect(checkedOptions.allowBlockElements).to.be.true;
+    });
+  });
+
+  describe('sorting', function() {
+    it('should sort by a specific plugin name', function() {
+      var sortByPlugin = config.sortByPlugin('setRootPElement'),
+      pluginList = Immutable.OrderedSet([
+        'enforcePElements',
+        'ensureSelectableContainers',
+        'setRootPElement',
+        'inlineElementsMode'
+      ]).sort(sortByPlugin);
+
+      expect(pluginList.first()).to.be.equal('setRootPElement');
+    });
+  });
+
+  describe('filtering', function() {
+    it('should filter by block level mode', function() {
+      var filterByBlockLevelMode = config.filterByBlockLevelMode(false),
+      pluginList = Immutable.OrderedSet([
+        'enforcePElements',
+        'ensureSelectableContainers',
+        'setRootPElement',
+        'inlineElementsMode',
+      ]).filter(filterByBlockLevelMode);
+
+      expect(pluginList.first()).to.be.equal('inlineElementsMode');
     });
   });
 });

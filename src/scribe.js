@@ -86,49 +86,11 @@ define([
     /**
      * Core Plugins
      */
-    var inlineElementPlugins = [
-      'inlineElementsMode'
-    ],
-    blockElementPlugins = difference(this.options.defaultPlugins, inlineElementPlugins),
-    corePlugins;
-
-    // Get inline element plugins with overrides
-    inlineElementPlugins = difference(this.options.defaultPlugins, blockElementPlugins);
-
-    if (this.allowsBlockElements()) {
-      /**
-       * Warning: enforcePElements must come before ensureSelectableContainers
-       *
-       * Commands assume block elements are allowed, so all we have to do is
-       * set the content.
-       */
-      corePlugins = Immutable.List(blockElementPlugins);
-    } else {
-      // Commands assume block elements are allowed, so we have to set the
-      // content and override some UX.
-      corePlugins = Immutable.List(inlineElementPlugins);
-    }
-
-    // Sort to ensure `setRootPElement` loads first
-    corePlugins
-      .sort(function (pluginCurrent, pluginNext) {
-        if (pluginCurrent === 'setRootPElement') {
-          // pluginCurrent comes before plugin next
-          return -1;
-        } else if (pluginNext === 'setRootPElement') {
-          // pluginNext comes before pluginCurrent
-          return 1;
-        }
-
-        // Do no swap
-        return 0;
-      })
-      .map(function (plugin) {
-        return plugins[plugin];
-      })
-      .forEach(function (plugin) {
-        this.use(plugin());
-      }.bind(this));
+    var corePlugins = Immutable.OrderedSet(this.options.defaultPlugins)
+      .sort(config.sortByPlugin('setRootPElement')) // Ensure `setRootPElement` is always loaded first
+      .filter(config.filterByBlockLevelMode(this.allowsBlockElements()))
+      .map(function (plugin) { return plugins[plugin]; })
+      .forEach(function (plugin) { this.use(plugin()); }.bind(this))
 
     // Formatters
     var defaultFormatters = Immutable.List(this.options.defaultFormatters)
