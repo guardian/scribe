@@ -1,9 +1,13 @@
 define([
-  './plugins/core/plugins',
   './plugins/core/commands',
-  './plugins/core/formatters',
   './plugins/core/events',
+  './plugins/core/formatters/html/replace-nbsp-chars',
+  './plugins/core/formatters/html/enforce-p-elements',
+  './plugins/core/formatters/html/ensure-selectable-containers',
+  './plugins/core/formatters/plain-text/escape-html-characters',
+  './plugins/core/inline-elements-mode',
   './plugins/core/patches',
+  './plugins/core/set-root-p-element',
   './api',
   './transaction-manager',
   './undo-manager',
@@ -13,11 +17,15 @@ define([
   'immutable/dist/immutable',
   './config'
 ], function (
-  plugins,
   commands,
-  formatters,
   events,
+  replaceNbspCharsFormatter,
+  enforcePElements,
+  ensureSelectableContainers,
+  escapeHtmlCharactersFormatter,
+  inlineElementsMode,
   patches,
+  setRootPElement,
   Api,
   buildTransactionManager,
   UndoManager,
@@ -84,15 +92,27 @@ define([
     /**
      * Core Plugins
      */
-    var corePlugins = Immutable.OrderedSet(this.options.defaultPlugins)
-      .sort(config.sortByPlugin('setRootPElement')) // Ensure `setRootPElement` is always loaded first
-      .filter(config.filterByBlockLevelMode(this.allowsBlockElements()))
-      .map(function (plugin) { return plugins[plugin]; })
-      .forEach(function (plugin) { this.use(plugin()); }.bind(this))
+
+    if (this.allowsBlockElements()) {
+      // Commands assume block elements are allowed, so all we have to do is
+      // set the content.
+      // TODO: replace this by initial formatter application?
+      this.use(setRootPElement());
+      // Warning: enforcePElements must come before ensureSelectableContainers
+      this.use(enforcePElements());
+      this.use(ensureSelectableContainers());
+    } else {
+      // Commands assume block elements are allowed, so we have to set the
+      // content and override some UX.
+      this.use(inlineElementsMode());
+    }
 
     // Formatters
-    var defaultFormatters = Immutable.List(this.options.defaultFormatters)
-    .map(function (formatter) { return formatters[formatter]; });
+    var defaultFormatters = Immutable.List.of(
+      escapeHtmlCharactersFormatter,
+      replaceNbspCharsFormatter
+    );
+
 
     // Patches
 
