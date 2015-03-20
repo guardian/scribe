@@ -1,3 +1,7 @@
+# 1.3.2
+
+Option handling (defaults and overrides) have now been moved to their own module
+
 # 1.3.1
 
 Adds a null check to selection.js to help with issues when Scribe is being run in ShadowDOM. Thanks [Shaun Netherby](https://github.com/shaunnetherby)
