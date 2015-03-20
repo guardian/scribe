@@ -1,5 +1,4 @@
 define([
-  'lodash-amd/modern/arrays/difference',
   './plugins/core/plugins',
   './plugins/core/commands',
   './plugins/core/formatters',
@@ -14,7 +13,6 @@ define([
   'immutable/dist/immutable',
   './config'
 ], function (
-  difference,
   plugins,
   commands,
   formatters,
