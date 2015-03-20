@@ -1,3 +1,7 @@
+# 1.3.1
+
+Adds a null check to selection.js to help with issues when Scribe is being run in ShadowDOM. Thanks [Shaun Netherby](https://github.com/shaunnetherby)
+
 # 1.3.0
 
 Introduces a new time-based undo manager and improvements to allow multiple Scribe instances to share or have a separate undo manager. Thanks to [Abdulrahman Alsaleh](https://github.com/aaalsaleh) for providing the code and spending a lot of time working with us on the tests.
