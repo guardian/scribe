@@ -24,7 +24,7 @@ function (elementHelper) {
       }
 
       this.selection = rootDoc.getSelection();
-      if (this.selection.rangeCount) {
+      if (this.selection.rangeCount && this.selection.anchorNode) {
         // create the range to avoid chrome bug from getRangeAt / window.getSelection()
         // https://code.google.com/p/chromium/issues/detail?id=380690
         this.range = document.createRange();
