@@ -109,7 +109,20 @@ define([
       corePlugins = Immutable.List(inlineElementPlugins);
     }
 
+    // Sort to ensure `setRootPElement` loads first
     corePlugins
+      .sort(function (pluginCurrent, pluginNext) {
+        if (pluginCurrent === 'setRootPElement') {
+          // pluginCurrent comes before plugin next
+          return -1;
+        } else if (pluginNext === 'setRootPElement') {
+          // pluginNext comes before pluginCurrent
+          return 1;
+        }
+
+        // Do no swap
+        return 0;
+      })
       .map(function (plugin) {
         return plugins[plugin];
       })
