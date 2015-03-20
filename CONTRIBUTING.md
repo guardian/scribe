@@ -1,6 +1,14 @@
 # Contributing
 
-These steps also apply to plugins.
+This advice also applies to Scribe plugins.
+
+## Finding an issue to work on
+
+See the [wiki page on labels](https://github.com/guardian/scribe/wiki/Project-labels) for an explanation about how we categorise the project issues.
+
+Assign yourself to the issue or comment on it to indicate that you are going to work on it.
+
+## Fixing an issue
 
 * Add a failing test
 * Create isolated cases for browser inconsistencies (see https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md)
