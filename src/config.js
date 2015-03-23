@@ -47,11 +47,11 @@ define([
 
     // Remove invalid plugins
     if (options.defaultPlugins) {
-      options.defaultPlugins    = (options.defaultPlugins || []).filter(filterByPluginExists(defaultOptions.defaultPlugins));
+      options.defaultPlugins    = options.defaultPlugins.filter(filterByPluginExists(defaultOptions.defaultPlugins));
     }
 
     if (options.defaultFormatters) {
-      options.defaultFormatters = (options.defaultFormatters || []).filter(filterByPluginExists(defaultOptions.defaultFormatters));
+      options.defaultFormatters = options.defaultFormatters.filter(filterByPluginExists(defaultOptions.defaultFormatters));
     }
 
     return Object.freeze(defaults(options, defaultOptions));
