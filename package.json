@@ -24,7 +24,7 @@
     "plumber-write": "~0.4.0",
     "q": "~1.0.0",
     "request": "~2.33.0",
-    "scribe-test-harness": "~0.0.17",
+    "scribe-test-harness": "~0.0.19",
     "selenium-webdriver": "~2.41.0",
     "sinon": "^1.12.2"
   },
