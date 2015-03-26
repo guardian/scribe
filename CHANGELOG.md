@@ -1,3 +1,11 @@
+# 1.3.3
+
+All plugins, formatters and commands can now be overridden via options.
+
+Thanks [David Tobin](https://github.com/DavidTobin)
+
+Lodash has been bumped to 3.5.0
+
 # 1.3.2
 
 Option handling (defaults and overrides) have now been moved to their own module
