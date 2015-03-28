@@ -1,3 +1,7 @@
+# 1.3.4
+
+Reverts the change to 3.5.0 as Bower and NPM-based packagers were not behaving consistently.
+
 # 1.3.3
 
 All plugins, formatters and commands can now be overridden via options.
