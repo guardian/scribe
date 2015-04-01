@@ -38,4 +38,14 @@ describe('event-emitter', function(){
     expect(secondHandle.calledBefore(thirdHandle)).to.be.true;
 
   });
+
+  it('should remove listeners when off is called', function(){
+    var handle = sinon.spy();
+    emitter.on('event', handle);
+    emitter.trigger('event');
+    emitter.off('event', handle);
+    emitter.trigger('event');
+
+    expect(handle.callCount).to.equal(1);
+  })
 });
