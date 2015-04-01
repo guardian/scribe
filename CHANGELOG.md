@@ -1,3 +1,7 @@
+# 1.3.5
+
+Fixes `event-emitter` off behaviour when un-binding events
+
 # 1.3.4
 
 Reverts the change to 3.5.0 as Bower and NPM-based packagers were not behaving consistently.
