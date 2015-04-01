@@ -23,12 +23,11 @@ define([
         // In Chrome, the range is not created on or before this event loop.
         // It doesn’t matter because this is a fix for Firefox.
         if (selection.range) {
-
           var isFirefoxBug = scribe.allowsBlockElements() &&
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+            var focusElement = getFirstDeepestChild(scribe.el);
 
             var range = selection.range;
 
