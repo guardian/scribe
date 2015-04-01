@@ -1,6 +1,6 @@
 define([
     '../../../../element',
-    'lodash-amd/modern/collections/contains'
+    'lodash-amd/modern/collection/contains'
   ], function (
     element,
     contains

@@ -1,6 +1,6 @@
 define([
-  'lodash-amd/modern/arrays/flatten',
-  'lodash-amd/modern/collections/toArray',
+  'lodash-amd/modern/array/flatten',
+  'lodash-amd/modern/lang/toArray',
   './element',
   './node'
 ], function (
@@ -26,7 +26,7 @@ define([
     }
 
     var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-    
+
     // Flag to avoid running recursively
     var runningPostMutation = false;
 
