@@ -1,4 +1,4 @@
-define(['lodash-amd/modern/collections/contains'], function (contains) {
+define(['lodash-amd/modern/collection/contains'], function (contains) {
 
   'use strict';
 

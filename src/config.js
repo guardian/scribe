@@ -1,5 +1,5 @@
 define([
-  'lodash-amd/modern/objects/defaults'
+  'lodash-amd/modern/object/defaults'
 ], function (defaults) {
 
   var blockModePlugins = [

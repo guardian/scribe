@@ -1,5 +1,5 @@
 define([
-  'lodash-amd/modern/collections/contains',
+  'lodash-amd/modern/collection/contains',
   '../../dom-observer'
 ], function (
   contains,
