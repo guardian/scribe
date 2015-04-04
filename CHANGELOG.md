@@ -1,3 +1,10 @@
+# 1.3.6
+
+Fixes a bug preventing individual events being switched off events in the event-emitter
+Bumps Lodash to 3.5.0 in the NPM package description for those using CommonJS builds
+
+Thanks [Ryan Fitzgerald](https://github.com/rf-)!
+
 # 1.3.5
 
 Fixes `event-emitter` off behaviour when un-binding events
