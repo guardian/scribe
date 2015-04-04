@@ -1,19 +1,19 @@
 {
   "name": "scribe-plugin-sanitizer",
-  "version": "0.1.4",
+  "version": "0.1.9",
   "main": "./scribe-plugin-sanitizer.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
   "license": "Apache 2.0",
   "homepage": "https://github.com/guardian/scribe-plugin-sanitizer",
-  "_release": "0.1.4",
+  "_release": "0.1.9",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.4",
-    "commit": "2e25cc637f0e901556886d4cd26c6fe37086dea6"
+    "tag": "v0.1.9",
+    "commit": "63a322d46d5e490b1c3ef35f3fee8a7ee4a91c92"
   },
   "_source": "git://github.com/guardian/scribe-plugin-sanitizer.git",
-  "_target": "0.1.4",
+  "_target": "0.1.9",
   "_originalSource": "scribe-plugin-sanitizer"
 }

@@ -1,6 +1,6 @@
 {
   "name": "scribe-plugin-sanitizer",
-  "version": "0.1.4",
+  "version": "0.1.9",
   "main": "./scribe-plugin-sanitizer.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"

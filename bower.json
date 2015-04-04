@@ -11,7 +11,7 @@
     "scribe-plugin-intelligent-unlink-command": "0.1.6",
     "scribe-plugin-keyboard-shortcuts": "0.1.1",
     "scribe-plugin-link-prompt-command": "0.2.0",
-    "scribe-plugin-sanitizer": "0.1.4",
+    "scribe-plugin-sanitizer": "0.1.9",
     "scribe-plugin-smart-lists": "0.1.7",
     "scribe-plugin-toolbar": "0.2.0"
   }
