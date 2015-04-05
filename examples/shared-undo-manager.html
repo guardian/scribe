@@ -80,7 +80,7 @@
         else if (undoManager.length > 0 && i == undoManager.length) {
           var item = undoManager.item(i - 1)[0];
           stack.value += '[' + (item.scribe == scribe1 ? 'editor1' : 'editor2');
-					stack.value += ': ' + item.previousItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '|') + ']\n';
+          stack.value += ': ' + item.previousItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '|') + ']\n';
         }
       }
     }
