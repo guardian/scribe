@@ -73,6 +73,28 @@ describe('commands', function () {
         });
       });
     });
+
+    givenContentOf('<p><em>1</em>2|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          scribeNode.click();
+
+          return executeCommand('bold');
+        });
+
+        when('the user types', function () {
+          beforeEach(function () {
+            return scribeNode.sendKeys('3');
+          });
+
+          it('should make the next text bold', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p><em>1</em>2<b>3</b></p>');
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('italic', function () {
