@@ -1,3 +1,9 @@
+# 1.3.7
+
+Fixes a bug where em tags were being stripped where we meant to strip Scribe markers instead.
+
+Thanks [Abdulrahman Alsaleh](https://github.com/aaalsaleh) for the fix
+
 # 1.3.6
 
 Fixes a bug preventing individual events being switched off events in the event-emitter
