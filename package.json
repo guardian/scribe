@@ -22,9 +22,9 @@
     "plumber-requirejs": "~0.4.0",
     "plumber-uglifyjs": "~0.4.0",
     "plumber-write": "~0.4.0",
-    "q": "~1.0.0",
+    "q": "~1.2",
     "request": "~2.33.0",
-    "scribe-test-harness": "~0.0.20",
+    "scribe-test-harness": "~0.0.21",
     "selenium-webdriver": "~2.41.0",
     "sinon": "^1.12.2"
   },
