@@ -50,7 +50,6 @@ define([
     });
 
     observer.observe(el, {
-      attributes: true,
       childList: true,
       subtree: true
     });
