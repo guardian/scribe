@@ -529,7 +529,7 @@ describe('commands', function () {
         });
       });
     });
-  });in
+  });
 
   describe('createLink', function  () {
     given('an empty editor', function () {
