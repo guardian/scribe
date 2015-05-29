@@ -30,7 +30,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = children.getFirstDeepestChild(scribe.el.firstChild);
+            var focusElement = children.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 

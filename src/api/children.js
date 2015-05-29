@@ -1,7 +1,11 @@
 define(function () {
 
   'use strict';
-        function getFirstDeepestChild(node) {
+        function firstDeepestChild(node) {
+          if(!node.hasChildNodes()) {
+            return node;
+          }
+
           var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
           var previousNode = treeWalker.currentNode;
           if (treeWalker.firstChild()) {
@@ -18,6 +22,6 @@ define(function () {
         }
 
   return {
-    getFirstDeepestChild: getFirstDeepestChild
+    firstDeepestChild: firstDeepestChild
   }
 });

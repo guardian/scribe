@@ -12,7 +12,7 @@ var chai = require('chai');
 var expect = chai.expect;
 
 describe('children API', function() {
-  it('should return the root node for the empty string', function() {
-    expect(children.getFirstDeepestChild).to.be.a('function');
+  it('should return the root node for node with no children', function() {
+    expect(children.firstDeepestChild).to.be.a('function');
   });
 });
