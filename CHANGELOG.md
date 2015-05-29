@@ -1,3 +1,9 @@
+# 1.3.9
+
+Stops Scribe failing on a focus event if the content of the Scribe element is set to empty. Previously the code assumed that a child node is available, now the focus node will be the parent element if there are no children.
+
+Based on contributions from [Ryan Fitzgerald](https://github.com/rf-)
+
 # 1.3.7
 
 Fixes a bug where em tags were being stripped where we meant to strip Scribe markers instead.
