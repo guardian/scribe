@@ -13,6 +13,7 @@ var expect = chai.expect;
 
 describe('children API', function() {
   it('should return the root node for node with no children', function() {
-    expect(children.firstDeepestChild).to.be.a('function');
+    var fakeNode = {hasChildNodes: function() { return false; }};
+    expect(children.firstDeepestChild(fakeNode)).to.equal(fakeNode);
   });
 });
