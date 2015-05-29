@@ -1,9 +1,11 @@
 define([
   'lodash-amd/modern/collection/contains',
-  '../../dom-observer'
+  '../../dom-observer',
+  '../../api/children'
 ], function (
   contains,
-  observeDomChanges
+  observeDomChanges,
+  children
 ) {
 
   'use strict';
@@ -28,7 +30,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+            var focusElement = children.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 
@@ -37,22 +39,6 @@ define([
 
             selection.selection.removeAllRanges();
             selection.selection.addRange(range);
-          }
-        }
-
-        function getFirstDeepestChild(node) {
-          var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
-          var previousNode = treeWalker.currentNode;
-          if (treeWalker.firstChild()) {
-            // TODO: build list of non-empty elements (used elsewhere)
-            // Do not include non-empty elements
-            if (treeWalker.currentNode.nodeName === 'BR') {
-              return previousNode;
-            } else {
-              return getFirstDeepestChild(treeWalker.currentNode);
-            }
-          } else {
-            return treeWalker.currentNode;
           }
         }
       }.bind(scribe));
