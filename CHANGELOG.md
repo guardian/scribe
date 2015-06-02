@@ -1,3 +1,9 @@
+# 1.4.0
+
+Changes the cleanup for Chrome inline style tags that happens in the patch for the `insertHTML` command. Previously span tags were aggressively stripped whereas now they are less aggressively removed to limit the fix just to the type of spans that Chrome inserts.
+
+Thanks [Christopher Liu](https://github.com/christopherliu) for contributing this change.
+
 # 1.3.9
 
 Stops Scribe failing on a focus event if the content of the Scribe element is set to empty. Previously the code assumed that a child node is available, now the focus node will be the parent element if there are no children.
