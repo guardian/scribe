@@ -138,7 +138,7 @@ layers sequentially.
   <dt>Scribe</dt>
   <dd>Where custom behaviour is defined.</dd>
   <dt>Scribe Patches</dt>
-  <dd>Where patches for brower inconsistencies in native commands are defined.</dd>
+  <dd>Where patches for browser inconsistencies in native commands are defined.</dd>
   <dt>Native</dt>
 </dl>
 
