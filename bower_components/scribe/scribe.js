@@ -5,7 +5,7 @@ define('plugins/core/set-root-p-element',[],function () {
    * a P.
    */
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -71,7 +71,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
    * that we do not end up in a pristine state.
    */
 
-  'use strict';
+  
 
   /**
    * Wrap consecutive inline elements and text nodes in a P element.
@@ -933,7 +933,7 @@ define('lodash-amd/modern/collection/contains',["./includes"], function(includes
 
 define('element',['lodash-amd/modern/collection/contains'], function (contains) {
 
-  'use strict';
+  
 
   var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
                            'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
@@ -982,7 +982,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
    * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
    */
 
-  'use strict';
+  
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
@@ -1052,7 +1052,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
 define('plugins/core/inline-elements-mode',[],function () {
 
-  'use strict';
+  
 
   // TODO: abstract
   function hasContent(rootNode) {
@@ -1176,7 +1176,7 @@ define('plugins/core/plugins',[
   ensureSelectableContainers,
   inlineElementsMode
 ) {
-  'use strict';
+  
 
   return {
     setRootPElement: setRootPElement,
@@ -1188,7 +1188,7 @@ define('plugins/core/plugins',[
 
 define('plugins/core/commands/indent',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1222,7 +1222,7 @@ define('plugins/core/commands/insert-list',[],function () {
    * unapplied, ensure that we enter a P element.
    */
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1349,7 +1349,7 @@ define('plugins/core/commands/insert-list',[],function () {
 
 define('plugins/core/commands/outdent',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1379,7 +1379,7 @@ define('plugins/core/commands/outdent',[],function () {
 
 define('plugins/core/commands/redo',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1411,7 +1411,7 @@ define('plugins/core/commands/redo',[],function () {
 
 define('plugins/core/commands/subscript',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1425,7 +1425,7 @@ define('plugins/core/commands/subscript',[],function () {
 
 define('plugins/core/commands/superscript',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1439,7 +1439,7 @@ define('plugins/core/commands/superscript',[],function () {
 
 define('plugins/core/commands/undo',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1487,7 +1487,7 @@ define('plugins/core/commands',[
   undo
 ) {
 
-  'use strict';
+  
 
   return {
     indent: indent,
@@ -1507,7 +1507,7 @@ define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
    * Chrome:
    */
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1603,7 +1603,7 @@ define('plugins/core/formatters/plain-text/escape-html-characters',[
   escape
 ) {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1620,7 +1620,7 @@ define('plugins/core/formatters',[
   replaceNbspCharsFormatter,
   escapeHtmlCharactersFormatter
 ) {
-  'use strict';
+  
 
   return {
     replaceNbspCharsFormatter: replaceNbspCharsFormatter,
@@ -1794,7 +1794,7 @@ define('lodash-amd/modern/lang/toArray',['../internal/arrayCopy', '../internal/i
 
 define('node',[], function () {
 
-  'use strict';
+  
 
   function isEmptyTextNode(node) {
     return (node.nodeType === Node.TEXT_NODE && node.textContent === '');
@@ -1868,7 +1868,6 @@ define('dom-observer',[
     });
 
     observer.observe(el, {
-      attributes: true,
       childList: true,
       subtree: true
     });
@@ -1879,15 +1878,46 @@ define('dom-observer',[
   return observeDomChanges;
 });
 
+define('api/children',[],function () {
+
+  
+
+  function firstDeepestChild(node) {
+    if(!node.hasChildNodes()) {
+      return node;
+    }
+
+    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
+    var previousNode = treeWalker.currentNode;
+    if (treeWalker.firstChild()) {
+      // TODO: build list of non-empty elements (used elsewhere)
+      // Do not include non-empty elements
+      if (treeWalker.currentNode.nodeName === 'BR') {
+        return previousNode;
+      } else {
+        return firstDeepestChild(treeWalker.currentNode);
+      }
+    } else {
+      return treeWalker.currentNode;
+    }
+  }
+
+  return {
+    firstDeepestChild: firstDeepestChild
+  }
+});
+
 define('plugins/core/events',[
   'lodash-amd/modern/collection/contains',
-  '../../dom-observer'
+  '../../dom-observer',
+  '../../api/children'
 ], function (
   contains,
-  observeDomChanges
+  observeDomChanges,
+  children
 ) {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -1909,7 +1939,7 @@ define('plugins/core/events',[
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = getFirstDeepestChild(scribe.el.firstChild);
+            var focusElement = children.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 
@@ -1918,22 +1948,6 @@ define('plugins/core/events',[
 
             selection.selection.removeAllRanges();
             selection.selection.addRange(range);
-          }
-        }
-
-        function getFirstDeepestChild(node) {
-          var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
-          var previousNode = treeWalker.currentNode;
-          if (treeWalker.firstChild()) {
-            // TODO: build list of non-empty elements (used elsewhere)
-            // Do not include non-empty elements
-            if (treeWalker.currentNode.nodeName === 'BR') {
-              return previousNode;
-            } else {
-              return getFirstDeepestChild(treeWalker.currentNode);
-            }
-          } else {
-            return treeWalker.currentNode;
           }
         }
       }.bind(scribe));
@@ -2140,7 +2154,7 @@ define('plugins/core/events',[
 
 define('plugins/core/patches/commands/bold',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -2175,7 +2189,7 @@ define('plugins/core/patches/commands/indent',[],function () {
    * adding a redundant `style` attribute to the created BLOCKQUOTE.
    */
 
-  'use strict';
+  
 
   var INVISIBLE_CHAR = '\uFEFF';
 
@@ -2236,9 +2250,7 @@ define('plugins/core/patches/commands/indent',[],function () {
 });
 
 define('plugins/core/patches/commands/insert-html',[], function () {
-
-  'use strict';
-
+  
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
@@ -2248,46 +2260,49 @@ define('plugins/core/patches/commands/insert-html',[], function () {
         scribe.transactionManager.run(function () {
           scribe.api.CommandPatch.prototype.execute.call(this, value);
 
+          // TODO: share somehow with similar event patch for P nodes
+          removeChromeArtifacts(scribe.el);
+
           /**
            * Chrome: If a parent node has a CSS `line-height` when we apply the
            * insertHTML command, Chrome appends a SPAN to plain content with
            * inline styling replicating that `line-height`, and adjusts the
            * `line-height` on inline elements.
+           * 
            * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
-           *
-           * FIXME: what if the user actually wants to use SPANs? This could
-           * cause conflicts.
+           * More from the web: http://stackoverflow.com/q/15015019/40352
            */
-
-          // TODO: share somehow with similar event patch for P nodes
-          sanitize(scribe.el);
-
-          function sanitize(parentNode) {
-            var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
-            var node = treeWalker.firstChild();
-            if (!node) { return; }
-
-            do {
-              if (node.nodeName === 'SPAN') {
-                element.unwrap(parentNode, node);
-              } else {
-                /**
-                 * If the list item contains inline elements such as
-                 * A, B, or I, Chrome will also append an inline style for
-                 * `line-height` on those elements, so we remove it here.
-                 */
-                node.style.lineHeight = null;
-
-                // There probably wasn’t a `style` attribute before, so
-                // remove it if it is now empty.
-                if (node.getAttribute('style') === '') {
-                  node.removeAttribute('style');
-                }
+          function removeChromeArtifacts(parentElement) {
+            // Can't use treeWalker: In at least Chrome, if a node is unwrapped,
+            // treeWalker.nextSibling will not work properly after that.
+            var childElement = parentElement.firstElementChild;
+            while (childElement) {
+              /**
+               * If the list item contains inline elements such as
+               * A, B, or I, Chrome will also append an inline style for
+               * `line-height` on those elements, so we remove it here.
+               */
+              var childStyle = window.getComputedStyle(childElement);
+              if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
+                childElement.style.lineHeight = null;
               }
-
-              // Sanitize children
-              sanitize(node);
-            } while ((node = treeWalker.nextSibling()));
+              
+              // We can discard an empty style attribute.
+              if (childElement.getAttribute('style') === '') {
+                childElement.removeAttribute('style');
+              }
+              
+              // Sanitize children.
+              removeChromeArtifacts(childElement);
+              
+              // We can discard an empty SPAN.
+              // (Don't do this until traversal's gone to the next element.)
+              var originalChild = childElement;
+              childElement = childElement.nextElementSibling;
+              if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
+                element.unwrap(parentElement, originalChild);
+              }
+            }
           }
         }.bind(this));
       };
@@ -2300,7 +2315,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
 
 define('plugins/core/patches/commands/insert-list',[], function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -2422,7 +2437,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
    * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
    */
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -2510,7 +2525,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
 
 define('plugins/core/patches/commands/create-link',[],function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -2550,7 +2565,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 define('plugins/core/patches/events',[], function () {
 
-  'use strict';
+  
 
   return function () {
     return function (scribe) {
@@ -2661,7 +2676,7 @@ define('plugins/core/patches',[
    * applying/unapplying commands — that is the job of the core commands.
    */
 
-  'use strict';
+  
 
   return {
     commands: {
@@ -2679,7 +2694,7 @@ define('plugins/core/patches',[
 
 define('api/command-patch',[],function () {
 
-  'use strict';
+  
 
   return function (scribe) {
     function CommandPatch(commandName) {
@@ -2707,7 +2722,7 @@ define('api/command-patch',[],function () {
 
 define('api/command',[],function () {
 
-  'use strict';
+  
 
   return function (scribe) {
     function Command(commandName) {
@@ -2748,7 +2763,7 @@ define('api/command',[],function () {
 
 define('api/node',[],function () {
 
-  'use strict';
+  
 
   function Node(node) {
     this.node = node;
@@ -2797,7 +2812,7 @@ define('api/selection',[
 ],
 function (elementHelper) {
 
-  'use strict';
+  
 
   return function (scribe) {
     /**
@@ -3074,7 +3089,7 @@ function (elementHelper) {
 
 define('api/simple-command',[],function () {
 
-  'use strict';
+  
 
   return function (api, scribe) {
     function SimpleCommand(commandName, nodeName) {
@@ -3112,7 +3127,7 @@ define('api',[
   buildSimpleCommand
 ) {
 
-  'use strict';
+  
 
   return function Api(scribe) {
     this.CommandPatch = buildCommandPatch(scribe);
@@ -3339,7 +3354,7 @@ define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal
 
 define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
 
-  'use strict';
+  
 
   return function (scribe) {
     function TransactionManager() {
@@ -3380,7 +3395,7 @@ define('transaction-manager',['lodash-amd/modern/object/assign'], function (assi
 });
 
 define('undo-manager',[],function () {
-  'use strict';
+  
 
   function UndoManager(limit, undoScopeHost) {
     this._stack = [];
@@ -3536,7 +3551,7 @@ define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(base
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define('immutable/dist/immutable',factory) :
   global.Immutable = factory()
-}(this, function () { 'use strict';var SLICE$0 = Array.prototype.slice;
+}(this, function () { var SLICE$0 = Array.prototype.slice;
 
   function createClass(ctor, superClass) {
     if (superClass) {
@@ -8391,7 +8406,7 @@ define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(base
 define('event-emitter',['lodash-amd/modern/array/pull',
   'immutable/dist/immutable'], function (pull, Immutable) {
 
-  'use strict';
+  
 
   // TODO: once
   // TODO: unit test
@@ -8627,7 +8642,7 @@ define('scribe',[
   config
 ) {
 
-  'use strict';
+  
 
   function Scribe(el, options) {
     EventEmitter.call(this);
@@ -8691,7 +8706,7 @@ define('scribe',[
     // Formatters
     var defaultFormatters = Immutable.List(this.options.defaultFormatters)
     .filter(function (formatter) { return !!formatters[formatter]; })
-    .map(function (formatter) { return formatters[formatter]; })
+    .map(function (formatter) { return formatters[formatter]; });
 
     // Patches
 
@@ -8769,8 +8784,7 @@ define('scribe',[
 
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content
-        .replace(/<em class="scribe-marker">/g, '').replace(/<\/em>/g, '');
+      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
       if (scribe.getHTML() !== lastContentNoMarkers) {
