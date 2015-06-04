@@ -27,17 +27,12 @@ function (elementHelper, nodeHelper) {
         // create the range to avoid chrome bug from getRangeAt / window.getSelection()
         // https://code.google.com/p/chromium/issues/detail?id=380690
         this.range = document.createRange();
-        var reverseRange = document.createRange();
 
-        this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
-        reverseRange.setStart(this.selection.focusNode, this.selection.focusOffset);
-
-        // Check if anchorNode is before focusNode, use reverseRange if not
-        if (this.range.compareBoundaryPoints(Range.START_TO_START, reverseRange) <= 0) {
+        if( nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode) ) {
+          this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
           this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
-        }
-        else {
-          this.range = reverseRange;
+        } else {
+          this.range.setStart(this.selection.focusNode, this.selection.focusOffset);
           this.range.setEnd(this.selection.anchorNode, this.selection.anchorOffset);
         }
       }
@@ -47,37 +42,31 @@ function (elementHelper, nodeHelper) {
      * @returns Closest ancestor Node satisfying nodeFilter. Undefined if none exist before reaching Scribe container.
      */
     Selection.prototype.getContaining = function (nodeFilter) {
-      var range = this.range;
-      if (!range) { return; }
+      if (!this.range) { return; }
 
-      var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      var isTopContainerElement = node.node && scribe.el === node.node;
+      var ancestor = this.range.commonAncestorContainer;
+      if (scribe.el === ancestor || !nodeFilter(ancestor)) {
+        ancestor = nodeHelper.getAncestor(ancestor, nodeFilter);
+      }
 
-      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(scribe.el, nodeFilter);
-    };
+      return ancestor;
+    }
 
     Selection.prototype.placeMarkers = function () {
       var range = this.range;
-      if (!range) {
-        return;
-      }
+      if (!range) { return; }
 
-      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
-      //one way to do this is to check if it's visible (is this the best way?).
-      if (!scribe.el.offsetParent) {
+      //we need to ensure that the scribe's element lives within the current document
+      //to avoid errors with the range comparison (see below)
+      if (!document.contains(scribe.el)) {
         return;
       }
 
       //we want to ensure that the current selection is within the current scribe node
       //if this isn't true scribe will place markers within the selections parent
       //we want to ensure that scribe ONLY places markers within it's own element
-      var scribeNodeRange = document.createRange();
-      scribeNodeRange.selectNodeContents(scribe.el);
-
-      var selectionStartWithinScribeElementStart = this.range.compareBoundaryPoints(Range.START_TO_START, scribeNodeRange) >= 0;
-      var selectionEndWithinScribeElementEnd = this.range.compareBoundaryPoints(Range.END_TO_END, scribeNodeRange) <= 0;
-
-      if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd) {
+      if (nodeHelper.isBefore(scribe.el, range.startContainer) &&
+        scribe.el.contains(range.endContainer)) {
 
         var startMarker = document.createElement('em');
         startMarker.classList.add('scribe-marker');
@@ -85,7 +74,7 @@ function (elementHelper, nodeHelper) {
         endMarker.classList.add('scribe-marker');
 
         // End marker
-        var rangeEnd = this.range.cloneRange();
+        var rangeEnd = range.cloneRange();
         rangeEnd.collapse(false);
         rangeEnd.insertNode(endMarker);
 
@@ -153,9 +142,9 @@ function (elementHelper, nodeHelper) {
          **/
 
         // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
-        if (! this.range.collapsed) {
+        if (! range.collapsed) {
           // Start marker
-          var rangeStart = this.range.cloneRange();
+          var rangeStart = range.cloneRange();
           rangeStart.collapse(true);
           rangeStart.insertNode(startMarker);
 
@@ -178,16 +167,14 @@ function (elementHelper, nodeHelper) {
            * FIXME: Document why we need to remove this
            * As per: http://jsbin.com/sifez/1/edit?js,console,output
            */
-          if (startMarker.previousSibling &&
-              startMarker.previousSibling.nodeType === Node.TEXT_NODE
-              && startMarker.previousSibling.data === '') {
-            startMarker.parentNode.removeChild(startMarker.previousSibling);
+          if (startMarker.previousSibling && nodeHelper.isEmptyTextNode(startMarker.previousSibling)) {
+            nodeHelper.removeNode(startMarker.previousSibling);
           }
         }
 
 
         this.selection.removeAllRanges();
-        this.selection.addRange(this.range);
+        this.selection.addRange(range);
       }
     };
 
@@ -213,13 +200,9 @@ function (elementHelper, nodeHelper) {
       var newRange = document.createRange();
 
       newRange.setStartBefore(markers[0]);
-      if (markers.length >= 2) {
-        newRange.setEndAfter(markers[1]);
-      } else {
-        // We always reset the end marker because otherwise it will just
-        // use the current range’s end marker.
-        newRange.setEndAfter(markers[0]);
-      }
+      // We always reset the end marker because otherwise it will just
+      // use the current range’s end marker.
+      newRange.setEndAfter(markers.length >= 2 ? markers[1] : markers[0])
 
       if (! keepMarkers) {
         this.removeMarkers();
