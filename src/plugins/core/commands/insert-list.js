@@ -13,6 +13,8 @@ define(function () {
         scribe.api.Command.call(this, commandName);
       };
 
+      var nodeHelper = scribe.node;
+
       InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
       InsertListCommand.prototype.constructor = InsertListCommand;
 
@@ -25,7 +27,7 @@ define(function () {
               newListNode.appendChild(listItemElement);
             });
 
-            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
+            nodeHelper.insertAfter(newListNode, listNode);
           }
         }
 
@@ -43,7 +45,7 @@ define(function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+              var nextListItemElements = nodeHelper.nextAll(listItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -60,8 +62,8 @@ define(function () {
               var pNode = document.createElement('p');
               pNode.innerHTML = listItemElement.innerHTML;
 
-              listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-              listItemElement.parentNode.removeChild(listItemElement);
+              nodeHelper.insertAfter(pNode, listNode);
+              nodeHelper.removeNode(listItemElement);
             } else {
               /**
                * When multiple list items are selected, we replace each list
@@ -78,7 +80,7 @@ define(function () {
                 return listItemElement;
               });
               var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+              var listItemElementsAfterSelection = nodeHelper.nextAll(lastSelectedListItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -99,7 +101,7 @@ define(function () {
               });
 
               // Insert the Ps
-              listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
+              nodeHelper.insertAfter(documentFragment, listNode);
 
               // Remove the LIs
               selectedListItemElements.forEach(function (listItemElement) {
@@ -109,7 +111,7 @@ define(function () {
 
             // If the list is now empty, clean it up.
             if (listNode.childNodes.length === 0) {
-              listNode.parentNode.removeChild(listNode);
+              nodeHelper.removeNode(listNode);
             }
 
             selection.selectMarkers();

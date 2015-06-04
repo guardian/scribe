@@ -1,4 +1,6 @@
-define(['lodash-amd/modern/collection/contains'], function (contains) {
+define([
+  './node'
+], function(nodeHelper) {
 
   'use strict';
 
@@ -7,30 +9,23 @@ define(['lodash-amd/modern/collection/contains'], function (contains) {
                            'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
                            'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
                            'TH', 'TFOOT', 'UL', 'VIDEO'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
+
+  function isBlockElement(element) {
+    return blockElementNames.indexOf(element.nodeName) !== -1;
   }
 
-  function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+  function isSelectionMarkerElement(element) {
+    return (nodeHelper.isElement(element) && element.className === 'scribe-marker');
   }
 
-  function isCaretPositionNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
+  function isCaretPositionElement(element) {
+    return (nodeHelper.isElement(element) && element.className === 'caret-position');
   }
 
   return {
     isBlockElement: isBlockElement,
-    isSelectionMarkerNode: isSelectionMarkerNode,
-    isCaretPositionNode: isCaretPositionNode,
-    unwrap: unwrap
+    isSelectionMarkerElement: isSelectionMarkerElement,
+    isCaretPositionElement: isCaretPositionElement
   };
 
 });

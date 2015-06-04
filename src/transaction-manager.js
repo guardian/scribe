@@ -1,41 +1,38 @@
-define(['lodash-amd/modern/object/assign'], function (assign) {
+define(function () {
 
   'use strict';
 
-  return function (scribe) {
-    function TransactionManager() {
-      this.history = [];
-    }
+  function TransactionManager(scribe) {
+    this.history = [];
+    this.scribe = scribe;
+  }
 
-    assign(TransactionManager.prototype, {
-      start: function () {
-        this.history.push(1);
-      },
-
-      end: function () {
-        this.history.pop();
-
-        if (this.history.length === 0) {
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
-        }
-      },
-
-      run: function (transaction, forceMerge) {
-        this.start();
-        // If there is an error, don't prevent the transaction from ending.
-        try {
-          if (transaction) {
-            transaction();
-          }
-        } finally {
-          scribe._forceMerge = forceMerge === true;
-          this.end();
-          scribe._forceMerge = false;
-        }
-      }
-    });
-
-    return TransactionManager;
+  TransactionManager.prototype.start = function () {
+    this.history.push(1);
   };
+
+  TransactionManager.prototype.end = function () {
+    this.history.pop();
+
+    if (this.history.length === 0) {
+      this.scribe.pushHistory();
+      this.scribe.trigger('content-changed');
+    }
+  };
+
+  TransactionManager.prototype.run = function (transaction, forceMerge) {
+    this.start();
+    // If there is an error, don't prevent the transaction from ending.
+    try {
+      if (transaction) {
+        transaction();
+      }
+    } finally {
+      this.scribe._forceMerge = !! forceMerge;
+      this.end();
+      this.scribe._forceMerge = false;
+    }
+  };
+
+  return TransactionManager;
 });

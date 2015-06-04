@@ -1,7 +1,8 @@
 define([
-  '../element'
+  '../element',
+  '../node'
 ],
-function (elementHelper) {
+function (elementHelper, nodeHelper) {
 
   'use strict';
 
@@ -98,13 +99,9 @@ function (elementHelper) {
          * As per: http://jsbin.com/hajim/5/edit?js,console,output
          */
         // TODO: abstract into polyfill for `Range.insertNode`
-        if (endMarker.nextSibling &&
-            endMarker.nextSibling.nodeType === Node.TEXT_NODE
-            && endMarker.nextSibling.data === '') {
-          endMarker.parentNode.removeChild(endMarker.nextSibling);
+        if (endMarker.nextSibling && nodeHelper.isEmptyTextNode(endMarker.nextSibling)) {
+          nodeHelper.removeNode(endMarker.nextSibling);
         }
-
-
 
         /**
          * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
@@ -113,10 +110,8 @@ function (elementHelper) {
          * FIXME: Document why we need to remove this
          * As per: http://jsbin.com/sifez/1/edit?js,console,output
          */
-        if (endMarker.previousSibling &&
-            endMarker.previousSibling.nodeType === Node.TEXT_NODE
-            && endMarker.previousSibling.data === '') {
-          endMarker.parentNode.removeChild(endMarker.previousSibling);
+        if (endMarker.previousSibling && nodeHelper.isEmptyTextNode(endMarker.previousSibling)) {
+          nodeHelper.removeNode(endMarker.previousSibling);
         }
 
 
@@ -174,10 +169,8 @@ function (elementHelper) {
            * As per: http://jsbin.com/hajim/5/edit?js,console,output
            */
           // TODO: abstract into polyfill for `Range.insertNode`
-          if (startMarker.nextSibling &&
-              startMarker.nextSibling.nodeType === Node.TEXT_NODE
-              && startMarker.nextSibling.data === '') {
-            startMarker.parentNode.removeChild(startMarker.nextSibling);
+          if (startMarker.nextSibling && nodeHelper.isEmptyTextNode(startMarker.nextSibling)) {
+            nodeHelper.removeNode(startMarker.nextSibling);
           }
 
           /**
@@ -205,9 +198,8 @@ function (elementHelper) {
     };
 
     Selection.prototype.removeMarkers = function () {
-      var markers = this.getMarkers();
-      Array.prototype.forEach.call(markers, function (marker) {
-        marker.parentNode.removeChild(marker);
+      Array.prototype.forEach.call(this.getMarkers(), function (marker) {
+        nodeHelper.removeNode(marker);
       });
     };
 

@@ -1,11 +1,9 @@
 define([
   'lodash-amd/modern/collection/contains',
-  '../../dom-observer',
-  '../../api/children'
+  '../../dom-observer'
 ], function (
   contains,
-  observeDomChanges,
-  children
+  observeDomChanges
 ) {
 
   'use strict';
@@ -30,7 +28,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = children.firstDeepestChild(scribe.el);
+            var focusElement = scribe.node.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 
@@ -41,7 +39,7 @@ define([
             selection.selection.addRange(range);
           }
         }
-      }.bind(scribe));
+      });
 
       /**
        * Apply the formatters when there is a DOM mutation.
@@ -117,7 +115,7 @@ define([
                   var brNode = document.createElement('br');
                   pNode.appendChild(brNode);
 
-                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+                  scribe.node.insertAfter(pNode, headingNode);
 
                   // Re-apply range
                   range.setStart(pNode, 0);
@@ -218,13 +216,13 @@ define([
 
           var bin = document.createElement('div');
           document.body.appendChild(bin);
-          bin.setAttribute('contenteditable', true);
+          bin.contentEditable = true;
           bin.focus();
 
           // Wait for the paste to happen (next loop?)
           setTimeout(function () {
             var data = bin.innerHTML;
-            bin.parentNode.removeChild(bin);
+            scribe.node.removeNode(bin);
 
             // Restore the caret position
             selection.selectMarkers();

@@ -19,7 +19,7 @@ define([
   events,
   patches,
   Api,
-  buildTransactionManager,
+  TransactionManager,
   UndoManager,
   EventEmitter,
   elementHelpers,
@@ -43,14 +43,9 @@ define([
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
-
-    this.node = nodeHelpers;
-    this.element = elementHelpers;
+    this.transactionManager = new TransactionManager(this);
 
     this.Immutable = Immutable;
-
-    var TransactionManager = buildTransactionManager(this);
-    this.transactionManager = new TransactionManager();
 
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
@@ -69,21 +64,10 @@ define([
 
     this.setHTML(this.getHTML());
 
-    this.el.setAttribute('contenteditable', true);
+    this.el.contentEditable = true;
+    this.el.addEventListener('input', this, false);
 
-    this.el.addEventListener('input', function () {
-      /**
-       * This event triggers when either the user types something or a native
-       * command is executed which causes the content to change (i.e.
-       * `document.execCommand('bold')`). We can't wrap a transaction around
-       * these actions, so instead we run the transaction in this event.
-       */
-      this.transactionManager.run();
-    }.bind(this), false);
-
-    /**
-     * Core Plugins
-     */
+    // Core Plugins
     var corePlugins = Immutable.OrderedSet(this.options.defaultPlugins)
       .sort(config.sortByPlugin('setRootPElement')) // Ensure `setRootPElement` is always loaded first
       .filter(config.filterByBlockLevelMode(this.allowsBlockElements()))
@@ -128,12 +112,16 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  // For plugins
-  // TODO: tap combinator?
-  Scribe.prototype.use = function (configurePlugin) {
-    configurePlugin(this);
-    return this;
-  };
+  Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element = elementHelpers;
+
+  Scribe.prototype.handleEvent = function() {
+    this.transactionManager.run();
+  }
+
+  Scribe.prototype.use = function(plugin) {
+    plugin(this);
+  }
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
     this._lastItem.content = html;

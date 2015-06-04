@@ -18,7 +18,7 @@ define([
   var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
   function parentHasNoTextContent(element, node) {
-    if (element.isCaretPositionNode(node)) {
+    if (element.isSelectionMarkerElement(node)) {
       return true;
     } else {
       return node.parentNode.textContent.trim() === '';
@@ -35,7 +35,7 @@ define([
     function isEmpty(node) {
 
       if ((node.children.length === 0 && element.isBlockElement(node))
-        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+        || (node.children.length === 1 && element.isSelectionMarkerElement(node.children[0]))) {
          return true;
       }
 
@@ -48,7 +48,7 @@ define([
     }
 
     while (node) {
-      if (!element.isSelectionMarkerNode(node)) {
+      if (!element.isSelectionMarkerElement(node)) {
         // Find any node that contains no child *elements*, or just contains
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
