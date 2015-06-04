@@ -11,17 +11,15 @@ function (elementHelper, nodeHelper) {
      * Wrapper for object holding currently selected text.
      */
     function Selection() {
-      var rootDoc = document;
+      var rootDoc = scribe.el.ownerDocument;
 
       // find the parent document or document fragment
-      var currentElement = scribe.el.parentNode;
-      while(currentElement && currentElement.nodeType !== Node.DOCUMENT_FRAGMENT_NODE && currentElement.nodeType !== Node.DOCUMENT_NODE) {
-        currentElement = currentElement.parentNode;
-      }
-
-      // if we found a document fragment and it has a getSelection method, set it to the root doc
-      if (currentElement && currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
-        rootDoc = currentElement;
+      if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
+        var currentElement = nodeHelper.getAncestor(scribe.el, nodeHelper.isFragment);
+        // if we found a document fragment and it has a getSelection method, set it to the root doc
+        if (currentElement.getSelection) {
+          rootDoc = currentElement;
+        }
       }
 
       this.selection = rootDoc.getSelection();
