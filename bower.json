@@ -13,6 +13,7 @@
     "scribe-plugin-link-prompt-command": "0.2.0",
     "scribe-plugin-sanitizer": "0.1.9",
     "scribe-plugin-smart-lists": "0.1.7",
-    "scribe-plugin-toolbar": "0.2.0"
+    "scribe-plugin-toolbar": "0.2.0",
+    "scribe-plugin-content-cleaner": "1.0.0"
   }
 }

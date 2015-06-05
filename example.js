@@ -11,7 +11,8 @@ require({
     'scribe-plugin-link-prompt-command': './bower_components/scribe-plugin-link-prompt-command/scribe-plugin-link-prompt-command',
     'scribe-plugin-sanitizer': './bower_components/scribe-plugin-sanitizer/scribe-plugin-sanitizer',
     'scribe-plugin-smart-lists': './bower_components/scribe-plugin-smart-lists/scribe-plugin-smart-lists',
-    'scribe-plugin-toolbar': './bower_components/scribe-plugin-toolbar/scribe-plugin-toolbar'
+    'scribe-plugin-toolbar': './bower_components/scribe-plugin-toolbar/scribe-plugin-toolbar',
+    'scribe-plugin-content-cleaner': './bower_components/scribe-plugin-content-cleaner/scribe-plugin-content-cleaner'
   }
 }, [
   'scribe',
@@ -25,7 +26,8 @@ require({
   'scribe-plugin-link-prompt-command',
   'scribe-plugin-sanitizer',
   'scribe-plugin-smart-lists',
-  'scribe-plugin-toolbar'
+  'scribe-plugin-toolbar',
+  'scribe-plugin-content-cleaner'
 ], function (
   Scribe,
   scribePluginBlockquoteCommand,
@@ -38,7 +40,8 @@ require({
   scribePluginLinkPromptCommand,
   scribePluginSanitizer,
   scribePluginSmartLists,
-  scribePluginToolbar
+  scribePluginToolbar,
+  scribePluginContentCleaner
 ) {
 
   'use strict';
@@ -84,6 +87,7 @@ require({
   scribe.use(scribePluginSmartLists());
   scribe.use(scribePluginCurlyQuotes());
   scribe.use(scribePluginKeyboardShortcuts(commandsToKeyboardShortcutsMap));
+  scribe.use(scribePluginContentCleaner());
 
   // Formatters
   scribe.use(scribePluginSanitizer({
