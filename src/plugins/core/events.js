@@ -182,7 +182,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.contains('text/html') !== -1) {
+          if (event.clipboardData.types.contains('text/html')) {
 
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
