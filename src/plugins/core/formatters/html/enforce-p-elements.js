@@ -51,20 +51,12 @@ define(function () {
 
   // Traverse the tree, wrapping child nodes as we go.
   function traverse(scribe, parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
-    var node = treeWalker.firstChild();
+    var i = -1, len = parentNode.children.length;
 
-    // FIXME: does this recurse down?
-
-    while (node) {
-      // TODO: At the moment we only support BLOCKQUOTEs. See failing
-      // tests.
-      if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
+    while (node = parentNode.children[++i]) {
+      if( node.tagName === 'BLOCKQUOTE' ) {
         wrapChildNodes(scribe, node);
-        traverse(scribe, parentNode);
-        break;
       }
-      node = treeWalker.nextSibling();
     }
   }
 
