@@ -19,38 +19,39 @@ define([
 
   'use strict';
 
-  /**
-   * Wrap consecutive inline elements and text nodes in a P element.
-   */
-  function wrapChildNodes(scribe, parentNode) {
-    var index = 0;
-    Immutable.List(parentNode.childNodes)
-      .filter(function(node) {
-        return scribe.node.isText(node) || !scribe.node.isBlockElement(node);
-      })
-      .groupBy(function(node, key, list) {
-        return key === 0 || node.previousSibling === list.get(key - 1) ?
-          index :
-          ++index;
-      })
-      .forEach(function(nodeGroup) {
-        scribe.node.wrap(nodeGroup.toArray(), document.createElement('p'));
-      });
-  }
-
-  // Traverse the tree, wrapping child nodes as we go.
-  function traverse(scribe, parentNode) {
-    var i = -1, len = parentNode.children.length;
-
-    while (node = parentNode.children[++i]) {
-      if( node.tagName === 'BLOCKQUOTE' ) {
-        wrapChildNodes(scribe, node);
-      }
-    }
-  }
-
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
+      /**
+       * Wrap consecutive inline elements and text nodes in a P element.
+       */
+      function wrapChildNodes(parentNode) {
+        var index = 0;
+        Immutable.List(parentNode.childNodes)
+          .filter(function(node) {
+            return nodeHelpers.isText(node) || !nodeHelpers.isBlockElement(node);
+          })
+          .groupBy(function(node, key, list) {
+            return key === 0 || node.previousSibling === list.get(key - 1) ?
+              index :
+              ++index;
+          })
+          .forEach(function(nodeGroup) {
+            nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
+          });
+      }
+
+      // Traverse the tree, wrapping child nodes as we go.
+      function traverse(parentNode) {
+        var i = -1, node;
+
+        while (node = parentNode.children[++i]) {
+          if( node.tagName === 'BLOCKQUOTE' ) {
+            wrapChildNodes(node);
+          }
+        }
+      }
 
       scribe.registerHTMLFormatter('normalize', function (html) {
         /**
@@ -64,9 +65,8 @@ define([
         // formatter.
         var bin = document.createElement('div');
         bin.innerHTML = html;
-
-        wrapChildNodes(scribe, bin);
-        traverse(scribe, bin);
+        wrapChildNodes(bin);
+        traverse(bin);
 
         return bin.innerHTML;
       });
