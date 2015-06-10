@@ -1,8 +1,10 @@
-define(function () {
+define([
+  'immutable/dist/immutable'
+], function (Immutable) {
   'use strict';
 
   function UndoManager(limit, undoScopeHost) {
-    this._stack = [];
+    this._stack = Immutable.List();
     this._limit = limit;
     this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
     this._ush = undoScopeHost;
@@ -18,68 +20,75 @@ define(function () {
 
     transaction.execute();
 
-    this._stack.splice(0, this.position);
-    if (merge && this.length) {
-      this._stack[0].push(transaction);
+    if (!!this.position) {
+      this._stack = this._stack.skip(this.position);
+      this.length = this._stack.size;
+      this.position = 0;
     }
-    else {
-      this._stack.unshift([transaction]);
-    }
-    this.position = 0;
 
-    if (this._limit && this._stack.length > this._limit) {
-      this.length = this._stack.length = this._limit;
+    if (merge && !!this.length) {
+      this._stack = this._stack
+        .skip(1)
+        .unshift(this._stack.first().push(transaction));
     }
     else {
-      this.length = this._stack.length;
+      this._stack = this._stack.unshift(Immutable.List.of(transaction));
+
+      if (!!this._limit && this.size > this._limit) {
+        this._stack = this._stack.take(this._limit);
+      }
+
+      this.length = this._stack.size;
     }
 
     if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
+      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack.first().toArray()}, bubbles: true, cancelable: false}));
     }
   };
 
   UndoManager.prototype.undo = function () {
     if (this.position === this.length) return;
 
-    for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
-      this._stack[this.position][i].undo();
+    var transactions = this._stack.get(this.position);
+    for (var i = transactions.size - 1; i >= 0; i--) {
+      transactions.get(i).undo();
     }
     this.position++;
 
     if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
+      this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: transactions.toArray()}, bubbles: true, cancelable: false}));
     }
   };
 
   UndoManager.prototype.redo = function () {
     if (this.position === 0) return;
 
-    for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
-      this._stack[this.position - 1][i].redo();
+    var transactions = this._stack.get(this.position - 1);
+    for (var i = 0, n = transactions.size; i < n; i++) {
+      transactions.get(i).redo();
     }
     this.position--;
 
     if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
+      this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: transactions.toArray()}, bubbles: true, cancelable: false}));
     }
   };
 
   UndoManager.prototype.item = function (index) {
-    if (index >= 0 && index < this.length) {
-      return this._stack[index].slice();
-    }
-    return null;
+    return index >= 0 && index < this.length ?
+      this._stack.get(index).toArray():
+      null;
   };
 
   UndoManager.prototype.clearUndo = function () {
-    this._stack.length = this.length = this.position;
+    this._stack = this._stack.take(this.position);
+    this.length = this.position;
   };
 
   UndoManager.prototype.clearRedo = function () {
-    this._stack.splice(0, this.position);
+    this._stack = this._stack.skip(this.position);
+    this.length = this._stack.size;
     this.position = 0;
-    this.length = this._stack.length;
   };
 
   return UndoManager;

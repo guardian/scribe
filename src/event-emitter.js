@@ -37,7 +37,7 @@ define([
           listener.apply(null, args);
         });
       }
-      eventName.splice((eventName.length - 1), 1);
+      eventName.pop();
     }
   };
 

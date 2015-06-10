@@ -124,6 +124,7 @@ define([], function () {
     firstDeepestChild: firstDeepestChild,
     insertAfter: insertAfter,
     removeNode: removeNode,
+    wrap: wrap,
     unwrap: unwrap,
     isEmptyTextNode: isEmptyTextNode,
     isElement: isElement,
