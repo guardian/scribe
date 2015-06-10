@@ -1,4 +1,6 @@
-define(function () {
+define([
+  'immutable/dist/immutable'
+], function (Immutable) {
 
   /**
    * Chrome and Firefox: Upon pressing backspace inside of a P, the
@@ -21,32 +23,19 @@ define(function () {
    * Wrap consecutive inline elements and text nodes in a P element.
    */
   function wrapChildNodes(scribe, parentNode) {
-    var groups = Array.prototype.reduce.call(
-      parentNode.childNodes,
-      function (accumulator, binChildNode) {
-        var group = accumulator.pop();
-        if ( scribe.node.isBlockElement(binChildNode) ) {
-          if ( group !== undefined && !! group.length ) {
-            accumulator.push(group);
-            accumulator.push([]);
-          }
-        } else {
-          if ( group === undefined ) {
-            accumulator.push([binChildNode]);
-          } else {
-            group.push(binChildNode);
-            accumulator.push(group);
-          }
-        }
-
-      return accumulator;
-    }, []);
-
-    groups.forEach(function (nodes) {
-      scribe.node.wrap(nodes, document.createElement('p'));
-    });
-
-    parentNode._isWrapped = true;
+    var index = 0;
+    Immutable.List(parentNode.childNodes)
+      .filter(function(node) {
+        return scribe.node.isText(node) || !scribe.node.isBlockElement(node);
+      })
+      .groupBy(function(node, key, list) {
+        return key === 0 || node.previousSibling === list.get(key - 1) ?
+          index :
+          ++index;
+      })
+      .forEach(function(nodeGroup) {
+        scribe.node.wrap(nodeGroup.toArray(), document.createElement('p'));
+      });
   }
 
   // Traverse the tree, wrapping child nodes as we go.
