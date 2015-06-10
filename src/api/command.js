@@ -5,7 +5,7 @@ define(function () {
   return function (scribe) {
     function Command(commandName) {
       this.commandName = commandName;
-      this.patch = scribe.commandPatches[this.commandName];
+      this.patch = scribe.commandPatches[commandName];
     }
 
     Command.prototype.execute = function (value) {

@@ -48,21 +48,6 @@ define(function () {
       }
     }
 
-    // return true if nested inline tags ultimately just contain <br> or ""
-    function isEmptyInlineElement(node) {
-      var treeWalker = document.createTreeWalker(node,
-        NodeFilter.SHOW_ELEMENT,
-        {
-          acceptNode: function(node) {
-            var numberOfChildren = node.childNodes.length;
-            return numberOfChildren > 1 || node.textContent.trim() !== '';
-          }
-        },
-        false);
-
-      return treeWalker.nextNode() === null;
-    }
-
     /**
      * Wrapper for object holding currently selected text.
      */
@@ -165,7 +150,7 @@ define(function () {
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      return !! containerPElement && isEmptyInlineElement(containerPElement);
+      return !! containerPElement && nodeHelper.isEmptyInlineElement(containerPElement);
     };
 
     return Selection;

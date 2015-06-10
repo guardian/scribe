@@ -16,6 +16,6 @@ define([
     this.CommandPatch = buildCommandPatch(scribe);
     this.Command = buildCommand(scribe);
     this.Selection = buildSelection(scribe);
-    this.SimpleCommand = buildSimpleCommand(this, scribe);
+    this.SimpleCommand = buildSimpleCommand(scribe, this.Command);
   };
 });

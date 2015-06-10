@@ -40,28 +40,28 @@ define(function () {
   };
 
   UndoManager.prototype.undo = function () {
-    if (this.position < this.length) {
-      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
-        this._stack[this.position][i].undo();
-      }
-      this.position++;
+    if (this.position === this.length) return;
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
-      }
+    for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
+      this._stack[this.position][i].undo();
+    }
+    this.position++;
+
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
     }
   };
 
   UndoManager.prototype.redo = function () {
-    if (this.position > 0) {
-      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
-        this._stack[this.position - 1][i].redo();
-      }
-      this.position--;
+    if (this.position === 0) return;
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
-      }
+    for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
+      this._stack[this.position - 1][i].redo();
+    }
+    this.position--;
+
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
     }
   };
 
@@ -84,4 +84,3 @@ define(function () {
 
   return UndoManager;
 });
-

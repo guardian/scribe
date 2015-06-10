@@ -4,11 +4,12 @@ define([
   './plugins/core/formatters',
   './plugins/core/events',
   './plugins/core/patches',
+  './formatter-factory',
+  './html-formatter-factory',
   './api',
   './transaction-manager',
   './undo-manager',
   './event-emitter',
-  './element',
   './node',
   'immutable/dist/immutable',
   './config'
@@ -18,11 +19,12 @@ define([
   formatters,
   events,
   patches,
+  FormatterFactory,
+  HTMLFormatterFactory,
   Api,
   TransactionManager,
   UndoManager,
   EventEmitter,
-  elementHelpers,
   nodeHelpers,
   Immutable,
   config
@@ -75,17 +77,10 @@ define([
 
     // Formatters
     var defaultFormatters = Immutable.List(this.options.defaultFormatters)
-    .filter(function (formatter) { return !!formatters[formatter]; })
-    .map(function (formatter) { return formatters[formatter]; });
+      .filter(function (formatter) { return !!formatters[formatter]; })
+      .map(function (formatter) { return formatters[formatter]; });
 
     // Patches
-
-    var defaultPatches = Immutable.List.of(
-      patches.events
-    );
-
-    var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
-
     var defaultCommands = Immutable.List.of(
       'indent',
       'insertList',
@@ -96,14 +91,17 @@ define([
       'undo'
     ).map(function(command) { return commands[command]; });
 
-    var allPlugins = Immutable.List().concat(
-      corePlugins,
+    var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches)
+      .map(function(patch) { return patches.commands[patch]; });
+
+    var defaultCommands = Immutable.List(commands);
+
+    corePlugins.concat(
       defaultFormatters,
       defaultPatches,
       defaultCommandPatches,
-      defaultCommands);
-
-    allPlugins.forEach(function(plugin) {
+      defaultCommands
+    ).forEach(function(plugin) {
       this.use(plugin());
     }.bind(this));
 
@@ -113,7 +111,6 @@ define([
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
   Scribe.prototype.node = nodeHelpers;
-  Scribe.prototype.element = elementHelpers;
 
   Scribe.prototype.handleEvent = function() {
     this.transactionManager.run();
@@ -124,7 +121,9 @@ define([
   }
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
-    this._lastItem.content = html;
+    if( this.options.undo.enabled ) {
+      this._lastItem.content = html;
+    }
 
     if (skipFormatters) {
       this._skipFormatters = true;
@@ -154,61 +153,59 @@ define([
      * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
      * This happens when doing any DOM manipulation.
      */
-    var scribe = this;
 
-    if (scribe.options.undo.enabled) {
-      // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
-
-      // We only want to push the history if the content actually changed.
-      if (scribe.getHTML() !== lastContentNoMarkers) {
-        var selection = new scribe.api.Selection();
-
-        selection.placeMarkers();
-        var content = scribe.getHTML();
-        selection.removeMarkers();
-
-        // Checking if there is a need to merge, and that the previous history item
-        // is the last history item of the same scribe instance.
-        // It is possible the last transaction is not for the same instance, or
-        // even not a scribe transaction (e.g. when using a shared undo manager).
-        var previousItem = scribe.undoManager.item(scribe.undoManager.position);
-        if ((scribe._merge || scribe._forceMerge) && previousItem && scribe._lastItem == previousItem[0]) {
-          // If so, merge manually with the last item to save more memory space.
-          scribe._lastItem.content = content;
-        }
-        else {
-          // Otherwise, create a new history item, and register it as a new transaction
-          scribe._lastItem = {
-            previousItem: scribe._lastItem,
-            content: content,
-            scribe: scribe,
-            execute: function () { },
-            undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
-            redo: function () { this.scribe.restoreFromHistory(this); }
-          };
-
-          scribe.undoManager.transact(scribe._lastItem, false);
-        }
-
-        // Merge next transaction if it happens before the interval option, otherwise don't merge.
-        clearTimeout(scribe._mergeTimer);
-        scribe._merge = true;
-        scribe._mergeTimer = setTimeout(function() { scribe._merge = false; }, scribe.options.undo.interval);
-
-        return true;
-      }
+    if (! this.options.undo.enabled ) {
+      return false;
     }
 
-    return false;
-  };
+    // We only want to push the history if the content actually changed.
+    if (this.getHTML() === scribe._lastItem.content.replace('<em class="scribe-marker"></em>', '')) {
+      return false;
+    }
 
-  Scribe.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || this.commandPatches[commandName] || new this.api.Command(commandName);
+    var selection = new scribe.api.Selection();
+    selection.placeMarkers();
+    var content = scribe.getHTML();
+    selection.removeMarkers();
+
+    // Checking if there is a need to merge, and that the previous history item
+    // is the last history item of the same scribe instance.
+    // It is possible the last transaction is not for the same instance, or
+    // even not a scribe transaction (e.g. when using a shared undo manager).
+    var previousItem = this.undoManager.item(this.undoManager.position);
+    if ((this._merge || this._forceMerge) && previousItem && this._lastItem == previousItem[0]) {
+      // If so, merge manually with the last item to save more memory space.
+      this._lastItem.content = content;
+    }
+    else {
+      // Otherwise, create a new history item, and register it as a new transaction
+      this._lastItem = {
+        previousItem: this._lastItem,
+        content: content,
+        scribe: this,
+        execute: function () { },
+        undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
+        redo: function () { this.scribe.restoreFromHistory(this); }
+      };
+
+      this.undoManager.transact(this._lastItem, false);
+    }
+
+    // Merge next transaction if it happens before the interval option, otherwise don't merge.
+    clearTimeout(this._mergeTimer);
+    scribe._merge = true;
+    scribe._mergeTimer = setTimeout(
+      function() { this._merge = false; }.bind(this),
+      this.options.undo.interval
+    );
+
+    return true;
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    this._lastItem = historyItem;
+    if( this.options.undo.enabled ) {
+      this._lastItem = historyItem;
+    }
 
     this.setHTML(historyItem.content, true);
 
@@ -219,6 +216,12 @@ define([
     // Because we skip the formatters, a transaction is not run, so we have to
     // emit this event ourselves.
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.getCommand = function (commandName) {
+    return this.commands[commandName] ||
+      this.commandPatches[commandName] ||
+      new this.api.Command(commandName);
   };
 
   // This will most likely be moved to another object eventually
@@ -271,60 +274,13 @@ define([
    * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
    */
   Scribe.prototype.registerHTMLFormatter = function (phase, formatter) {
-    this._htmlFormatterFactory.formatters[phase]
-      = this._htmlFormatterFactory.formatters[phase].push(formatter);
+    this._htmlFormatterFactory.register(phase, formatter);
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (formatter) {
-    this._plainTextFormatterFactory.formatters
-      = this._plainTextFormatterFactory.formatters.push(formatter);
+    this._plainTextFormatterFactory.register(formatter);
   };
 
-  // TODO: abstract
-  function FormatterFactory() {
-    this.formatters = Immutable.List();
-  }
-
-  FormatterFactory.prototype.format = function (html) {
-    // Map the object to an array: Array[Formatter]
-    var formatted = this.formatters.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
-
-    return formatted;
-  };
-
-  function HTMLFormatterFactory() {
-    // Define phases
-    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
-    this.formatters = {
-      // Configurable sanitization of the HTML, e.g. converting/filter/removing
-      // elements
-      sanitize: Immutable.List(),
-      // Normalize content to ensure it is ready for interaction
-      normalize: Immutable.List(),
-      'export': Immutable.List()
-    };
-  }
-
-  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
-  HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
-
-  HTMLFormatterFactory.prototype.format = function (html) {
-    var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
-
-    var formatted = formatters.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
-
-    return formatted;
-  };
-
-  HTMLFormatterFactory.prototype.formatForExport = function (html) {
-    return this.formatters['export'].reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
-  };
 
   return Scribe;
 

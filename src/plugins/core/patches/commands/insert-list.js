@@ -4,7 +4,6 @@ define([], function () {
 
   return function () {
     return function (scribe) {
-      var element = scribe.element;
       var nodeHelpers = scribe.node;
 
       var InsertListCommandPatch = function (commandName) {
@@ -88,7 +87,7 @@ define([], function () {
                 if (listElementChildNode.nodeName === 'SPAN') {
                   // Unwrap any SPAN that has been inserted
                   var spanElement = listElementChildNode;
-                  element.unwrap(listItemElement, spanElement);
+                  nodeHelpers.unwrap(listItemElement, spanElement);
                 } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
                   /**
                    * If the list item contains inline elements such as

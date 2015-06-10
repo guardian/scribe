@@ -1,8 +1,4 @@
-define([
-  'lodash-amd/modern/array/last'
-], function (
-  last
-) {
+define(function () {
 
   /**
    * Chrome and Firefox: Upon pressing backspace inside of a P, the
@@ -25,39 +21,29 @@ define([
    * Wrap consecutive inline elements and text nodes in a P element.
    */
   function wrapChildNodes(scribe, parentNode) {
-    var groups = Array.prototype.reduce.call(parentNode.childNodes,
-                                             function (accumulator, binChildNode) {
-      var group = last(accumulator);
-      if (! group) {
-        startNewGroup();
-      } else {
-        var isBlockGroup = scribe.element.isBlockElement(group[0]);
-        if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
-          group.push(binChildNode);
+    var groups = Array.prototype.reduce.call(
+      parentNode.childNodes,
+      function (accumulator, binChildNode) {
+        var group = accumulator.pop();
+        if ( scribe.node.isBlockElement(binChildNode) ) {
+          if ( group !== undefined && !! group.length ) {
+            accumulator.push(group);
+            accumulator.push([]);
+          }
         } else {
-          startNewGroup();
+          if ( group === undefined ) {
+            accumulator.push([binChildNode]);
+          } else {
+            group.push(binChildNode);
+            accumulator.push(group);
+          }
         }
-      }
 
       return accumulator;
-
-      function startNewGroup() {
-        var newGroup = [binChildNode];
-        accumulator.push(newGroup);
-      }
     }, []);
 
-    var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = scribe.element.isBlockElement(group[0]);
-      return ! isBlockGroup;
-    });
-
-    consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-      var pElement = document.createElement('p');
-      nodes[0].parentNode.insertBefore(pElement, nodes[0]);
-      nodes.forEach(function (node) {
-        pElement.appendChild(node);
-      });
+    groups.forEach(function (nodes) {
+      scribe.node.wrap(nodes, document.createElement('p'));
     });
 
     parentNode._isWrapped = true;
