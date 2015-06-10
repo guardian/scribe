@@ -58,7 +58,8 @@ define(function () {
         // https://code.google.com/p/chromium/issues/detail?id=380690
         this.range = document.createRange();
 
-        if( nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode) ) {
+        if( nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode)
+          || this.selection.anchorNode === this.selection.focusNode ) {
           this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
           this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
         } else {

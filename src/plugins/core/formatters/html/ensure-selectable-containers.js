@@ -1,8 +1,4 @@
-define([
-  'lodash-amd/modern/collection/contains'
-], function (
-  contains
-) {
+define(function () {
 
   /**
    * Chrome and Firefox: All elements need to contain either text or a `<br>` to
@@ -54,7 +50,7 @@ define([
             // whitespace, and is not self-closing
             if (isEmpty(node) &&
               node.textContent.trim() === '' &&
-              !contains(html5VoidElements, node.nodeName)) {
+              html5VoidElements.indexOf(node.nodeName) === -1) {
               node.appendChild(document.createElement('br'));
             } else if (node.children.length > 0) {
               traverse(node);

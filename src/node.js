@@ -111,11 +111,11 @@ define([], function () {
   }
 
   function isSelectionMarkerElement(element) {
-    return (nodeHelper.isElement(element) && element.className === 'scribe-marker');
+    return (isElement(element) && element.className === 'scribe-marker');
   }
 
   function isCaretPositionElement(element) {
-    return (nodeHelper.isElement(element) && element.className === 'caret-position');
+    return (isElement(element) && element.className === 'caret-position');
   }
 
   return {
