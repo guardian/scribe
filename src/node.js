@@ -96,14 +96,7 @@ define([], function () {
   }
 
   function hasContent(node) {
-    var treeWalker = document.createTreeWalker(
-      node,
-      NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-      { acceptNode: function(node) { return node.nodeName === 'BR' || ! isEmptyTextNode(node) } },
-      false
-    );
-
-    return treeWalker.nextNode();
+    return node.querySelector(':not(br):not(:empty)');
   }
 
   function isBlockElement(element) {
