@@ -81,6 +81,9 @@ define([
       .map(function (formatter) { return formatters[formatter]; });
 
     // Patches
+    var defaultPatches = Immutable.List.of(patches.events);
+
+    // Commands
     var defaultCommands = Immutable.List.of(
       'indent',
       'insertList',
@@ -91,10 +94,9 @@ define([
       'undo'
     ).map(function(command) { return commands[command]; });
 
+    // Command patches
     var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches)
       .map(function(patch) { return patches.commands[patch]; });
-
-    var defaultCommands = Immutable.List(commands);
 
     corePlugins.concat(
       defaultFormatters,
