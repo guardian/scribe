@@ -22,6 +22,7 @@ define([
   return function () {
     return function (scribe) {
       var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
 
       /**
        * Wrap consecutive inline elements and text nodes in a P element.
@@ -30,7 +31,7 @@ define([
         var index = 0;
         Immutable.List(parentNode.childNodes)
           .filter(function(node) {
-            return nodeHelpers.isText(node) || !nodeHelpers.isBlockElement(node);
+            return nodeHelpers.isText(node) || !elementHelpers.isBlockElement(node);
           })
           .groupBy(function(node, key, list) {
             return key === 0 || node.previousSibling === list.get(key - 1) ?
@@ -40,6 +41,7 @@ define([
           .forEach(function(nodeGroup) {
             nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
           });
+        parentNode._isWrapped = true;
       }
 
       // Traverse the tree, wrapping child nodes as we go.
@@ -47,7 +49,7 @@ define([
         var i = -1, node;
 
         while (node = parentNode.children[++i]) {
-          if( node.tagName === 'BLOCKQUOTE' ) {
+          if( node.tagName === 'BLOCKQUOTE' && ! node._isWrapped ) {
             wrapChildNodes(node);
           }
         }

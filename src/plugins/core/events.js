@@ -1,7 +1,9 @@
 define([
-  '../../dom-observer'
+  '../../dom-observer',
+  '../../api/children'
 ], function (
-  observeDomChanges
+  observeDomChanges,
+  children
 ) {
 
   'use strict';
@@ -26,7 +28,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = scribe.node.firstDeepestChild(scribe.el);
+            var focusElement = children.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 

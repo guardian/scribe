@@ -45,7 +45,7 @@ define(function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = nodeHelper.nextAll(listItemElement);
+              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -80,7 +80,7 @@ define(function () {
                 return listItemElement;
               });
               var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = nodeHelper.nextAll(lastSelectedListItemElement);
+              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
 
               /**
                * If we are not at the start or end of a UL/OL, we have to

@@ -10,19 +10,32 @@ define(function () {
 
   return function () {
     return function (scribe) {
-      var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
 
       // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
       var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
 
       function parentHasNoTextContent(node) {
-        if (nodeHelpers.isSelectionMarkerElement(node)) {
+        if (elementHelpers.isCaretPositionElement(node)) {
           return true;
         } else {
           return node.parentNode.textContent.trim() === '';
         }
       }
 
+      function isEmpty(node) {
+        if ((node.children.length === 0 && elementHelpers.isBlockElement(node))
+          || (node.children.length === 1 && elementHelpers.isSelectionMarkerElement(node.children[0]))) {
+           return true;
+        }
+
+        // Do not insert BR in empty non block elements with parent containing text
+        if (!elementHelpers.isBlockElement(node)) {
+          return parentHasNoTextContent(node);
+        }
+
+        return false;
+      }
 
       function traverse(parentNode) {
         // Instead of TreeWalker, which gets confused when the BR is added to the dom,
@@ -30,22 +43,8 @@ define(function () {
 
         var node = parentNode.firstElementChild;
 
-        function isEmpty(node) {
-          if ((node.children.length === 0 && nodeHelpers.isBlockElement(node))
-            || (node.children.length === 1 && nodeHelpers.isSelectionMarkerElement(node.children[0]))) {
-             return true;
-          }
-
-          // Do not insert BR in empty non block elements with parent containing text
-          if (!nodeHelpers.isBlockElement(node)) {
-            return parentHasNoTextContent(node);
-          }
-
-          return false;
-        }
-
         while (node) {
-          if (!nodeHelpers.isSelectionMarkerElement(node)) {
+          if (!elementHelpers.isSelectionMarkerElement(node)) {
             // Find any node that contains no child *elements*, or just contains
             // whitespace, and is not self-closing
             if (isEmpty(node) &&

@@ -1,26 +1,6 @@
-define([], function () {
+define(function () {
 
   'use strict';
-
-  var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
-                           'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
-                           'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO'];
-
-  function getAncestor(node, nodeFilter, rootNode) {
-    rootNode = rootNode || node.ownerDocument;
-
-    // If it's a `contenteditable` then it's likely going to be the Scribe
-    // instance, so stop traversing there.
-    while ((node = node.parentNode) && node !== rootNode) {
-      if (nodeFilter(node)) {
-        return node;
-      }
-    }
-
-    return null;
-  }
 
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
@@ -30,41 +10,12 @@ define([], function () {
     return isEmptyInlineElement(node.children[0]);
   }
 
-  function nextAll(node) {
-    var all = [];
-    while (node = node.nextSibling) {
-      all.push(node);
-    }
-    return all;
-  }
-
-
-  function firstDeepestChild(node) {
-    if(!node.hasChildNodes()) {
-      return node;
-    }
-
-    var child = node.firstChild;
-    if( child.nodeName === 'BR' ) {
-      return node;
-    }
-
-    return firstDeepestChild(child);
-  }
-
   function wrap(nodes, parentNode) {
     nodes[0].parentNode.insertBefore(parentNode, nodes[0]);
     nodes.forEach(function (node) {
       parentNode.appendChild(node);
     });
     return parentNode;
-  }
-
-  function unwrap(node) {
-    while (node.childNodes.length) {
-      node.parentNode.insertBefore(node.childNodes[0], node);
-    }
-    removeNode(node);
   }
 
   function insertAfter(newNode, referenceNode) {
@@ -96,38 +47,20 @@ define([], function () {
   }
 
   function hasContent(node) {
-    return node.querySelector(':not(br):not(:empty)');
-  }
-
-  function isBlockElement(element) {
-    return blockElementNames.indexOf(element.nodeName) !== -1;
-  }
-
-  function isSelectionMarkerElement(element) {
-    return (isElement(element) && element.className === 'scribe-marker');
-  }
-
-  function isCaretPositionElement(element) {
-    return (isElement(element) && element.className === 'caret-position');
+    return !!node.querySelector(':not(br):not(:empty)');
   }
 
   return {
-    getAncestor: getAncestor,
-    nextAll: nextAll,
-    firstDeepestChild: firstDeepestChild,
+    isEmptyInlineElement: isEmptyInlineElement,
+    wrap: wrap,
     insertAfter: insertAfter,
     removeNode: removeNode,
-    wrap: wrap,
-    unwrap: unwrap,
-    isEmptyTextNode: isEmptyTextNode,
     isElement: isElement,
     isText: isText,
+    isEmptyTextNode: isEmptyTextNode,
     isFragment: isFragment,
     isBefore: isBefore,
-    hasContent: hasContent,
-    isBlockElement: isBlockElement,
-    isSelectionMarkerElement: isSelectionMarkerElement,
-    isCaretPositionElement: isCaretPositionElement
+    hasContent: hasContent
   };
 
 });

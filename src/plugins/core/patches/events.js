@@ -22,7 +22,7 @@ define([], function () {
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
 
-      var nodeHelpers = scribe.node;
+      var element = scribe.element;
 
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
@@ -59,8 +59,7 @@ define([], function () {
                 pElementChildNodes.forEach(function(pElementChildNode) {
                   if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
-                    var spanElement = pElementChildNode;
-                    nodeHelpers.unwrap(containerPElement, spanElement);
+                    nodeHelpers.unwrap(pElementChildNode);
                   } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
                     /**
                      * If the paragraph contains inline elements such as

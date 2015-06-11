@@ -4,11 +4,15 @@ define(function () {
 
   return function (scribe) {
     var rootDoc = scribe.el.ownerDocument;
+    var elementHelper = scribe.element;
     var nodeHelper = scribe.node;
 
     // find the parent document or document fragment
     if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
-      var currentElement = nodeHelper.getAncestor(scribe.el, nodeHelper.isFragment);
+      var currentElement = scribe.el.parentNode;
+      while(currentElement && !nodeHelper.isFragment(currentElement)) {
+        currentElement = currentElement.parentNode;
+      }
       // if we found a document fragment and it has a getSelection method, set it to the root doc
       if (currentElement && currentElement.getSelection) {
         rootDoc = currentElement;
@@ -74,15 +78,14 @@ define(function () {
      * exist before reaching Scribe container.
      */
     Selection.prototype.getContaining = function (nodeFilter) {
-      if (!this.range) { return; }
+      var range = this.range;
+      if (!range) { return; }
 
-      var ancestor = this.range.commonAncestorContainer;
-      if (scribe.el === ancestor || !nodeFilter(ancestor)) {
-        ancestor = nodeHelper.getAncestor(ancestor, nodeFilter);
-      }
-
-      return ancestor;
-    }
+      var node = new scribe.api.Node(this.range.commonAncestorContainer);
+      return ! (node.node && scribe.el === node.node) && nodeFilter(node.node) ?
+        node.node :
+        node.getAncestor(scribe.el, nodeFilter);
+    };
 
     Selection.prototype.placeMarkers = function () {
       var range = this.range;

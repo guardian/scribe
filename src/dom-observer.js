@@ -1,8 +1,7 @@
 define([
+  './element',
   './node'
-], function (
-  nodeHelpers
-) {
+], function (elementHelpers, nodeHelpers) {
 
   function includeRealMutations(mutations) {
     var realChangedNodes = mutations
@@ -12,7 +11,7 @@ define([
       })
       .reduce(function(result, input) { return result.concat(input); }, [])
       .filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); })
-      .filter(function(n) { return ! nodeHelpers.isSelectionMarkerElement(n); });
+      .filter(function(n) { return ! elementHelpers.isSelectionMarkerElement(n); });
 
     return realChangedNodes.length > 0;
   }
