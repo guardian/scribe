@@ -43,14 +43,10 @@ define([
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
-
-    this.node = nodeHelpers;
-    this.element = elementHelpers;
-
-    this.Immutable = Immutable;
-
     var TransactionManager = buildTransactionManager(this);
     this.transactionManager = new TransactionManager();
+
+    this.Immutable = Immutable;
 
     //added for explicit checking later eg if (scribe.undoManager) { ... }
     this.undoManager = false;
@@ -69,21 +65,10 @@ define([
 
     this.setHTML(this.getHTML());
 
-    this.el.setAttribute('contenteditable', true);
+    this.el.contentEditable = true;
+    this.el.addEventListener('input', this, false);
 
-    this.el.addEventListener('input', function () {
-      /**
-       * This event triggers when either the user types something or a native
-       * command is executed which causes the content to change (i.e.
-       * `document.execCommand('bold')`). We can't wrap a transaction around
-       * these actions, so instead we run the transaction in this event.
-       */
-      this.transactionManager.run();
-    }.bind(this), false);
-
-    /**
-     * Core Plugins
-     */
+    // Core Plugins
     var corePlugins = Immutable.OrderedSet(this.options.defaultPlugins)
       .sort(config.sortByPlugin('setRootPElement')) // Ensure `setRootPElement` is always loaded first
       .filter(config.filterByBlockLevelMode(this.allowsBlockElements()))
@@ -91,17 +76,13 @@ define([
 
     // Formatters
     var defaultFormatters = Immutable.List(this.options.defaultFormatters)
-    .filter(function (formatter) { return !!formatters[formatter]; })
-    .map(function (formatter) { return formatters[formatter]; });
+      .filter(function (formatter) { return !!formatters[formatter]; })
+      .map(function (formatter) { return formatters[formatter]; });
 
     // Patches
+    var defaultPatches = Immutable.List.of(patches.events);
 
-    var defaultPatches = Immutable.List.of(
-      patches.events
-    );
-
-    var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches).map(function(patch) { return patches.commands[patch]; });
-
+    // Commands
     var defaultCommands = Immutable.List.of(
       'indent',
       'insertList',
@@ -112,14 +93,16 @@ define([
       'undo'
     ).map(function(command) { return commands[command]; });
 
-    var allPlugins = Immutable.List().concat(
-      corePlugins,
+    // Command patches
+    var defaultCommandPatches = Immutable.List(this.options.defaultCommandPatches)
+      .map(function(patch) { return patches.commands[patch]; });
+
+    corePlugins.concat(
       defaultFormatters,
       defaultPatches,
       defaultCommandPatches,
-      defaultCommands);
-
-    allPlugins.forEach(function(plugin) {
+      defaultCommands
+    ).forEach(function(plugin) {
       this.use(plugin());
     }.bind(this));
 
@@ -128,12 +111,16 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
-  // For plugins
-  // TODO: tap combinator?
-  Scribe.prototype.use = function (configurePlugin) {
-    configurePlugin(this);
-    return this;
-  };
+  Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element = elementHelpers;
+
+  Scribe.prototype.handleEvent = function() {
+    this.transactionManager.run();
+  }
+
+  Scribe.prototype.use = function(plugin) {
+    plugin(this);
+  }
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
     this._lastItem.content = html;
@@ -166,57 +153,53 @@ define([
      * browser magic around `Document.queryCommandState` (http://jsbin.com/eDOxacI/1/edit?js,console,output).
      * This happens when doing any DOM manipulation.
      */
-    var scribe = this;
 
-    if (scribe.options.undo.enabled) {
-      // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
-
-      // We only want to push the history if the content actually changed.
-      if (scribe.getHTML() !== lastContentNoMarkers) {
-        var selection = new scribe.api.Selection();
-
-        selection.placeMarkers();
-        var content = scribe.getHTML();
-        selection.removeMarkers();
-
-        // Checking if there is a need to merge, and that the previous history item
-        // is the last history item of the same scribe instance.
-        // It is possible the last transaction is not for the same instance, or
-        // even not a scribe transaction (e.g. when using a shared undo manager).
-        var previousItem = scribe.undoManager.item(scribe.undoManager.position);
-        if ((scribe._merge || scribe._forceMerge) && previousItem && scribe._lastItem == previousItem[0]) {
-          // If so, merge manually with the last item to save more memory space.
-          scribe._lastItem.content = content;
-        }
-        else {
-          // Otherwise, create a new history item, and register it as a new transaction
-          scribe._lastItem = {
-            previousItem: scribe._lastItem,
-            content: content,
-            scribe: scribe,
-            execute: function () { },
-            undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
-            redo: function () { this.scribe.restoreFromHistory(this); }
-          };
-
-          scribe.undoManager.transact(scribe._lastItem, false);
-        }
-
-        // Merge next transaction if it happens before the interval option, otherwise don't merge.
-        clearTimeout(scribe._mergeTimer);
-        scribe._merge = true;
-        scribe._mergeTimer = setTimeout(function() { scribe._merge = false; }, scribe.options.undo.interval);
-
-        return true;
-      }
+    if (! this.options.undo.enabled ) {
+      return false;
     }
 
-    return false;
-  };
+    // We only want to push the history if the content actually changed.
+    if (this.getHTML() === scribe._lastItem.content.replace('<em class="scribe-marker"></em>', '')) {
+      return false;
+    }
 
-  Scribe.prototype.getCommand = function (commandName) {
-    return this.commands[commandName] || this.commandPatches[commandName] || new this.api.Command(commandName);
+    var selection = new scribe.api.Selection();
+    selection.placeMarkers();
+    var content = scribe.getHTML();
+    selection.removeMarkers();
+
+    // Checking if there is a need to merge, and that the previous history item
+    // is the last history item of the same scribe instance.
+    // It is possible the last transaction is not for the same instance, or
+    // even not a scribe transaction (e.g. when using a shared undo manager).
+    var previousItem = this.undoManager.item(this.undoManager.position);
+    if ((this._merge || this._forceMerge) && previousItem && this._lastItem == previousItem[0]) {
+      // If so, merge manually with the last item to save more memory space.
+      this._lastItem.content = content;
+    }
+    else {
+      // Otherwise, create a new history item, and register it as a new transaction
+      this._lastItem = {
+        previousItem: this._lastItem,
+        content: content,
+        scribe: this,
+        execute: function () { },
+        undo: function () { this.scribe.restoreFromHistory(this.previousItem); },
+        redo: function () { this.scribe.restoreFromHistory(this); }
+      };
+
+      this.undoManager.transact(this._lastItem, false);
+    }
+
+    // Merge next transaction if it happens before the interval option, otherwise don't merge.
+    clearTimeout(this._mergeTimer);
+    scribe._merge = true;
+    scribe._mergeTimer = setTimeout(
+      function() { this._merge = false; }.bind(this),
+      this.options.undo.interval
+    );
+
+    return true;
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
@@ -231,6 +214,12 @@ define([
     // Because we skip the formatters, a transaction is not run, so we have to
     // emit this event ourselves.
     this.trigger('content-changed');
+  };
+
+  Scribe.prototype.getCommand = function (commandName) {
+    return this.commands[commandName] ||
+      this.commandPatches[commandName] ||
+      new this.api.Command(commandName);
   };
 
   // This will most likely be moved to another object eventually

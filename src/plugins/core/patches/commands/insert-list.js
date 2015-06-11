@@ -4,8 +4,8 @@ define([], function () {
 
   return function () {
     return function (scribe) {
-      var element = scribe.element;
       var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
 
       var InsertListCommandPatch = function (commandName) {
         scribe.api.CommandPatch.call(this, commandName);
@@ -78,8 +78,8 @@ define([], function () {
              */
 
             // TODO: share somehow with similar event patch for P nodes
-            var listItemElements = Array.prototype.slice.call(listElement.childNodes);
-            listItemElements.forEach(function(listItemElement) {
+            Array.prototype.slice.call(listElement.childNodes)
+            .forEach(function(listItemElement) {
               // We clone the childNodes into an Array so that it's
               // not affected by any manipulation below when we
               // iterate over it
@@ -87,8 +87,7 @@ define([], function () {
               listItemElementChildNodes.forEach(function(listElementChildNode) {
                 if (listElementChildNode.nodeName === 'SPAN') {
                   // Unwrap any SPAN that has been inserted
-                  var spanElement = listElementChildNode;
-                  element.unwrap(listItemElement, spanElement);
+                  elementHelpers.unwrap(listElementChildNode);
                 } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
                   /**
                    * If the list item contains inline elements such as

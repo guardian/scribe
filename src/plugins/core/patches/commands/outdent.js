@@ -9,6 +9,7 @@ define(function () {
   return function () {
     return function (scribe) {
       var outdentCommand = new scribe.api.CommandPatch('outdent');
+      var nodeHelper = scribe.node;
 
       outdentCommand.execute = function () {
         scribe.transactionManager.run(function () {
@@ -38,7 +39,7 @@ define(function () {
 
             // Delete the BLOCKQUOTE if it's empty
             if (blockquoteNode.textContent === '') {
-              blockquoteNode.parentNode.removeChild(blockquoteNode);
+              nodeHelper.removeNode(blockquoteNode);
             }
           } else {
             /**
@@ -66,16 +67,16 @@ define(function () {
                   newContainerNode.appendChild(siblingNode);
                 });
 
-                blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
+                nodeHelper.insertAfter(newContainerNode, blockquoteNode);
               }
 
               selection.placeMarkers();
-              blockquoteNode.parentNode.insertBefore(pNode, blockquoteNode.nextElementSibling);
+              nodeHelper.insertAfter(pNode, blockquoteNode);
               selection.selectMarkers();
 
               // If the BLOCKQUOTE is now empty, clean it up.
               if (blockquoteNode.innerHTML === '') {
-                blockquoteNode.parentNode.removeChild(blockquoteNode);
+                nodeHelper.removeNode(blockquoteNode);
               }
             } else {
               scribe.api.CommandPatch.prototype.execute.call(this);

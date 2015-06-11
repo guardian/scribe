@@ -1,8 +1,6 @@
 define([
-  'lodash-amd/modern/array/last'
-], function (
-  last
-) {
+  'immutable/dist/immutable'
+], function (Immutable) {
 
   /**
    * Chrome and Firefox: Upon pressing backspace inside of a P, the
@@ -21,69 +19,41 @@ define([
 
   'use strict';
 
-  /**
-   * Wrap consecutive inline elements and text nodes in a P element.
-   */
-  function wrapChildNodes(scribe, parentNode) {
-    var groups = Array.prototype.reduce.call(parentNode.childNodes,
-                                             function (accumulator, binChildNode) {
-      var group = last(accumulator);
-      if (! group) {
-        startNewGroup();
-      } else {
-        var isBlockGroup = scribe.element.isBlockElement(group[0]);
-        if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
-          group.push(binChildNode);
-        } else {
-          startNewGroup();
-        }
-      }
-
-      return accumulator;
-
-      function startNewGroup() {
-        var newGroup = [binChildNode];
-        accumulator.push(newGroup);
-      }
-    }, []);
-
-    var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = scribe.element.isBlockElement(group[0]);
-      return ! isBlockGroup;
-    });
-
-    consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-      var pElement = document.createElement('p');
-      nodes[0].parentNode.insertBefore(pElement, nodes[0]);
-      nodes.forEach(function (node) {
-        pElement.appendChild(node);
-      });
-    });
-
-    parentNode._isWrapped = true;
-  }
-
-  // Traverse the tree, wrapping child nodes as we go.
-  function traverse(scribe, parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
-    var node = treeWalker.firstChild();
-
-    // FIXME: does this recurse down?
-
-    while (node) {
-      // TODO: At the moment we only support BLOCKQUOTEs. See failing
-      // tests.
-      if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
-        wrapChildNodes(scribe, node);
-        traverse(scribe, parentNode);
-        break;
-      }
-      node = treeWalker.nextSibling();
-    }
-  }
-
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
+
+      /**
+       * Wrap consecutive inline elements and text nodes in a P element.
+       */
+      function wrapChildNodes(parentNode) {
+        var index = 0;
+        Immutable.List(parentNode.childNodes)
+          .filter(function(node) {
+            return nodeHelpers.isText(node) || !elementHelpers.isBlockElement(node);
+          })
+          .groupBy(function(node, key, list) {
+            return key === 0 || node.previousSibling === list.get(key - 1) ?
+              index :
+              ++index;
+          })
+          .forEach(function(nodeGroup) {
+            nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
+          });
+        parentNode._isWrapped = true;
+      }
+
+      // Traverse the tree, wrapping child nodes as we go.
+      function traverse(parentNode) {
+        var i = -1, node;
+
+        while (node = parentNode.children[++i]) {
+          if( node.tagName === 'BLOCKQUOTE' && ! node._isWrapped ) {
+            wrapChildNodes(node);
+          }
+        }
+      }
 
       scribe.registerHTMLFormatter('normalize', function (html) {
         /**
@@ -97,9 +67,8 @@ define([
         // formatter.
         var bin = document.createElement('div');
         bin.innerHTML = html;
-
-        wrapChildNodes(scribe, bin);
-        traverse(scribe, bin);
+        wrapChildNodes(bin);
+        traverse(bin);
 
         return bin.innerHTML;
       });

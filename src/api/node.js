@@ -10,25 +10,22 @@ define(function () {
   // Node or Selection?
   // TODO: write tests. unit or integration?
   Node.prototype.getAncestor = function (rootElement, nodeFilter) {
-    var isTopContainerElement = function (element) {
-      return rootElement === element;
-    };
     // TODO: should this happen here?
-    if (isTopContainerElement(this.node)) {
+    if (this.node === rootElement) {
       return;
     }
 
-    var currentNode = this.node.parentNode;
+    var currentNode = this.node;
 
     // If it's a `contenteditable` then it's likely going to be the Scribe
     // instance, so stop traversing there.
-    while (currentNode && ! isTopContainerElement(currentNode)) {
+    while ((currentNode = currentNode.parentNode) && currentNode !== rootElement) {
       if (nodeFilter(currentNode)) {
         return currentNode;
       }
-      currentNode = currentNode.parentNode;
     }
   };
+
 
   Node.prototype.nextAll = function () {
     var all = [];

@@ -84,4 +84,3 @@ define(function () {
 
   return UndoManager;
 });
-

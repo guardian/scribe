@@ -5,7 +5,6 @@ define(function () {
   return function (api, scribe) {
     function SimpleCommand(commandName, nodeName) {
       scribe.api.Command.call(this, commandName);
-
       this._nodeName = nodeName;
     }
 
@@ -14,7 +13,7 @@ define(function () {
 
     SimpleCommand.prototype.queryState = function () {
       var selection = new scribe.api.Selection();
-      return scribe.api.Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
+      return this.queryState() && !! selection.getContaining(function (node) {
         return node.nodeName === this._nodeName;
       }.bind(this));
     };
