@@ -3,7 +3,7 @@ define([], function () {
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
-      var nodeHelper = scribe.node;
+      var element = scribe.element;
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
@@ -49,7 +49,7 @@ define([], function () {
               var originalChild = childElement;
               childElement = childElement.nextElementSibling;
               if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
-                nodeHelper.unwrap(originalChild);
+                element.unwrap(originalChild);
               }
             }
           }

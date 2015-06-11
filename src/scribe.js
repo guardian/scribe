@@ -4,12 +4,11 @@ define([
   './plugins/core/formatters',
   './plugins/core/events',
   './plugins/core/patches',
-  './formatter-factory',
-  './html-formatter-factory',
   './api',
   './transaction-manager',
   './undo-manager',
   './event-emitter',
+  './element',
   './node',
   'immutable/dist/immutable',
   './config'
@@ -19,12 +18,11 @@ define([
   formatters,
   events,
   patches,
-  FormatterFactory,
-  HTMLFormatterFactory,
   Api,
-  TransactionManager,
+  buildTransactionManager,
   UndoManager,
   EventEmitter,
+  elementHelpers,
   nodeHelpers,
   Immutable,
   config
@@ -45,7 +43,8 @@ define([
     this._htmlFormatterFactory = new HTMLFormatterFactory();
 
     this.api = new Api(this);
-    this.transactionManager = new TransactionManager(this);
+    var TransactionManager = buildTransactionManager(this);
+    this.transactionManager = new TransactionManager();
 
     this.Immutable = Immutable;
 
@@ -113,6 +112,7 @@ define([
   Scribe.prototype = Object.create(EventEmitter.prototype);
 
   Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element = elementHelpers;
 
   Scribe.prototype.handleEvent = function() {
     this.transactionManager.run();
@@ -123,9 +123,7 @@ define([
   }
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
-    if( this.options.undo.enabled ) {
-      this._lastItem.content = html;
-    }
+    this._lastItem.content = html;
 
     if (skipFormatters) {
       this._skipFormatters = true;
@@ -205,9 +203,7 @@ define([
   };
 
   Scribe.prototype.restoreFromHistory = function (historyItem) {
-    if( this.options.undo.enabled ) {
-      this._lastItem = historyItem;
-    }
+    this._lastItem = historyItem;
 
     this.setHTML(historyItem.content, true);
 
@@ -276,13 +272,60 @@ define([
    * @param {Function} fn Function that takes the current editor HTML and returns a formatted version.
    */
   Scribe.prototype.registerHTMLFormatter = function (phase, formatter) {
-    this._htmlFormatterFactory.register(phase, formatter);
+    this._htmlFormatterFactory.formatters[phase]
+      = this._htmlFormatterFactory.formatters[phase].push(formatter);
   };
 
   Scribe.prototype.registerPlainTextFormatter = function (formatter) {
-    this._plainTextFormatterFactory.register(formatter);
+    this._plainTextFormatterFactory.formatters
+      = this._plainTextFormatterFactory.formatters.push(formatter);
   };
 
+  // TODO: abstract
+  function FormatterFactory() {
+    this.formatters = Immutable.List();
+  }
+
+  FormatterFactory.prototype.format = function (html) {
+    // Map the object to an array: Array[Formatter]
+    var formatted = this.formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
+  };
+
+  function HTMLFormatterFactory() {
+    // Define phases
+    // For a list of formatters, see https://github.com/guardian/scribe/issues/126
+    this.formatters = {
+      // Configurable sanitization of the HTML, e.g. converting/filter/removing
+      // elements
+      sanitize: Immutable.List(),
+      // Normalize content to ensure it is ready for interaction
+      normalize: Immutable.List(),
+      'export': Immutable.List()
+    };
+  }
+
+  HTMLFormatterFactory.prototype = Object.create(FormatterFactory.prototype);
+  HTMLFormatterFactory.prototype.constructor = HTMLFormatterFactory;
+
+  HTMLFormatterFactory.prototype.format = function (html) {
+    var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
+
+    var formatted = formatters.reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+
+    return formatted;
+  };
+
+  HTMLFormatterFactory.prototype.formatForExport = function (html) {
+    return this.formatters['export'].reduce(function (formattedData, formatter) {
+      return formatter(formattedData);
+    }, html);
+  };
 
   return Scribe;
 

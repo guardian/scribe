@@ -58,7 +58,7 @@ define(function () {
                * split the node and insert the P in the middle.
                */
 
-              var nextSiblingNodes = nodeHelper.nextAll(pNode);
+              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
 
               if (nextSiblingNodes.length) {
                 var newContainerNode = document.createElement(blockquoteNode.nodeName);
