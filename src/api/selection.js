@@ -81,8 +81,10 @@ function (elementHelper) {
       if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd) {
 
         var startMarker = document.createElement('em');
+        startMarker.style.display = 'none';
         startMarker.classList.add('scribe-marker');
         var endMarker = document.createElement('em');
+        endMarker.style.display = 'none';
         endMarker.classList.add('scribe-marker');
 
         // End marker
