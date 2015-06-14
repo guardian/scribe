@@ -170,7 +170,7 @@ define([
 
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
+      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em [^>]*class="scribe-marker"[^>]*>[^<]*?<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
       if (scribe.getHTML() !== lastContentNoMarkers) {
