@@ -36,7 +36,6 @@ define(function () {
        * node (`removeFormat`, `unlink`).
        * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
-      // TODO: abstract into polyfill for `Range.insertNode`
       if (marker.nextSibling && nodeHelper.isEmptyTextNode(marker.nextSibling)) {
         nodeHelper.removeNode(marker.nextSibling);
       }
@@ -64,8 +63,10 @@ define(function () {
         this.range = document.createRange();
 
         // Check if anchorNode is before focusNode, reverse the range if not
-        if( nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode)
-          || this.selection.anchorNode === this.selection.focusNode ) {
+        if (this.selection.anchorNode === this.selection.focusNode) {
+          this.range.setStart(this.selection.anchorNode, Math.min(this.selection.anchorOffset, this.selection.focusOffset));
+          this.range.setStart(this.selection.anchorNode, Math.max(this.selection.anchorOffset, this.selection.focusOffset));
+        } else if (nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode)) {
           this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
           this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
         } else {
