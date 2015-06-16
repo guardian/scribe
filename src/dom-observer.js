@@ -1,26 +1,18 @@
 define([
-  'lodash-amd/modern/array/flatten',
-  'lodash-amd/modern/lang/toArray',
   './element',
   './node'
-], function (
-  flatten,
-  toArray,
-  elementHelpers,
-  nodeHelpers
-) {
+], function (elementHelpers, nodeHelpers) {
 
   function observeDomChanges(el, callback) {
     function includeRealMutations(mutations) {
-      var allChangedNodes = flatten(mutations.map(function(mutation) {
-        var added   = toArray(mutation.addedNodes);
-        var removed = toArray(mutation.removedNodes);
-        return added.concat(removed);
-      }));
-
-      var realChangedNodes = allChangedNodes.
-        filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); }).
-        filter(function(n) { return ! elementHelpers.isSelectionMarkerNode(n); });
+      var realChangedNodes = mutations
+      .map(function(mutation) {
+        return mutations.slice.call(mutation.addedNodes)
+          .concat(mutations.slice.call(mutation.removedNodes));
+      })
+      .reduce(function(result, input) { return result.concat(input); }, [])
+      .filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); })
+      .filter(function(n) { return ! elementHelpers.isSelectionMarkerElement(n); });
 
       return realChangedNodes.length > 0;
     }
