@@ -13,7 +13,7 @@ define([
       .reduce(function(result, input) { return result.concat(input); }, [])
       .filter(function(n) {
         return ! nodeHelpers.isEmptyTextNode(n) &&
-          ! elementHelpers.isSelectionMarkerElement(n);
+          ! elementHelpers.isSelectionMarkerNode(n);
       });
 
       return realChangedNodes.length > 0;
