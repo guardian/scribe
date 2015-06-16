@@ -6,7 +6,7 @@ define(function () {
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
     if( node.children.length === 1 && node.textContent.trim() !== '' ) return false;
-    if( node.children.length === O ) return node.textContent.trim() === '';
+    if( node.children.length === 0 ) return node.textContent.trim() === '';
     return isEmptyInlineElement(node.children[0]);
   }
 
