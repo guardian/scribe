@@ -21,6 +21,7 @@ define(function () {
 
     function createMarker() {
       var node = document.createElement('em');
+      node.style.display = 'none';
       node.classList.add('scribe-marker');
       return node;
     }
