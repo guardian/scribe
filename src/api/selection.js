@@ -105,7 +105,7 @@ define(function () {
       //we want to ensure that scribe ONLY places markers within it's own element
       if (scribe.el.contains(range.startContainer) && scribe.el.contains(range.endContainer)) {
         // insert start marker
-        insertMarker(range, createMarker());
+        insertMarker(range.cloneRange(), createMarker());
 
         if (! range.collapsed ) {
           // End marker
