@@ -1,6 +1,6 @@
 define([
-  'lodash-amd/modern/array/last'
-], function (last) {
+  'immutable/dist/immutable'
+], function (Immutable) {
 
   /**
    * Chrome and Firefox: Upon pressing backspace inside of a P, the
@@ -21,45 +21,26 @@ define([
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
+
       /**
        * Wrap consecutive inline elements and text nodes in a P element.
        */
       function wrapChildNodes(parentNode) {
-        var groups = Array.prototype.reduce.call(parentNode.childNodes,
-                                                 function (accumulator, binChildNode) {
-          var group = last(accumulator);
-          if (! group) {
-            startNewGroup();
-          } else {
-            var isBlockGroup = scribe.element.isBlockElement(group[0]);
-            if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
-              group.push(binChildNode);
-            } else {
-              startNewGroup();
-            }
-          }
-
-          return accumulator;
-
-          function startNewGroup() {
-            var newGroup = [binChildNode];
-            accumulator.push(newGroup);
-          }
-        }, []);
-
-        var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-          var isBlockGroup = scribe.element.isBlockElement(group[0]);
-          return ! isBlockGroup;
-        });
-
-        consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-          var pElement = document.createElement('p');
-          nodes[0].parentNode.insertBefore(pElement, nodes[0]);
-          nodes.forEach(function (node) {
-            pElement.appendChild(node);
+        var index = 0;
+        Immutable.List(parentNode.childNodes)
+          .filter(function(node) {
+            return node.nodeType === Node.TEXT_NODE || !elementHelpers.isBlockElement(node);
+          })
+          .groupBy(function(node, key, list) {
+            return key === 0 || node.previousSibling === list.get(key - 1) ?
+              index :
+              ++index;
+          })
+          .forEach(function(nodeGroup) {
+            nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
           });
-        });
-
         parentNode._isWrapped = true;
       }
 
