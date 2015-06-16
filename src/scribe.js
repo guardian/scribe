@@ -44,9 +44,6 @@ define([
 
     this.api = new Api(this);
 
-    this.node = nodeHelpers;
-    this.element = elementHelpers;
-
     this.Immutable = Immutable;
 
     var TransactionManager = buildTransactionManager(this);
@@ -127,6 +124,8 @@ define([
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
+  Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element = elementHelpers;
 
   // For plugins
   // TODO: tap combinator?
