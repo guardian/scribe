@@ -11,8 +11,10 @@ define([
           .concat(mutations.slice.call(mutation.removedNodes));
       })
       .reduce(function(result, input) { return result.concat(input); }, [])
-      .filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); })
-      .filter(function(n) { return ! elementHelpers.isSelectionMarkerElement(n); });
+      .filter(function(n) {
+        return ! nodeHelpers.isEmptyTextNode(n) &&
+          ! elementHelpers.isSelectionMarkerElement(n);
+      });
 
       return realChangedNodes.length > 0;
     }
