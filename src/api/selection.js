@@ -65,7 +65,7 @@ define(function () {
         // Check if anchorNode is before focusNode, reverse the range if not
         if (this.selection.anchorNode === this.selection.focusNode) {
           this.range.setStart(this.selection.anchorNode, Math.min(this.selection.anchorOffset, this.selection.focusOffset));
-          this.range.setStart(this.selection.anchorNode, Math.max(this.selection.anchorOffset, this.selection.focusOffset));
+          this.range.setEnd(this.selection.anchorNode, Math.max(this.selection.anchorOffset, this.selection.focusOffset));
         } else if (nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode)) {
           this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
           this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
