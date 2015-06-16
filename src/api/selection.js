@@ -104,14 +104,14 @@ define(function () {
       //if this isn't true scribe will place markers within the selections parent
       //we want to ensure that scribe ONLY places markers within it's own element
       if (scribe.el.contains(range.startContainer) && scribe.el.contains(range.endContainer)) {
-        // insert start marker
-        insertMarker(range.cloneRange(), createMarker());
+        // End marker
+        var rangeEnd = range.cloneRange();
+        rangeEnd.collapse(false);
+        insertMarker(rangeEnd, createMarker());
 
         if (! range.collapsed ) {
-          // End marker
-          var rangeEnd = range.cloneRange();
-          rangeEnd.collapse(false);
-          insertMarker(rangeEnd, createMarker());
+          // insert start marker
+          insertMarker(range.cloneRange(), createMarker());
         }
 
         this.selection.removeAllRanges();
