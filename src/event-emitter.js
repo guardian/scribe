@@ -1,5 +1,4 @@
-define(['lodash-amd/modern/array/pull',
-  'immutable/dist/immutable'], function (pull, Immutable) {
+define(['immutable/dist/immutable'], function (Immutable) {
 
   'use strict';
 
