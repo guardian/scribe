@@ -36,20 +36,19 @@ define([
           .groupBy(function(node, key, list) {
             return key === 0 || node.previousSibling === list.get(key - 1) ?
               index :
-              ++index;
+              index += 1;
           })
           .forEach(function(nodeGroup) {
             nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
           });
-        parentNode._isWrapped = true;
       }
 
       // Traverse the tree, wrapping child nodes as we go.
       function traverse(parentNode) {
-        var i = -1, node;
+        var i = 0, node;
 
-        while (node = parentNode.children[++i]) {
-          if( node.tagName === 'BLOCKQUOTE' && ! node._isWrapped ) {
+        while (node = parentNode.children[i++]) {
+          if (node.tagName === 'BLOCKQUOTE') {
             wrapChildNodes(node);
           }
         }
