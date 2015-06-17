@@ -2890,8 +2890,10 @@ function (elementHelper) {
       if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd) {
 
         var startMarker = document.createElement('em');
+        startMarker.style.display = 'none';
         startMarker.classList.add('scribe-marker');
         var endMarker = document.createElement('em');
+        endMarker.style.display = 'none';
         endMarker.classList.add('scribe-marker');
 
         // End marker
@@ -8784,7 +8786,7 @@ define('scribe',[
 
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
+      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em [^>]*class="scribe-marker"[^>]*>[^<]*?<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
       if (scribe.getHTML() !== lastContentNoMarkers) {
