@@ -1,9 +1,7 @@
 define([
-  'lodash-amd/modern/collection/contains',
   '../../dom-observer',
   '../../api/children'
 ], function (
-  contains,
   observeDomChanges,
   children
 ) {
@@ -186,7 +184,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (contains(event.clipboardData.types, 'text/html')) {
+          if (event.clipboardData.types.contains('text/html')) {
 
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
