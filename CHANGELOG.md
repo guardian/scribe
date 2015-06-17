@@ -1,3 +1,7 @@
+# 1.4.2
+
+A number of performance improvements have been contributed by [Regis Kuckaertz](https://github.com/regiskuckaertz). Primarily these include avoiding TreeWalker where it isn't needed and moving a number of function definitions to the parse phase. See the individual PRs for details.
+
 # 1.4.1
 
 Small optimisation to avoid a relayout as a result of placing Scribe markers.
