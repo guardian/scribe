@@ -24,3521 +24,6 @@ define('plugins/core/set-root-p-element',[],function () {
 
 });
 
-define('lodash-amd/modern/array/last',[], function() {
-
-  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
-  var undefined;
-
-  /**
-   * Gets the last element of `array`.
-   *
-   * @static
-   * @memberOf _
-   * @category Array
-   * @param {Array} array The array to query.
-   * @returns {*} Returns the last element of `array`.
-   * @example
-   *
-   * _.last([1, 2, 3]);
-   * // => 3
-   */
-  function last(array) {
-    var length = array ? array.length : 0;
-    return length ? array[length - 1] : undefined;
-  }
-
-  return last;
-});
-
-define('plugins/core/formatters/html/enforce-p-elements',[
-  'lodash-amd/modern/array/last'
-], function (
-  last
-) {
-
-  /**
-   * Chrome and Firefox: Upon pressing backspace inside of a P, the
-   * browser deletes the paragraph element, leaving the caret (and any
-   * content) outside of any P.
-   *
-   * Firefox: Erasing across multiple paragraphs, or outside of a
-   * whole paragraph (e.g. by ‘Select All’) will leave content outside
-   * of any P.
-   *
-   * Entering a new line in a pristine state state will insert
-   * `<div>`s (in Chrome) or `<br>`s (in Firefox) where previously we
-   * had `<p>`'s. This patches the behaviour of delete/backspace so
-   * that we do not end up in a pristine state.
-   */
-
-  
-
-  /**
-   * Wrap consecutive inline elements and text nodes in a P element.
-   */
-  function wrapChildNodes(scribe, parentNode) {
-    var groups = Array.prototype.reduce.call(parentNode.childNodes,
-                                             function (accumulator, binChildNode) {
-      var group = last(accumulator);
-      if (! group) {
-        startNewGroup();
-      } else {
-        var isBlockGroup = scribe.element.isBlockElement(group[0]);
-        if (isBlockGroup === scribe.element.isBlockElement(binChildNode)) {
-          group.push(binChildNode);
-        } else {
-          startNewGroup();
-        }
-      }
-
-      return accumulator;
-
-      function startNewGroup() {
-        var newGroup = [binChildNode];
-        accumulator.push(newGroup);
-      }
-    }, []);
-
-    var consecutiveInlineElementsAndTextNodes = groups.filter(function (group) {
-      var isBlockGroup = scribe.element.isBlockElement(group[0]);
-      return ! isBlockGroup;
-    });
-
-    consecutiveInlineElementsAndTextNodes.forEach(function (nodes) {
-      var pElement = document.createElement('p');
-      nodes[0].parentNode.insertBefore(pElement, nodes[0]);
-      nodes.forEach(function (node) {
-        pElement.appendChild(node);
-      });
-    });
-
-    parentNode._isWrapped = true;
-  }
-
-  // Traverse the tree, wrapping child nodes as we go.
-  function traverse(scribe, parentNode) {
-    var treeWalker = document.createTreeWalker(parentNode, NodeFilter.SHOW_ELEMENT, null, false);
-    var node = treeWalker.firstChild();
-
-    // FIXME: does this recurse down?
-
-    while (node) {
-      // TODO: At the moment we only support BLOCKQUOTEs. See failing
-      // tests.
-      if (node.nodeName === 'BLOCKQUOTE' && ! node._isWrapped) {
-        wrapChildNodes(scribe, node);
-        traverse(scribe, parentNode);
-        break;
-      }
-      node = treeWalker.nextSibling();
-    }
-  }
-
-  return function () {
-    return function (scribe) {
-
-      scribe.registerHTMLFormatter('normalize', function (html) {
-        /**
-         * Ensure P mode.
-         *
-         * Wrap any orphan text nodes in a P element.
-         */
-        // TODO: This should be configurable and also correct markup such as
-        // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
-        // TODO: This should probably be a part of HTML Janitor, or some other
-        // formatter.
-        var bin = document.createElement('div');
-        bin.innerHTML = html;
-
-        wrapChildNodes(scribe, bin);
-        traverse(scribe, bin);
-
-        return bin.innerHTML;
-      });
-
-    };
-  };
-
-});
-
-define('lodash-amd/modern/internal/indexOfNaN',[], function() {
-
-  /**
-   * Gets the index at which the first occurrence of `NaN` is found in `array`.
-   * If `fromRight` is provided elements of `array` are iterated from right to left.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {number} fromIndex The index to search from.
-   * @param {boolean} [fromRight] Specify iterating from right to left.
-   * @returns {number} Returns the index of the matched `NaN`, else `-1`.
-   */
-  function indexOfNaN(array, fromIndex, fromRight) {
-    var length = array.length,
-        index = fromIndex + (fromRight ? 0 : -1);
-
-    while ((fromRight ? index-- : ++index < length)) {
-      var other = array[index];
-      if (other !== other) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return indexOfNaN;
-});
-
-define('lodash-amd/modern/internal/baseIndexOf',['./indexOfNaN'], function(indexOfNaN) {
-
-  /**
-   * The base implementation of `_.indexOf` without support for binary searches.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {*} value The value to search for.
-   * @param {number} fromIndex The index to search from.
-   * @returns {number} Returns the index of the matched value, else `-1`.
-   */
-  function baseIndexOf(array, value, fromIndex) {
-    if (value !== value) {
-      return indexOfNaN(array, fromIndex);
-    }
-    var index = fromIndex - 1,
-        length = array.length;
-
-    while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return baseIndexOf;
-});
-
-define('lodash-amd/modern/internal/isLength',[], function() {
-
-  /**
-   * Used as the maximum length of an array-like value.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
-   * for more details.
-   */
-  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-  /**
-   * Checks if `value` is a valid array-like length.
-   *
-   * **Note:** This function is based on ES `ToLength`. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
-   * for more details.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
-   */
-  function isLength(value) {
-    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-  }
-
-  return isLength;
-});
-
-define('lodash-amd/modern/internal/baseToString',[], function() {
-
-  /**
-   * Converts `value` to a string if it is not one. An empty string is returned
-   * for `null` or `undefined` values.
-   *
-   * @private
-   * @param {*} value The value to process.
-   * @returns {string} Returns the string.
-   */
-  function baseToString(value) {
-    if (typeof value == 'string') {
-      return value;
-    }
-    return value == null ? '' : (value + '');
-  }
-
-  return baseToString;
-});
-
-define('lodash-amd/modern/string/escapeRegExp',['../internal/baseToString'], function(baseToString) {
-
-  /**
-   * Used to match `RegExp` special characters.
-   * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
-   * for more details.
-   */
-  var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
-      reHasRegExpChars = RegExp(reRegExpChars.source);
-
-  /**
-   * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
-   * "+", "(", ")", "[", "]", "{" and "}" in `string`.
-   *
-   * @static
-   * @memberOf _
-   * @category String
-   * @param {string} [string=''] The string to escape.
-   * @returns {string} Returns the escaped string.
-   * @example
-   *
-   * _.escapeRegExp('[lodash](https://lodash.com/)');
-   * // => '\[lodash\]\(https://lodash\.com/\)'
-   */
-  function escapeRegExp(string) {
-    string = baseToString(string);
-    return (string && reHasRegExpChars.test(string))
-      ? string.replace(reRegExpChars, '\\$&')
-      : string;
-  }
-
-  return escapeRegExp;
-});
-
-define('lodash-amd/modern/internal/isObjectLike',[], function() {
-
-  /**
-   * Checks if `value` is object-like.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-   */
-  function isObjectLike(value) {
-    return (value && typeof value == 'object') || false;
-  }
-
-  return isObjectLike;
-});
-
-define('lodash-amd/modern/lang/isNative',['../string/escapeRegExp', '../internal/isObjectLike'], function(escapeRegExp, isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var funcTag = '[object Function]';
-
-  /** Used to detect host constructors (Safari > 5). */
-  var reHostCtor = /^\[object .+?Constructor\]$/;
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the decompiled source of functions. */
-  var fnToString = Function.prototype.toString;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /** Used to detect if a method is native. */
-  var reNative = RegExp('^' +
-    escapeRegExp(objToString)
-    .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-  );
-
-  /**
-   * Checks if `value` is a native function.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
-   * @example
-   *
-   * _.isNative(Array.prototype.push);
-   * // => true
-   *
-   * _.isNative(_);
-   * // => false
-   */
-  function isNative(value) {
-    if (value == null) {
-      return false;
-    }
-    if (objToString.call(value) == funcTag) {
-      return reNative.test(fnToString.call(value));
-    }
-    return (isObjectLike(value) && reHostCtor.test(value)) || false;
-  }
-
-  return isNative;
-});
-
-define('lodash-amd/modern/lang/isArray',['../internal/isLength', './isNative', '../internal/isObjectLike'], function(isLength, isNative, isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var arrayTag = '[object Array]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
-
-  /**
-   * Checks if `value` is classified as an `Array` object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   *
-   * _.isArray(function() { return arguments; }());
-   * // => false
-   */
-  var isArray = nativeIsArray || function(value) {
-    return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
-  };
-
-  return isArray;
-});
-
-define('lodash-amd/modern/lang/isString',['../internal/isObjectLike'], function(isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var stringTag = '[object String]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /**
-   * Checks if `value` is classified as a `String` primitive or object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isString('abc');
-   * // => true
-   *
-   * _.isString(1);
-   * // => false
-   */
-  function isString(value) {
-    return typeof value == 'string' || (isObjectLike(value) && objToString.call(value) == stringTag) || false;
-  }
-
-  return isString;
-});
-
-define('lodash-amd/modern/internal/baseValues',[], function() {
-
-  /**
-   * The base implementation of `_.values` and `_.valuesIn` which creates an
-   * array of `object` property values corresponding to the property names
-   * returned by `keysFunc`.
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {Array} props The property names to get values for.
-   * @returns {Object} Returns the array of property values.
-   */
-  function baseValues(object, props) {
-    var index = -1,
-        length = props.length,
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = object[props[index]];
-    }
-    return result;
-  }
-
-  return baseValues;
-});
-
-define('lodash-amd/modern/lang/isObject',[], function() {
-
-  /**
-   * Checks if `value` is the language type of `Object`.
-   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(1);
-   * // => false
-   */
-  function isObject(value) {
-    // Avoid a V8 JIT bug in Chrome 19-20.
-    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-    var type = typeof value;
-    return type == 'function' || (value && type == 'object') || false;
-  }
-
-  return isObject;
-});
-
-define('lodash-amd/modern/lang/isArguments',['../internal/isLength', '../internal/isObjectLike'], function(isLength, isObjectLike) {
-
-  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
-  var undefined;
-
-  /** `Object#toString` result references. */
-  var argsTag = '[object Arguments]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /**
-   * Checks if `value` is classified as an `arguments` object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isArguments(function() { return arguments; }());
-   * // => true
-   *
-   * _.isArguments([1, 2, 3]);
-   * // => false
-   */
-  function isArguments(value) {
-    var length = isObjectLike(value) ? value.length : undefined;
-    return (isLength(length) && objToString.call(value) == argsTag) || false;
-  }
-
-  return isArguments;
-});
-
-define('lodash-amd/modern/internal/isIndex',[], function() {
-
-  /**
-   * Used as the maximum length of an array-like value.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
-   * for more details.
-   */
-  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-  /**
-   * Checks if `value` is a valid array-like index.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
-   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
-   */
-  function isIndex(value, length) {
-    value = +value;
-    length = length == null ? MAX_SAFE_INTEGER : length;
-    return value > -1 && value % 1 == 0 && value < length;
-  }
-
-  return isIndex;
-});
-
-define('lodash-amd/modern/internal/root',[], function() {
-
-  /** Used to determine if values are of the language type `Object`. */
-  var objectTypes = {
-    'function': true,
-    'object': true
-  };
-
-  /** Detect free variable `exports`. */
-  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-
-  /** Detect free variable `module`. */
-  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-
-  /** Detect free variable `global` from Node.js. */
-  var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
-
-  /** Detect free variable `window`. */
-  var freeWindow = objectTypes[typeof window] && window;
-
-  /**
-   * Used as a reference to the global object.
-   *
-   * The `this` value is used if it is the global object to avoid Greasemonkey's
-   * restricted `window` object, otherwise the `window` object is used.
-   */
-  var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || this;
-
-  return root;
-});
-
-define('lodash-amd/modern/support',['./lang/isNative', './internal/root'], function(isNative, root) {
-
-  /** Used to detect functions containing a `this` reference. */
-  var reThis = /\bthis\b/;
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to detect DOM support. */
-  var document = (document = root.window) && document.document;
-
-  /** Native method references. */
-  var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-  /**
-   * An object environment feature flags.
-   *
-   * @static
-   * @memberOf _
-   * @type Object
-   */
-  var support = {};
-
-  (function(x) {
-
-    /**
-     * Detect if functions can be decompiled by `Function#toString`
-     * (all but Firefox OS certified apps, older Opera mobile browsers, and
-     * the PlayStation 3; forced `false` for Windows 8 apps).
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    support.funcDecomp = !isNative(root.WinRTError) && reThis.test(function() { return this; });
-
-    /**
-     * Detect if `Function#name` is supported (all but IE).
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    support.funcNames = typeof Function.name == 'string';
-
-    /**
-     * Detect if the DOM is supported.
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    try {
-      support.dom = document.createDocumentFragment().nodeType === 11;
-    } catch(e) {
-      support.dom = false;
-    }
-
-    /**
-     * Detect if `arguments` object indexes are non-enumerable.
-     *
-     * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
-     * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
-     * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
-     * checks for indexes that exceed their function's formal parameters with
-     * associated values of `0`.
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    try {
-      support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
-    } catch(e) {
-      support.nonEnumArgs = true;
-    }
-  }(0, 0));
-
-  return support;
-});
-
-define('lodash-amd/modern/object/keysIn',['../lang/isArguments', '../lang/isArray', '../internal/isIndex', '../internal/isLength', '../lang/isObject', '../support'], function(isArguments, isArray, isIndex, isLength, isObject, support) {
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
-
-  /**
-   * Creates an array of the own and inherited enumerable property names of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.keysIn(new Foo);
-   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
-   */
-  function keysIn(object) {
-    if (object == null) {
-      return [];
-    }
-    if (!isObject(object)) {
-      object = Object(object);
-    }
-    var length = object.length;
-    length = (length && isLength(length) &&
-      (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
-
-    var Ctor = object.constructor,
-        index = -1,
-        isProto = typeof Ctor == 'function' && Ctor.prototype === object,
-        result = Array(length),
-        skipIndexes = length > 0;
-
-    while (++index < length) {
-      result[index] = (index + '');
-    }
-    for (var key in object) {
-      if (!(skipIndexes && isIndex(key, length)) &&
-          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
-        result.push(key);
-      }
-    }
-    return result;
-  }
-
-  return keysIn;
-});
-
-define('lodash-amd/modern/internal/shimKeys',['../lang/isArguments', '../lang/isArray', './isIndex', './isLength', '../object/keysIn', '../support'], function(isArguments, isArray, isIndex, isLength, keysIn, support) {
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
-
-  /**
-   * A fallback implementation of `Object.keys` which creates an array of the
-   * own enumerable property names of `object`.
-   *
-   * @private
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   */
-  function shimKeys(object) {
-    var props = keysIn(object),
-        propsLength = props.length,
-        length = propsLength && object.length;
-
-    var allowIndexes = length && isLength(length) &&
-      (isArray(object) || (support.nonEnumArgs && isArguments(object)));
-
-    var index = -1,
-        result = [];
-
-    while (++index < propsLength) {
-      var key = props[index];
-      if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
-        result.push(key);
-      }
-    }
-    return result;
-  }
-
-  return shimKeys;
-});
-
-define('lodash-amd/modern/object/keys',['../internal/isLength', '../lang/isNative', '../lang/isObject', '../internal/shimKeys'], function(isLength, isNative, isObject, shimKeys) {
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
-
-  /**
-   * Creates an array of the own enumerable property names of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
-   * for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.keys(new Foo);
-   * // => ['a', 'b'] (iteration order is not guaranteed)
-   *
-   * _.keys('hi');
-   * // => ['0', '1']
-   */
-  var keys = !nativeKeys ? shimKeys : function(object) {
-    if (object) {
-      var Ctor = object.constructor,
-          length = object.length;
-    }
-    if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-        (typeof object != 'function' && (length && isLength(length)))) {
-      return shimKeys(object);
-    }
-    return isObject(object) ? nativeKeys(object) : [];
-  };
-
-  return keys;
-});
-
-define('lodash-amd/modern/object/values',['../internal/baseValues', './keys'], function(baseValues, keys) {
-
-  /**
-   * Creates an array of the own enumerable property values of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to query.
-   * @returns {Array} Returns the array of property values.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.values(new Foo);
-   * // => [1, 2] (iteration order is not guaranteed)
-   *
-   * _.values('hi');
-   * // => ['h', 'i']
-   */
-  function values(object) {
-    return baseValues(object, keys(object));
-  }
-
-  return values;
-});
-
-define('lodash-amd/modern/collection/includes',['../internal/baseIndexOf', '../lang/isArray', '../internal/isLength', '../lang/isString', '../object/values'], function(baseIndexOf, isArray, isLength, isString, values) {
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeMax = Math.max;
-
-  /**
-   * Checks if `value` is in `collection` using `SameValueZero` for equality
-   * comparisons. If `fromIndex` is negative, it is used as the offset from
-   * the end of `collection`.
-   *
-   * **Note:** `SameValueZero` comparisons are like strict equality comparisons,
-   * e.g. `===`, except that `NaN` matches `NaN`. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-   * for more details.
-   *
-   * @static
-   * @memberOf _
-   * @alias contains, include
-   * @category Collection
-   * @param {Array|Object|string} collection The collection to search.
-   * @param {*} target The value to search for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {boolean} Returns `true` if a matching element is found, else `false`.
-   * @example
-   *
-   * _.includes([1, 2, 3], 1);
-   * // => true
-   *
-   * _.includes([1, 2, 3], 1, 2);
-   * // => false
-   *
-   * _.includes({ 'user': 'fred', 'age': 40 }, 'fred');
-   * // => true
-   *
-   * _.includes('pebbles', 'eb');
-   * // => true
-   */
-  function includes(collection, target, fromIndex) {
-    var length = collection ? collection.length : 0;
-    if (!isLength(length)) {
-      collection = values(collection);
-      length = collection.length;
-    }
-    if (!length) {
-      return false;
-    }
-    if (typeof fromIndex == 'number') {
-      fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : (fromIndex || 0);
-    } else {
-      fromIndex = 0;
-    }
-    return (typeof collection == 'string' || !isArray(collection) && isString(collection))
-      ? (fromIndex < length && collection.indexOf(target, fromIndex) > -1)
-      : (baseIndexOf(collection, target, fromIndex) > -1);
-  }
-
-  return includes;
-});
-
-define('lodash-amd/modern/collection/contains',["./includes"], function(includes) {
-  return includes;
-});
-
-define('element',['lodash-amd/modern/collection/contains'], function (contains) {
-
-  
-
-  var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
-                           'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
-                           'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
-  function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
-  }
-
-  function isCaretPositionNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
-  }
-
-  return {
-    isBlockElement: isBlockElement,
-    isSelectionMarkerNode: isSelectionMarkerNode,
-    isCaretPositionNode: isCaretPositionNode,
-    unwrap: unwrap
-  };
-
-});
-
-define('plugins/core/formatters/html/ensure-selectable-containers',[
-    '../../../../element',
-    'lodash-amd/modern/collection/contains'
-  ], function (
-    element,
-    contains
-  ) {
-
-  /**
-   * Chrome and Firefox: All elements need to contain either text or a `<br>` to
-   * remain selectable. (Unless they have a width and height explicitly set with
-   * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
-   */
-
-  
-
-  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
-  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
-
-  function parentHasNoTextContent(element, node) {
-    if (element.isCaretPositionNode(node)) {
-      return true;
-    } else {
-      return node.parentNode.textContent.trim() === '';
-    }
-  }
-
-
-  function traverse(element, parentNode) {
-    // Instead of TreeWalker, which gets confused when the BR is added to the dom,
-    // we recursively traverse the tree to look for an empty node that can have childNodes
-
-    var node = parentNode.firstElementChild;
-
-    function isEmpty(node) {
-
-      if ((node.children.length === 0 && element.isBlockElement(node))
-        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
-         return true;
-      }
-
-      // Do not insert BR in empty non block elements with parent containing text
-      if (!element.isBlockElement(node) && node.children.length === 0) {
-        return parentHasNoTextContent(element, node);
-      }
-
-      return false;
-    }
-
-    while (node) {
-      if (!element.isSelectionMarkerNode(node)) {
-        // Find any node that contains no child *elements*, or just contains
-        // whitespace, and is not self-closing
-        if (isEmpty(node) &&
-          node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName)) {
-          node.appendChild(document.createElement('br'));
-        } else if (node.children.length > 0) {
-          traverse(element, node);
-        }
-      }
-      node = node.nextElementSibling;
-    }
-  }
-
-  return function () {
-    return function (scribe) {
-
-      scribe.registerHTMLFormatter('normalize', function (html) {
-        var bin = document.createElement('div');
-        bin.innerHTML = html;
-
-        traverse(scribe.element, bin);
-
-        return bin.innerHTML;
-      });
-
-    };
-  };
-
-});
-
-define('plugins/core/inline-elements-mode',[],function () {
-
-  
-
-  // TODO: abstract
-  function hasContent(rootNode) {
-    var treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
-
-    while (treeWalker.nextNode()) {
-      if (treeWalker.currentNode) {
-        // If the node is a non-empty element or has content
-        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  return function () {
-    return function (scribe) {
-      /**
-       * Firefox has a `insertBrOnReturn` command, but this is not a part of
-       * any standard. One day we might have an `insertLineBreak` command,
-       * proposed by this spec:
-       * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
-       * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
-       */
-      scribe.el.addEventListener('keydown', function (event) {
-        if (event.keyCode === 13) { // enter
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var blockNode = selection.getContaining(function (node) {
-            return node.nodeName === 'LI' || (/^(H[1-6])$/).test(node.nodeName);
-          });
-
-          if (! blockNode) {
-            event.preventDefault();
-
-            scribe.transactionManager.run(function () {
-              /**
-               * Firefox: Delete the bogus BR as we insert another one later.
-               * We have to do this because otherwise the browser will believe
-               * there is content to the right of the selection.
-               */
-              if (scribe.el.lastChild.nodeName === 'BR') {
-                scribe.el.removeChild(scribe.el.lastChild);
-              }
-
-              var brNode = document.createElement('br');
-
-              range.insertNode(brNode);
-              // After inserting the BR into the range is no longer collapsed, so
-              // we have to collapse it again.
-              // TODO: Older versions of Firefox require this argument even though
-              // it is supposed to be optional. Proxy/polyfill?
-              range.collapse(false);
-
-              /**
-               * Chrome: If there is no right-hand side content, inserting a BR
-               * will not appear to create a line break.
-               * Firefox: If there is no right-hand side content, inserting a BR
-               * will appear to create a weird "half-line break".
-               *
-               * Possible solution: Insert two BRs.
-               * ✓ Chrome: Inserting two BRs appears to create a line break.
-               * Typing will then delete the bogus BR element.
-               * Firefox: Inserting two BRs will create two line breaks.
-               *
-               * Solution: Only insert two BRs if there is no right-hand
-               * side content.
-               *
-               * If the user types on a line immediately after a BR element,
-               * Chrome will replace the BR element with the typed characters,
-               * whereas Firefox will not. Thus, to satisfy Firefox we have to
-               * insert a bogus BR element on initialization (see below).
-               */
-
-              var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
-
-              // Get the content from the range to the end of the heading
-              var contentToEndFragment = contentToEndRange.cloneContents();
-
-              // If there is not already a right hand side content we need to
-              // insert a bogus BR element.
-              if (! hasContent(contentToEndFragment)) {
-                var bogusBrNode = document.createElement('br');
-                range.insertNode(bogusBrNode);
-              }
-
-              var newRange = range.cloneRange();
-
-              newRange.setStartAfter(brNode, 0);
-              newRange.setEndAfter(brNode, 0);
-
-              selection.selection.removeAllRanges();
-              selection.selection.addRange(newRange);
-            });
-          }
-        }
-      }.bind(this));
-
-      if (scribe.getHTML().trim() === '') {
-        // Bogus BR element for Firefox — see explanation above.
-        // TODO: also append when consumer sets the content manually.
-        // TODO: hide when the user calls `getHTML`?
-        scribe.setContent('');
-      }
-    };
-  };
-});
-
-define('plugins/core/plugins',[
-  './set-root-p-element',
-  './formatters/html/enforce-p-elements',
-  './formatters/html/ensure-selectable-containers',
-  './inline-elements-mode'
-], function (
-  setRootPElement,
-  enforcePElements,
-  ensureSelectableContainers,
-  inlineElementsMode
-) {
-  
-
-  return {
-    setRootPElement: setRootPElement,
-    enforcePElements: enforcePElements,
-    ensureSelectableContainers: ensureSelectableContainers,
-    inlineElementsMode: inlineElementsMode
-  };
-});
-
-define('plugins/core/commands/indent',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var indentCommand = new scribe.api.Command('indent');
-
-      indentCommand.queryEnabled = function () {
-        /**
-         * FIXME: Chrome nests ULs inside of ULs
-         * Currently we just disable the command when the selection is inside of
-         * a list.
-         * As per: http://jsbin.com/ORikUPa/3/edit?html,js,output
-         */
-        var selection = new scribe.api.Selection();
-        var listElement = selection.getContaining(function (element) {
-          return element.nodeName === 'UL' || element.nodeName === 'OL';
-        });
-
-        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
-      };
-
-      scribe.commands.indent = indentCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/insert-list',[],function () {
-
-  /**
-   * If the paragraphs option is set to true, then when the list is
-   * unapplied, ensure that we enter a P element.
-   */
-
-  
-
-  return function () {
-    return function (scribe) {
-      var InsertListCommand = function (commandName) {
-        scribe.api.Command.call(this, commandName);
-      };
-
-      InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
-      InsertListCommand.prototype.constructor = InsertListCommand;
-
-      InsertListCommand.prototype.execute = function (value) {
-        function splitList(listItemElements) {
-          if (listItemElements.length > 0) {
-            var newListNode = document.createElement(listNode.nodeName);
-
-            listItemElements.forEach(function (listItemElement) {
-              newListNode.appendChild(listItemElement);
-            });
-
-            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
-          }
-        }
-
-        if (this.queryState()) {
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var listNode = selection.getContaining(function (node) {
-            return node.nodeName === 'OL' || node.nodeName === 'UL';
-          });
-
-          var listItemElement = selection.getContaining(function (node) {
-            return node.nodeName === 'LI';
-          });
-
-          scribe.transactionManager.run(function () {
-            if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
-
-              /**
-               * If we are not at the start or end of a UL/OL, we have to
-               * split the node and insert the P(s) in the middle.
-               */
-              splitList(nextListItemElements);
-
-              /**
-               * Insert a paragraph in place of the list item.
-               */
-
-              selection.placeMarkers();
-
-              var pNode = document.createElement('p');
-              pNode.innerHTML = listItemElement.innerHTML;
-
-              listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
-              listItemElement.parentNode.removeChild(listItemElement);
-            } else {
-              /**
-               * When multiple list items are selected, we replace each list
-               * item with a paragraph.
-               */
-
-              // We can't query for list items in the selection so we loop
-              // through them all and find the intersection ourselves.
-              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
-                function (listItemElement) {
-                return range.intersectsNode(listItemElement) && listItemElement;
-              }).filter(function (listItemElement) {
-                // TODO: identity
-                return listItemElement;
-              });
-              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
-
-              /**
-               * If we are not at the start or end of a UL/OL, we have to
-               * split the node and insert the P(s) in the middle.
-               */
-              splitList(listItemElementsAfterSelection);
-
-              // Store the caret/range positioning inside of the list items so
-              // we can restore it from the newly created P elements soon
-              // afterwards.
-              selection.placeMarkers();
-
-              var documentFragment = document.createDocumentFragment();
-              selectedListItemElements.forEach(function (listItemElement) {
-                var pElement = document.createElement('p');
-                pElement.innerHTML = listItemElement.innerHTML;
-                documentFragment.appendChild(pElement);
-              });
-
-              // Insert the Ps
-              listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
-
-              // Remove the LIs
-              selectedListItemElements.forEach(function (listItemElement) {
-                listItemElement.parentNode.removeChild(listItemElement);
-              });
-            }
-
-            // If the list is now empty, clean it up.
-            if (listNode.childNodes.length === 0) {
-              listNode.parentNode.removeChild(listNode);
-            }
-
-            selection.selectMarkers();
-          }.bind(this));
-        } else {
-          scribe.api.Command.prototype.execute.call(this, value);
-        }
-      };
-
-      InsertListCommand.prototype.queryEnabled = function () {
-        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
-      };
-
-      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
-      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
-    };
-  };
-
-});
-
-define('plugins/core/commands/outdent',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var outdentCommand = new scribe.api.Command('outdent');
-
-      outdentCommand.queryEnabled = function () {
-        /**
-         * FIXME: If the paragraphs option is set to true, then when the
-         * list is unapplied, ensure that we enter a P element.
-         * Currently we just disable the command when the selection is inside of
-         * a list.
-         */
-        var selection = new scribe.api.Selection();
-        var listElement = selection.getContaining(function (element) {
-          return element.nodeName === 'UL' || element.nodeName === 'OL';
-        });
-
-        // FIXME: define block element rule here?
-        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
-      };
-
-      scribe.commands.outdent = outdentCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/redo',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var redoCommand = new scribe.api.Command('redo');
-
-      redoCommand.execute = function () {
-        scribe.undoManager.redo();
-      };
-
-      redoCommand.queryEnabled = function () {
-        return scribe.undoManager.position > 0;
-      };
-
-      scribe.commands.redo = redoCommand;
-
-      //is scribe is configured to undo assign listener
-      if (scribe.options.undo.enabled) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-            event.preventDefault();
-            redoCommand.execute();
-          }
-        });
-      }
-    };
-  };
-
-});
-
-define('plugins/core/commands/subscript',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var subscriptCommand = new scribe.api.Command('subscript');
-
-      scribe.commands.subscript = subscriptCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/superscript',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var superscriptCommand = new scribe.api.Command('superscript');
-
-      scribe.commands.superscript = superscriptCommand;
-    };
-  };
-
-});
-
-define('plugins/core/commands/undo',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var undoCommand = new scribe.api.Command('undo');
-
-      undoCommand.execute = function () {
-        scribe.undoManager.undo();
-      };
-
-      undoCommand.queryEnabled = function () {
-        return scribe.undoManager.position < scribe.undoManager.length;
-      };
-
-      scribe.commands.undo = undoCommand;
-
-      if (scribe.options.undo.enabled) {
-        scribe.el.addEventListener('keydown', function (event) {
-          // TODO: use lib to abstract meta/ctrl keys?
-          if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
-            event.preventDefault();
-            undoCommand.execute();
-          }
-        });
-      }
-    };
-  };
-
-});
-
-define('plugins/core/commands',[
-  './commands/indent',
-  './commands/insert-list',
-  './commands/outdent',
-  './commands/redo',
-  './commands/subscript',
-  './commands/superscript',
-  './commands/undo'
-], function (
-  indent,
-  insertList,
-  outdent,
-  redo,
-  subscript,
-  superscript,
-  undo
-) {
-
-  
-
-  return {
-    indent: indent,
-    insertList: insertList,
-    outdent: outdent,
-    redo: redo,
-    subscript: subscript,
-    superscript: superscript,
-    undo: undo
-  };
-
-});
-
-define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
-
-  /**
-   * Chrome:
-   */
-
-  
-
-  return function () {
-    return function (scribe) {
-      var nbspCharRegExp = /(\s|&nbsp;)+/g;
-
-      // TODO: should we be doing this on paste?
-      scribe.registerHTMLFormatter('export', function (html) {
-        return html.replace(nbspCharRegExp, ' ');
-      });
-    };
-  };
-
-});
-
-define('lodash-amd/modern/internal/escapeHtmlChar',[], function() {
-
-  /** Used to map characters to HTML entities. */
-  var htmlEscapes = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-    '`': '&#96;'
-  };
-
-  /**
-   * Used by `_.escape` to convert characters to HTML entities.
-   *
-   * @private
-   * @param {string} chr The matched character to escape.
-   * @returns {string} Returns the escaped character.
-   */
-  function escapeHtmlChar(chr) {
-    return htmlEscapes[chr];
-  }
-
-  return escapeHtmlChar;
-});
-
-define('lodash-amd/modern/string/escape',['../internal/baseToString', '../internal/escapeHtmlChar'], function(baseToString, escapeHtmlChar) {
-
-  /** Used to match HTML entities and HTML characters. */
-  var reUnescapedHtml = /[&<>"'`]/g,
-      reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
-
-  /**
-   * Converts the characters "&", "<", ">", '"', "'", and "\`", in `string` to
-   * their corresponding HTML entities.
-   *
-   * **Note:** No other characters are escaped. To escape additional characters
-   * use a third-party library like [_he_](https://mths.be/he).
-   *
-   * Though the ">" character is escaped for symmetry, characters like
-   * ">" and "/" don't require escaping in HTML and have no special meaning
-   * unless they're part of a tag or unquoted attribute value.
-   * See [Mathias Bynens's article](https://mathiasbynens.be/notes/ambiguous-ampersands)
-   * (under "semi-related fun fact") for more details.
-   *
-   * Backticks are escaped because in Internet Explorer < 9, they can break out
-   * of attribute values or HTML comments. See [#102](https://html5sec.org/#102),
-   * [#108](https://html5sec.org/#108), and [#133](https://html5sec.org/#133) of
-   * the [HTML5 Security Cheatsheet](https://html5sec.org/) for more details.
-   *
-   * When working with HTML you should always quote attribute values to reduce
-   * XSS vectors. See [Ryan Grove's article](http://wonko.com/post/html-escaping)
-   * for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category String
-   * @param {string} [string=''] The string to escape.
-   * @returns {string} Returns the escaped string.
-   * @example
-   *
-   * _.escape('fred, barney, & pebbles');
-   * // => 'fred, barney, &amp; pebbles'
-   */
-  function escape(string) {
-    // Reset `lastIndex` because in IE < 9 `String#replace` does not.
-    string = baseToString(string);
-    return (string && reHasUnescapedHtml.test(string))
-      ? string.replace(reUnescapedHtml, escapeHtmlChar)
-      : string;
-  }
-
-  return escape;
-});
-
-define('plugins/core/formatters/plain-text/escape-html-characters',[
-  'lodash-amd/modern/string/escape'
-], function (
-  escape
-) {
-
-  
-
-  return function () {
-    return function (scribe) {
-      scribe.registerPlainTextFormatter(escape);
-    };
-  };
-
-});
-
-define('plugins/core/formatters',[
-  './formatters/html/replace-nbsp-chars',
-  './formatters/plain-text/escape-html-characters'
-], function (
-  replaceNbspCharsFormatter,
-  escapeHtmlCharactersFormatter
-) {
-  
-
-  return {
-    replaceNbspCharsFormatter: replaceNbspCharsFormatter,
-    escapeHtmlCharactersFormatter: escapeHtmlCharactersFormatter
-  };
-});
-
-define('lodash-amd/modern/internal/baseFlatten',['../lang/isArguments', '../lang/isArray', './isLength', './isObjectLike'], function(isArguments, isArray, isLength, isObjectLike) {
-
-  /**
-   * The base implementation of `_.flatten` with added support for restricting
-   * flattening and specifying the start index.
-   *
-   * @private
-   * @param {Array} array The array to flatten.
-   * @param {boolean} isDeep Specify a deep flatten.
-   * @param {boolean} isStrict Restrict flattening to arrays and `arguments` objects.
-   * @param {number} fromIndex The index to start from.
-   * @returns {Array} Returns the new flattened array.
-   */
-  function baseFlatten(array, isDeep, isStrict, fromIndex) {
-    var index = fromIndex - 1,
-        length = array.length,
-        resIndex = -1,
-        result = [];
-
-    while (++index < length) {
-      var value = array[index];
-
-      if (isObjectLike(value) && isLength(value.length) && (isArray(value) || isArguments(value))) {
-        if (isDeep) {
-          // Recursively flatten arrays (susceptible to call stack limits).
-          value = baseFlatten(value, isDeep, isStrict, 0);
-        }
-        var valIndex = -1,
-            valLength = value.length;
-
-        result.length += valLength;
-        while (++valIndex < valLength) {
-          result[++resIndex] = value[valIndex];
-        }
-      } else if (!isStrict) {
-        result[++resIndex] = value;
-      }
-    }
-    return result;
-  }
-
-  return baseFlatten;
-});
-
-define('lodash-amd/modern/internal/isIterateeCall',['./isIndex', './isLength', '../lang/isObject'], function(isIndex, isLength, isObject) {
-
-  /**
-   * Checks if the provided arguments are from an iteratee call.
-   *
-   * @private
-   * @param {*} value The potential iteratee value argument.
-   * @param {*} index The potential iteratee index or key argument.
-   * @param {*} object The potential iteratee object argument.
-   * @returns {boolean} Returns `true` if the arguments are from an iteratee call, else `false`.
-   */
-  function isIterateeCall(value, index, object) {
-    if (!isObject(object)) {
-      return false;
-    }
-    var type = typeof index;
-    if (type == 'number') {
-      var length = object.length,
-          prereq = isLength(length) && isIndex(index, length);
-    } else {
-      prereq = type == 'string' && index in object;
-    }
-    if (prereq) {
-      var other = object[index];
-      return value === value ? (value === other) : (other !== other);
-    }
-    return false;
-  }
-
-  return isIterateeCall;
-});
-
-define('lodash-amd/modern/array/flatten',['../internal/baseFlatten', '../internal/isIterateeCall'], function(baseFlatten, isIterateeCall) {
-
-  /**
-   * Flattens a nested array. If `isDeep` is `true` the array is recursively
-   * flattened, otherwise it is only flattened a single level.
-   *
-   * @static
-   * @memberOf _
-   * @category Array
-   * @param {Array} array The array to flatten.
-   * @param {boolean} [isDeep] Specify a deep flatten.
-   * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
-   * @returns {Array} Returns the new flattened array.
-   * @example
-   *
-   * _.flatten([1, [2, 3, [4]]]);
-   * // => [1, 2, 3, [4]];
-   *
-   * // using `isDeep`
-   * _.flatten([1, [2, 3, [4]]], true);
-   * // => [1, 2, 3, 4];
-   */
-  function flatten(array, isDeep, guard) {
-    var length = array ? array.length : 0;
-    if (guard && isIterateeCall(array, isDeep, guard)) {
-      isDeep = false;
-    }
-    return length ? baseFlatten(array, isDeep, false, 0) : [];
-  }
-
-  return flatten;
-});
-
-define('lodash-amd/modern/internal/arrayCopy',[], function() {
-
-  /**
-   * Copies the values of `source` to `array`.
-   *
-   * @private
-   * @param {Array} source The array to copy values from.
-   * @param {Array} [array=[]] The array to copy values to.
-   * @returns {Array} Returns `array`.
-   */
-  function arrayCopy(source, array) {
-    var index = -1,
-        length = source.length;
-
-    array || (array = Array(length));
-    while (++index < length) {
-      array[index] = source[index];
-    }
-    return array;
-  }
-
-  return arrayCopy;
-});
-
-define('lodash-amd/modern/lang/toArray',['../internal/arrayCopy', '../internal/isLength', '../object/values'], function(arrayCopy, isLength, values) {
-
-  /**
-   * Converts `value` to an array.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to convert.
-   * @returns {Array} Returns the converted array.
-   * @example
-   *
-   * (function() {
-   *   return _.toArray(arguments).slice(1);
-   * }(1, 2, 3));
-   * // => [2, 3]
-   */
-  function toArray(value) {
-    var length = value ? value.length : 0;
-    if (!isLength(length)) {
-      return values(value);
-    }
-    if (!length) {
-      return [];
-    }
-    return arrayCopy(value);
-  }
-
-  return toArray;
-});
-
-define('node',[], function () {
-
-  
-
-  function isEmptyTextNode(node) {
-    return (node.nodeType === Node.TEXT_NODE && node.textContent === '');
-  }
-
-  function insertAfter(newNode, referenceNode) {
-    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-  }
-
-  function removeNode(node) {
-    return node.parentNode.removeChild(node);
-  }
-
-  return {
-    isEmptyTextNode: isEmptyTextNode,
-    insertAfter: insertAfter,
-    removeNode: removeNode
-  };
-
-});
-
-define('dom-observer',[
-  'lodash-amd/modern/array/flatten',
-  'lodash-amd/modern/lang/toArray',
-  './element',
-  './node'
-], function (
-  flatten,
-  toArray,
-  elementHelpers,
-  nodeHelpers
-) {
-
-  function observeDomChanges(el, callback) {
-    function includeRealMutations(mutations) {
-      var allChangedNodes = flatten(mutations.map(function(mutation) {
-        var added   = toArray(mutation.addedNodes);
-        var removed = toArray(mutation.removedNodes);
-        return added.concat(removed);
-      }));
-
-      var realChangedNodes = allChangedNodes.
-        filter(function(n) { return ! nodeHelpers.isEmptyTextNode(n); }).
-        filter(function(n) { return ! elementHelpers.isSelectionMarkerNode(n); });
-
-      return realChangedNodes.length > 0;
-    }
-
-    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
-    // Flag to avoid running recursively
-    var runningPostMutation = false;
-
-    var observer = new MutationObserver(function(mutations) {
-      if (! runningPostMutation && includeRealMutations(mutations)) {
-        runningPostMutation = true;
-
-        try {
-          callback();
-        } catch(e) {
-          // The catch block is required but we don't want to swallow the error
-          throw e;
-        } finally {
-          // We must yield to let any mutation we caused be triggered
-          // in the next cycle
-          setTimeout(function() {
-            runningPostMutation = false;
-          }, 0);
-        }
-      }
-    });
-
-    observer.observe(el, {
-      childList: true,
-      subtree: true
-    });
-
-    return observer;
-  }
-
-  return observeDomChanges;
-});
-
-define('api/children',[],function () {
-
-  
-
-  function firstDeepestChild(node) {
-    if(!node.hasChildNodes()) {
-      return node;
-    }
-
-    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
-    var previousNode = treeWalker.currentNode;
-    if (treeWalker.firstChild()) {
-      // TODO: build list of non-empty elements (used elsewhere)
-      // Do not include non-empty elements
-      if (treeWalker.currentNode.nodeName === 'BR') {
-        return previousNode;
-      } else {
-        return firstDeepestChild(treeWalker.currentNode);
-      }
-    } else {
-      return treeWalker.currentNode;
-    }
-  }
-
-  return {
-    firstDeepestChild: firstDeepestChild
-  }
-});
-
-define('plugins/core/events',[
-  'lodash-amd/modern/collection/contains',
-  '../../dom-observer',
-  '../../api/children'
-], function (
-  contains,
-  observeDomChanges,
-  children
-) {
-
-  
-
-  return function () {
-    return function (scribe) {
-      /**
-       * Firefox: Giving focus to a `contenteditable` will place the caret
-       * outside of any block elements. Chrome behaves correctly by placing the
-       * caret at the  earliest point possible inside the first block element.
-       * As per: http://jsbin.com/eLoFOku/1/edit?js,console,output
-       *
-       * We detect when this occurs and fix it by placing the caret ourselves.
-       */
-      scribe.el.addEventListener('focus', function placeCaretOnFocus() {
-        var selection = new scribe.api.Selection();
-        // In Chrome, the range is not created on or before this event loop.
-        // It doesn’t matter because this is a fix for Firefox.
-        if (selection.range) {
-
-          var isFirefoxBug = scribe.allowsBlockElements() &&
-                  selection.range.startContainer === scribe.el;
-
-          if (isFirefoxBug) {
-            var focusElement = children.firstDeepestChild(scribe.el);
-
-            var range = selection.range;
-
-            range.setStart(focusElement, 0);
-            range.setEnd(focusElement, 0);
-
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(range);
-          }
-        }
-      }.bind(scribe));
-
-      /**
-       * Apply the formatters when there is a DOM mutation.
-       */
-      var applyFormatters = function() {
-        if (!scribe._skipFormatters) {
-          var selection = new scribe.api.Selection();
-          var isEditorActive = selection.range;
-
-          var runFormatters = function () {
-            if (isEditorActive) {
-              selection.placeMarkers();
-            }
-            scribe.setHTML(scribe._htmlFormatterFactory.format(scribe.getHTML()));
-            selection.selectMarkers();
-          }.bind(scribe);
-
-          // We only want to wrap the formatting in a transaction if the editor is
-          // active. If the DOM is mutated when the editor isn't active (e.g.
-          // `scribe.setContent`), we do not want to push to the history. (This
-          // happens on the first `focus` event).
-
-          // The previous check is no longer needed, and the above comments are no longer valid.
-          // Now `scribe.setContent` updates the content manually, and `scribe.pushHistory`
-          // will not detect any changes, and nothing will be push into the history.
-          // Any mutations made without `scribe.getContent` will be pushed into the history normally.
-
-          // Pass content through formatters, place caret back
-          scribe.transactionManager.run(runFormatters);
-        }
-
-        delete scribe._skipFormatters;
-      }.bind(scribe);
-
-      observeDomChanges(scribe.el, applyFormatters);
-
-      // TODO: disconnect on tear down:
-      // observer.disconnect();
-
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside a heading to ensure a P element is created.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13) { // enter
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            var headingNode = selection.getContaining(function (node) {
-              return (/^(H[1-6])$/).test(node.nodeName);
-            });
-
-            /**
-             * If we are at the end of the heading, insert a P. Otherwise handle
-             * natively.
-             */
-            if (headingNode && range.collapsed) {
-              var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(headingNode, 0);
-
-              // Get the content from the range to the end of the heading
-              var contentToEndFragment = contentToEndRange.cloneContents();
-
-              if (contentToEndFragment.firstChild.textContent === '') {
-                event.preventDefault();
-
-                scribe.transactionManager.run(function () {
-                  // Default P
-                  // TODO: Abstract somewhere
-                  var pNode = document.createElement('p');
-                  var brNode = document.createElement('br');
-                  pNode.appendChild(brNode);
-
-                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
-
-                  // Re-apply range
-                  range.setStart(pNode, 0);
-                  range.setEnd(pNode, 0);
-
-                  selection.selection.removeAllRanges();
-                  selection.selection.addRange(range);
-                });
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * If the paragraphs option is set to true, we need to manually handle
-       * keyboard navigation inside list item nodes.
-       */
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keydown', function (event) {
-          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
-
-            var selection = new scribe.api.Selection();
-            var range = selection.range;
-
-            if (range.collapsed) {
-              var containerLIElement = selection.getContaining(function (node) {
-                return node.nodeName === 'LI';
-              });
-              if (containerLIElement && containerLIElement.textContent.trim() === '') {
-                /**
-                 * LIs
-                 */
-
-                event.preventDefault();
-
-                var listNode = selection.getContaining(function (node) {
-                  return node.nodeName === 'UL' || node.nodeName === 'OL';
-                });
-
-                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
-
-                command.execute();
-              }
-            }
-          }
-        });
-      }
-
-      /**
-       * We have to hijack the paste event to ensure it uses
-       * `scribe.insertHTML`, which executes the Scribe version of the command
-       * and also runs the formatters.
-       */
-
-      /**
-       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
-       * I also don't like how it has the authority to perform `event.preventDefault`.
-       */
-
-      scribe.el.addEventListener('paste', function handlePaste(event) {
-        /**
-         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
-         * will execute the second branch here.
-         */
-        if (event.clipboardData) {
-          event.preventDefault();
-
-          if (contains(event.clipboardData.types, 'text/html')) {
-
-            scribe.insertHTML(event.clipboardData.getData('text/html'));
-          } else {
-            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
-          }
-        } else {
-          /**
-           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
-           * sequence of events:
-           *
-           *   - Save the text selection
-           *   - Focus another, hidden textarea so we paste there
-           *   - Copy the pasted content of said textarea
-           *   - Give focus back to the scribe
-           *   - Restore the text selection
-           *
-           * This is required because, without access to the Clipboard API, there is literally
-           * no other way to manipulate content on paste.
-           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
-           *
-           * Firefox <= 21
-           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
-           */
-
-          var selection = new scribe.api.Selection();
-
-          // Store the caret position
-          selection.placeMarkers();
-
-          var bin = document.createElement('div');
-          document.body.appendChild(bin);
-          bin.setAttribute('contenteditable', true);
-          bin.focus();
-
-          // Wait for the paste to happen (next loop?)
-          setTimeout(function () {
-            var data = bin.innerHTML;
-            bin.parentNode.removeChild(bin);
-
-            // Restore the caret position
-            selection.selectMarkers();
-            /**
-             * Firefox 19 (and maybe others): even though the applied range
-             * exists within the Scribe instance, we need to focus it.
-             */
-            scribe.el.focus();
-
-            scribe.insertHTML(data);
-          }, 1);
-        }
-      });
-
-    };
-  };
-});
-
-define('plugins/core/patches/commands/bold',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var boldCommand = new scribe.api.CommandPatch('bold');
-
-      /**
-       * Chrome: Executing the bold command inside a heading corrupts the markup.
-       * Disabling for now.
-       */
-      boldCommand.queryEnabled = function () {
-        var selection = new scribe.api.Selection();
-        var headingNode = selection.getContaining(function (node) {
-          return (/^(H[1-6])$/).test(node.nodeName);
-        });
-
-        return scribe.api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! headingNode;
-      };
-
-      // TODO: We can't use STRONGs because this would mean we have to
-      // re-implement the `queryState` command, which would be difficult.
-
-      scribe.commandPatches.bold = boldCommand;
-    };
-  };
-
-});
-
-define('plugins/core/patches/commands/indent',[],function () {
-
-  /**
-   * Prevent Chrome from inserting BLOCKQUOTEs inside of Ps, and also from
-   * adding a redundant `style` attribute to the created BLOCKQUOTE.
-   */
-
-  
-
-  var INVISIBLE_CHAR = '\uFEFF';
-
-  return function () {
-    return function (scribe) {
-      var indentCommand = new scribe.api.CommandPatch('indent');
-
-      indentCommand.execute = function (value) {
-        scribe.transactionManager.run(function () {
-          /**
-           * Chrome: If we apply the indent command on an empty P, the
-           * BLOCKQUOTE will be nested inside the P.
-           * As per: http://jsbin.com/oDOriyU/3/edit?html,js,output
-           */
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var isCaretOnNewLine =
-              (range.commonAncestorContainer.nodeName === 'P'
-               && range.commonAncestorContainer.innerHTML === '<br>');
-          if (isCaretOnNewLine) {
-            // FIXME: this text node is left behind. Tidy it up somehow,
-            // or don't use it at all.
-            var textNode = document.createTextNode(INVISIBLE_CHAR);
-
-            range.insertNode(textNode);
-
-            range.setStart(textNode, 0);
-            range.setEnd(textNode, 0);
-
-            selection.selection.removeAllRanges();
-            selection.selection.addRange(range);
-          }
-
-          scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-          /**
-           * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
-           * As per: http://jsbin.com/AkasOzu/1/edit?html,js,output
-           */
-
-          // Renew the selection
-          selection = new scribe.api.Selection();
-          var blockquoteNode = selection.getContaining(function (node) {
-            return node.nodeName === 'BLOCKQUOTE';
-          });
-
-          if (blockquoteNode) {
-            blockquoteNode.removeAttribute('style');
-          }
-        }.bind(this));
-      };
-
-      scribe.commandPatches.indent = indentCommand;
-    };
-  };
-
-});
-
-define('plugins/core/patches/commands/insert-html',[], function () {
-  
-  return function () {
-    return function (scribe) {
-      var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
-      var element = scribe.element;
-
-      insertHTMLCommandPatch.execute = function (value) {
-        scribe.transactionManager.run(function () {
-          scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-          // TODO: share somehow with similar event patch for P nodes
-          removeChromeArtifacts(scribe.el);
-
-          /**
-           * Chrome: If a parent node has a CSS `line-height` when we apply the
-           * insertHTML command, Chrome appends a SPAN to plain content with
-           * inline styling replicating that `line-height`, and adjusts the
-           * `line-height` on inline elements.
-           * 
-           * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
-           * More from the web: http://stackoverflow.com/q/15015019/40352
-           */
-          function removeChromeArtifacts(parentElement) {
-            // Can't use treeWalker: In at least Chrome, if a node is unwrapped,
-            // treeWalker.nextSibling will not work properly after that.
-            var childElement = parentElement.firstElementChild;
-            while (childElement) {
-              /**
-               * If the list item contains inline elements such as
-               * A, B, or I, Chrome will also append an inline style for
-               * `line-height` on those elements, so we remove it here.
-               */
-              var childStyle = window.getComputedStyle(childElement);
-              if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
-                childElement.style.lineHeight = null;
-              }
-              
-              // We can discard an empty style attribute.
-              if (childElement.getAttribute('style') === '') {
-                childElement.removeAttribute('style');
-              }
-              
-              // Sanitize children.
-              removeChromeArtifacts(childElement);
-              
-              // We can discard an empty SPAN.
-              // (Don't do this until traversal's gone to the next element.)
-              var originalChild = childElement;
-              childElement = childElement.nextElementSibling;
-              if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
-                element.unwrap(parentElement, originalChild);
-              }
-            }
-          }
-        }.bind(this));
-      };
-
-      scribe.commandPatches.insertHTML = insertHTMLCommandPatch;
-    };
-  };
-
-});
-
-define('plugins/core/patches/commands/insert-list',[], function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var element = scribe.element;
-      var nodeHelpers = scribe.node;
-
-      var InsertListCommandPatch = function (commandName) {
-        scribe.api.CommandPatch.call(this, commandName);
-      };
-
-      InsertListCommandPatch.prototype = Object.create(scribe.api.CommandPatch.prototype);
-      InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
-
-      InsertListCommandPatch.prototype.execute = function (value) {
-        scribe.transactionManager.run(function () {
-          scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-          if (this.queryState()) {
-            var selection = new scribe.api.Selection();
-
-            var listElement = selection.getContaining(function (node) {
-              return node.nodeName === 'OL' || node.nodeName === 'UL';
-            });
-
-
-            /**
-             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, a P will be inserted after the OL/UL.
-             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
-             */
-
-            if (listElement.nextElementSibling &&
-                listElement.nextElementSibling.childNodes.length === 0) {
-              nodeHelpers.removeNode(listElement.nextElementSibling);
-            }
-
-            /**
-             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, the OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
-             */
-
-            if (listElement) {
-              var listParentNode = listElement.parentNode;
-              // If list is within a text block then split that block
-              if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
-                selection.placeMarkers();
-                // Move listElement out of the block
-                nodeHelpers.insertAfter(listElement, listParentNode);
-                selection.selectMarkers();
-
-                /**
-                 * Chrome 27-34: An empty text node is inserted.
-                 */
-                if (listParentNode.childNodes.length === 2 &&
-                    nodeHelpers.isEmptyTextNode(listParentNode.firstChild)) {
-                  nodeHelpers.removeNode(listParentNode);
-                }
-
-                // Remove the block if it's empty
-                if (listParentNode.childNodes.length === 0) {
-                  nodeHelpers.removeNode(listParentNode);
-                }
-              }
-            }
-
-            /**
-             * Chrome: If a parent node has a CSS `line-height` when we apply the
-             * insertOrderedList or the insertUnorderedList command, Chrome appends
-             * a SPAN to LIs with inline styling replicating that `line-height`.
-             * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
-             *
-             * FIXME: what if the user actually wants to use SPANs? This could
-             * cause conflicts.
-             */
-
-            // TODO: share somehow with similar event patch for P nodes
-            var listItemElements = Array.prototype.slice.call(listElement.childNodes);
-            listItemElements.forEach(function(listItemElement) {
-              // We clone the childNodes into an Array so that it's
-              // not affected by any manipulation below when we
-              // iterate over it
-              var listItemElementChildNodes = Array.prototype.slice.call(listItemElement.childNodes);
-              listItemElementChildNodes.forEach(function(listElementChildNode) {
-                if (listElementChildNode.nodeName === 'SPAN') {
-                  // Unwrap any SPAN that has been inserted
-                  var spanElement = listElementChildNode;
-                  element.unwrap(listItemElement, spanElement);
-                } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
-                  /**
-                   * If the list item contains inline elements such as
-                   * A, B, or I, Chrome will also append an inline style for
-                   * `line-height` on those elements, so we remove it here.
-                   */
-                  listElementChildNode.style.lineHeight = null;
-
-                  // There probably wasn’t a `style` attribute before, so
-                  // remove it if it is now empty.
-                  if (listElementChildNode.getAttribute('style') === '') {
-                    listElementChildNode.removeAttribute('style');
-                  }
-                }
-              });
-            });
-          }
-        }.bind(this));
-      };
-
-      scribe.commandPatches.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
-      scribe.commandPatches.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
-    };
-  };
-
-});
-
-define('plugins/core/patches/commands/outdent',[],function () {
-
-  /**
-   * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
-   */
-
-  
-
-  return function () {
-    return function (scribe) {
-      var outdentCommand = new scribe.api.CommandPatch('outdent');
-
-      outdentCommand.execute = function () {
-        scribe.transactionManager.run(function () {
-          var selection = new scribe.api.Selection();
-          var range = selection.range;
-
-          var blockquoteNode = selection.getContaining(function (node) {
-            return node.nodeName === 'BLOCKQUOTE';
-          });
-
-          if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
-            /**
-             * Chrome: Applying the outdent command when a whole BLOCKQUOTE is
-             * selected removes the formatting of its contents.
-             * As per: http://jsbin.com/okAYaHa/1/edit?html,js,output
-             */
-
-            // Insert a copy of the selection before the BLOCKQUOTE, and then
-            // restore the selection on the copy.
-            selection.placeMarkers();
-            // We want to copy the selected nodes *with* the markers
-            selection.selectMarkers(true);
-            var selectedNodes = range.cloneContents();
-            blockquoteNode.parentNode.insertBefore(selectedNodes, blockquoteNode);
-            range.deleteContents();
-            selection.selectMarkers();
-
-            // Delete the BLOCKQUOTE if it's empty
-            if (blockquoteNode.textContent === '') {
-              blockquoteNode.parentNode.removeChild(blockquoteNode);
-            }
-          } else {
-            /**
-             * Chrome: If we apply the outdent command on a P, the contents of the
-             * P will be outdented instead of the whole P element.
-             * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
-             */
-
-            var pNode = selection.getContaining(function (node) {
-              return node.nodeName === 'P';
-            });
-
-            if (pNode) {
-              /**
-               * If we are not at the start of end of a BLOCKQUOTE, we have to
-               * split the node and insert the P in the middle.
-               */
-
-              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
-
-              if (nextSiblingNodes.length) {
-                var newContainerNode = document.createElement(blockquoteNode.nodeName);
-
-                nextSiblingNodes.forEach(function (siblingNode) {
-                  newContainerNode.appendChild(siblingNode);
-                });
-
-                blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
-              }
-
-              selection.placeMarkers();
-              blockquoteNode.parentNode.insertBefore(pNode, blockquoteNode.nextElementSibling);
-              selection.selectMarkers();
-
-              // If the BLOCKQUOTE is now empty, clean it up.
-              if (blockquoteNode.innerHTML === '') {
-                blockquoteNode.parentNode.removeChild(blockquoteNode);
-              }
-            } else {
-              scribe.api.CommandPatch.prototype.execute.call(this);
-            }
-          }
-        }.bind(this));
-      };
-
-      scribe.commandPatches.outdent = outdentCommand;
-    };
-  };
-
-});
-
-define('plugins/core/patches/commands/create-link',[],function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      var createLinkCommand = new scribe.api.CommandPatch('createLink');
-      scribe.commandPatches.createLink = createLinkCommand;
-
-      createLinkCommand.execute = function (value) {
-        var selection = new scribe.api.Selection();
-
-        /**
-         * Firefox does not create a link when selection is collapsed
-         * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
-         */
-        // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
-        if (selection.range.collapsed) {
-          var aElement = document.createElement('a');
-          aElement.setAttribute('href', value);
-          aElement.textContent = value;
-
-          selection.range.insertNode(aElement);
-
-          // Select the created link
-          var newRange = document.createRange();
-          newRange.setStartBefore(aElement);
-          newRange.setEndAfter(aElement);
-
-          selection.selection.removeAllRanges();
-          selection.selection.addRange(newRange);
-        } else {
-          scribe.api.CommandPatch.prototype.execute.call(this, value);
-        }
-      };
-    };
-  };
-
-});
-
-define('plugins/core/patches/events',[], function () {
-
-  
-
-  return function () {
-    return function (scribe) {
-      /**
-       * Chrome: If a parent node has a CSS `line-height` when we apply the
-       * insert(Un)OrderedList command, altering the paragraph structure by pressing
-       * <backspace> or <delete> (merging/deleting paragraphs) sometimes
-       * results in the application of a line-height attribute to the
-       * contents of the paragraph, either onto existing elements or
-       * by wrapping text in a span.
-       * As per: http://jsbin.com/isIdoKA/4/edit?html,css,js,output
-       *
-       * FIXME: what if the user actually wants to use SPANs? This could
-       * cause conflicts.
-       */
-      // TODO: do we need to run this on every key press, or could we
-      //       detect when the issue may have occurred?
-      // TODO: run in a transaction so as to record the change? how do
-      //       we know in advance whether there will be a change though?
-      // TODO: share somehow with `InsertList` command
-
-      var element = scribe.element;
-
-      if (scribe.allowsBlockElements()) {
-        scribe.el.addEventListener('keyup', function (event) {
-          if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
-
-            var selection = new scribe.api.Selection();
-
-            // Note: the range is always collapsed on keyup here
-            var containerPElement = selection.getContaining(function (node) {
-              return node.nodeName === 'P';
-            });
-            if (containerPElement) {
-              /**
-               * The 'input' event listener has already triggered
-               * and recorded the faulty content as an item in the
-               * UndoManager. We interfere with the undoManager
-               * by force merging that transaction with the next
-               * transaction which produce a clean one instead.
-               *
-               * FIXME: ideally we would not trigger a
-               * 'content-changed' event with faulty HTML at all, but
-               * it's too late to cancel it at this stage (and it's
-               * not happened yet at keydown time).
-               */
-
-              scribe.transactionManager.run(function () {
-                // Store the caret position
-                selection.placeMarkers();
-
-                // We clone the childNodes into an Array so that it's
-                // not affected by any manipulation below when we
-                // iterate over it
-                var pElementChildNodes = Array.prototype.slice.call(containerPElement.childNodes);
-                pElementChildNodes.forEach(function(pElementChildNode) {
-                  if (pElementChildNode.nodeName === 'SPAN') {
-                    // Unwrap any SPAN that has been inserted
-                    var spanElement = pElementChildNode;
-                    element.unwrap(containerPElement, spanElement);
-                  } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
-                    /**
-                     * If the paragraph contains inline elements such as
-                     * A, B, or I, Chrome will also append an inline style for
-                     * `line-height` on those elements, so we remove it here.
-                     */
-                    pElementChildNode.style.lineHeight = null;
-
-                    // There probably wasn’t a `style` attribute before, so
-                    // remove it if it is now empty.
-                    if (pElementChildNode.getAttribute('style') === '') {
-                      pElementChildNode.removeAttribute('style');
-                    }
-                  }
-                });
-
-                selection.selectMarkers();
-              }, true);
-            }
-          }
-        });
-      }
-    };
-  };
-});
-
-define('plugins/core/patches',[
-  './patches/commands/bold',
-  './patches/commands/indent',
-  './patches/commands/insert-html',
-  './patches/commands/insert-list',
-  './patches/commands/outdent',
-  './patches/commands/create-link',
-  './patches/events'
-], function (
-  boldCommand,
-  indentCommand,
-  insertHTMLCommand,
-  insertListCommands,
-  outdentCommand,
-  createLinkCommand,
-  events
-) {
-
-  /**
-   * Command patches browser inconsistencies. They do not perform core features
-   * of the editor, such as ensuring P elements are created when
-   * applying/unapplying commands — that is the job of the core commands.
-   */
-
-  
-
-  return {
-    commands: {
-      bold: boldCommand,
-      indent: indentCommand,
-      insertHTML: insertHTMLCommand,
-      insertList: insertListCommands,
-      outdent: outdentCommand,
-      createLink: createLinkCommand,
-    },
-    events: events
-  };
-
-});
-
-define('api/command-patch',[],function () {
-
-  
-
-  return function (scribe) {
-    function CommandPatch(commandName) {
-      this.commandName = commandName;
-    }
-
-    CommandPatch.prototype.execute = function (value) {
-      scribe.transactionManager.run(function () {
-        document.execCommand(this.commandName, false, value || null);
-      }.bind(this));
-    };
-
-    CommandPatch.prototype.queryState = function () {
-      return document.queryCommandState(this.commandName);
-    };
-
-    CommandPatch.prototype.queryEnabled = function () {
-      return document.queryCommandEnabled(this.commandName);
-    };
-
-    return CommandPatch;
-  };
-
-});
-
-define('api/command',[],function () {
-
-  
-
-  return function (scribe) {
-    function Command(commandName) {
-      this.commandName = commandName;
-      this.patch = scribe.commandPatches[this.commandName];
-    }
-
-    Command.prototype.execute = function (value) {
-      if (this.patch) {
-        this.patch.execute(value);
-      } else {
-        scribe.transactionManager.run(function () {
-          document.execCommand(this.commandName, false, value || null);
-        }.bind(this));
-      }
-    };
-
-    Command.prototype.queryState = function () {
-      if (this.patch) {
-        return this.patch.queryState();
-      } else {
-        return document.queryCommandState(this.commandName);
-      }
-    };
-
-    Command.prototype.queryEnabled = function () {
-      if (this.patch) {
-        return this.patch.queryEnabled();
-      } else {
-        return document.queryCommandEnabled(this.commandName);
-      }
-    };
-
-    return Command;
-  };
-
-});
-
-define('api/node',[],function () {
-
-  
-
-  function Node(node) {
-    this.node = node;
-  }
-
-  // TODO: should the return value be wrapped in one of our APIs?
-  // Node or Selection?
-  // TODO: write tests. unit or integration?
-  Node.prototype.getAncestor = function (rootElement, nodeFilter) {
-    var isTopContainerElement = function (element) {
-      return rootElement === element;
-    };
-    // TODO: should this happen here?
-    if (isTopContainerElement(this.node)) {
-      return;
-    }
-
-    var currentNode = this.node.parentNode;
-
-    // If it's a `contenteditable` then it's likely going to be the Scribe
-    // instance, so stop traversing there.
-    while (currentNode && ! isTopContainerElement(currentNode)) {
-      if (nodeFilter(currentNode)) {
-        return currentNode;
-      }
-      currentNode = currentNode.parentNode;
-    }
-  };
-
-  Node.prototype.nextAll = function () {
-    var all = [];
-    var el = this.node.nextSibling;
-    while (el) {
-      all.push(el);
-      el = el.nextSibling;
-    }
-    return all;
-  };
-
-  return Node;
-
-});
-
-define('api/selection',[
-  '../element'
-],
-function (elementHelper) {
-
-  
-
-  return function (scribe) {
-    /**
-     * Wrapper for object holding currently selected text.
-     */
-    function Selection() {
-      var rootDoc = document;
-
-      // find the parent document or document fragment
-      var currentElement = scribe.el.parentNode;
-      while(currentElement && currentElement.nodeType !== Node.DOCUMENT_FRAGMENT_NODE && currentElement.nodeType !== Node.DOCUMENT_NODE) {
-        currentElement = currentElement.parentNode;
-      }
-
-      // if we found a document fragment and it has a getSelection method, set it to the root doc
-      if (currentElement && currentElement.nodeType === Node.DOCUMENT_FRAGMENT_NODE && currentElement.getSelection) {
-        rootDoc = currentElement;
-      }
-
-      this.selection = rootDoc.getSelection();
-      if (this.selection.rangeCount && this.selection.anchorNode) {
-        // create the range to avoid chrome bug from getRangeAt / window.getSelection()
-        // https://code.google.com/p/chromium/issues/detail?id=380690
-        this.range = document.createRange();
-        var reverseRange = document.createRange();
-
-        this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
-        reverseRange.setStart(this.selection.focusNode, this.selection.focusOffset);
-
-        // Check if anchorNode is before focusNode, use reverseRange if not
-        if (this.range.compareBoundaryPoints(Range.START_TO_START, reverseRange) <= 0) {
-          this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
-        }
-        else {
-          this.range = reverseRange;
-          this.range.setEnd(this.selection.anchorNode, this.selection.anchorOffset);
-        }
-      }
-    }
-
-    /**
-     * @returns Closest ancestor Node satisfying nodeFilter. Undefined if none exist before reaching Scribe container.
-     */
-    Selection.prototype.getContaining = function (nodeFilter) {
-      var range = this.range;
-      if (!range) { return; }
-
-      var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      var isTopContainerElement = node.node && scribe.el === node.node;
-
-      return ! isTopContainerElement && nodeFilter(node.node) ? node.node : node.getAncestor(scribe.el, nodeFilter);
-    };
-
-    Selection.prototype.placeMarkers = function () {
-      var range = this.range;
-      if (!range) {
-        return;
-      }
-
-      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
-      //one way to do this is to check if it's visible (is this the best way?).
-      if (!scribe.el.offsetParent) {
-        return;
-      }
-
-      //we want to ensure that the current selection is within the current scribe node
-      //if this isn't true scribe will place markers within the selections parent
-      //we want to ensure that scribe ONLY places markers within it's own element
-      var scribeNodeRange = document.createRange();
-      scribeNodeRange.selectNodeContents(scribe.el);
-
-      var selectionStartWithinScribeElementStart = this.range.compareBoundaryPoints(Range.START_TO_START, scribeNodeRange) >= 0;
-      var selectionEndWithinScribeElementEnd = this.range.compareBoundaryPoints(Range.END_TO_END, scribeNodeRange) <= 0;
-
-      if (selectionStartWithinScribeElementStart && selectionEndWithinScribeElementEnd) {
-
-        var startMarker = document.createElement('em');
-        startMarker.classList.add('scribe-marker');
-        var endMarker = document.createElement('em');
-        endMarker.classList.add('scribe-marker');
-
-        // End marker
-        var rangeEnd = this.range.cloneRange();
-        rangeEnd.collapse(false);
-        rangeEnd.insertNode(endMarker);
-
-        /**
-         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
-         * the inserted element. We just remove it. This in turn creates several
-         * bugs when perfoming commands on selections that contain an empty text
-         * node (`removeFormat`, `unlink`).
-         * As per: http://jsbin.com/hajim/5/edit?js,console,output
-         */
-        // TODO: abstract into polyfill for `Range.insertNode`
-        if (endMarker.nextSibling &&
-            endMarker.nextSibling.nodeType === Node.TEXT_NODE
-            && endMarker.nextSibling.data === '') {
-          endMarker.parentNode.removeChild(endMarker.nextSibling);
-        }
-
-
-
-        /**
-         * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
-         * the inserted element when the child element is at the start of a block
-         * element. We just remove it.
-         * FIXME: Document why we need to remove this
-         * As per: http://jsbin.com/sifez/1/edit?js,console,output
-         */
-        if (endMarker.previousSibling &&
-            endMarker.previousSibling.nodeType === Node.TEXT_NODE
-            && endMarker.previousSibling.data === '') {
-          endMarker.parentNode.removeChild(endMarker.previousSibling);
-        }
-
-
-        /**
-         * This is meant to test Chrome inserting erroneous text blocks into
-         * the scribe el when focus switches from a scribe.el to a button to
-         * the scribe.el. However, this is impossible to simlulate correctly
-         * in a test.
-         *
-         * This behaviour does not happen in Firefox.
-         *
-         * See http://jsbin.com/quhin/2/edit?js,output,console
-         *
-         * To reproduce the bug, follow the following steps:
-         *    1. Select text and create H2
-         *    2. Move cursor to front of text.
-         *    3. Remove the H2 by clicking the button
-         *    4. Observe that you are left with an empty H2
-         *        after the element.
-         *
-         * The problem is caused by the Range being different, depending on
-         * the position of the marker.
-         *
-         * Consider the following two scenarios.
-         *
-         * A)
-         *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
-         *   2. Click button and click the right of to scribe.el
-         *   3. scribe.el contains: ["1", <em>scribe-marker</em>. #text]
-         *
-         *   This is wrong but does not cause the problem.
-         *
-         * B)
-         *   1. scribe.el contains: ["1", <em>scribe-marker</em>]
-         *   2. Click button and click to left of scribe.el
-         *   3. scribe.el contains: [#text, <em>scribe-marker</em>, "1"]
-         *
-         * The second example sets the range in the wrong place, meaning
-         * that in the second case the formatBlock is executed on the wrong
-         * element [the text node] leaving the empty H2 behind.
-         **/
-
-        // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
-        if (! this.range.collapsed) {
-          // Start marker
-          var rangeStart = this.range.cloneRange();
-          rangeStart.collapse(true);
-          rangeStart.insertNode(startMarker);
-
-          /**
-           * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
-           * the inserted element. We just remove it. This in turn creates several
-           * bugs when perfoming commands on selections that contain an empty text
-           * node (`removeFormat`, `unlink`).
-           * As per: http://jsbin.com/hajim/5/edit?js,console,output
-           */
-          // TODO: abstract into polyfill for `Range.insertNode`
-          if (startMarker.nextSibling &&
-              startMarker.nextSibling.nodeType === Node.TEXT_NODE
-              && startMarker.nextSibling.data === '') {
-            startMarker.parentNode.removeChild(startMarker.nextSibling);
-          }
-
-          /**
-           * Chrome and Firefox: `Range.insertNode` inserts a bogus text node
-           * before the inserted element when the child element is at the start of
-           * a block element. We just remove it.
-           * FIXME: Document why we need to remove this
-           * As per: http://jsbin.com/sifez/1/edit?js,console,output
-           */
-          if (startMarker.previousSibling &&
-              startMarker.previousSibling.nodeType === Node.TEXT_NODE
-              && startMarker.previousSibling.data === '') {
-            startMarker.parentNode.removeChild(startMarker.previousSibling);
-          }
-        }
-
-
-        this.selection.removeAllRanges();
-        this.selection.addRange(this.range);
-      }
-    };
-
-    Selection.prototype.getMarkers = function () {
-      return scribe.el.querySelectorAll('em.scribe-marker');
-    };
-
-    Selection.prototype.removeMarkers = function () {
-      var markers = this.getMarkers();
-      Array.prototype.forEach.call(markers, function (marker) {
-        marker.parentNode.removeChild(marker);
-      });
-    };
-
-    // This will select markers if there are any. You will need to focus the
-    // Scribe instance’s element if it is not already for the selection to
-    // become active.
-    Selection.prototype.selectMarkers = function (keepMarkers) {
-      var markers = this.getMarkers();
-      if (!markers.length) {
-        return;
-      }
-
-      var newRange = document.createRange();
-
-      newRange.setStartBefore(markers[0]);
-      if (markers.length >= 2) {
-        newRange.setEndAfter(markers[1]);
-      } else {
-        // We always reset the end marker because otherwise it will just
-        // use the current range’s end marker.
-        newRange.setEndAfter(markers[0]);
-      }
-
-      if (! keepMarkers) {
-        this.removeMarkers();
-      }
-
-      this.selection.removeAllRanges();
-      this.selection.addRange(newRange);
-    };
-
-    Selection.prototype.isCaretOnNewLine = function () {
-      // return true if nested inline tags ultimately just contain <br> or ""
-      function isEmptyInlineElement(node) {
-
-        var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false);
-
-        var currentNode = treeWalker.root;
-
-        while(currentNode) {
-          var numberOfChildren = currentNode.childNodes.length;
-
-          // forks in the tree or text mean no new line
-          if (numberOfChildren > 1 ||
-              (numberOfChildren === 1 && currentNode.textContent.trim() !== ''))
-            return false;
-
-          if (numberOfChildren === 0) {
-            return currentNode.textContent.trim() === '';
-          }
-
-          currentNode = treeWalker.nextNode();
-        };
-      };
-
-      var containerPElement = this.getContaining(function (node) {
-        return node.nodeName === 'P';
-      });
-      if (containerPElement) {
-        return isEmptyInlineElement(containerPElement);
-      } else {
-        return false;
-      }
-    };
-
-    return Selection;
-  };
-
-});
-
-define('api/simple-command',[],function () {
-
-  
-
-  return function (api, scribe) {
-    function SimpleCommand(commandName, nodeName) {
-      scribe.api.Command.call(this, commandName);
-
-      this._nodeName = nodeName;
-    }
-
-    SimpleCommand.prototype = Object.create(api.Command.prototype);
-    SimpleCommand.prototype.constructor = SimpleCommand;
-
-    SimpleCommand.prototype.queryState = function () {
-      var selection = new scribe.api.Selection();
-      return scribe.api.Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
-        return node.nodeName === this._nodeName;
-      }.bind(this));
-    };
-
-    return SimpleCommand;
-  };
-
-});
-
-define('api',[
-  './api/command-patch',
-  './api/command',
-  './api/node',
-  './api/selection',
-  './api/simple-command'
-], function (
-  buildCommandPatch,
-  buildCommand,
-  Node,
-  buildSelection,
-  buildSimpleCommand
-) {
-
-  
-
-  return function Api(scribe) {
-    this.CommandPatch = buildCommandPatch(scribe);
-    this.Command = buildCommand(scribe);
-    this.Node = Node;
-    this.Selection = buildSelection(scribe);
-    this.SimpleCommand = buildSimpleCommand(this, scribe);
-  };
-});
-
-define('lodash-amd/modern/internal/baseCopy',[], function() {
-
-  /**
-   * Copies the properties of `source` to `object`.
-   *
-   * @private
-   * @param {Object} source The object to copy properties from.
-   * @param {Object} [object={}] The object to copy properties to.
-   * @param {Array} props The property names to copy.
-   * @returns {Object} Returns `object`.
-   */
-  function baseCopy(source, object, props) {
-    if (!props) {
-      props = object;
-      object = {};
-    }
-    var index = -1,
-        length = props.length;
-
-    while (++index < length) {
-      var key = props[index];
-      object[key] = source[key];
-    }
-    return object;
-  }
-
-  return baseCopy;
-});
-
-define('lodash-amd/modern/internal/baseAssign',['./baseCopy', '../object/keys'], function(baseCopy, keys) {
-
-  /**
-   * The base implementation of `_.assign` without support for argument juggling,
-   * multiple sources, and `this` binding `customizer` functions.
-   *
-   * @private
-   * @param {Object} object The destination object.
-   * @param {Object} source The source object.
-   * @param {Function} [customizer] The function to customize assigning values.
-   * @returns {Object} Returns the destination object.
-   */
-  function baseAssign(object, source, customizer) {
-    var props = keys(source);
-    if (!customizer) {
-      return baseCopy(source, object, props);
-    }
-    var index = -1,
-        length = props.length;
-
-    while (++index < length) {
-      var key = props[index],
-          value = object[key],
-          result = customizer(value, source[key], key, object, source);
-
-      if ((result === result ? (result !== value) : (value === value)) ||
-          (typeof value == 'undefined' && !(key in object))) {
-        object[key] = result;
-      }
-    }
-    return object;
-  }
-
-  return baseAssign;
-});
-
-define('lodash-amd/modern/utility/identity',[], function() {
-
-  /**
-   * This method returns the first argument provided to it.
-   *
-   * @static
-   * @memberOf _
-   * @category Utility
-   * @param {*} value Any value.
-   * @returns {*} Returns `value`.
-   * @example
-   *
-   * var object = { 'user': 'fred' };
-   *
-   * _.identity(object) === object;
-   * // => true
-   */
-  function identity(value) {
-    return value;
-  }
-
-  return identity;
-});
-
-define('lodash-amd/modern/internal/bindCallback',['../utility/identity'], function(identity) {
-
-  /**
-   * A specialized version of `baseCallback` which only supports `this` binding
-   * and specifying the number of arguments to provide to `func`.
-   *
-   * @private
-   * @param {Function} func The function to bind.
-   * @param {*} thisArg The `this` binding of `func`.
-   * @param {number} [argCount] The number of arguments to provide to `func`.
-   * @returns {Function} Returns the callback.
-   */
-  function bindCallback(func, thisArg, argCount) {
-    if (typeof func != 'function') {
-      return identity;
-    }
-    if (typeof thisArg == 'undefined') {
-      return func;
-    }
-    switch (argCount) {
-      case 1: return function(value) {
-        return func.call(thisArg, value);
-      };
-      case 3: return function(value, index, collection) {
-        return func.call(thisArg, value, index, collection);
-      };
-      case 4: return function(accumulator, value, index, collection) {
-        return func.call(thisArg, accumulator, value, index, collection);
-      };
-      case 5: return function(value, other, key, object, source) {
-        return func.call(thisArg, value, other, key, object, source);
-      };
-    }
-    return function() {
-      return func.apply(thisArg, arguments);
-    };
-  }
-
-  return bindCallback;
-});
-
-define('lodash-amd/modern/internal/createAssigner',['./bindCallback', './isIterateeCall'], function(bindCallback, isIterateeCall) {
-
-  /**
-   * Creates a function that assigns properties of source object(s) to a given
-   * destination object.
-   *
-   * @private
-   * @param {Function} assigner The function to assign values.
-   * @returns {Function} Returns the new assigner function.
-   */
-  function createAssigner(assigner) {
-    return function() {
-      var args = arguments,
-          length = args.length,
-          object = args[0];
-
-      if (length < 2 || object == null) {
-        return object;
-      }
-      var customizer = args[length - 2],
-          thisArg = args[length - 1],
-          guard = args[3];
-
-      if (length > 3 && typeof customizer == 'function') {
-        customizer = bindCallback(customizer, thisArg, 5);
-        length -= 2;
-      } else {
-        customizer = (length > 2 && typeof thisArg == 'function') ? thisArg : null;
-        length -= (customizer ? 1 : 0);
-      }
-      if (guard && isIterateeCall(args[1], args[2], guard)) {
-        customizer = length == 3 ? null : customizer;
-        length = 2;
-      }
-      var index = 0;
-      while (++index < length) {
-        var source = args[index];
-        if (source) {
-          assigner(object, source, customizer);
-        }
-      }
-      return object;
-    };
-  }
-
-  return createAssigner;
-});
-
-define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal/createAssigner'], function(baseAssign, createAssigner) {
-
-  /**
-   * Assigns own enumerable properties of source object(s) to the destination
-   * object. Subsequent sources overwrite property assignments of previous sources.
-   * If `customizer` is provided it is invoked to produce the assigned values.
-   * The `customizer` is bound to `thisArg` and invoked with five arguments;
-   * (objectValue, sourceValue, key, object, source).
-   *
-   * @static
-   * @memberOf _
-   * @alias extend
-   * @category Object
-   * @param {Object} object The destination object.
-   * @param {...Object} [sources] The source objects.
-   * @param {Function} [customizer] The function to customize assigning values.
-   * @param {*} [thisArg] The `this` binding of `customizer`.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * _.assign({ 'user': 'barney' }, { 'age': 40 }, { 'user': 'fred' });
-   * // => { 'user': 'fred', 'age': 40 }
-   *
-   * // using a customizer callback
-   * var defaults = _.partialRight(_.assign, function(value, other) {
-   *   return typeof value == 'undefined' ? other : value;
-   * });
-   *
-   * defaults({ 'user': 'barney' }, { 'age': 36 }, { 'user': 'fred' });
-   * // => { 'user': 'barney', 'age': 36 }
-   */
-  var assign = createAssigner(baseAssign);
-
-  return assign;
-});
-
-define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
-
-  
-
-  return function (scribe) {
-    function TransactionManager() {
-      this.history = [];
-    }
-
-    assign(TransactionManager.prototype, {
-      start: function () {
-        this.history.push(1);
-      },
-
-      end: function () {
-        this.history.pop();
-
-        if (this.history.length === 0) {
-          scribe.pushHistory();
-          scribe.trigger('content-changed');
-        }
-      },
-
-      run: function (transaction, forceMerge) {
-        this.start();
-        // If there is an error, don't prevent the transaction from ending.
-        try {
-          if (transaction) {
-            transaction();
-          }
-        } finally {
-          scribe._forceMerge = forceMerge === true;
-          this.end();
-          scribe._forceMerge = false;
-        }
-      }
-    });
-
-    return TransactionManager;
-  };
-});
-
-define('undo-manager',[],function () {
-  
-
-  function UndoManager(limit, undoScopeHost) {
-    this._stack = [];
-    this._limit = limit;
-    this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
-    this._ush = undoScopeHost;
-
-    this.position = 0;
-    this.length = 0;
-  }
-
-  UndoManager.prototype.transact = function (transaction, merge) {
-    if (arguments.length < 2) {
-      throw new TypeError('Not enough arguments to UndoManager.transact.');
-    }
-
-    transaction.execute();
-
-    this._stack.splice(0, this.position);
-    if (merge && this.length) {
-      this._stack[0].push(transaction);
-    }
-    else {
-      this._stack.unshift([transaction]);
-    }
-    this.position = 0;
-
-    if (this._limit && this._stack.length > this._limit) {
-      this.length = this._stack.length = this._limit;
-    }
-    else {
-      this.length = this._stack.length;
-    }
-
-    if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
-    }
-  };
-
-  UndoManager.prototype.undo = function () {
-    if (this.position < this.length) {
-      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
-        this._stack[this.position][i].undo();
-      }
-      this.position++;
-
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
-      }
-    }
-  };
-
-  UndoManager.prototype.redo = function () {
-    if (this.position > 0) {
-      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
-        this._stack[this.position - 1][i].redo();
-      }
-      this.position--;
-
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
-      }
-    }
-  };
-
-  UndoManager.prototype.item = function (index) {
-    if (index >= 0 && index < this.length) {
-      return this._stack[index].slice();
-    }
-    return null;
-  };
-
-  UndoManager.prototype.clearUndo = function () {
-    this._stack.length = this.length = this.position;
-  };
-
-  UndoManager.prototype.clearRedo = function () {
-    this._stack.splice(0, this.position);
-    this.position = 0;
-    this.length = this._stack.length;
-  };
-
-  return UndoManager;
-});
-
-
-define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(baseIndexOf) {
-
-  /** Used for native method references. */
-  var arrayProto = Array.prototype;
-
-  /** Native method references. */
-  var splice = arrayProto.splice;
-
-  /**
-   * Removes all provided values from `array` using `SameValueZero` for equality
-   * comparisons.
-   *
-   * **Notes:**
-   *  - Unlike `_.without`, this method mutates `array`.
-   *  - `SameValueZero` comparisons are like strict equality comparisons, e.g. `===`,
-   *    except that `NaN` matches `NaN`. See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-   *    for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Array
-   * @param {Array} array The array to modify.
-   * @param {...*} [values] The values to remove.
-   * @returns {Array} Returns `array`.
-   * @example
-   *
-   * var array = [1, 2, 3, 1, 2, 3];
-   *
-   * _.pull(array, 2, 3);
-   * console.log(array);
-   * // => [1, 1]
-   */
-  function pull() {
-    var args = arguments,
-        array = args[0];
-
-    if (!(array && array.length)) {
-      return array;
-    }
-    var index = 0,
-        indexOf = baseIndexOf,
-        length = args.length;
-
-    while (++index < length) {
-      var fromIndex = 0,
-          value = args[index];
-
-      while ((fromIndex = indexOf(array, value, fromIndex)) > -1) {
-        splice.call(array, fromIndex, 1);
-      }
-    }
-    return array;
-  }
-
-  return pull;
-});
-
 /**
  *  Copyright (c) 2014, Facebook, Inc.
  *  All rights reserved.
@@ -8403,6 +4888,3259 @@ define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(base
   return Immutable;
 
 }));
+define('plugins/core/formatters/html/enforce-p-elements',[
+  'immutable/dist/immutable'
+], function (Immutable) {
+
+  /**
+   * Chrome and Firefox: Upon pressing backspace inside of a P, the
+   * browser deletes the paragraph element, leaving the caret (and any
+   * content) outside of any P.
+   *
+   * Firefox: Erasing across multiple paragraphs, or outside of a
+   * whole paragraph (e.g. by ‘Select All’) will leave content outside
+   * of any P.
+   *
+   * Entering a new line in a pristine state state will insert
+   * `<div>`s (in Chrome) or `<br>`s (in Firefox) where previously we
+   * had `<p>`'s. This patches the behaviour of delete/backspace so
+   * that we do not end up in a pristine state.
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var nodeHelpers = scribe.node;
+      var elementHelpers = scribe.element;
+
+      /**
+       * Wrap consecutive inline elements and text nodes in a P element.
+       */
+      function wrapChildNodes(parentNode) {
+        var index = 0;
+        Immutable.List(parentNode.childNodes)
+          .filter(function(node) {
+            return node.nodeType === Node.TEXT_NODE || !elementHelpers.isBlockElement(node);
+          })
+          .groupBy(function(node, key, list) {
+            return key === 0 || node.previousSibling === list.get(key - 1) ?
+              index :
+              index += 1;
+          })
+          .forEach(function(nodeGroup) {
+            nodeHelpers.wrap(nodeGroup.toArray(), document.createElement('p'));
+          });
+      }
+
+      // Traverse the tree, wrapping child nodes as we go.
+      function traverse(parentNode) {
+        var i = 0, node;
+
+        while (node = parentNode.children[i++]) {
+          if (node.tagName === 'BLOCKQUOTE') {
+            wrapChildNodes(node);
+          }
+        }
+      }
+
+      scribe.registerHTMLFormatter('normalize', function (html) {
+        /**
+         * Ensure P mode.
+         *
+         * Wrap any orphan text nodes in a P element.
+         */
+        // TODO: This should be configurable and also correct markup such as
+        // `<ul>1</ul>` to <ul><li>2</li></ul>`. See skipped tests.
+        // TODO: This should probably be a part of HTML Janitor, or some other
+        // formatter.
+        var bin = document.createElement('div');
+        bin.innerHTML = html;
+
+        wrapChildNodes(bin);
+        traverse(bin);
+
+        return bin.innerHTML;
+      });
+
+    };
+  };
+
+});
+
+define('lodash-amd/modern/internal/indexOfNaN',[], function() {
+
+  /**
+   * Gets the index at which the first occurrence of `NaN` is found in `array`.
+   * If `fromRight` is provided elements of `array` are iterated from right to left.
+   *
+   * @private
+   * @param {Array} array The array to search.
+   * @param {number} fromIndex The index to search from.
+   * @param {boolean} [fromRight] Specify iterating from right to left.
+   * @returns {number} Returns the index of the matched `NaN`, else `-1`.
+   */
+  function indexOfNaN(array, fromIndex, fromRight) {
+    var length = array.length,
+        index = fromIndex + (fromRight ? 0 : -1);
+
+    while ((fromRight ? index-- : ++index < length)) {
+      var other = array[index];
+      if (other !== other) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  return indexOfNaN;
+});
+
+define('lodash-amd/modern/internal/baseIndexOf',['./indexOfNaN'], function(indexOfNaN) {
+
+  /**
+   * The base implementation of `_.indexOf` without support for binary searches.
+   *
+   * @private
+   * @param {Array} array The array to search.
+   * @param {*} value The value to search for.
+   * @param {number} fromIndex The index to search from.
+   * @returns {number} Returns the index of the matched value, else `-1`.
+   */
+  function baseIndexOf(array, value, fromIndex) {
+    if (value !== value) {
+      return indexOfNaN(array, fromIndex);
+    }
+    var index = fromIndex - 1,
+        length = array.length;
+
+    while (++index < length) {
+      if (array[index] === value) {
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  return baseIndexOf;
+});
+
+define('lodash-amd/modern/internal/isLength',[], function() {
+
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like length.
+   *
+   * **Note:** This function is based on ES `ToLength`. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
+   * for more details.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+   */
+  function isLength(value) {
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  }
+
+  return isLength;
+});
+
+define('lodash-amd/modern/internal/baseToString',[], function() {
+
+  /**
+   * Converts `value` to a string if it is not one. An empty string is returned
+   * for `null` or `undefined` values.
+   *
+   * @private
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
+   */
+  function baseToString(value) {
+    if (typeof value == 'string') {
+      return value;
+    }
+    return value == null ? '' : (value + '');
+  }
+
+  return baseToString;
+});
+
+define('lodash-amd/modern/string/escapeRegExp',['../internal/baseToString'], function(baseToString) {
+
+  /**
+   * Used to match `RegExp` special characters.
+   * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
+   * for more details.
+   */
+  var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
+      reHasRegExpChars = RegExp(reRegExpChars.source);
+
+  /**
+   * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
+   * "+", "(", ")", "[", "]", "{" and "}" in `string`.
+   *
+   * @static
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escapeRegExp('[lodash](https://lodash.com/)');
+   * // => '\[lodash\]\(https://lodash\.com/\)'
+   */
+  function escapeRegExp(string) {
+    string = baseToString(string);
+    return (string && reHasRegExpChars.test(string))
+      ? string.replace(reRegExpChars, '\\$&')
+      : string;
+  }
+
+  return escapeRegExp;
+});
+
+define('lodash-amd/modern/internal/isObjectLike',[], function() {
+
+  /**
+   * Checks if `value` is object-like.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   */
+  function isObjectLike(value) {
+    return (value && typeof value == 'object') || false;
+  }
+
+  return isObjectLike;
+});
+
+define('lodash-amd/modern/lang/isNative',['../string/escapeRegExp', '../internal/isObjectLike'], function(escapeRegExp, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var funcTag = '[object Function]';
+
+  /** Used to detect host constructors (Safari > 5). */
+  var reHostCtor = /^\[object .+?Constructor\]$/;
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the decompiled source of functions. */
+  var fnToString = Function.prototype.toString;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /** Used to detect if a method is native. */
+  var reNative = RegExp('^' +
+    escapeRegExp(objToString)
+    .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+  );
+
+  /**
+   * Checks if `value` is a native function.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
+   * @example
+   *
+   * _.isNative(Array.prototype.push);
+   * // => true
+   *
+   * _.isNative(_);
+   * // => false
+   */
+  function isNative(value) {
+    if (value == null) {
+      return false;
+    }
+    if (objToString.call(value) == funcTag) {
+      return reNative.test(fnToString.call(value));
+    }
+    return (isObjectLike(value) && reHostCtor.test(value)) || false;
+  }
+
+  return isNative;
+});
+
+define('lodash-amd/modern/lang/isArray',['../internal/isLength', './isNative', '../internal/isObjectLike'], function(isLength, isNative, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var arrayTag = '[object Array]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
+
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(function() { return arguments; }());
+   * // => false
+   */
+  var isArray = nativeIsArray || function(value) {
+    return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
+  };
+
+  return isArray;
+});
+
+define('lodash-amd/modern/lang/isString',['../internal/isObjectLike'], function(isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var stringTag = '[object String]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /**
+   * Checks if `value` is classified as a `String` primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isString('abc');
+   * // => true
+   *
+   * _.isString(1);
+   * // => false
+   */
+  function isString(value) {
+    return typeof value == 'string' || (isObjectLike(value) && objToString.call(value) == stringTag) || false;
+  }
+
+  return isString;
+});
+
+define('lodash-amd/modern/internal/baseValues',[], function() {
+
+  /**
+   * The base implementation of `_.values` and `_.valuesIn` which creates an
+   * array of `object` property values corresponding to the property names
+   * returned by `keysFunc`.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {Array} props The property names to get values for.
+   * @returns {Object} Returns the array of property values.
+   */
+  function baseValues(object, props) {
+    var index = -1,
+        length = props.length,
+        result = Array(length);
+
+    while (++index < length) {
+      result[index] = object[props[index]];
+    }
+    return result;
+  }
+
+  return baseValues;
+});
+
+define('lodash-amd/modern/lang/isObject',[], function() {
+
+  /**
+   * Checks if `value` is the language type of `Object`.
+   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(1);
+   * // => false
+   */
+  function isObject(value) {
+    // Avoid a V8 JIT bug in Chrome 19-20.
+    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+    var type = typeof value;
+    return type == 'function' || (value && type == 'object') || false;
+  }
+
+  return isObject;
+});
+
+define('lodash-amd/modern/lang/isArguments',['../internal/isLength', '../internal/isObjectLike'], function(isLength, isObjectLike) {
+
+  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
+  var undefined;
+
+  /** `Object#toString` result references. */
+  var argsTag = '[object Arguments]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /**
+   * Checks if `value` is classified as an `arguments` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArguments(function() { return arguments; }());
+   * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
+   */
+  function isArguments(value) {
+    var length = isObjectLike(value) ? value.length : undefined;
+    return (isLength(length) && objToString.call(value) == argsTag) || false;
+  }
+
+  return isArguments;
+});
+
+define('lodash-amd/modern/internal/isIndex',[], function() {
+
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like index.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+   */
+  function isIndex(value, length) {
+    value = +value;
+    length = length == null ? MAX_SAFE_INTEGER : length;
+    return value > -1 && value % 1 == 0 && value < length;
+  }
+
+  return isIndex;
+});
+
+define('lodash-amd/modern/internal/root',[], function() {
+
+  /** Used to determine if values are of the language type `Object`. */
+  var objectTypes = {
+    'function': true,
+    'object': true
+  };
+
+  /** Detect free variable `exports`. */
+  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+
+  /** Detect free variable `module`. */
+  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
+
+  /** Detect free variable `window`. */
+  var freeWindow = objectTypes[typeof window] && window;
+
+  /**
+   * Used as a reference to the global object.
+   *
+   * The `this` value is used if it is the global object to avoid Greasemonkey's
+   * restricted `window` object, otherwise the `window` object is used.
+   */
+  var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || this;
+
+  return root;
+});
+
+define('lodash-amd/modern/support',['./lang/isNative', './internal/root'], function(isNative, root) {
+
+  /** Used to detect functions containing a `this` reference. */
+  var reThis = /\bthis\b/;
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to detect DOM support. */
+  var document = (document = root.window) && document.document;
+
+  /** Native method references. */
+  var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+  /**
+   * An object environment feature flags.
+   *
+   * @static
+   * @memberOf _
+   * @type Object
+   */
+  var support = {};
+
+  (function(x) {
+
+    /**
+     * Detect if functions can be decompiled by `Function#toString`
+     * (all but Firefox OS certified apps, older Opera mobile browsers, and
+     * the PlayStation 3; forced `false` for Windows 8 apps).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcDecomp = !isNative(root.WinRTError) && reThis.test(function() { return this; });
+
+    /**
+     * Detect if `Function#name` is supported (all but IE).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcNames = typeof Function.name == 'string';
+
+    /**
+     * Detect if the DOM is supported.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.dom = document.createDocumentFragment().nodeType === 11;
+    } catch(e) {
+      support.dom = false;
+    }
+
+    /**
+     * Detect if `arguments` object indexes are non-enumerable.
+     *
+     * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
+     * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
+     * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
+     * checks for indexes that exceed their function's formal parameters with
+     * associated values of `0`.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
+    } catch(e) {
+      support.nonEnumArgs = true;
+    }
+  }(0, 0));
+
+  return support;
+});
+
+define('lodash-amd/modern/object/keysIn',['../lang/isArguments', '../lang/isArray', '../internal/isIndex', '../internal/isLength', '../lang/isObject', '../support'], function(isArguments, isArray, isIndex, isLength, isObject, support) {
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * Creates an array of the own and inherited enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keysIn(new Foo);
+   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+   */
+  function keysIn(object) {
+    if (object == null) {
+      return [];
+    }
+    if (!isObject(object)) {
+      object = Object(object);
+    }
+    var length = object.length;
+    length = (length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
+
+    var Ctor = object.constructor,
+        index = -1,
+        isProto = typeof Ctor == 'function' && Ctor.prototype === object,
+        result = Array(length),
+        skipIndexes = length > 0;
+
+    while (++index < length) {
+      result[index] = (index + '');
+    }
+    for (var key in object) {
+      if (!(skipIndexes && isIndex(key, length)) &&
+          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  return keysIn;
+});
+
+define('lodash-amd/modern/internal/shimKeys',['../lang/isArguments', '../lang/isArray', './isIndex', './isLength', '../object/keysIn', '../support'], function(isArguments, isArray, isIndex, isLength, keysIn, support) {
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * A fallback implementation of `Object.keys` which creates an array of the
+   * own enumerable property names of `object`.
+   *
+   * @private
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   */
+  function shimKeys(object) {
+    var props = keysIn(object),
+        propsLength = props.length,
+        length = propsLength && object.length;
+
+    var allowIndexes = length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object)));
+
+    var index = -1,
+        result = [];
+
+    while (++index < propsLength) {
+      var key = props[index];
+      if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  return shimKeys;
+});
+
+define('lodash-amd/modern/object/keys',['../internal/isLength', '../lang/isNative', '../lang/isObject', '../internal/shimKeys'], function(isLength, isNative, isObject, shimKeys) {
+
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+  /**
+   * Creates an array of the own enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
+   * for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keys(new Foo);
+   * // => ['a', 'b'] (iteration order is not guaranteed)
+   *
+   * _.keys('hi');
+   * // => ['0', '1']
+   */
+  var keys = !nativeKeys ? shimKeys : function(object) {
+    if (object) {
+      var Ctor = object.constructor,
+          length = object.length;
+    }
+    if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
+        (typeof object != 'function' && (length && isLength(length)))) {
+      return shimKeys(object);
+    }
+    return isObject(object) ? nativeKeys(object) : [];
+  };
+
+  return keys;
+});
+
+define('lodash-amd/modern/object/values',['../internal/baseValues', './keys'], function(baseValues, keys) {
+
+  /**
+   * Creates an array of the own enumerable property values of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property values.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.values(new Foo);
+   * // => [1, 2] (iteration order is not guaranteed)
+   *
+   * _.values('hi');
+   * // => ['h', 'i']
+   */
+  function values(object) {
+    return baseValues(object, keys(object));
+  }
+
+  return values;
+});
+
+define('lodash-amd/modern/collection/includes',['../internal/baseIndexOf', '../lang/isArray', '../internal/isLength', '../lang/isString', '../object/values'], function(baseIndexOf, isArray, isLength, isString, values) {
+
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeMax = Math.max;
+
+  /**
+   * Checks if `value` is in `collection` using `SameValueZero` for equality
+   * comparisons. If `fromIndex` is negative, it is used as the offset from
+   * the end of `collection`.
+   *
+   * **Note:** `SameValueZero` comparisons are like strict equality comparisons,
+   * e.g. `===`, except that `NaN` matches `NaN`. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
+   * for more details.
+   *
+   * @static
+   * @memberOf _
+   * @alias contains, include
+   * @category Collection
+   * @param {Array|Object|string} collection The collection to search.
+   * @param {*} target The value to search for.
+   * @param {number} [fromIndex=0] The index to search from.
+   * @returns {boolean} Returns `true` if a matching element is found, else `false`.
+   * @example
+   *
+   * _.includes([1, 2, 3], 1);
+   * // => true
+   *
+   * _.includes([1, 2, 3], 1, 2);
+   * // => false
+   *
+   * _.includes({ 'user': 'fred', 'age': 40 }, 'fred');
+   * // => true
+   *
+   * _.includes('pebbles', 'eb');
+   * // => true
+   */
+  function includes(collection, target, fromIndex) {
+    var length = collection ? collection.length : 0;
+    if (!isLength(length)) {
+      collection = values(collection);
+      length = collection.length;
+    }
+    if (!length) {
+      return false;
+    }
+    if (typeof fromIndex == 'number') {
+      fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : (fromIndex || 0);
+    } else {
+      fromIndex = 0;
+    }
+    return (typeof collection == 'string' || !isArray(collection) && isString(collection))
+      ? (fromIndex < length && collection.indexOf(target, fromIndex) > -1)
+      : (baseIndexOf(collection, target, fromIndex) > -1);
+  }
+
+  return includes;
+});
+
+define('lodash-amd/modern/collection/contains',["./includes"], function(includes) {
+  return includes;
+});
+
+define('element',['lodash-amd/modern/collection/contains'], function (contains) {
+
+  
+
+  var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
+                           'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
+                           'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
+                           'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
+                           'TH', 'TFOOT', 'UL', 'VIDEO'];
+  function isBlockElement(node) {
+    return contains(blockElementNames, node.nodeName);
+  }
+
+  function isSelectionMarkerNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+  }
+
+  function isCaretPositionNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
+  }
+
+  function unwrap(node, childNode) {
+    while (childNode.childNodes.length > 0) {
+      node.insertBefore(childNode.childNodes[0], childNode);
+    }
+    node.removeChild(childNode);
+  }
+
+  return {
+    isBlockElement: isBlockElement,
+    isSelectionMarkerNode: isSelectionMarkerNode,
+    isCaretPositionNode: isCaretPositionNode,
+    unwrap: unwrap
+  };
+
+});
+
+define('plugins/core/formatters/html/ensure-selectable-containers',[
+    '../../../../element',
+    'lodash-amd/modern/collection/contains'
+  ], function (
+    element,
+    contains
+  ) {
+
+  /**
+   * Chrome and Firefox: All elements need to contain either text or a `<br>` to
+   * remain selectable. (Unless they have a width and height explicitly set with
+   * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
+   */
+
+  
+
+  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
+  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+
+  function parentHasNoTextContent(element, node) {
+    if (element.isCaretPositionNode(node)) {
+      return true;
+    } else {
+      return node.parentNode.textContent.trim() === '';
+    }
+  }
+
+
+  function traverse(element, parentNode) {
+    // Instead of TreeWalker, which gets confused when the BR is added to the dom,
+    // we recursively traverse the tree to look for an empty node that can have childNodes
+
+    var node = parentNode.firstElementChild;
+
+    function isEmpty(node) {
+
+      if ((node.children.length === 0 && element.isBlockElement(node))
+        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+         return true;
+      }
+
+      // Do not insert BR in empty non block elements with parent containing text
+      if (!element.isBlockElement(node) && node.children.length === 0) {
+        return parentHasNoTextContent(element, node);
+      }
+
+      return false;
+    }
+
+    while (node) {
+      if (!element.isSelectionMarkerNode(node)) {
+        // Find any node that contains no child *elements*, or just contains
+        // whitespace, and is not self-closing
+        if (isEmpty(node) &&
+          node.textContent.trim() === '' &&
+          !contains(html5VoidElements, node.nodeName)) {
+          node.appendChild(document.createElement('br'));
+        } else if (node.children.length > 0) {
+          traverse(element, node);
+        }
+      }
+      node = node.nextElementSibling;
+    }
+  }
+
+  return function () {
+    return function (scribe) {
+
+      scribe.registerHTMLFormatter('normalize', function (html) {
+        var bin = document.createElement('div');
+        bin.innerHTML = html;
+
+        traverse(scribe.element, bin);
+
+        return bin.innerHTML;
+      });
+
+    };
+  };
+
+});
+
+define('plugins/core/inline-elements-mode',[],function () {
+
+  
+
+  // TODO: abstract
+  function hasContent(rootNode) {
+    var treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
+
+    while (treeWalker.nextNode()) {
+      if (treeWalker.currentNode) {
+        // If the node is a non-empty element or has content
+        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  return function () {
+    return function (scribe) {
+      /**
+       * Firefox has a `insertBrOnReturn` command, but this is not a part of
+       * any standard. One day we might have an `insertLineBreak` command,
+       * proposed by this spec:
+       * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#the-insertlinebreak-command
+       * As per: http://jsbin.com/IQUraXA/1/edit?html,js,output
+       */
+      scribe.el.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) { // enter
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var blockNode = selection.getContaining(function (node) {
+            return node.nodeName === 'LI' || (/^(H[1-6])$/).test(node.nodeName);
+          });
+
+          if (! blockNode) {
+            event.preventDefault();
+
+            scribe.transactionManager.run(function () {
+              /**
+               * Firefox: Delete the bogus BR as we insert another one later.
+               * We have to do this because otherwise the browser will believe
+               * there is content to the right of the selection.
+               */
+              if (scribe.el.lastChild.nodeName === 'BR') {
+                scribe.el.removeChild(scribe.el.lastChild);
+              }
+
+              var brNode = document.createElement('br');
+
+              range.insertNode(brNode);
+              // After inserting the BR into the range is no longer collapsed, so
+              // we have to collapse it again.
+              // TODO: Older versions of Firefox require this argument even though
+              // it is supposed to be optional. Proxy/polyfill?
+              range.collapse(false);
+
+              /**
+               * Chrome: If there is no right-hand side content, inserting a BR
+               * will not appear to create a line break.
+               * Firefox: If there is no right-hand side content, inserting a BR
+               * will appear to create a weird "half-line break".
+               *
+               * Possible solution: Insert two BRs.
+               * ✓ Chrome: Inserting two BRs appears to create a line break.
+               * Typing will then delete the bogus BR element.
+               * Firefox: Inserting two BRs will create two line breaks.
+               *
+               * Solution: Only insert two BRs if there is no right-hand
+               * side content.
+               *
+               * If the user types on a line immediately after a BR element,
+               * Chrome will replace the BR element with the typed characters,
+               * whereas Firefox will not. Thus, to satisfy Firefox we have to
+               * insert a bogus BR element on initialization (see below).
+               */
+
+              var contentToEndRange = range.cloneRange();
+              contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
+
+              // Get the content from the range to the end of the heading
+              var contentToEndFragment = contentToEndRange.cloneContents();
+
+              // If there is not already a right hand side content we need to
+              // insert a bogus BR element.
+              if (! hasContent(contentToEndFragment)) {
+                var bogusBrNode = document.createElement('br');
+                range.insertNode(bogusBrNode);
+              }
+
+              var newRange = range.cloneRange();
+
+              newRange.setStartAfter(brNode, 0);
+              newRange.setEndAfter(brNode, 0);
+
+              selection.selection.removeAllRanges();
+              selection.selection.addRange(newRange);
+            });
+          }
+        }
+      }.bind(this));
+
+      if (scribe.getHTML().trim() === '') {
+        // Bogus BR element for Firefox — see explanation above.
+        // TODO: also append when consumer sets the content manually.
+        // TODO: hide when the user calls `getHTML`?
+        scribe.setContent('');
+      }
+    };
+  };
+});
+
+define('plugins/core/plugins',[
+  './set-root-p-element',
+  './formatters/html/enforce-p-elements',
+  './formatters/html/ensure-selectable-containers',
+  './inline-elements-mode'
+], function (
+  setRootPElement,
+  enforcePElements,
+  ensureSelectableContainers,
+  inlineElementsMode
+) {
+  
+
+  return {
+    setRootPElement: setRootPElement,
+    enforcePElements: enforcePElements,
+    ensureSelectableContainers: ensureSelectableContainers,
+    inlineElementsMode: inlineElementsMode
+  };
+});
+
+define('plugins/core/commands/indent',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var indentCommand = new scribe.api.Command('indent');
+
+      indentCommand.queryEnabled = function () {
+        /**
+         * FIXME: Chrome nests ULs inside of ULs
+         * Currently we just disable the command when the selection is inside of
+         * a list.
+         * As per: http://jsbin.com/ORikUPa/3/edit?html,js,output
+         */
+        var selection = new scribe.api.Selection();
+        var listElement = selection.getContaining(function (element) {
+          return element.nodeName === 'UL' || element.nodeName === 'OL';
+        });
+
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+      };
+
+      scribe.commands.indent = indentCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/insert-list',[],function () {
+
+  /**
+   * If the paragraphs option is set to true, then when the list is
+   * unapplied, ensure that we enter a P element.
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var InsertListCommand = function (commandName) {
+        scribe.api.Command.call(this, commandName);
+      };
+
+      InsertListCommand.prototype = Object.create(scribe.api.Command.prototype);
+      InsertListCommand.prototype.constructor = InsertListCommand;
+
+      InsertListCommand.prototype.execute = function (value) {
+        function splitList(listItemElements) {
+          if (listItemElements.length > 0) {
+            var newListNode = document.createElement(listNode.nodeName);
+
+            listItemElements.forEach(function (listItemElement) {
+              newListNode.appendChild(listItemElement);
+            });
+
+            listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
+          }
+        }
+
+        if (this.queryState()) {
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var listNode = selection.getContaining(function (node) {
+            return node.nodeName === 'OL' || node.nodeName === 'UL';
+          });
+
+          var listItemElement = selection.getContaining(function (node) {
+            return node.nodeName === 'LI';
+          });
+
+          scribe.transactionManager.run(function () {
+            if (listItemElement) {
+              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+
+              /**
+               * If we are not at the start or end of a UL/OL, we have to
+               * split the node and insert the P(s) in the middle.
+               */
+              splitList(nextListItemElements);
+
+              /**
+               * Insert a paragraph in place of the list item.
+               */
+
+              selection.placeMarkers();
+
+              var pNode = document.createElement('p');
+              pNode.innerHTML = listItemElement.innerHTML;
+
+              listNode.parentNode.insertBefore(pNode, listNode.nextElementSibling);
+              listItemElement.parentNode.removeChild(listItemElement);
+            } else {
+              /**
+               * When multiple list items are selected, we replace each list
+               * item with a paragraph.
+               */
+
+              // We can't query for list items in the selection so we loop
+              // through them all and find the intersection ourselves.
+              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
+                function (listItemElement) {
+                return range.intersectsNode(listItemElement) && listItemElement;
+              }).filter(function (listItemElement) {
+                // TODO: identity
+                return listItemElement;
+              });
+              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
+              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+
+              /**
+               * If we are not at the start or end of a UL/OL, we have to
+               * split the node and insert the P(s) in the middle.
+               */
+              splitList(listItemElementsAfterSelection);
+
+              // Store the caret/range positioning inside of the list items so
+              // we can restore it from the newly created P elements soon
+              // afterwards.
+              selection.placeMarkers();
+
+              var documentFragment = document.createDocumentFragment();
+              selectedListItemElements.forEach(function (listItemElement) {
+                var pElement = document.createElement('p');
+                pElement.innerHTML = listItemElement.innerHTML;
+                documentFragment.appendChild(pElement);
+              });
+
+              // Insert the Ps
+              listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
+
+              // Remove the LIs
+              selectedListItemElements.forEach(function (listItemElement) {
+                listItemElement.parentNode.removeChild(listItemElement);
+              });
+            }
+
+            // If the list is now empty, clean it up.
+            if (listNode.childNodes.length === 0) {
+              listNode.parentNode.removeChild(listNode);
+            }
+
+            selection.selectMarkers();
+          }.bind(this));
+        } else {
+          scribe.api.Command.prototype.execute.call(this, value);
+        }
+      };
+
+      InsertListCommand.prototype.queryEnabled = function () {
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements();
+      };
+
+      scribe.commands.insertOrderedList = new InsertListCommand('insertOrderedList');
+      scribe.commands.insertUnorderedList = new InsertListCommand('insertUnorderedList');
+    };
+  };
+
+});
+
+define('plugins/core/commands/outdent',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var outdentCommand = new scribe.api.Command('outdent');
+
+      outdentCommand.queryEnabled = function () {
+        /**
+         * FIXME: If the paragraphs option is set to true, then when the
+         * list is unapplied, ensure that we enter a P element.
+         * Currently we just disable the command when the selection is inside of
+         * a list.
+         */
+        var selection = new scribe.api.Selection();
+        var listElement = selection.getContaining(function (element) {
+          return element.nodeName === 'UL' || element.nodeName === 'OL';
+        });
+
+        // FIXME: define block element rule here?
+        return scribe.api.Command.prototype.queryEnabled.call(this) && scribe.allowsBlockElements() && ! listElement;
+      };
+
+      scribe.commands.outdent = outdentCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/redo',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var redoCommand = new scribe.api.Command('redo');
+
+      redoCommand.execute = function () {
+        scribe.undoManager.redo();
+      };
+
+      redoCommand.queryEnabled = function () {
+        return scribe.undoManager.position > 0;
+      };
+
+      scribe.commands.redo = redoCommand;
+
+      //is scribe is configured to undo assign listener
+      if (scribe.options.undo.enabled) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+            event.preventDefault();
+            redoCommand.execute();
+          }
+        });
+      }
+    };
+  };
+
+});
+
+define('plugins/core/commands/subscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var subscriptCommand = new scribe.api.Command('subscript');
+
+      scribe.commands.subscript = subscriptCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/superscript',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var superscriptCommand = new scribe.api.Command('superscript');
+
+      scribe.commands.superscript = superscriptCommand;
+    };
+  };
+
+});
+
+define('plugins/core/commands/undo',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var undoCommand = new scribe.api.Command('undo');
+
+      undoCommand.execute = function () {
+        scribe.undoManager.undo();
+      };
+
+      undoCommand.queryEnabled = function () {
+        return scribe.undoManager.position < scribe.undoManager.length;
+      };
+
+      scribe.commands.undo = undoCommand;
+
+      if (scribe.options.undo.enabled) {
+        scribe.el.addEventListener('keydown', function (event) {
+          // TODO: use lib to abstract meta/ctrl keys?
+          if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+            event.preventDefault();
+            undoCommand.execute();
+          }
+        });
+      }
+    };
+  };
+
+});
+
+define('plugins/core/commands',[
+  './commands/indent',
+  './commands/insert-list',
+  './commands/outdent',
+  './commands/redo',
+  './commands/subscript',
+  './commands/superscript',
+  './commands/undo'
+], function (
+  indent,
+  insertList,
+  outdent,
+  redo,
+  subscript,
+  superscript,
+  undo
+) {
+
+  
+
+  return {
+    indent: indent,
+    insertList: insertList,
+    outdent: outdent,
+    redo: redo,
+    subscript: subscript,
+    superscript: superscript,
+    undo: undo
+  };
+
+});
+
+define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
+
+  /**
+   * Chrome:
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var nbspCharRegExp = /(\s|&nbsp;)+/g;
+
+      // TODO: should we be doing this on paste?
+      scribe.registerHTMLFormatter('export', function (html) {
+        return html.replace(nbspCharRegExp, ' ');
+      });
+    };
+  };
+
+});
+
+define('lodash-amd/modern/internal/escapeHtmlChar',[], function() {
+
+  /** Used to map characters to HTML entities. */
+  var htmlEscapes = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '`': '&#96;'
+  };
+
+  /**
+   * Used by `_.escape` to convert characters to HTML entities.
+   *
+   * @private
+   * @param {string} chr The matched character to escape.
+   * @returns {string} Returns the escaped character.
+   */
+  function escapeHtmlChar(chr) {
+    return htmlEscapes[chr];
+  }
+
+  return escapeHtmlChar;
+});
+
+define('lodash-amd/modern/string/escape',['../internal/baseToString', '../internal/escapeHtmlChar'], function(baseToString, escapeHtmlChar) {
+
+  /** Used to match HTML entities and HTML characters. */
+  var reUnescapedHtml = /[&<>"'`]/g,
+      reHasUnescapedHtml = RegExp(reUnescapedHtml.source);
+
+  /**
+   * Converts the characters "&", "<", ">", '"', "'", and "\`", in `string` to
+   * their corresponding HTML entities.
+   *
+   * **Note:** No other characters are escaped. To escape additional characters
+   * use a third-party library like [_he_](https://mths.be/he).
+   *
+   * Though the ">" character is escaped for symmetry, characters like
+   * ">" and "/" don't require escaping in HTML and have no special meaning
+   * unless they're part of a tag or unquoted attribute value.
+   * See [Mathias Bynens's article](https://mathiasbynens.be/notes/ambiguous-ampersands)
+   * (under "semi-related fun fact") for more details.
+   *
+   * Backticks are escaped because in Internet Explorer < 9, they can break out
+   * of attribute values or HTML comments. See [#102](https://html5sec.org/#102),
+   * [#108](https://html5sec.org/#108), and [#133](https://html5sec.org/#133) of
+   * the [HTML5 Security Cheatsheet](https://html5sec.org/) for more details.
+   *
+   * When working with HTML you should always quote attribute values to reduce
+   * XSS vectors. See [Ryan Grove's article](http://wonko.com/post/html-escaping)
+   * for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escape('fred, barney, & pebbles');
+   * // => 'fred, barney, &amp; pebbles'
+   */
+  function escape(string) {
+    // Reset `lastIndex` because in IE < 9 `String#replace` does not.
+    string = baseToString(string);
+    return (string && reHasUnescapedHtml.test(string))
+      ? string.replace(reUnescapedHtml, escapeHtmlChar)
+      : string;
+  }
+
+  return escape;
+});
+
+define('plugins/core/formatters/plain-text/escape-html-characters',[
+  'lodash-amd/modern/string/escape'
+], function (
+  escape
+) {
+
+  
+
+  return function () {
+    return function (scribe) {
+      scribe.registerPlainTextFormatter(escape);
+    };
+  };
+
+});
+
+define('plugins/core/formatters',[
+  './formatters/html/replace-nbsp-chars',
+  './formatters/plain-text/escape-html-characters'
+], function (
+  replaceNbspCharsFormatter,
+  escapeHtmlCharactersFormatter
+) {
+  
+
+  return {
+    replaceNbspCharsFormatter: replaceNbspCharsFormatter,
+    escapeHtmlCharactersFormatter: escapeHtmlCharactersFormatter
+  };
+});
+
+define('node',[],function () {
+
+  
+
+  // return true if nested inline tags ultimately just contain <br> or ""
+  function isEmptyInlineElement(node) {
+    if( node.children.length > 1 ) return false;
+    if( node.children.length === 1 && node.textContent.trim() !== '' ) return false;
+    if( node.children.length === 0 ) return node.textContent.trim() === '';
+    return isEmptyInlineElement(node.children[0]);
+  }
+
+  function isText(node) {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+
+  function isEmptyTextNode(node) {
+    return isText(node) && node.data === '';
+  }
+
+  function isFragment(node) {
+    return node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+  }
+
+  function isBefore(node1, node2) {
+    return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
+  }
+
+  function insertAfter(newNode, referenceNode) {
+    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
+
+  function removeNode(node) {
+    return node.parentNode.removeChild(node);
+  }
+
+  function wrap(nodes, parentNode) {
+    nodes[0].parentNode.insertBefore(parentNode, nodes[0]);
+    nodes.forEach(function (node) {
+      parentNode.appendChild(node);
+    });
+    return parentNode;
+  }
+
+  return {
+    isEmptyInlineElement: isEmptyInlineElement,
+    isText: isText,
+    isEmptyTextNode: isEmptyTextNode,
+    isFragment: isFragment,
+    isBefore: isBefore,
+    insertAfter: insertAfter,
+    removeNode: removeNode,
+    wrap: wrap
+  };
+
+});
+
+define('dom-observer',[
+  './element',
+  './node'
+], function (elementHelpers, nodeHelpers) {
+
+  function observeDomChanges(el, callback) {
+    function includeRealMutations(mutations) {
+      var realChangedNodes = mutations
+      .map(function(mutation) {
+        return mutations.slice.call(mutation.addedNodes)
+          .concat(mutations.slice.call(mutation.removedNodes));
+      })
+      .reduce(function(result, input) { return result.concat(input); }, [])
+      .filter(function(n) {
+        return ! nodeHelpers.isEmptyTextNode(n) &&
+          ! elementHelpers.isSelectionMarkerNode(n);
+      });
+
+      return realChangedNodes.length > 0;
+    }
+
+    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+    // Flag to avoid running recursively
+    var runningPostMutation = false;
+
+    var observer = new MutationObserver(function(mutations) {
+      if (! runningPostMutation && includeRealMutations(mutations)) {
+        runningPostMutation = true;
+
+        try {
+          callback();
+        } catch(e) {
+          // The catch block is required but we don't want to swallow the error
+          throw e;
+        } finally {
+          // We must yield to let any mutation we caused be triggered
+          // in the next cycle
+          setTimeout(function() {
+            runningPostMutation = false;
+          }, 0);
+        }
+      }
+    });
+
+    observer.observe(el, {
+      childList: true,
+      subtree: true
+    });
+
+    return observer;
+  }
+
+  return observeDomChanges;
+});
+
+define('api/children',[],function () {
+
+  
+
+  function firstDeepestChild(node) {
+    if(!node.hasChildNodes()) {
+      return node;
+    }
+
+    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
+    var previousNode = treeWalker.currentNode;
+    if (treeWalker.firstChild()) {
+      // TODO: build list of non-empty elements (used elsewhere)
+      // Do not include non-empty elements
+      if (treeWalker.currentNode.nodeName === 'BR') {
+        return previousNode;
+      } else {
+        return firstDeepestChild(treeWalker.currentNode);
+      }
+    } else {
+      return treeWalker.currentNode;
+    }
+  }
+
+  return {
+    firstDeepestChild: firstDeepestChild
+  }
+});
+
+define('plugins/core/events',[
+  'lodash-amd/modern/collection/contains',
+  '../../dom-observer',
+  '../../api/children'
+], function (
+  contains,
+  observeDomChanges,
+  children
+) {
+
+  
+
+  return function () {
+    return function (scribe) {
+      /**
+       * Firefox: Giving focus to a `contenteditable` will place the caret
+       * outside of any block elements. Chrome behaves correctly by placing the
+       * caret at the  earliest point possible inside the first block element.
+       * As per: http://jsbin.com/eLoFOku/1/edit?js,console,output
+       *
+       * We detect when this occurs and fix it by placing the caret ourselves.
+       */
+      scribe.el.addEventListener('focus', function placeCaretOnFocus() {
+        var selection = new scribe.api.Selection();
+        // In Chrome, the range is not created on or before this event loop.
+        // It doesn’t matter because this is a fix for Firefox.
+        if (selection.range) {
+
+          var isFirefoxBug = scribe.allowsBlockElements() &&
+                  selection.range.startContainer === scribe.el;
+
+          if (isFirefoxBug) {
+            var focusElement = children.firstDeepestChild(scribe.el);
+
+            var range = selection.range;
+
+            range.setStart(focusElement, 0);
+            range.setEnd(focusElement, 0);
+
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(range);
+          }
+        }
+      }.bind(scribe));
+
+      /**
+       * Apply the formatters when there is a DOM mutation.
+       */
+      var applyFormatters = function() {
+        if (!scribe._skipFormatters) {
+          var selection = new scribe.api.Selection();
+          var isEditorActive = selection.range;
+
+          var runFormatters = function () {
+            if (isEditorActive) {
+              selection.placeMarkers();
+            }
+            scribe.setHTML(scribe._htmlFormatterFactory.format(scribe.getHTML()));
+            selection.selectMarkers();
+          }.bind(scribe);
+
+          // We only want to wrap the formatting in a transaction if the editor is
+          // active. If the DOM is mutated when the editor isn't active (e.g.
+          // `scribe.setContent`), we do not want to push to the history. (This
+          // happens on the first `focus` event).
+
+          // The previous check is no longer needed, and the above comments are no longer valid.
+          // Now `scribe.setContent` updates the content manually, and `scribe.pushHistory`
+          // will not detect any changes, and nothing will be push into the history.
+          // Any mutations made without `scribe.getContent` will be pushed into the history normally.
+
+          // Pass content through formatters, place caret back
+          scribe.transactionManager.run(runFormatters);
+        }
+
+        delete scribe._skipFormatters;
+      }.bind(scribe);
+
+      observeDomChanges(scribe.el, applyFormatters);
+
+      // TODO: disconnect on tear down:
+      // observer.disconnect();
+
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside a heading to ensure a P element is created.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13) { // enter
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            var headingNode = selection.getContaining(function (node) {
+              return (/^(H[1-6])$/).test(node.nodeName);
+            });
+
+            /**
+             * If we are at the end of the heading, insert a P. Otherwise handle
+             * natively.
+             */
+            if (headingNode && range.collapsed) {
+              var contentToEndRange = range.cloneRange();
+              contentToEndRange.setEndAfter(headingNode, 0);
+
+              // Get the content from the range to the end of the heading
+              var contentToEndFragment = contentToEndRange.cloneContents();
+
+              if (contentToEndFragment.firstChild.textContent === '') {
+                event.preventDefault();
+
+                scribe.transactionManager.run(function () {
+                  // Default P
+                  // TODO: Abstract somewhere
+                  var pNode = document.createElement('p');
+                  var brNode = document.createElement('br');
+                  pNode.appendChild(brNode);
+
+                  headingNode.parentNode.insertBefore(pNode, headingNode.nextElementSibling);
+
+                  // Re-apply range
+                  range.setStart(pNode, 0);
+                  range.setEnd(pNode, 0);
+
+                  selection.selection.removeAllRanges();
+                  selection.selection.addRange(range);
+                });
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * If the paragraphs option is set to true, we need to manually handle
+       * keyboard navigation inside list item nodes.
+       */
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keydown', function (event) {
+          if (event.keyCode === 13 || event.keyCode === 8) { // enter || backspace
+
+            var selection = new scribe.api.Selection();
+            var range = selection.range;
+
+            if (range.collapsed) {
+              var containerLIElement = selection.getContaining(function (node) {
+                return node.nodeName === 'LI';
+              });
+              if (containerLIElement && containerLIElement.textContent.trim() === '') {
+                /**
+                 * LIs
+                 */
+
+                event.preventDefault();
+
+                var listNode = selection.getContaining(function (node) {
+                  return node.nodeName === 'UL' || node.nodeName === 'OL';
+                });
+
+                var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
+
+                command.execute();
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * We have to hijack the paste event to ensure it uses
+       * `scribe.insertHTML`, which executes the Scribe version of the command
+       * and also runs the formatters.
+       */
+
+      /**
+       * TODO: could we implement this as a polyfill for `event.clipboardData` instead?
+       * I also don't like how it has the authority to perform `event.preventDefault`.
+       */
+
+      scribe.el.addEventListener('paste', function handlePaste(event) {
+        /**
+         * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
+         * will execute the second branch here.
+         */
+        if (event.clipboardData) {
+          event.preventDefault();
+
+          if (contains(event.clipboardData.types, 'text/html')) {
+
+            scribe.insertHTML(event.clipboardData.getData('text/html'));
+          } else {
+            scribe.insertPlainText(event.clipboardData.getData('text/plain'));
+          }
+        } else {
+          /**
+           * If the browser doesn't have `ClipboardEvent.clipboardData`, we run through a
+           * sequence of events:
+           *
+           *   - Save the text selection
+           *   - Focus another, hidden textarea so we paste there
+           *   - Copy the pasted content of said textarea
+           *   - Give focus back to the scribe
+           *   - Restore the text selection
+           *
+           * This is required because, without access to the Clipboard API, there is literally
+           * no other way to manipulate content on paste.
+           * As per: https://github.com/jejacks0n/mercury/issues/23#issuecomment-2308347
+           *
+           * Firefox <= 21
+           * https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent.clipboardData
+           */
+
+          var selection = new scribe.api.Selection();
+
+          // Store the caret position
+          selection.placeMarkers();
+
+          var bin = document.createElement('div');
+          document.body.appendChild(bin);
+          bin.setAttribute('contenteditable', true);
+          bin.focus();
+
+          // Wait for the paste to happen (next loop?)
+          setTimeout(function () {
+            var data = bin.innerHTML;
+            bin.parentNode.removeChild(bin);
+
+            // Restore the caret position
+            selection.selectMarkers();
+            /**
+             * Firefox 19 (and maybe others): even though the applied range
+             * exists within the Scribe instance, we need to focus it.
+             */
+            scribe.el.focus();
+
+            scribe.insertHTML(data);
+          }, 1);
+        }
+      });
+
+    };
+  };
+});
+
+define('plugins/core/patches/commands/bold',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var boldCommand = new scribe.api.CommandPatch('bold');
+
+      /**
+       * Chrome: Executing the bold command inside a heading corrupts the markup.
+       * Disabling for now.
+       */
+      boldCommand.queryEnabled = function () {
+        var selection = new scribe.api.Selection();
+        var headingNode = selection.getContaining(function (node) {
+          return (/^(H[1-6])$/).test(node.nodeName);
+        });
+
+        return scribe.api.CommandPatch.prototype.queryEnabled.apply(this, arguments) && ! headingNode;
+      };
+
+      // TODO: We can't use STRONGs because this would mean we have to
+      // re-implement the `queryState` command, which would be difficult.
+
+      scribe.commandPatches.bold = boldCommand;
+    };
+  };
+
+});
+
+define('plugins/core/patches/commands/indent',[],function () {
+
+  /**
+   * Prevent Chrome from inserting BLOCKQUOTEs inside of Ps, and also from
+   * adding a redundant `style` attribute to the created BLOCKQUOTE.
+   */
+
+  
+
+  var INVISIBLE_CHAR = '\uFEFF';
+
+  return function () {
+    return function (scribe) {
+      var indentCommand = new scribe.api.CommandPatch('indent');
+
+      indentCommand.execute = function (value) {
+        scribe.transactionManager.run(function () {
+          /**
+           * Chrome: If we apply the indent command on an empty P, the
+           * BLOCKQUOTE will be nested inside the P.
+           * As per: http://jsbin.com/oDOriyU/3/edit?html,js,output
+           */
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var isCaretOnNewLine =
+              (range.commonAncestorContainer.nodeName === 'P'
+               && range.commonAncestorContainer.innerHTML === '<br>');
+          if (isCaretOnNewLine) {
+            // FIXME: this text node is left behind. Tidy it up somehow,
+            // or don't use it at all.
+            var textNode = document.createTextNode(INVISIBLE_CHAR);
+
+            range.insertNode(textNode);
+
+            range.setStart(textNode, 0);
+            range.setEnd(textNode, 0);
+
+            selection.selection.removeAllRanges();
+            selection.selection.addRange(range);
+          }
+
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
+
+          /**
+           * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
+           * As per: http://jsbin.com/AkasOzu/1/edit?html,js,output
+           */
+
+          // Renew the selection
+          selection = new scribe.api.Selection();
+          var blockquoteNode = selection.getContaining(function (node) {
+            return node.nodeName === 'BLOCKQUOTE';
+          });
+
+          if (blockquoteNode) {
+            blockquoteNode.removeAttribute('style');
+          }
+        }.bind(this));
+      };
+
+      scribe.commandPatches.indent = indentCommand;
+    };
+  };
+
+});
+
+define('plugins/core/patches/commands/insert-html',[], function () {
+  
+  return function () {
+    return function (scribe) {
+      var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
+      var element = scribe.element;
+
+      insertHTMLCommandPatch.execute = function (value) {
+        scribe.transactionManager.run(function () {
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
+
+          // TODO: share somehow with similar event patch for P nodes
+          removeChromeArtifacts(scribe.el);
+
+          /**
+           * Chrome: If a parent node has a CSS `line-height` when we apply the
+           * insertHTML command, Chrome appends a SPAN to plain content with
+           * inline styling replicating that `line-height`, and adjusts the
+           * `line-height` on inline elements.
+           * 
+           * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
+           * More from the web: http://stackoverflow.com/q/15015019/40352
+           */
+          function removeChromeArtifacts(parentElement) {
+            // Can't use treeWalker: In at least Chrome, if a node is unwrapped,
+            // treeWalker.nextSibling will not work properly after that.
+            var childElement = parentElement.firstElementChild;
+            while (childElement) {
+              /**
+               * If the list item contains inline elements such as
+               * A, B, or I, Chrome will also append an inline style for
+               * `line-height` on those elements, so we remove it here.
+               */
+              var childStyle = window.getComputedStyle(childElement);
+              if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
+                childElement.style.lineHeight = null;
+              }
+              
+              // We can discard an empty style attribute.
+              if (childElement.getAttribute('style') === '') {
+                childElement.removeAttribute('style');
+              }
+              
+              // Sanitize children.
+              removeChromeArtifacts(childElement);
+              
+              // We can discard an empty SPAN.
+              // (Don't do this until traversal's gone to the next element.)
+              var originalChild = childElement;
+              childElement = childElement.nextElementSibling;
+              if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
+                element.unwrap(parentElement, originalChild);
+              }
+            }
+          }
+        }.bind(this));
+      };
+
+      scribe.commandPatches.insertHTML = insertHTMLCommandPatch;
+    };
+  };
+
+});
+
+define('plugins/core/patches/commands/insert-list',[], function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var element = scribe.element;
+      var nodeHelpers = scribe.node;
+
+      var InsertListCommandPatch = function (commandName) {
+        scribe.api.CommandPatch.call(this, commandName);
+      };
+
+      InsertListCommandPatch.prototype = Object.create(scribe.api.CommandPatch.prototype);
+      InsertListCommandPatch.prototype.constructor = InsertListCommandPatch;
+
+      InsertListCommandPatch.prototype.execute = function (value) {
+        scribe.transactionManager.run(function () {
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
+
+          if (this.queryState()) {
+            var selection = new scribe.api.Selection();
+
+            var listElement = selection.getContaining(function (node) {
+              return node.nodeName === 'OL' || node.nodeName === 'UL';
+            });
+
+
+            /**
+             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, a P will be inserted after the OL/UL.
+             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+             */
+
+            if (listElement.nextElementSibling &&
+                listElement.nextElementSibling.childNodes.length === 0) {
+              nodeHelpers.removeNode(listElement.nextElementSibling);
+            }
+
+            /**
+             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+             * command on an empty block, the OL/UL will be nested inside the block.
+             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
+             */
+
+            if (listElement) {
+              var listParentNode = listElement.parentNode;
+              // If list is within a text block then split that block
+              if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
+                selection.placeMarkers();
+                // Move listElement out of the block
+                nodeHelpers.insertAfter(listElement, listParentNode);
+                selection.selectMarkers();
+
+                /**
+                 * Chrome 27-34: An empty text node is inserted.
+                 */
+                if (listParentNode.childNodes.length === 2 &&
+                    nodeHelpers.isEmptyTextNode(listParentNode.firstChild)) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
+
+                // Remove the block if it's empty
+                if (listParentNode.childNodes.length === 0) {
+                  nodeHelpers.removeNode(listParentNode);
+                }
+              }
+            }
+
+            /**
+             * Chrome: If a parent node has a CSS `line-height` when we apply the
+             * insertOrderedList or the insertUnorderedList command, Chrome appends
+             * a SPAN to LIs with inline styling replicating that `line-height`.
+             * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
+             *
+             * FIXME: what if the user actually wants to use SPANs? This could
+             * cause conflicts.
+             */
+
+            // TODO: share somehow with similar event patch for P nodes
+            var listItemElements = Array.prototype.slice.call(listElement.childNodes);
+            listItemElements.forEach(function(listItemElement) {
+              // We clone the childNodes into an Array so that it's
+              // not affected by any manipulation below when we
+              // iterate over it
+              var listItemElementChildNodes = Array.prototype.slice.call(listItemElement.childNodes);
+              listItemElementChildNodes.forEach(function(listElementChildNode) {
+                if (listElementChildNode.nodeName === 'SPAN') {
+                  // Unwrap any SPAN that has been inserted
+                  var spanElement = listElementChildNode;
+                  element.unwrap(listItemElement, spanElement);
+                } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
+                  /**
+                   * If the list item contains inline elements such as
+                   * A, B, or I, Chrome will also append an inline style for
+                   * `line-height` on those elements, so we remove it here.
+                   */
+                  listElementChildNode.style.lineHeight = null;
+
+                  // There probably wasn’t a `style` attribute before, so
+                  // remove it if it is now empty.
+                  if (listElementChildNode.getAttribute('style') === '') {
+                    listElementChildNode.removeAttribute('style');
+                  }
+                }
+              });
+            });
+          }
+        }.bind(this));
+      };
+
+      scribe.commandPatches.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
+      scribe.commandPatches.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
+    };
+  };
+
+});
+
+define('plugins/core/patches/commands/outdent',[],function () {
+
+  /**
+   * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
+   */
+
+  
+
+  return function () {
+    return function (scribe) {
+      var outdentCommand = new scribe.api.CommandPatch('outdent');
+
+      outdentCommand.execute = function () {
+        scribe.transactionManager.run(function () {
+          var selection = new scribe.api.Selection();
+          var range = selection.range;
+
+          var blockquoteNode = selection.getContaining(function (node) {
+            return node.nodeName === 'BLOCKQUOTE';
+          });
+
+          if (range.commonAncestorContainer.nodeName === 'BLOCKQUOTE') {
+            /**
+             * Chrome: Applying the outdent command when a whole BLOCKQUOTE is
+             * selected removes the formatting of its contents.
+             * As per: http://jsbin.com/okAYaHa/1/edit?html,js,output
+             */
+
+            // Insert a copy of the selection before the BLOCKQUOTE, and then
+            // restore the selection on the copy.
+            selection.placeMarkers();
+            // We want to copy the selected nodes *with* the markers
+            selection.selectMarkers(true);
+            var selectedNodes = range.cloneContents();
+            blockquoteNode.parentNode.insertBefore(selectedNodes, blockquoteNode);
+            range.deleteContents();
+            selection.selectMarkers();
+
+            // Delete the BLOCKQUOTE if it's empty
+            if (blockquoteNode.textContent === '') {
+              blockquoteNode.parentNode.removeChild(blockquoteNode);
+            }
+          } else {
+            /**
+             * Chrome: If we apply the outdent command on a P, the contents of the
+             * P will be outdented instead of the whole P element.
+             * As per: http://jsbin.com/IfaRaFO/1/edit?html,js,output
+             */
+
+            var pNode = selection.getContaining(function (node) {
+              return node.nodeName === 'P';
+            });
+
+            if (pNode) {
+              /**
+               * If we are not at the start of end of a BLOCKQUOTE, we have to
+               * split the node and insert the P in the middle.
+               */
+
+              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
+
+              if (nextSiblingNodes.length) {
+                var newContainerNode = document.createElement(blockquoteNode.nodeName);
+
+                nextSiblingNodes.forEach(function (siblingNode) {
+                  newContainerNode.appendChild(siblingNode);
+                });
+
+                blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
+              }
+
+              selection.placeMarkers();
+              blockquoteNode.parentNode.insertBefore(pNode, blockquoteNode.nextElementSibling);
+              selection.selectMarkers();
+
+              // If the BLOCKQUOTE is now empty, clean it up.
+              if (blockquoteNode.innerHTML === '') {
+                blockquoteNode.parentNode.removeChild(blockquoteNode);
+              }
+            } else {
+              scribe.api.CommandPatch.prototype.execute.call(this);
+            }
+          }
+        }.bind(this));
+      };
+
+      scribe.commandPatches.outdent = outdentCommand;
+    };
+  };
+
+});
+
+define('plugins/core/patches/commands/create-link',[],function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      var createLinkCommand = new scribe.api.CommandPatch('createLink');
+      scribe.commandPatches.createLink = createLinkCommand;
+
+      createLinkCommand.execute = function (value) {
+        var selection = new scribe.api.Selection();
+
+        /**
+         * Firefox does not create a link when selection is collapsed
+         * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
+         */
+        // using range.collapsed vs selection.isCollapsed - https://code.google.com/p/chromium/issues/detail?id=447523
+        if (selection.range.collapsed) {
+          var aElement = document.createElement('a');
+          aElement.setAttribute('href', value);
+          aElement.textContent = value;
+
+          selection.range.insertNode(aElement);
+
+          // Select the created link
+          var newRange = document.createRange();
+          newRange.setStartBefore(aElement);
+          newRange.setEndAfter(aElement);
+
+          selection.selection.removeAllRanges();
+          selection.selection.addRange(newRange);
+        } else {
+          scribe.api.CommandPatch.prototype.execute.call(this, value);
+        }
+      };
+    };
+  };
+
+});
+
+define('plugins/core/patches/events',[], function () {
+
+  
+
+  return function () {
+    return function (scribe) {
+      /**
+       * Chrome: If a parent node has a CSS `line-height` when we apply the
+       * insert(Un)OrderedList command, altering the paragraph structure by pressing
+       * <backspace> or <delete> (merging/deleting paragraphs) sometimes
+       * results in the application of a line-height attribute to the
+       * contents of the paragraph, either onto existing elements or
+       * by wrapping text in a span.
+       * As per: http://jsbin.com/isIdoKA/4/edit?html,css,js,output
+       *
+       * FIXME: what if the user actually wants to use SPANs? This could
+       * cause conflicts.
+       */
+      // TODO: do we need to run this on every key press, or could we
+      //       detect when the issue may have occurred?
+      // TODO: run in a transaction so as to record the change? how do
+      //       we know in advance whether there will be a change though?
+      // TODO: share somehow with `InsertList` command
+
+      var element = scribe.element;
+
+      if (scribe.allowsBlockElements()) {
+        scribe.el.addEventListener('keyup', function (event) {
+          if (event.keyCode === 8 || event.keyCode === 46) { // backspace or delete
+
+            var selection = new scribe.api.Selection();
+
+            // Note: the range is always collapsed on keyup here
+            var containerPElement = selection.getContaining(function (node) {
+              return node.nodeName === 'P';
+            });
+            if (containerPElement) {
+              /**
+               * The 'input' event listener has already triggered
+               * and recorded the faulty content as an item in the
+               * UndoManager. We interfere with the undoManager
+               * by force merging that transaction with the next
+               * transaction which produce a clean one instead.
+               *
+               * FIXME: ideally we would not trigger a
+               * 'content-changed' event with faulty HTML at all, but
+               * it's too late to cancel it at this stage (and it's
+               * not happened yet at keydown time).
+               */
+
+              scribe.transactionManager.run(function () {
+                // Store the caret position
+                selection.placeMarkers();
+
+                // We clone the childNodes into an Array so that it's
+                // not affected by any manipulation below when we
+                // iterate over it
+                var pElementChildNodes = Array.prototype.slice.call(containerPElement.childNodes);
+                pElementChildNodes.forEach(function(pElementChildNode) {
+                  if (pElementChildNode.nodeName === 'SPAN') {
+                    // Unwrap any SPAN that has been inserted
+                    var spanElement = pElementChildNode;
+                    element.unwrap(containerPElement, spanElement);
+                  } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
+                    /**
+                     * If the paragraph contains inline elements such as
+                     * A, B, or I, Chrome will also append an inline style for
+                     * `line-height` on those elements, so we remove it here.
+                     */
+                    pElementChildNode.style.lineHeight = null;
+
+                    // There probably wasn’t a `style` attribute before, so
+                    // remove it if it is now empty.
+                    if (pElementChildNode.getAttribute('style') === '') {
+                      pElementChildNode.removeAttribute('style');
+                    }
+                  }
+                });
+
+                selection.selectMarkers();
+              }, true);
+            }
+          }
+        });
+      }
+    };
+  };
+});
+
+define('plugins/core/patches',[
+  './patches/commands/bold',
+  './patches/commands/indent',
+  './patches/commands/insert-html',
+  './patches/commands/insert-list',
+  './patches/commands/outdent',
+  './patches/commands/create-link',
+  './patches/events'
+], function (
+  boldCommand,
+  indentCommand,
+  insertHTMLCommand,
+  insertListCommands,
+  outdentCommand,
+  createLinkCommand,
+  events
+) {
+
+  /**
+   * Command patches browser inconsistencies. They do not perform core features
+   * of the editor, such as ensuring P elements are created when
+   * applying/unapplying commands — that is the job of the core commands.
+   */
+
+  
+
+  return {
+    commands: {
+      bold: boldCommand,
+      indent: indentCommand,
+      insertHTML: insertHTMLCommand,
+      insertList: insertListCommands,
+      outdent: outdentCommand,
+      createLink: createLinkCommand,
+    },
+    events: events
+  };
+
+});
+
+define('api/command-patch',[],function () {
+
+  
+
+  return function (scribe) {
+    function CommandPatch(commandName) {
+      this.commandName = commandName;
+    }
+
+    CommandPatch.prototype.execute = function (value) {
+      scribe.transactionManager.run(function () {
+        document.execCommand(this.commandName, false, value || null);
+      }.bind(this));
+    };
+
+    CommandPatch.prototype.queryState = function () {
+      return document.queryCommandState(this.commandName);
+    };
+
+    CommandPatch.prototype.queryEnabled = function () {
+      return document.queryCommandEnabled(this.commandName);
+    };
+
+    return CommandPatch;
+  };
+
+});
+
+define('api/command',[],function () {
+
+  
+
+  return function (scribe) {
+    function Command(commandName) {
+      this.commandName = commandName;
+      this.patch = scribe.commandPatches[this.commandName];
+    }
+
+    Command.prototype.execute = function (value) {
+      if (this.patch) {
+        this.patch.execute(value);
+      } else {
+        scribe.transactionManager.run(function () {
+          document.execCommand(this.commandName, false, value || null);
+        }.bind(this));
+      }
+    };
+
+    Command.prototype.queryState = function () {
+      if (this.patch) {
+        return this.patch.queryState();
+      } else {
+        return document.queryCommandState(this.commandName);
+      }
+    };
+
+    Command.prototype.queryEnabled = function () {
+      if (this.patch) {
+        return this.patch.queryEnabled();
+      } else {
+        return document.queryCommandEnabled(this.commandName);
+      }
+    };
+
+    return Command;
+  };
+
+});
+
+define('api/node',[],function () {
+
+  
+
+  function Node(node) {
+    this.node = node;
+  }
+
+  // TODO: should the return value be wrapped in one of our APIs?
+  // Node or Selection?
+  // TODO: write tests. unit or integration?
+  Node.prototype.getAncestor = function (rootElement, nodeFilter) {
+    var isTopContainerElement = function (element) {
+      return rootElement === element;
+    };
+    // TODO: should this happen here?
+    if (isTopContainerElement(this.node)) {
+      return;
+    }
+
+    var currentNode = this.node.parentNode;
+
+    // If it's a `contenteditable` then it's likely going to be the Scribe
+    // instance, so stop traversing there.
+    while (currentNode && ! isTopContainerElement(currentNode)) {
+      if (nodeFilter(currentNode)) {
+        return currentNode;
+      }
+      currentNode = currentNode.parentNode;
+    }
+  };
+
+  Node.prototype.nextAll = function () {
+    var all = [];
+    var el = this.node.nextSibling;
+    while (el) {
+      all.push(el);
+      el = el.nextSibling;
+    }
+    return all;
+  };
+
+  return Node;
+
+});
+
+define('api/selection',[],function () {
+
+  
+
+  return function (scribe) {
+    var rootDoc = scribe.el.ownerDocument;
+    var nodeHelper = scribe.node;
+
+    // find the parent document or document fragment
+    if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
+      var currentElement = scribe.el.parentNode;
+      while(currentElement && nodeHelper.isFragment(currentElement)) {
+        currentElement = currentElement.parentNode;
+      }
+
+      // if we found a document fragment and it has a getSelection method, set it to the root doc
+      if (currentElement && currentElement.getSelection) {
+        rootDoc = currentElement;
+      }
+    }
+
+    function createMarker() {
+      var node = document.createElement('em');
+      node.style.display = 'none';
+      node.classList.add('scribe-marker');
+      return node;
+    }
+
+    function insertMarker(range, marker) {
+      range.insertNode(marker);
+
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node after
+       * the inserted element. We just remove it. This in turn creates several
+       * bugs when perfoming commands on selections that contain an empty text
+       * node (`removeFormat`, `unlink`).
+       * As per: http://jsbin.com/hajim/5/edit?js,console,output
+       */
+      if (marker.nextSibling && nodeHelper.isEmptyTextNode(marker.nextSibling)) {
+        nodeHelper.removeNode(marker.nextSibling);
+      }
+
+      /**
+       * Chrome and Firefox: `Range.insertNode` inserts a bogus text node before
+       * the inserted element when the child element is at the start of a block
+       * element. We just remove it.
+       * FIXME: Document why we need to remove this
+       * As per: http://jsbin.com/sifez/1/edit?js,console,output
+       */
+      if (marker.previousSibling && nodeHelper.isEmptyTextNode(marker.previousSibling)) {
+        nodeHelper.removeNode(marker.previousSibling);
+      }
+    }
+
+    /**
+     * Wrapper for object holding currently selected text.
+     */
+    function Selection() {
+      this.selection = rootDoc.getSelection();
+      if (this.selection.rangeCount && this.selection.anchorNode) {
+        var startNode   = this.selection.anchorNode;
+        var startOffset = this.selection.anchorOffset;
+        var endNode     = this.selection.focusNode;
+        var endOffset   = this.selection.focusOffset;
+
+        // if the range starts and ends on the same node, then we must swap the
+        // offsets if ever focusOffset is smaller than anchorOffset
+        if (startNode === endNode && endOffset < startOffset) {
+          var tmp = startOffset;
+          startOffset = endOffset;
+          endOffset = tmp;
+        }
+        // if the range ends *before* it starts, then we must reverse the range
+        else if (nodeHelper.isBefore(endNode, startNode)) {
+          var tmpNode = startNode,
+            tmpOffset = startOffset;
+          startNode = endNode;
+          startOffset = endOffset;
+          endNode = tmpNode;
+          endOffset = tmpOffset;
+        }
+
+        // create the range to avoid chrome bug from getRangeAt / window.getSelection()
+        // https://code.google.com/p/chromium/issues/detail?id=380690
+        this.range = document.createRange();
+        this.range.setStart(startNode, startOffset);
+        this.range.setEnd(endNode, endOffset);
+      }
+    }
+
+    /**
+     * @returns Closest ancestor Node satisfying nodeFilter. Undefined if none exist before reaching Scribe container.
+     */
+    Selection.prototype.getContaining = function (nodeFilter) {
+      var range = this.range;
+      if (!range) { return; }
+
+      var node = new scribe.api.Node(this.range.commonAncestorContainer);
+      return ! (node.node && scribe.el === node.node) && nodeFilter(node.node) ?
+        node.node :
+        node.getAncestor(scribe.el, nodeFilter);
+    };
+
+    Selection.prototype.placeMarkers = function () {
+      var range = this.range;
+      if (!range) {
+        return;
+      }
+
+      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
+      //one way to do this is to check if it's visible (is this the best way?).
+      if (!document.contains(scribe.el)) {
+        return;
+      }
+
+      //we want to ensure that the current selection is within the current scribe node
+      //if this isn't true scribe will place markers within the selections parent
+      //we want to ensure that scribe ONLY places markers within it's own element
+      if (scribe.el.contains(range.startContainer) && scribe.el.contains(range.endContainer)) {
+        // insert start marker
+        insertMarker(range.cloneRange(), createMarker());
+
+        if (! range.collapsed ) {
+          // End marker
+          var rangeEnd = range.cloneRange();
+          rangeEnd.collapse(false);
+          insertMarker(rangeEnd, createMarker());
+        }
+
+        this.selection.removeAllRanges();
+        this.selection.addRange(range);
+      }
+    };
+
+    Selection.prototype.getMarkers = function () {
+      return scribe.el.querySelectorAll('em.scribe-marker');
+    };
+
+    Selection.prototype.removeMarkers = function () {
+      Array.prototype.forEach.call(this.getMarkers(), function (marker) {
+        nodeHelper.removeNode(marker);
+      });
+    };
+
+    // This will select markers if there are any. You will need to focus the
+    // Scribe instance’s element if it is not already for the selection to
+    // become active.
+    Selection.prototype.selectMarkers = function (keepMarkers) {
+      var markers = this.getMarkers();
+      if (!markers.length) {
+        return;
+      }
+
+      var newRange = document.createRange();
+
+      newRange.setStartBefore(markers[0]);
+      // We always reset the end marker because otherwise it will just
+      // use the current range’s end marker.
+      newRange.setEndAfter(markers.length >= 2 ? markers[1] : markers[0]);
+
+      if (! keepMarkers) {
+        this.removeMarkers();
+      }
+
+      this.selection.removeAllRanges();
+      this.selection.addRange(newRange);
+    };
+
+    Selection.prototype.isCaretOnNewLine = function () {
+      var containerPElement = this.getContaining(function (node) {
+        return node.nodeName === 'P';
+      });
+      return !! containerPElement && nodeHelper.isEmptyInlineElement(containerPElement);
+    };
+
+    return Selection;
+  };
+
+});
+
+define('api/simple-command',[],function () {
+
+  
+
+  return function (api, scribe) {
+    function SimpleCommand(commandName, nodeName) {
+      scribe.api.Command.call(this, commandName);
+
+      this._nodeName = nodeName;
+    }
+
+    SimpleCommand.prototype = Object.create(api.Command.prototype);
+    SimpleCommand.prototype.constructor = SimpleCommand;
+
+    SimpleCommand.prototype.queryState = function () {
+      var selection = new scribe.api.Selection();
+      return scribe.api.Command.prototype.queryState.call(this) && !! selection.getContaining(function (node) {
+        return node.nodeName === this._nodeName;
+      }.bind(this));
+    };
+
+    return SimpleCommand;
+  };
+
+});
+
+define('api',[
+  './api/command-patch',
+  './api/command',
+  './api/node',
+  './api/selection',
+  './api/simple-command'
+], function (
+  buildCommandPatch,
+  buildCommand,
+  Node,
+  buildSelection,
+  buildSimpleCommand
+) {
+
+  
+
+  return function Api(scribe) {
+    this.CommandPatch = buildCommandPatch(scribe);
+    this.Command = buildCommand(scribe);
+    this.Node = Node;
+    this.Selection = buildSelection(scribe);
+    this.SimpleCommand = buildSimpleCommand(this, scribe);
+  };
+});
+
+define('lodash-amd/modern/internal/baseCopy',[], function() {
+
+  /**
+   * Copies the properties of `source` to `object`.
+   *
+   * @private
+   * @param {Object} source The object to copy properties from.
+   * @param {Object} [object={}] The object to copy properties to.
+   * @param {Array} props The property names to copy.
+   * @returns {Object} Returns `object`.
+   */
+  function baseCopy(source, object, props) {
+    if (!props) {
+      props = object;
+      object = {};
+    }
+    var index = -1,
+        length = props.length;
+
+    while (++index < length) {
+      var key = props[index];
+      object[key] = source[key];
+    }
+    return object;
+  }
+
+  return baseCopy;
+});
+
+define('lodash-amd/modern/internal/baseAssign',['./baseCopy', '../object/keys'], function(baseCopy, keys) {
+
+  /**
+   * The base implementation of `_.assign` without support for argument juggling,
+   * multiple sources, and `this` binding `customizer` functions.
+   *
+   * @private
+   * @param {Object} object The destination object.
+   * @param {Object} source The source object.
+   * @param {Function} [customizer] The function to customize assigning values.
+   * @returns {Object} Returns the destination object.
+   */
+  function baseAssign(object, source, customizer) {
+    var props = keys(source);
+    if (!customizer) {
+      return baseCopy(source, object, props);
+    }
+    var index = -1,
+        length = props.length;
+
+    while (++index < length) {
+      var key = props[index],
+          value = object[key],
+          result = customizer(value, source[key], key, object, source);
+
+      if ((result === result ? (result !== value) : (value === value)) ||
+          (typeof value == 'undefined' && !(key in object))) {
+        object[key] = result;
+      }
+    }
+    return object;
+  }
+
+  return baseAssign;
+});
+
+define('lodash-amd/modern/utility/identity',[], function() {
+
+  /**
+   * This method returns the first argument provided to it.
+   *
+   * @static
+   * @memberOf _
+   * @category Utility
+   * @param {*} value Any value.
+   * @returns {*} Returns `value`.
+   * @example
+   *
+   * var object = { 'user': 'fred' };
+   *
+   * _.identity(object) === object;
+   * // => true
+   */
+  function identity(value) {
+    return value;
+  }
+
+  return identity;
+});
+
+define('lodash-amd/modern/internal/bindCallback',['../utility/identity'], function(identity) {
+
+  /**
+   * A specialized version of `baseCallback` which only supports `this` binding
+   * and specifying the number of arguments to provide to `func`.
+   *
+   * @private
+   * @param {Function} func The function to bind.
+   * @param {*} thisArg The `this` binding of `func`.
+   * @param {number} [argCount] The number of arguments to provide to `func`.
+   * @returns {Function} Returns the callback.
+   */
+  function bindCallback(func, thisArg, argCount) {
+    if (typeof func != 'function') {
+      return identity;
+    }
+    if (typeof thisArg == 'undefined') {
+      return func;
+    }
+    switch (argCount) {
+      case 1: return function(value) {
+        return func.call(thisArg, value);
+      };
+      case 3: return function(value, index, collection) {
+        return func.call(thisArg, value, index, collection);
+      };
+      case 4: return function(accumulator, value, index, collection) {
+        return func.call(thisArg, accumulator, value, index, collection);
+      };
+      case 5: return function(value, other, key, object, source) {
+        return func.call(thisArg, value, other, key, object, source);
+      };
+    }
+    return function() {
+      return func.apply(thisArg, arguments);
+    };
+  }
+
+  return bindCallback;
+});
+
+define('lodash-amd/modern/internal/isIterateeCall',['./isIndex', './isLength', '../lang/isObject'], function(isIndex, isLength, isObject) {
+
+  /**
+   * Checks if the provided arguments are from an iteratee call.
+   *
+   * @private
+   * @param {*} value The potential iteratee value argument.
+   * @param {*} index The potential iteratee index or key argument.
+   * @param {*} object The potential iteratee object argument.
+   * @returns {boolean} Returns `true` if the arguments are from an iteratee call, else `false`.
+   */
+  function isIterateeCall(value, index, object) {
+    if (!isObject(object)) {
+      return false;
+    }
+    var type = typeof index;
+    if (type == 'number') {
+      var length = object.length,
+          prereq = isLength(length) && isIndex(index, length);
+    } else {
+      prereq = type == 'string' && index in object;
+    }
+    if (prereq) {
+      var other = object[index];
+      return value === value ? (value === other) : (other !== other);
+    }
+    return false;
+  }
+
+  return isIterateeCall;
+});
+
+define('lodash-amd/modern/internal/createAssigner',['./bindCallback', './isIterateeCall'], function(bindCallback, isIterateeCall) {
+
+  /**
+   * Creates a function that assigns properties of source object(s) to a given
+   * destination object.
+   *
+   * @private
+   * @param {Function} assigner The function to assign values.
+   * @returns {Function} Returns the new assigner function.
+   */
+  function createAssigner(assigner) {
+    return function() {
+      var args = arguments,
+          length = args.length,
+          object = args[0];
+
+      if (length < 2 || object == null) {
+        return object;
+      }
+      var customizer = args[length - 2],
+          thisArg = args[length - 1],
+          guard = args[3];
+
+      if (length > 3 && typeof customizer == 'function') {
+        customizer = bindCallback(customizer, thisArg, 5);
+        length -= 2;
+      } else {
+        customizer = (length > 2 && typeof thisArg == 'function') ? thisArg : null;
+        length -= (customizer ? 1 : 0);
+      }
+      if (guard && isIterateeCall(args[1], args[2], guard)) {
+        customizer = length == 3 ? null : customizer;
+        length = 2;
+      }
+      var index = 0;
+      while (++index < length) {
+        var source = args[index];
+        if (source) {
+          assigner(object, source, customizer);
+        }
+      }
+      return object;
+    };
+  }
+
+  return createAssigner;
+});
+
+define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal/createAssigner'], function(baseAssign, createAssigner) {
+
+  /**
+   * Assigns own enumerable properties of source object(s) to the destination
+   * object. Subsequent sources overwrite property assignments of previous sources.
+   * If `customizer` is provided it is invoked to produce the assigned values.
+   * The `customizer` is bound to `thisArg` and invoked with five arguments;
+   * (objectValue, sourceValue, key, object, source).
+   *
+   * @static
+   * @memberOf _
+   * @alias extend
+   * @category Object
+   * @param {Object} object The destination object.
+   * @param {...Object} [sources] The source objects.
+   * @param {Function} [customizer] The function to customize assigning values.
+   * @param {*} [thisArg] The `this` binding of `customizer`.
+   * @returns {Object} Returns `object`.
+   * @example
+   *
+   * _.assign({ 'user': 'barney' }, { 'age': 40 }, { 'user': 'fred' });
+   * // => { 'user': 'fred', 'age': 40 }
+   *
+   * // using a customizer callback
+   * var defaults = _.partialRight(_.assign, function(value, other) {
+   *   return typeof value == 'undefined' ? other : value;
+   * });
+   *
+   * defaults({ 'user': 'barney' }, { 'age': 36 }, { 'user': 'fred' });
+   * // => { 'user': 'barney', 'age': 36 }
+   */
+  var assign = createAssigner(baseAssign);
+
+  return assign;
+});
+
+define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
+
+  
+
+  return function (scribe) {
+    function TransactionManager() {
+      this.history = [];
+    }
+
+    assign(TransactionManager.prototype, {
+      start: function () {
+        this.history.push(1);
+      },
+
+      end: function () {
+        this.history.pop();
+
+        if (this.history.length === 0) {
+          scribe.pushHistory();
+          scribe.trigger('content-changed');
+        }
+      },
+
+      run: function (transaction, forceMerge) {
+        this.start();
+        // If there is an error, don't prevent the transaction from ending.
+        try {
+          if (transaction) {
+            transaction();
+          }
+        } finally {
+          scribe._forceMerge = forceMerge === true;
+          this.end();
+          scribe._forceMerge = false;
+        }
+      }
+    });
+
+    return TransactionManager;
+  };
+});
+
+define('undo-manager',[],function () {
+  
+
+  function UndoManager(limit, undoScopeHost) {
+    this._stack = [];
+    this._limit = limit;
+    this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
+    this._ush = undoScopeHost;
+
+    this.position = 0;
+    this.length = 0;
+  }
+
+  UndoManager.prototype.transact = function (transaction, merge) {
+    if (arguments.length < 2) {
+      throw new TypeError('Not enough arguments to UndoManager.transact.');
+    }
+
+    transaction.execute();
+
+    this._stack.splice(0, this.position);
+    if (merge && this.length) {
+      this._stack[0].push(transaction);
+    }
+    else {
+      this._stack.unshift([transaction]);
+    }
+    this.position = 0;
+
+    if (this._limit && this._stack.length > this._limit) {
+      this.length = this._stack.length = this._limit;
+    }
+    else {
+      this.length = this._stack.length;
+    }
+
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
+    }
+  };
+
+  UndoManager.prototype.undo = function () {
+    if (this.position < this.length) {
+      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
+        this._stack[this.position][i].undo();
+      }
+      this.position++;
+
+      if (this._fireEvent) {
+        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
+      }
+    }
+  };
+
+  UndoManager.prototype.redo = function () {
+    if (this.position > 0) {
+      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
+        this._stack[this.position - 1][i].redo();
+      }
+      this.position--;
+
+      if (this._fireEvent) {
+        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
+      }
+    }
+  };
+
+  UndoManager.prototype.item = function (index) {
+    if (index >= 0 && index < this.length) {
+      return this._stack[index].slice();
+    }
+    return null;
+  };
+
+  UndoManager.prototype.clearUndo = function () {
+    this._stack.length = this.length = this.position;
+  };
+
+  UndoManager.prototype.clearRedo = function () {
+    this._stack.splice(0, this.position);
+    this.position = 0;
+    this.length = this._stack.length;
+  };
+
+  return UndoManager;
+});
+
+
+define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(baseIndexOf) {
+
+  /** Used for native method references. */
+  var arrayProto = Array.prototype;
+
+  /** Native method references. */
+  var splice = arrayProto.splice;
+
+  /**
+   * Removes all provided values from `array` using `SameValueZero` for equality
+   * comparisons.
+   *
+   * **Notes:**
+   *  - Unlike `_.without`, this method mutates `array`.
+   *  - `SameValueZero` comparisons are like strict equality comparisons, e.g. `===`,
+   *    except that `NaN` matches `NaN`. See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
+   *    for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Array
+   * @param {Array} array The array to modify.
+   * @param {...*} [values] The values to remove.
+   * @returns {Array} Returns `array`.
+   * @example
+   *
+   * var array = [1, 2, 3, 1, 2, 3];
+   *
+   * _.pull(array, 2, 3);
+   * console.log(array);
+   * // => [1, 1]
+   */
+  function pull() {
+    var args = arguments,
+        array = args[0];
+
+    if (!(array && array.length)) {
+      return array;
+    }
+    var index = 0,
+        indexOf = baseIndexOf,
+        length = args.length;
+
+    while (++index < length) {
+      var fromIndex = 0,
+          value = args[index];
+
+      while ((fromIndex = indexOf(array, value, fromIndex)) > -1) {
+        splice.call(array, fromIndex, 1);
+      }
+    }
+    return array;
+  }
+
+  return pull;
+});
+
 define('event-emitter',['lodash-amd/modern/array/pull',
   'immutable/dist/immutable'], function (pull, Immutable) {
 
@@ -8447,6 +8185,30 @@ define('event-emitter',['lodash-amd/modern/array/pull',
 
   return EventEmitter;
 
+});
+
+define('lodash-amd/modern/internal/arrayCopy',[], function() {
+
+  /**
+   * Copies the values of `source` to `array`.
+   *
+   * @private
+   * @param {Array} source The array to copy values from.
+   * @param {Array} [array=[]] The array to copy values to.
+   * @returns {Array} Returns `array`.
+   */
+  function arrayCopy(source, array) {
+    var index = -1,
+        length = source.length;
+
+    array || (array = Array(length));
+    while (++index < length) {
+      array[index] = source[index];
+    }
+    return array;
+  }
+
+  return arrayCopy;
 });
 
 define('lodash-amd/modern/internal/assignDefaults',[], function() {
@@ -8658,9 +8420,6 @@ define('scribe',[
 
     this.api = new Api(this);
 
-    this.node = nodeHelpers;
-    this.element = elementHelpers;
-
     this.Immutable = Immutable;
 
     var TransactionManager = buildTransactionManager(this);
@@ -8741,6 +8500,8 @@ define('scribe',[
   }
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
+  Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element = elementHelpers;
 
   // For plugins
   // TODO: tap combinator?
@@ -8784,7 +8545,7 @@ define('scribe',[
 
     if (scribe.options.undo.enabled) {
       // Get scribe previous content, and strip markers.
-      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em class="scribe-marker">[^<]*?<\/em>/g, '');
+      var lastContentNoMarkers = scribe._lastItem.content.replace(/<em [^>]*class="scribe-marker"[^>]*>[^<]*?<\/em>/g, '');
 
       // We only want to push the history if the content actually changed.
       if (scribe.getHTML() !== lastContentNoMarkers) {
