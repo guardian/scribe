@@ -34,6 +34,14 @@ define(function () {
     return node.parentNode.removeChild(node);
   }
 
+  function wrap(nodes, parentNode) {
+    nodes[0].parentNode.insertBefore(parentNode, nodes[0]);
+    nodes.forEach(function (node) {
+      parentNode.appendChild(node);
+    });
+    return parentNode;
+  }
+
   return {
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
@@ -41,7 +49,8 @@ define(function () {
     isFragment: isFragment,
     isBefore: isBefore,
     insertAfter: insertAfter,
-    removeNode: removeNode
+    removeNode: removeNode,
+    wrap: wrap
   };
 
 });
