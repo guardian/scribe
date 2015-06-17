@@ -58,21 +58,33 @@ define(function () {
     function Selection() {
       this.selection = rootDoc.getSelection();
       if (this.selection.rangeCount && this.selection.anchorNode) {
+        var startNode   = this.selection.anchorNode;
+        var startOffset = this.selection.anchorOffset;
+        var endNode     = this.selection.focusNode;
+        var endOffset   = this.selection.focusOffset;
+
+        // if the range starts and ends on the same node, then we must swap the
+        // offsets if ever focusOffset is smaller than anchorOffset
+        if (startNode === endNode && endOffset < startOffset) {
+          var tmp = startOffset;
+          startOffset = endOffset;
+          endOffset = tmp;
+        }
+        // if the range ends *before* it starts, then we must reverse the range
+        else if (nodeHelper.isBefore(endNode, startNode)) {
+          var tmpNode = startNode,
+            tmpOffset = startOffset;
+          startNode = endNode;
+          startOffset = endOffset;
+          endNode = tmpNode;
+          endOffset = tmpOffset;
+        }
+
         // create the range to avoid chrome bug from getRangeAt / window.getSelection()
         // https://code.google.com/p/chromium/issues/detail?id=380690
         this.range = document.createRange();
-
-        // Check if anchorNode is before focusNode, reverse the range if not
-        if (this.selection.anchorNode === this.selection.focusNode) {
-          this.range.setStart(this.selection.anchorNode, Math.min(this.selection.anchorOffset, this.selection.focusOffset));
-          this.range.setEnd(this.selection.anchorNode, Math.max(this.selection.anchorOffset, this.selection.focusOffset));
-        } else if (nodeHelper.isBefore(this.selection.anchorNode, this.selection.focusNode)) {
-          this.range.setStart(this.selection.anchorNode, this.selection.anchorOffset);
-          this.range.setEnd(this.selection.focusNode, this.selection.focusOffset);
-        } else {
-          this.range.setStart(this.selection.focusNode, this.selection.focusOffset);
-          this.range.setEnd(this.selection.anchorNode, this.selection.anchorOffset);
-        }
+        this.range.setStart(startNode, startOffset);
+        this.range.setEnd(endNode, endOffset);
       }
     }
 
