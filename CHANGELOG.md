@@ -1,3 +1,9 @@
+# 1.4.1
+
+Small optimisation to avoid a relayout as a result of placing Scribe markers.
+
+Thanks for improvement [Brad Vogel](https://github.com/bradvogel)
+
 # 1.4.0
 
 Changes the cleanup for Chrome inline style tags that happens in the patch for the `insertHTML` command. Previously span tags were aggressively stripped whereas now they are less aggressively removed to limit the fix just to the type of spans that Chrome inserts.
