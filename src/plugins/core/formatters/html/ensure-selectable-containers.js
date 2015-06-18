@@ -15,7 +15,7 @@ define([
   'use strict';
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
-  var html5VoidElements = Immutable.fromJS(['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR']);
+  var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
   function parentHasNoTextContent(element, node) {
     if (element.isCaretPositionNode(node)) {
