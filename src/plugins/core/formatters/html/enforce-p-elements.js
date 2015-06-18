@@ -1,5 +1,5 @@
 define([
-  'immutable/dist/immutable'
+  'immutable'
 ], function (Immutable) {
 
   /**
