@@ -1,9 +1,9 @@
 define([
     '../../../../element',
-    'lodash-amd/modern/collection/contains'
+    'immutable'
   ], function (
     element,
-    contains
+    Immutable
   ) {
 
   /**
@@ -15,7 +15,7 @@ define([
   'use strict';
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
-  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+  var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
   function parentHasNoTextContent(element, node) {
     if (element.isCaretPositionNode(node)) {
@@ -53,7 +53,7 @@ define([
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName)) {
+          !html5VoidElements.includes(node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(element, node);

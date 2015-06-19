@@ -1,14 +1,14 @@
-define(['lodash-amd/modern/collection/contains'], function (contains) {
+define(['immutable'], function (Immutable) {
 
   'use strict';
 
-  var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
+  var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
                            'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
                            'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
                            'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO'];
+                           'TH', 'TFOOT', 'UL', 'VIDEO');
   function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
+    return blockElementNames.includes(node.nodeName);
   }
 
   function isSelectionMarkerNode(node) {
