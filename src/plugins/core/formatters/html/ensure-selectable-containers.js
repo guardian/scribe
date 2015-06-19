@@ -1,6 +1,6 @@
 define([
     '../../../../element',
-    'immutable/dist/immutable'
+    'immutable'
   ], function (
     element,
     Immutable

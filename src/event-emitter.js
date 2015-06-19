@@ -1,4 +1,4 @@
-define(['immutable/dist/immutable'], function (Immutable) {
+define(['immutable'], function (Immutable) {
 
   'use strict';
 
