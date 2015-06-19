@@ -17,7 +17,7 @@ module.exports = function (pipelines) {
       preserveLicenseComments: false,
       paths: {
           'lodash-amd': '../bower_components/lodash-amd',
-          'immutable': '../bower_components/immutable'
+          'immutable': '../bower_components/immutable/dist/immutable'
       }
   });
 

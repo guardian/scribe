@@ -10,7 +10,7 @@ define([
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable',
+  'immutable',
   './config'
 ], function (
   plugins,
