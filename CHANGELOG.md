@@ -1,3 +1,11 @@
+# 1.4.4
+
+Replaces some of the use of Lodash contains with Immutable data structures and `includes`.
+
+# 1.4.3
+
+Changes the require alias so that the Immutable import path is simplified.
+
 # 1.4.2
 
 A number of performance improvements have been contributed by [Regis Kuckaertz](https://github.com/regiskuckaertz). Primarily these include avoiding TreeWalker where it isn't needed and moving a number of function definitions to the parse phase. See the individual PRs for details.
