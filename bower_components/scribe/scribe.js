@@ -25,7 +25,7 @@ define('plugins/core/set-root-p-element',[],function () {
 });
 
 /**
- *  Copyright (c) 2014, Facebook, Inc.
+ *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -34,7 +34,7 @@ define('plugins/core/set-root-p-element',[],function () {
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define('immutable/dist/immutable',factory) :
+  typeof define === 'function' && define.amd ? define('immutable',factory) :
   global.Immutable = factory()
 }(this, function () { var SLICE$0 = Array.prototype.slice;
 
@@ -196,22 +196,22 @@ define('plugins/core/set-root-p-element',[],function () {
   var ITERATOR_SYMBOL = REAL_ITERATOR_SYMBOL || FAUX_ITERATOR_SYMBOL;
 
 
-  function Iterator(next) {
+  function src_Iterator__Iterator(next) {
       this.next = next;
     }
 
-    Iterator.prototype.toString = function() {
+    src_Iterator__Iterator.prototype.toString = function() {
       return '[Iterator]';
     };
 
 
-  Iterator.KEYS = ITERATE_KEYS;
-  Iterator.VALUES = ITERATE_VALUES;
-  Iterator.ENTRIES = ITERATE_ENTRIES;
+  src_Iterator__Iterator.KEYS = ITERATE_KEYS;
+  src_Iterator__Iterator.VALUES = ITERATE_VALUES;
+  src_Iterator__Iterator.ENTRIES = ITERATE_ENTRIES;
 
-  Iterator.prototype.inspect =
-  Iterator.prototype.toSource = function () { return this.toString(); }
-  Iterator.prototype[ITERATOR_SYMBOL] = function () {
+  src_Iterator__Iterator.prototype.inspect =
+  src_Iterator__Iterator.prototype.toSource = function () { return this.toString(); }
+  src_Iterator__Iterator.prototype[ITERATOR_SYMBOL] = function () {
     return this;
   };
 
@@ -304,15 +304,7 @@ define('plugins/core/set-root-p-element',[],function () {
           keyedSeqFromValue(value);
     }
 
-    KeyedSeq.of = function(/*...values*/) {
-      return KeyedSeq(arguments);
-    };
-
     KeyedSeq.prototype.toKeyedSeq = function() {
-      return this;
-    };
-
-    KeyedSeq.prototype.toSeq = function() {
       return this;
     };
 
@@ -404,7 +396,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var array = this._array;
       var maxIndex = array.length - 1;
       var ii = 0;
-      return new Iterator(function() 
+      return new src_Iterator__Iterator(function() 
         {return ii > maxIndex ?
           iteratorDone() :
           iteratorValue(type, ii, array[reverse ? maxIndex - ii++ : ii++])}
@@ -450,7 +442,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var keys = this._keys;
       var maxIndex = keys.length - 1;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var key = keys[reverse ? maxIndex - ii : ii];
         return ii++ > maxIndex ?
           iteratorDone() :
@@ -492,10 +484,10 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterable = this._iterable;
       var iterator = getIterator(iterable);
       if (!isIterator(iterator)) {
-        return new Iterator(iteratorDone);
+        return new src_Iterator__Iterator(iteratorDone);
       }
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step : iteratorValue(type, iterations++, step.value);
       });
@@ -539,7 +531,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = this._iterator;
       var cache = this._iteratorCache;
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (iterations >= cache.length) {
           var step = iterator.next();
           if (step.done) {
@@ -632,7 +624,7 @@ define('plugins/core/set-root-p-element',[],function () {
     if (cache) {
       var maxIndex = cache.length - 1;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var entry = cache[reverse ? maxIndex - ii : ii];
         return ii++ > maxIndex ?
           iteratorDone() :
@@ -724,11 +716,19 @@ define('plugins/core/set-root-p-element',[],function () {
         typeof valueB.valueOf === 'function') {
       valueA = valueA.valueOf();
       valueB = valueB.valueOf();
+      if (valueA === valueB || (valueA !== valueA && valueB !== valueB)) {
+        return true;
+      }
+      if (!valueA || !valueB) {
+        return false;
+      }
     }
-    return typeof valueA.equals === 'function' &&
-      typeof valueB.equals === 'function' ?
-        valueA.equals(valueB) :
-        valueA === valueB || (valueA !== valueA && valueB !== valueB);
+    if (typeof valueA.equals === 'function' &&
+        typeof valueB.equals === 'function' &&
+        valueA.equals(valueB)) {
+      return true;
+    }
+    return false;
   }
 
   function fromJS(json, converter) {
@@ -758,13 +758,13 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function isPlainObj(value) {
-    return value && value.constructor === Object;
+    return value && (value.constructor === Object || value.constructor === undefined);
   }
 
-  var Math__imul =
+  var src_Math__imul =
     typeof Math.imul === 'function' && Math.imul(0xffffffff, 2) === -2 ?
     Math.imul :
-    function Math__imul(a, b) {
+    function imul(a, b) {
       a = a | 0; // int
       b = b | 0; // int
       var c = a & 0xffff;
@@ -845,22 +845,29 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function hashJSObj(obj) {
-    var hash = weakMap && weakMap.get(obj);
-    if (hash) return hash;
+    var hash;
+    if (usingWeakMap) {
+      hash = weakMap.get(obj);
+      if (hash !== undefined) {
+        return hash;
+      }
+    }
 
     hash = obj[UID_HASH_KEY];
-    if (hash) return hash;
+    if (hash !== undefined) {
+      return hash;
+    }
 
     if (!canDefineProperty) {
       hash = obj.propertyIsEnumerable && obj.propertyIsEnumerable[UID_HASH_KEY];
-      if (hash) return hash;
+      if (hash !== undefined) {
+        return hash;
+      }
 
       hash = getIENodeHash(obj);
-      if (hash) return hash;
-    }
-
-    if (Object.isExtensible && !Object.isExtensible(obj)) {
-      throw new Error('Non-extensible objects are not allowed as keys.');
+      if (hash !== undefined) {
+        return hash;
+      }
     }
 
     hash = ++objHashUID;
@@ -868,8 +875,10 @@ define('plugins/core/set-root-p-element',[],function () {
       objHashUID = 0;
     }
 
-    if (weakMap) {
+    if (usingWeakMap) {
       weakMap.set(obj, hash);
+    } else if (isExtensible !== undefined && isExtensible(obj) === false) {
+      throw new Error('Non-extensible objects are not allowed as keys.');
     } else if (canDefineProperty) {
       Object.defineProperty(obj, UID_HASH_KEY, {
         'enumerable': false,
@@ -877,7 +886,7 @@ define('plugins/core/set-root-p-element',[],function () {
         'writable': false,
         'value': hash
       });
-    } else if (obj.propertyIsEnumerable &&
+    } else if (obj.propertyIsEnumerable !== undefined &&
                obj.propertyIsEnumerable === obj.constructor.prototype.propertyIsEnumerable) {
       // Since we can't define a non-enumerable property on the object
       // we'll hijack one of the less-used non-enumerable properties to
@@ -887,7 +896,7 @@ define('plugins/core/set-root-p-element',[],function () {
         return this.constructor.prototype.propertyIsEnumerable.apply(this, arguments);
       };
       obj.propertyIsEnumerable[UID_HASH_KEY] = hash;
-    } else if (obj.nodeType) {
+    } else if (obj.nodeType !== undefined) {
       // At this point we couldn't get the IE `uniqueID` to use as a hash
       // and we couldn't use a non-enumerable property to exploit the
       // dontEnum bug so we simply add the `UID_HASH_KEY` on the node
@@ -900,10 +909,13 @@ define('plugins/core/set-root-p-element',[],function () {
     return hash;
   }
 
+  // Get references to ES5 object methods.
+  var isExtensible = Object.isExtensible;
+
   // True if Object.defineProperty works as expected. IE8 fails this test.
   var canDefineProperty = (function() {
     try {
-      Object.defineProperty({}, 'x', {});
+      Object.defineProperty({}, '@', {});
       return true;
     } catch (e) {
       return false;
@@ -924,7 +936,11 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   // If possible, use a WeakMap.
-  var weakMap = typeof WeakMap === 'function' && new WeakMap();
+  var usingWeakMap = typeof WeakMap === 'function';
+  var weakMap;
+  if (usingWeakMap) {
+    weakMap = new WeakMap();
+  }
 
   var objHashUID = 0;
 
@@ -1001,7 +1017,7 @@ define('plugins/core/set-root-p-element',[],function () {
       }
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
       var ii = reverse ? resolveSize(this) : 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, reverse ? --ii : ii++, step.value, step);
@@ -1017,8 +1033,8 @@ define('plugins/core/set-root-p-element',[],function () {
       this.size = iter.size;
     }
 
-    ToIndexedSequence.prototype.contains = function(value) {
-      return this._iter.contains(value);
+    ToIndexedSequence.prototype.includes = function(value) {
+      return this._iter.includes(value);
     };
 
     ToIndexedSequence.prototype.__iterate = function(fn, reverse) {var this$0 = this;
@@ -1029,7 +1045,7 @@ define('plugins/core/set-root-p-element',[],function () {
     ToIndexedSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, iterations++, step.value, step)
@@ -1045,7 +1061,7 @@ define('plugins/core/set-root-p-element',[],function () {
     }
 
     ToSetSequence.prototype.has = function(key) {
-      return this._iter.contains(key);
+      return this._iter.includes(key);
     };
 
     ToSetSequence.prototype.__iterate = function(fn, reverse) {var this$0 = this;
@@ -1054,7 +1070,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     ToSetSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, step.value, step.value, step);
@@ -1079,14 +1095,19 @@ define('plugins/core/set-root-p-element',[],function () {
         // in the parent iteration.
         if (entry) {
           validateEntry(entry);
-          return fn(entry[1], entry[0], this$0);
+          var indexedIterable = isIterable(entry);
+          return fn(
+            indexedIterable ? entry.get(1) : entry[1],
+            indexedIterable ? entry.get(0) : entry[0],
+            this$0
+          );
         }
       }, reverse);
     };
 
     FromEntriesSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (true) {
           var step = iterator.next();
           if (step.done) {
@@ -1097,8 +1118,13 @@ define('plugins/core/set-root-p-element',[],function () {
           // in the parent iteration.
           if (entry) {
             validateEntry(entry);
-            return type === ITERATE_ENTRIES ? step :
-              iteratorValue(type, entry[0], entry[1], step);
+            var indexedIterable = isIterable(entry);
+            return iteratorValue(
+              type,
+              indexedIterable ? entry.get(0) : entry[0],
+              indexedIterable ? entry.get(1) : entry[1],
+              step
+            );
           }
         }
       });
@@ -1122,8 +1148,8 @@ define('plugins/core/set-root-p-element',[],function () {
       reversedSequence.flip = function()  {return iterable.reverse()};
       return reversedSequence;
     };
-    flipSequence.has = function(key ) {return iterable.contains(key)};
-    flipSequence.contains = function(key ) {return iterable.has(key)};
+    flipSequence.has = function(key ) {return iterable.includes(key)};
+    flipSequence.includes = function(key ) {return iterable.has(key)};
     flipSequence.cacheResult = cacheResultThrough;
     flipSequence.__iterateUncached = function (fn, reverse) {var this$0 = this;
       return iterable.__iterate(function(v, k)  {return fn(k, v, this$0) !== false}, reverse);
@@ -1131,7 +1157,7 @@ define('plugins/core/set-root-p-element',[],function () {
     flipSequence.__iteratorUncached = function(type, reverse) {
       if (type === ITERATE_ENTRIES) {
         var iterator = iterable.__iterator(type, reverse);
-        return new Iterator(function()  {
+        return new src_Iterator__Iterator(function()  {
           var step = iterator.next();
           if (!step.done) {
             var k = step.value[0];
@@ -1168,7 +1194,7 @@ define('plugins/core/set-root-p-element',[],function () {
     }
     mappedSequence.__iteratorUncached = function (type, reverse) {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         if (step.done) {
           return step;
@@ -1203,7 +1229,7 @@ define('plugins/core/set-root-p-element',[],function () {
       {return iterable.get(useKeys ? key : -1 - key, notSetValue)};
     reversedSequence.has = function(key )
       {return iterable.has(useKeys ? key : -1 - key)};
-    reversedSequence.contains = function(value ) {return iterable.contains(value)};
+    reversedSequence.includes = function(value ) {return iterable.includes(value)};
     reversedSequence.cacheResult = cacheResultThrough;
     reversedSequence.__iterate = function (fn, reverse) {var this$0 = this;
       return iterable.__iterate(function(v, k)  {return fn(v, k, this$0)}, !reverse);
@@ -1240,7 +1266,7 @@ define('plugins/core/set-root-p-element',[],function () {
     filterSequence.__iteratorUncached = function (type, reverse) {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (true) {
           var step = iterator.next();
           if (step.done) {
@@ -1260,7 +1286,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
 
   function countByFactory(iterable, grouper, context) {
-    var groups = Map().asMutable();
+    var groups = src_Map__Map().asMutable();
     iterable.__iterate(function(v, k)  {
       groups.update(
         grouper.call(context, v, k, iterable),
@@ -1274,7 +1300,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
   function groupByFactory(iterable, grouper, context) {
     var isKeyedIter = isKeyed(iterable);
-    var groups = (isOrdered(iterable) ? OrderedMap() : Map()).asMutable();
+    var groups = (isOrdered(iterable) ? OrderedMap() : src_Map__Map()).asMutable();
     iterable.__iterate(function(v, k)  {
       groups.update(
         grouper.call(context, v, k, iterable),
@@ -1298,19 +1324,24 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // begin or end will be NaN if they were provided as negative numbers and
     // this iterable's size is unknown. In that case, cache first so there is
-    // a known size.
+    // a known size and these do not resolve to NaN.
     if (resolvedBegin !== resolvedBegin || resolvedEnd !== resolvedEnd) {
       return sliceFactory(iterable.toSeq().cacheResult(), begin, end, useKeys);
     }
 
-    var sliceSize = resolvedEnd - resolvedBegin;
-    if (sliceSize < 0) {
-      sliceSize = 0;
+    // Note: resolvedEnd is undefined when the original sequence's length is
+    // unknown and this slice did not supply an end and should contain all
+    // elements after resolvedBegin.
+    // In that case, resolvedSize will be NaN and sliceSize will remain undefined.
+    var resolvedSize = resolvedEnd - resolvedBegin;
+    var sliceSize;
+    if (resolvedSize === resolvedSize) {
+      sliceSize = resolvedSize < 0 ? 0 : resolvedSize;
     }
 
     var sliceSeq = makeSequence(iterable);
 
-    sliceSeq.size = sliceSize === 0 ? sliceSize : iterable.size && sliceSize || undefined;
+    sliceSeq.size = sliceSize;
 
     if (!useKeys && isSeq(iterable) && sliceSize >= 0) {
       sliceSeq.get = function (index, notSetValue) {
@@ -1342,15 +1373,15 @@ define('plugins/core/set-root-p-element',[],function () {
     };
 
     sliceSeq.__iteratorUncached = function(type, reverse) {
-      if (sliceSize && reverse) {
+      if (sliceSize !== 0 && reverse) {
         return this.cacheResult().__iterator(type, reverse);
       }
       // Don't bother instantiating parent iterator if taking 0.
-      var iterator = sliceSize && iterable.__iterator(type, reverse);
+      var iterator = sliceSize !== 0 && iterable.__iterator(type, reverse);
       var skipped = 0;
       var iterations = 0;
-      return new Iterator(function()  {
-        while (skipped++ !== resolvedBegin) {
+      return new src_Iterator__Iterator(function()  {
+        while (skipped++ < resolvedBegin) {
           iterator.next();
         }
         if (++iterations > sliceSize) {
@@ -1389,7 +1420,7 @@ define('plugins/core/set-root-p-element',[],function () {
       }
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var iterating = true;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (!iterating) {
           return iteratorDone();
         }
@@ -1435,7 +1466,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var skipping = true;
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step, k, v;
         do {
           step = iterator.next();
@@ -1531,7 +1562,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(type, reverse);
       var stack = [];
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (iterator) {
           var step = iterator.next();
           if (step.done !== false) {
@@ -1580,7 +1611,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(ITERATE_VALUES, reverse);
       var iterations = 0;
       var step;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (!step || iterations % 2) {
           step = iterator.next();
           if (step.done) {
@@ -1673,7 +1704,7 @@ define('plugins/core/set-root-p-element',[],function () {
       );
       var iterations = 0;
       var isDone = false;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var steps;
         if (!isDone) {
           steps = iterators.map(function(i ) {return i.next()});
@@ -1753,11 +1784,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return iter;
   }
 
-  createClass(Map, KeyedCollection);
+  createClass(src_Map__Map, KeyedCollection);
 
     // @pragma Construction
 
-    function Map(value) {
+    function src_Map__Map(value) {
       return value === null || value === undefined ? emptyMap() :
         isMap(value) ? value :
         emptyMap().withMutations(function(map ) {
@@ -1767,13 +1798,13 @@ define('plugins/core/set-root-p-element',[],function () {
         });
     }
 
-    Map.prototype.toString = function() {
+    src_Map__Map.prototype.toString = function() {
       return this.__toString('Map {', '}');
     };
 
     // @pragma Access
 
-    Map.prototype.get = function(k, notSetValue) {
+    src_Map__Map.prototype.get = function(k, notSetValue) {
       return this._root ?
         this._root.get(0, undefined, k, notSetValue) :
         notSetValue;
@@ -1781,29 +1812,29 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // @pragma Modification
 
-    Map.prototype.set = function(k, v) {
+    src_Map__Map.prototype.set = function(k, v) {
       return updateMap(this, k, v);
     };
 
-    Map.prototype.setIn = function(keyPath, v) {
+    src_Map__Map.prototype.setIn = function(keyPath, v) {
       return this.updateIn(keyPath, NOT_SET, function()  {return v});
     };
 
-    Map.prototype.remove = function(k) {
+    src_Map__Map.prototype.remove = function(k) {
       return updateMap(this, k, NOT_SET);
     };
 
-    Map.prototype.deleteIn = function(keyPath) {
+    src_Map__Map.prototype.deleteIn = function(keyPath) {
       return this.updateIn(keyPath, function()  {return NOT_SET});
     };
 
-    Map.prototype.update = function(k, notSetValue, updater) {
+    src_Map__Map.prototype.update = function(k, notSetValue, updater) {
       return arguments.length === 1 ?
         k(this) :
         this.updateIn([k], notSetValue, updater);
     };
 
-    Map.prototype.updateIn = function(keyPath, notSetValue, updater) {
+    src_Map__Map.prototype.updateIn = function(keyPath, notSetValue, updater) {
       if (!updater) {
         updater = notSetValue;
         notSetValue = undefined;
@@ -1817,7 +1848,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return updatedValue === NOT_SET ? undefined : updatedValue;
     };
 
-    Map.prototype.clear = function() {
+    src_Map__Map.prototype.clear = function() {
       if (this.size === 0) {
         return this;
       }
@@ -1833,65 +1864,77 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // @pragma Composition
 
-    Map.prototype.merge = function(/*...iters*/) {
+    src_Map__Map.prototype.merge = function(/*...iters*/) {
       return mergeIntoMapWith(this, undefined, arguments);
     };
 
-    Map.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Map__Map.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return mergeIntoMapWith(this, merger, iters);
     };
 
-    Map.prototype.mergeIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.merge.apply(m, iters)});
+    src_Map__Map.prototype.mergeIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.merge === 'function' ?
+          m.merge.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
-    Map.prototype.mergeDeep = function(/*...iters*/) {
+    src_Map__Map.prototype.mergeDeep = function(/*...iters*/) {
       return mergeIntoMapWith(this, deepMerger(undefined), arguments);
     };
 
-    Map.prototype.mergeDeepWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Map__Map.prototype.mergeDeepWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return mergeIntoMapWith(this, deepMerger(merger), iters);
     };
 
-    Map.prototype.mergeDeepIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.mergeDeep.apply(m, iters)});
+    src_Map__Map.prototype.mergeDeepIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.mergeDeep === 'function' ?
+          m.mergeDeep.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
-    Map.prototype.sort = function(comparator) {
+    src_Map__Map.prototype.sort = function(comparator) {
       // Late binding
       return OrderedMap(sortFactory(this, comparator));
     };
 
-    Map.prototype.sortBy = function(mapper, comparator) {
+    src_Map__Map.prototype.sortBy = function(mapper, comparator) {
       // Late binding
       return OrderedMap(sortFactory(this, comparator, mapper));
     };
 
     // @pragma Mutability
 
-    Map.prototype.withMutations = function(fn) {
+    src_Map__Map.prototype.withMutations = function(fn) {
       var mutable = this.asMutable();
       fn(mutable);
       return mutable.wasAltered() ? mutable.__ensureOwner(this.__ownerID) : this;
     };
 
-    Map.prototype.asMutable = function() {
+    src_Map__Map.prototype.asMutable = function() {
       return this.__ownerID ? this : this.__ensureOwner(new OwnerID());
     };
 
-    Map.prototype.asImmutable = function() {
+    src_Map__Map.prototype.asImmutable = function() {
       return this.__ensureOwner();
     };
 
-    Map.prototype.wasAltered = function() {
+    src_Map__Map.prototype.wasAltered = function() {
       return this.__altered;
     };
 
-    Map.prototype.__iterator = function(type, reverse) {
+    src_Map__Map.prototype.__iterator = function(type, reverse) {
       return new MapIterator(this, type, reverse);
     };
 
-    Map.prototype.__iterate = function(fn, reverse) {var this$0 = this;
+    src_Map__Map.prototype.__iterate = function(fn, reverse) {var this$0 = this;
       var iterations = 0;
       this._root && this._root.iterate(function(entry ) {
         iterations++;
@@ -1900,7 +1943,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return iterations;
     };
 
-    Map.prototype.__ensureOwner = function(ownerID) {
+    src_Map__Map.prototype.__ensureOwner = function(ownerID) {
       if (ownerID === this.__ownerID) {
         return this;
       }
@@ -1917,11 +1960,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return !!(maybeMap && maybeMap[IS_MAP_SENTINEL]);
   }
 
-  Map.isMap = isMap;
+  src_Map__Map.isMap = isMap;
 
   var IS_MAP_SENTINEL = '@@__IMMUTABLE_MAP__@@';
 
-  var MapPrototype = Map.prototype;
+  var MapPrototype = src_Map__Map.prototype;
   MapPrototype[IS_MAP_SENTINEL] = true;
   MapPrototype[DELETE] = MapPrototype.remove;
   MapPrototype.removeIn = MapPrototype.deleteIn;
@@ -2265,7 +2308,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return fn(this.entry);
   }
 
-  createClass(MapIterator, Iterator);
+  createClass(MapIterator, src_Iterator__Iterator);
 
     function MapIterator(map, type, reverse) {
       this._type = type;
@@ -2445,10 +2488,10 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function deepMerger(merger) {
-    return function(existing, value) 
+    return function(existing, value, key) 
       {return existing && existing.mergeDeepWith && isIterable(value) ?
         existing.mergeDeepWith(merger, value) :
-        merger ? merger(existing, value) : value};
+        merger ? merger(existing, value, key) : value};
   }
 
   function mergeIntoCollectionWith(collection, merger, iters) {
@@ -2456,14 +2499,14 @@ define('plugins/core/set-root-p-element',[],function () {
     if (iters.length === 0) {
       return collection;
     }
-    if (collection.size === 0 && iters.length === 1) {
+    if (collection.size === 0 && !collection.__ownerID && iters.length === 1) {
       return collection.constructor(iters[0]);
     }
     return collection.withMutations(function(collection ) {
       var mergeIntoMap = merger ?
         function(value, key)  {
           collection.update(key, NOT_SET, function(existing )
-            {return existing === NOT_SET ? value : merger(existing, value)}
+            {return existing === NOT_SET ? value : merger(existing, value, key)}
           );
         } :
         function(value, key)  {
@@ -2698,7 +2741,7 @@ define('plugins/core/set-root-p-element',[],function () {
     List.prototype.__iterator = function(type, reverse) {
       var index = 0;
       var values = iterateList(this, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var value = values();
         return value === DONE ?
           iteratorDone() :
@@ -3017,7 +3060,7 @@ define('plugins/core/set-root-p-element',[],function () {
     var newLevel = list._level;
     var newRoot = list._root;
 
-    // New origin might require creating a higher root.
+    // New origin might need creating a higher root.
     var offsetShift = 0;
     while (newOrigin + offsetShift < 0) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [undefined, newRoot] : [], owner);
@@ -3034,7 +3077,7 @@ define('plugins/core/set-root-p-element',[],function () {
     var oldTailOffset = getTailOffset(oldCapacity);
     var newTailOffset = getTailOffset(newCapacity);
 
-    // New size might require creating a higher root.
+    // New size might need creating a higher root.
     while (newTailOffset >= 1 << (newLevel + SHIFT)) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [newRoot] : [], owner);
       newLevel += SHIFT;
@@ -3138,7 +3181,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return size < SIZE ? 0 : (((size - 1) >>> SHIFT) << SHIFT);
   }
 
-  createClass(OrderedMap, Map);
+  createClass(OrderedMap, src_Map__Map);
 
     // @pragma Construction
 
@@ -3312,6 +3355,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.get = function(index, notSetValue) {
       var head = this._head;
+      index = wrapIndex(this, index);
       while (head && index--) {
         head = head.next;
       }
@@ -3444,7 +3488,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.__iterate = function(fn, reverse) {
       if (reverse) {
-        return this.toSeq().cacheResult.__iterate(fn, reverse);
+        return this.reverse().__iterate(fn);
       }
       var iterations = 0;
       var node = this._head;
@@ -3459,11 +3503,11 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.__iterator = function(type, reverse) {
       if (reverse) {
-        return this.toSeq().cacheResult().__iterator(type, reverse);
+        return this.reverse().__iterator(type);
       }
       var iterations = 0;
       var node = this._head;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (node) {
           var value = node.value;
           node = node.next;
@@ -3505,11 +3549,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return EMPTY_STACK || (EMPTY_STACK = makeStack(0));
   }
 
-  createClass(Set, SetCollection);
+  createClass(src_Set__Set, SetCollection);
 
     // @pragma Construction
 
-    function Set(value) {
+    function src_Set__Set(value) {
       return value === null || value === undefined ? emptySet() :
         isSet(value) ? value :
         emptySet().withMutations(function(set ) {
@@ -3519,46 +3563,46 @@ define('plugins/core/set-root-p-element',[],function () {
         });
     }
 
-    Set.of = function(/*...values*/) {
+    src_Set__Set.of = function(/*...values*/) {
       return this(arguments);
     };
 
-    Set.fromKeys = function(value) {
+    src_Set__Set.fromKeys = function(value) {
       return this(KeyedIterable(value).keySeq());
     };
 
-    Set.prototype.toString = function() {
+    src_Set__Set.prototype.toString = function() {
       return this.__toString('Set {', '}');
     };
 
     // @pragma Access
 
-    Set.prototype.has = function(value) {
+    src_Set__Set.prototype.has = function(value) {
       return this._map.has(value);
     };
 
     // @pragma Modification
 
-    Set.prototype.add = function(value) {
+    src_Set__Set.prototype.add = function(value) {
       return updateSet(this, this._map.set(value, true));
     };
 
-    Set.prototype.remove = function(value) {
+    src_Set__Set.prototype.remove = function(value) {
       return updateSet(this, this._map.remove(value));
     };
 
-    Set.prototype.clear = function() {
+    src_Set__Set.prototype.clear = function() {
       return updateSet(this, this._map.clear());
     };
 
     // @pragma Composition
 
-    Set.prototype.union = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.union = function() {var iters = SLICE$0.call(arguments, 0);
       iters = iters.filter(function(x ) {return x.size !== 0});
       if (iters.length === 0) {
         return this;
       }
-      if (this.size === 0 && iters.length === 1) {
+      if (this.size === 0 && !this.__ownerID && iters.length === 1) {
         return this.constructor(iters[0]);
       }
       return this.withMutations(function(set ) {
@@ -3568,7 +3612,7 @@ define('plugins/core/set-root-p-element',[],function () {
       });
     };
 
-    Set.prototype.intersect = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.intersect = function() {var iters = SLICE$0.call(arguments, 0);
       if (iters.length === 0) {
         return this;
       }
@@ -3576,14 +3620,14 @@ define('plugins/core/set-root-p-element',[],function () {
       var originalSet = this;
       return this.withMutations(function(set ) {
         originalSet.forEach(function(value ) {
-          if (!iters.every(function(iter ) {return iter.contains(value)})) {
+          if (!iters.every(function(iter ) {return iter.includes(value)})) {
             set.remove(value);
           }
         });
       });
     };
 
-    Set.prototype.subtract = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.subtract = function() {var iters = SLICE$0.call(arguments, 0);
       if (iters.length === 0) {
         return this;
       }
@@ -3591,44 +3635,44 @@ define('plugins/core/set-root-p-element',[],function () {
       var originalSet = this;
       return this.withMutations(function(set ) {
         originalSet.forEach(function(value ) {
-          if (iters.some(function(iter ) {return iter.contains(value)})) {
+          if (iters.some(function(iter ) {return iter.includes(value)})) {
             set.remove(value);
           }
         });
       });
     };
 
-    Set.prototype.merge = function() {
+    src_Set__Set.prototype.merge = function() {
       return this.union.apply(this, arguments);
     };
 
-    Set.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Set__Set.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return this.union.apply(this, iters);
     };
 
-    Set.prototype.sort = function(comparator) {
+    src_Set__Set.prototype.sort = function(comparator) {
       // Late binding
       return OrderedSet(sortFactory(this, comparator));
     };
 
-    Set.prototype.sortBy = function(mapper, comparator) {
+    src_Set__Set.prototype.sortBy = function(mapper, comparator) {
       // Late binding
       return OrderedSet(sortFactory(this, comparator, mapper));
     };
 
-    Set.prototype.wasAltered = function() {
+    src_Set__Set.prototype.wasAltered = function() {
       return this._map.wasAltered();
     };
 
-    Set.prototype.__iterate = function(fn, reverse) {var this$0 = this;
+    src_Set__Set.prototype.__iterate = function(fn, reverse) {var this$0 = this;
       return this._map.__iterate(function(_, k)  {return fn(k, k, this$0)}, reverse);
     };
 
-    Set.prototype.__iterator = function(type, reverse) {
+    src_Set__Set.prototype.__iterator = function(type, reverse) {
       return this._map.map(function(_, k)  {return k}).__iterator(type, reverse);
     };
 
-    Set.prototype.__ensureOwner = function(ownerID) {
+    src_Set__Set.prototype.__ensureOwner = function(ownerID) {
       if (ownerID === this.__ownerID) {
         return this;
       }
@@ -3646,11 +3690,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return !!(maybeSet && maybeSet[IS_SET_SENTINEL]);
   }
 
-  Set.isSet = isSet;
+  src_Set__Set.isSet = isSet;
 
   var IS_SET_SENTINEL = '@@__IMMUTABLE_SET__@@';
 
-  var SetPrototype = Set.prototype;
+  var SetPrototype = src_Set__Set.prototype;
   SetPrototype[IS_SET_SENTINEL] = true;
   SetPrototype[DELETE] = SetPrototype.remove;
   SetPrototype.mergeDeep = SetPrototype.merge;
@@ -3686,7 +3730,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return EMPTY_SET || (EMPTY_SET = makeSet(emptyMap()));
   }
 
-  createClass(OrderedSet, Set);
+  createClass(OrderedSet, src_Set__Set);
 
     // @pragma Construction
 
@@ -3741,37 +3785,29 @@ define('plugins/core/set-root-p-element',[],function () {
   createClass(Record, KeyedCollection);
 
     function Record(defaultValues, name) {
+      var hasInitialized;
+
       var RecordType = function Record(values) {
+        if (values instanceof RecordType) {
+          return values;
+        }
         if (!(this instanceof RecordType)) {
           return new RecordType(values);
         }
-        this._map = Map(values);
+        if (!hasInitialized) {
+          hasInitialized = true;
+          var keys = Object.keys(defaultValues);
+          setProps(RecordTypePrototype, keys);
+          RecordTypePrototype.size = keys.length;
+          RecordTypePrototype._name = name;
+          RecordTypePrototype._keys = keys;
+          RecordTypePrototype._defaultValues = defaultValues;
+        }
+        this._map = src_Map__Map(values);
       };
-
-      var keys = Object.keys(defaultValues);
 
       var RecordTypePrototype = RecordType.prototype = Object.create(RecordPrototype);
       RecordTypePrototype.constructor = RecordType;
-      name && (RecordTypePrototype._name = name);
-      RecordTypePrototype._defaultValues = defaultValues;
-      RecordTypePrototype._keys = keys;
-      RecordTypePrototype.size = keys.length;
-
-      try {
-        keys.forEach(function(key ) {
-          Object.defineProperty(RecordType.prototype, key, {
-            get: function() {
-              return this.get(key);
-            },
-            set: function(value) {
-              invariant(this.__ownerID, 'Cannot set on an immutable record.');
-              this.set(key, value);
-            }
-          });
-        });
-      } catch (error) {
-        // Object.defineProperty failed. Probably IE8.
-      }
 
       return RecordType;
     }
@@ -3801,8 +3837,8 @@ define('plugins/core/set-root-p-element',[],function () {
         this._map && this._map.clear();
         return this;
       }
-      var SuperRecord = Object.getPrototypeOf(this).constructor;
-      return SuperRecord._empty || (SuperRecord._empty = makeRecord(this, emptyMap()));
+      var RecordType = this.constructor;
+      return RecordType._empty || (RecordType._empty = makeRecord(this, emptyMap()));
     };
 
     Record.prototype.set = function(k, v) {
@@ -3879,7 +3915,27 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function recordName(record) {
-    return record._name || record.constructor.name;
+    return record._name || record.constructor.name || 'Record';
+  }
+
+  function setProps(prototype, names) {
+    try {
+      names.forEach(setProp.bind(undefined, prototype));
+    } catch (error) {
+      // Object.defineProperty failed. Probably IE8.
+    }
+  }
+
+  function setProp(prototype, name) {
+    Object.defineProperty(prototype, name, {
+      get: function() {
+        return this.get(name);
+      },
+      set: function(value) {
+        invariant(this.__ownerID, 'Cannot set on an immutable record.');
+        this.set(name, value);
+      }
+    });
   }
 
   function deepEqual(a, b) {
@@ -3916,7 +3972,9 @@ define('plugins/core/set-root-p-element',[],function () {
 
     if (a.size === undefined) {
       if (b.size === undefined) {
-        a.cacheResult();
+        if (typeof a.cacheResult === 'function') {
+          a.cacheResult();
+        }
       } else {
         flipped = true;
         var _ = a;
@@ -3980,7 +4038,7 @@ define('plugins/core/set-root-p-element',[],function () {
         notSetValue;
     };
 
-    Range.prototype.contains = function(searchValue) {
+    Range.prototype.includes = function(searchValue) {
       var possibleIndex = (searchValue - this._start) / this._step;
       return possibleIndex >= 0 &&
         possibleIndex < this.size &&
@@ -4032,7 +4090,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var step = this._step;
       var value = reverse ? this._start + maxIndex * step : this._start;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var v = value;
         value += reverse ? -step : step;
         return ii > maxIndex ? iteratorDone() : iteratorValue(type, ii++, v);
@@ -4077,7 +4135,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return this.has(index) ? this._value : notSetValue;
     };
 
-    Repeat.prototype.contains = function(searchValue) {
+    Repeat.prototype.includes = function(searchValue) {
       return is(this._value, searchValue);
     };
 
@@ -4116,7 +4174,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Repeat.prototype.__iterator = function(type, reverse) {var this$0 = this;
       var ii = 0;
-      return new Iterator(function() 
+      return new src_Iterator__Iterator(function() 
         {return ii < this$0.size ? iteratorValue(type, ii++, this$0._value) : iteratorDone()}
       );
     };
@@ -4141,7 +4199,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return ctor;
   }
 
-  Iterable.Iterator = Iterator;
+  Iterable.Iterator = src_Iterator__Iterator;
 
   mixin(Iterable, {
 
@@ -4176,7 +4234,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     toMap: function() {
       // Use Late Binding here to solve the circular dependency.
-      return Map(this.toKeyedSeq());
+      return src_Map__Map(this.toKeyedSeq());
     },
 
     toObject: function() {
@@ -4198,7 +4256,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     toSet: function() {
       // Use Late Binding here to solve the circular dependency.
-      return Set(isKeyed(this) ? this.valueSeq() : this);
+      return src_Set__Set(isKeyed(this) ? this.valueSeq() : this);
     },
 
     toSetSeq: function() {
@@ -4243,6 +4301,10 @@ define('plugins/core/set-root-p-element',[],function () {
     },
 
     contains: function(searchValue) {
+      return this.includes(searchValue);
+    },
+
+    includes: function(searchValue) {
       return this.some(function(value ) {return is(value, searchValue)});
     },
 
@@ -4298,7 +4360,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var isFirst = true;
       this.__iterate(function(v ) {
         isFirst ? (isFirst = false) : (joined += separator);
-        joined += v !== null && v !== undefined ? v : '';
+        joined += v !== null && v !== undefined ? v.toString() : '';
       });
       return joined;
     },
@@ -4449,8 +4511,8 @@ define('plugins/core/set-root-p-element',[],function () {
     },
 
     isSubset: function(iter) {
-      iter = typeof iter.contains === 'function' ? iter : Iterable(iter);
-      return this.every(function(value ) {return iter.contains(value)});
+      iter = typeof iter.includes === 'function' ? iter : Iterable(iter);
+      return this.every(function(value ) {return iter.includes(value)});
     },
 
     isSuperset: function(iter) {
@@ -4631,7 +4693,7 @@ define('plugins/core/set-root-p-element',[],function () {
   KeyedIterablePrototype[IS_KEYED_SENTINEL] = true;
   KeyedIterablePrototype[ITERATOR_SYMBOL] = IterablePrototype.entries;
   KeyedIterablePrototype.__toJS = IterablePrototype.toObject;
-  KeyedIterablePrototype.__toStringMapper = function(v, k)  {return k + ': ' + quoteString(v)};
+  KeyedIterablePrototype.__toStringMapper = function(v, k)  {return JSON.stringify(k) + ': ' + quoteString(v)};
 
 
 
@@ -4768,7 +4830,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return this.has(value) ? value : notSetValue;
     },
 
-    contains: function(value) {
+    includes: function(value) {
       return this.has(value);
     },
 
@@ -4781,7 +4843,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
   });
 
-  SetIterable.prototype.has = IterablePrototype.contains;
+  SetIterable.prototype.has = IterablePrototype.includes;
 
 
   // Mixin subclasses
@@ -4849,12 +4911,12 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function murmurHashOfSize(size, h) {
-    h = Math__imul(h, 0xCC9E2D51);
-    h = Math__imul(h << 15 | h >>> -15, 0x1B873593);
-    h = Math__imul(h << 13 | h >>> -13, 5);
+    h = src_Math__imul(h, 0xCC9E2D51);
+    h = src_Math__imul(h << 15 | h >>> -15, 0x1B873593);
+    h = src_Math__imul(h << 13 | h >>> -13, 5);
     h = (h + 0xE6546B64 | 0) ^ size;
-    h = Math__imul(h ^ h >>> 16, 0x85EBCA6B);
-    h = Math__imul(h ^ h >>> 13, 0xC2B2AE35);
+    h = src_Math__imul(h ^ h >>> 16, 0x85EBCA6B);
+    h = src_Math__imul(h ^ h >>> 13, 0xC2B2AE35);
     h = smi(h ^ h >>> 16);
     return h;
   }
@@ -4869,11 +4931,11 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Seq: Seq,
     Collection: Collection,
-    Map: Map,
+    Map: src_Map__Map,
     OrderedMap: OrderedMap,
     List: List,
     Stack: Stack,
-    Set: Set,
+    Set: src_Set__Set,
     OrderedSet: OrderedSet,
 
     Record: Record,
@@ -4889,7 +4951,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
 }));
 define('plugins/core/formatters/html/enforce-p-elements',[
-  'immutable/dist/immutable'
+  'immutable'
 ], function (Immutable) {
 
   /**
@@ -4968,787 +5030,17 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 
 });
 
-define('lodash-amd/modern/internal/indexOfNaN',[], function() {
-
-  /**
-   * Gets the index at which the first occurrence of `NaN` is found in `array`.
-   * If `fromRight` is provided elements of `array` are iterated from right to left.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {number} fromIndex The index to search from.
-   * @param {boolean} [fromRight] Specify iterating from right to left.
-   * @returns {number} Returns the index of the matched `NaN`, else `-1`.
-   */
-  function indexOfNaN(array, fromIndex, fromRight) {
-    var length = array.length,
-        index = fromIndex + (fromRight ? 0 : -1);
-
-    while ((fromRight ? index-- : ++index < length)) {
-      var other = array[index];
-      if (other !== other) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return indexOfNaN;
-});
-
-define('lodash-amd/modern/internal/baseIndexOf',['./indexOfNaN'], function(indexOfNaN) {
-
-  /**
-   * The base implementation of `_.indexOf` without support for binary searches.
-   *
-   * @private
-   * @param {Array} array The array to search.
-   * @param {*} value The value to search for.
-   * @param {number} fromIndex The index to search from.
-   * @returns {number} Returns the index of the matched value, else `-1`.
-   */
-  function baseIndexOf(array, value, fromIndex) {
-    if (value !== value) {
-      return indexOfNaN(array, fromIndex);
-    }
-    var index = fromIndex - 1,
-        length = array.length;
-
-    while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
-    }
-    return -1;
-  }
-
-  return baseIndexOf;
-});
-
-define('lodash-amd/modern/internal/isLength',[], function() {
-
-  /**
-   * Used as the maximum length of an array-like value.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
-   * for more details.
-   */
-  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-  /**
-   * Checks if `value` is a valid array-like length.
-   *
-   * **Note:** This function is based on ES `ToLength`. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
-   * for more details.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
-   */
-  function isLength(value) {
-    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-  }
-
-  return isLength;
-});
-
-define('lodash-amd/modern/internal/baseToString',[], function() {
-
-  /**
-   * Converts `value` to a string if it is not one. An empty string is returned
-   * for `null` or `undefined` values.
-   *
-   * @private
-   * @param {*} value The value to process.
-   * @returns {string} Returns the string.
-   */
-  function baseToString(value) {
-    if (typeof value == 'string') {
-      return value;
-    }
-    return value == null ? '' : (value + '');
-  }
-
-  return baseToString;
-});
-
-define('lodash-amd/modern/string/escapeRegExp',['../internal/baseToString'], function(baseToString) {
-
-  /**
-   * Used to match `RegExp` special characters.
-   * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
-   * for more details.
-   */
-  var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
-      reHasRegExpChars = RegExp(reRegExpChars.source);
-
-  /**
-   * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
-   * "+", "(", ")", "[", "]", "{" and "}" in `string`.
-   *
-   * @static
-   * @memberOf _
-   * @category String
-   * @param {string} [string=''] The string to escape.
-   * @returns {string} Returns the escaped string.
-   * @example
-   *
-   * _.escapeRegExp('[lodash](https://lodash.com/)');
-   * // => '\[lodash\]\(https://lodash\.com/\)'
-   */
-  function escapeRegExp(string) {
-    string = baseToString(string);
-    return (string && reHasRegExpChars.test(string))
-      ? string.replace(reRegExpChars, '\\$&')
-      : string;
-  }
-
-  return escapeRegExp;
-});
-
-define('lodash-amd/modern/internal/isObjectLike',[], function() {
-
-  /**
-   * Checks if `value` is object-like.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-   */
-  function isObjectLike(value) {
-    return (value && typeof value == 'object') || false;
-  }
-
-  return isObjectLike;
-});
-
-define('lodash-amd/modern/lang/isNative',['../string/escapeRegExp', '../internal/isObjectLike'], function(escapeRegExp, isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var funcTag = '[object Function]';
-
-  /** Used to detect host constructors (Safari > 5). */
-  var reHostCtor = /^\[object .+?Constructor\]$/;
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the decompiled source of functions. */
-  var fnToString = Function.prototype.toString;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /** Used to detect if a method is native. */
-  var reNative = RegExp('^' +
-    escapeRegExp(objToString)
-    .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
-  );
-
-  /**
-   * Checks if `value` is a native function.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
-   * @example
-   *
-   * _.isNative(Array.prototype.push);
-   * // => true
-   *
-   * _.isNative(_);
-   * // => false
-   */
-  function isNative(value) {
-    if (value == null) {
-      return false;
-    }
-    if (objToString.call(value) == funcTag) {
-      return reNative.test(fnToString.call(value));
-    }
-    return (isObjectLike(value) && reHostCtor.test(value)) || false;
-  }
-
-  return isNative;
-});
-
-define('lodash-amd/modern/lang/isArray',['../internal/isLength', './isNative', '../internal/isObjectLike'], function(isLength, isNative, isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var arrayTag = '[object Array]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
-
-  /**
-   * Checks if `value` is classified as an `Array` object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   *
-   * _.isArray(function() { return arguments; }());
-   * // => false
-   */
-  var isArray = nativeIsArray || function(value) {
-    return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
-  };
-
-  return isArray;
-});
-
-define('lodash-amd/modern/lang/isString',['../internal/isObjectLike'], function(isObjectLike) {
-
-  /** `Object#toString` result references. */
-  var stringTag = '[object String]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /**
-   * Checks if `value` is classified as a `String` primitive or object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isString('abc');
-   * // => true
-   *
-   * _.isString(1);
-   * // => false
-   */
-  function isString(value) {
-    return typeof value == 'string' || (isObjectLike(value) && objToString.call(value) == stringTag) || false;
-  }
-
-  return isString;
-});
-
-define('lodash-amd/modern/internal/baseValues',[], function() {
-
-  /**
-   * The base implementation of `_.values` and `_.valuesIn` which creates an
-   * array of `object` property values corresponding to the property names
-   * returned by `keysFunc`.
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {Array} props The property names to get values for.
-   * @returns {Object} Returns the array of property values.
-   */
-  function baseValues(object, props) {
-    var index = -1,
-        length = props.length,
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = object[props[index]];
-    }
-    return result;
-  }
-
-  return baseValues;
-});
-
-define('lodash-amd/modern/lang/isObject',[], function() {
-
-  /**
-   * Checks if `value` is the language type of `Object`.
-   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-   *
-   * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-   * @example
-   *
-   * _.isObject({});
-   * // => true
-   *
-   * _.isObject([1, 2, 3]);
-   * // => true
-   *
-   * _.isObject(1);
-   * // => false
-   */
-  function isObject(value) {
-    // Avoid a V8 JIT bug in Chrome 19-20.
-    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
-    var type = typeof value;
-    return type == 'function' || (value && type == 'object') || false;
-  }
-
-  return isObject;
-});
-
-define('lodash-amd/modern/lang/isArguments',['../internal/isLength', '../internal/isObjectLike'], function(isLength, isObjectLike) {
-
-  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
-  var undefined;
-
-  /** `Object#toString` result references. */
-  var argsTag = '[object Arguments]';
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /**
-   * Used to resolve the `toStringTag` of values.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
-   * for more details.
-   */
-  var objToString = objectProto.toString;
-
-  /**
-   * Checks if `value` is classified as an `arguments` object.
-   *
-   * @static
-   * @memberOf _
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
-   * @example
-   *
-   * _.isArguments(function() { return arguments; }());
-   * // => true
-   *
-   * _.isArguments([1, 2, 3]);
-   * // => false
-   */
-  function isArguments(value) {
-    var length = isObjectLike(value) ? value.length : undefined;
-    return (isLength(length) && objToString.call(value) == argsTag) || false;
-  }
-
-  return isArguments;
-});
-
-define('lodash-amd/modern/internal/isIndex',[], function() {
-
-  /**
-   * Used as the maximum length of an array-like value.
-   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
-   * for more details.
-   */
-  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
-
-  /**
-   * Checks if `value` is a valid array-like index.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
-   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
-   */
-  function isIndex(value, length) {
-    value = +value;
-    length = length == null ? MAX_SAFE_INTEGER : length;
-    return value > -1 && value % 1 == 0 && value < length;
-  }
-
-  return isIndex;
-});
-
-define('lodash-amd/modern/internal/root',[], function() {
-
-  /** Used to determine if values are of the language type `Object`. */
-  var objectTypes = {
-    'function': true,
-    'object': true
-  };
-
-  /** Detect free variable `exports`. */
-  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-
-  /** Detect free variable `module`. */
-  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-
-  /** Detect free variable `global` from Node.js. */
-  var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
-
-  /** Detect free variable `window`. */
-  var freeWindow = objectTypes[typeof window] && window;
-
-  /**
-   * Used as a reference to the global object.
-   *
-   * The `this` value is used if it is the global object to avoid Greasemonkey's
-   * restricted `window` object, otherwise the `window` object is used.
-   */
-  var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || this;
-
-  return root;
-});
-
-define('lodash-amd/modern/support',['./lang/isNative', './internal/root'], function(isNative, root) {
-
-  /** Used to detect functions containing a `this` reference. */
-  var reThis = /\bthis\b/;
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to detect DOM support. */
-  var document = (document = root.window) && document.document;
-
-  /** Native method references. */
-  var propertyIsEnumerable = objectProto.propertyIsEnumerable;
-
-  /**
-   * An object environment feature flags.
-   *
-   * @static
-   * @memberOf _
-   * @type Object
-   */
-  var support = {};
-
-  (function(x) {
-
-    /**
-     * Detect if functions can be decompiled by `Function#toString`
-     * (all but Firefox OS certified apps, older Opera mobile browsers, and
-     * the PlayStation 3; forced `false` for Windows 8 apps).
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    support.funcDecomp = !isNative(root.WinRTError) && reThis.test(function() { return this; });
-
-    /**
-     * Detect if `Function#name` is supported (all but IE).
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    support.funcNames = typeof Function.name == 'string';
-
-    /**
-     * Detect if the DOM is supported.
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    try {
-      support.dom = document.createDocumentFragment().nodeType === 11;
-    } catch(e) {
-      support.dom = false;
-    }
-
-    /**
-     * Detect if `arguments` object indexes are non-enumerable.
-     *
-     * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
-     * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
-     * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
-     * checks for indexes that exceed their function's formal parameters with
-     * associated values of `0`.
-     *
-     * @memberOf _.support
-     * @type boolean
-     */
-    try {
-      support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
-    } catch(e) {
-      support.nonEnumArgs = true;
-    }
-  }(0, 0));
-
-  return support;
-});
-
-define('lodash-amd/modern/object/keysIn',['../lang/isArguments', '../lang/isArray', '../internal/isIndex', '../internal/isLength', '../lang/isObject', '../support'], function(isArguments, isArray, isIndex, isLength, isObject, support) {
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
-
-  /**
-   * Creates an array of the own and inherited enumerable property names of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.keysIn(new Foo);
-   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
-   */
-  function keysIn(object) {
-    if (object == null) {
-      return [];
-    }
-    if (!isObject(object)) {
-      object = Object(object);
-    }
-    var length = object.length;
-    length = (length && isLength(length) &&
-      (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
-
-    var Ctor = object.constructor,
-        index = -1,
-        isProto = typeof Ctor == 'function' && Ctor.prototype === object,
-        result = Array(length),
-        skipIndexes = length > 0;
-
-    while (++index < length) {
-      result[index] = (index + '');
-    }
-    for (var key in object) {
-      if (!(skipIndexes && isIndex(key, length)) &&
-          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
-        result.push(key);
-      }
-    }
-    return result;
-  }
-
-  return keysIn;
-});
-
-define('lodash-amd/modern/internal/shimKeys',['../lang/isArguments', '../lang/isArray', './isIndex', './isLength', '../object/keysIn', '../support'], function(isArguments, isArray, isIndex, isLength, keysIn, support) {
-
-  /** Used for native method references. */
-  var objectProto = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty = objectProto.hasOwnProperty;
-
-  /**
-   * A fallback implementation of `Object.keys` which creates an array of the
-   * own enumerable property names of `object`.
-   *
-   * @private
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   */
-  function shimKeys(object) {
-    var props = keysIn(object),
-        propsLength = props.length,
-        length = propsLength && object.length;
-
-    var allowIndexes = length && isLength(length) &&
-      (isArray(object) || (support.nonEnumArgs && isArguments(object)));
-
-    var index = -1,
-        result = [];
-
-    while (++index < propsLength) {
-      var key = props[index];
-      if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
-        result.push(key);
-      }
-    }
-    return result;
-  }
-
-  return shimKeys;
-});
-
-define('lodash-amd/modern/object/keys',['../internal/isLength', '../lang/isNative', '../lang/isObject', '../internal/shimKeys'], function(isLength, isNative, isObject, shimKeys) {
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
-
-  /**
-   * Creates an array of the own enumerable property names of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
-   * for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns the array of property names.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.keys(new Foo);
-   * // => ['a', 'b'] (iteration order is not guaranteed)
-   *
-   * _.keys('hi');
-   * // => ['0', '1']
-   */
-  var keys = !nativeKeys ? shimKeys : function(object) {
-    if (object) {
-      var Ctor = object.constructor,
-          length = object.length;
-    }
-    if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-        (typeof object != 'function' && (length && isLength(length)))) {
-      return shimKeys(object);
-    }
-    return isObject(object) ? nativeKeys(object) : [];
-  };
-
-  return keys;
-});
-
-define('lodash-amd/modern/object/values',['../internal/baseValues', './keys'], function(baseValues, keys) {
-
-  /**
-   * Creates an array of the own enumerable property values of `object`.
-   *
-   * **Note:** Non-object values are coerced to objects.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to query.
-   * @returns {Array} Returns the array of property values.
-   * @example
-   *
-   * function Foo() {
-   *   this.a = 1;
-   *   this.b = 2;
-   * }
-   *
-   * Foo.prototype.c = 3;
-   *
-   * _.values(new Foo);
-   * // => [1, 2] (iteration order is not guaranteed)
-   *
-   * _.values('hi');
-   * // => ['h', 'i']
-   */
-  function values(object) {
-    return baseValues(object, keys(object));
-  }
-
-  return values;
-});
-
-define('lodash-amd/modern/collection/includes',['../internal/baseIndexOf', '../lang/isArray', '../internal/isLength', '../lang/isString', '../object/values'], function(baseIndexOf, isArray, isLength, isString, values) {
-
-  /* Native method references for those with the same name as other `lodash` methods. */
-  var nativeMax = Math.max;
-
-  /**
-   * Checks if `value` is in `collection` using `SameValueZero` for equality
-   * comparisons. If `fromIndex` is negative, it is used as the offset from
-   * the end of `collection`.
-   *
-   * **Note:** `SameValueZero` comparisons are like strict equality comparisons,
-   * e.g. `===`, except that `NaN` matches `NaN`. See the
-   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-   * for more details.
-   *
-   * @static
-   * @memberOf _
-   * @alias contains, include
-   * @category Collection
-   * @param {Array|Object|string} collection The collection to search.
-   * @param {*} target The value to search for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {boolean} Returns `true` if a matching element is found, else `false`.
-   * @example
-   *
-   * _.includes([1, 2, 3], 1);
-   * // => true
-   *
-   * _.includes([1, 2, 3], 1, 2);
-   * // => false
-   *
-   * _.includes({ 'user': 'fred', 'age': 40 }, 'fred');
-   * // => true
-   *
-   * _.includes('pebbles', 'eb');
-   * // => true
-   */
-  function includes(collection, target, fromIndex) {
-    var length = collection ? collection.length : 0;
-    if (!isLength(length)) {
-      collection = values(collection);
-      length = collection.length;
-    }
-    if (!length) {
-      return false;
-    }
-    if (typeof fromIndex == 'number') {
-      fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : (fromIndex || 0);
-    } else {
-      fromIndex = 0;
-    }
-    return (typeof collection == 'string' || !isArray(collection) && isString(collection))
-      ? (fromIndex < length && collection.indexOf(target, fromIndex) > -1)
-      : (baseIndexOf(collection, target, fromIndex) > -1);
-  }
-
-  return includes;
-});
-
-define('lodash-amd/modern/collection/contains',["./includes"], function(includes) {
-  return includes;
-});
-
-define('element',['lodash-amd/modern/collection/contains'], function (contains) {
+define('element',['immutable'], function (Immutable) {
 
   
 
-  var blockElementNames = ['ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
+  var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
                            'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
                            'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
                            'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO'];
+                           'TH', 'TFOOT', 'UL', 'VIDEO');
   function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
+    return blockElementNames.includes(node.nodeName);
   }
 
   function isSelectionMarkerNode(node) {
@@ -5777,10 +5069,10 @@ define('element',['lodash-amd/modern/collection/contains'], function (contains) 
 
 define('plugins/core/formatters/html/ensure-selectable-containers',[
     '../../../../element',
-    'lodash-amd/modern/collection/contains'
+    'immutable'
   ], function (
     element,
-    contains
+    Immutable
   ) {
 
   /**
@@ -5792,7 +5084,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
-  var html5VoidElements = ['AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR'];
+  var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
   function parentHasNoTextContent(element, node) {
     if (element.isCaretPositionNode(node)) {
@@ -5830,7 +5122,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !contains(html5VoidElements, node.nodeName)) {
+          !html5VoidElements.includes(node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(element, node);
@@ -6329,6 +5621,26 @@ define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
 
 });
 
+define('lodash-amd/modern/internal/baseToString',[], function() {
+
+  /**
+   * Converts `value` to a string if it is not one. An empty string is returned
+   * for `null` or `undefined` values.
+   *
+   * @private
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
+   */
+  function baseToString(value) {
+    if (typeof value == 'string') {
+      return value;
+    }
+    return value == null ? '' : (value + '');
+  }
+
+  return baseToString;
+});
+
 define('lodash-amd/modern/internal/escapeHtmlChar',[], function() {
 
   /** Used to map characters to HTML entities. */
@@ -6578,11 +5890,9 @@ define('api/children',[],function () {
 });
 
 define('plugins/core/events',[
-  'lodash-amd/modern/collection/contains',
   '../../dom-observer',
   '../../api/children'
 ], function (
-  contains,
   observeDomChanges,
   children
 ) {
@@ -6765,7 +6075,7 @@ define('plugins/core/events',[
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (contains(event.clipboardData.types, 'text/html')) {
+          if (event.clipboardData.types.contains('text/html')) {
 
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
@@ -7737,6 +7047,538 @@ define('lodash-amd/modern/internal/baseCopy',[], function() {
   return baseCopy;
 });
 
+define('lodash-amd/modern/internal/isLength',[], function() {
+
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like length.
+   *
+   * **Note:** This function is based on ES `ToLength`. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
+   * for more details.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+   */
+  function isLength(value) {
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  }
+
+  return isLength;
+});
+
+define('lodash-amd/modern/string/escapeRegExp',['../internal/baseToString'], function(baseToString) {
+
+  /**
+   * Used to match `RegExp` special characters.
+   * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
+   * for more details.
+   */
+  var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
+      reHasRegExpChars = RegExp(reRegExpChars.source);
+
+  /**
+   * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
+   * "+", "(", ")", "[", "]", "{" and "}" in `string`.
+   *
+   * @static
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escapeRegExp('[lodash](https://lodash.com/)');
+   * // => '\[lodash\]\(https://lodash\.com/\)'
+   */
+  function escapeRegExp(string) {
+    string = baseToString(string);
+    return (string && reHasRegExpChars.test(string))
+      ? string.replace(reRegExpChars, '\\$&')
+      : string;
+  }
+
+  return escapeRegExp;
+});
+
+define('lodash-amd/modern/internal/isObjectLike',[], function() {
+
+  /**
+   * Checks if `value` is object-like.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   */
+  function isObjectLike(value) {
+    return (value && typeof value == 'object') || false;
+  }
+
+  return isObjectLike;
+});
+
+define('lodash-amd/modern/lang/isNative',['../string/escapeRegExp', '../internal/isObjectLike'], function(escapeRegExp, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var funcTag = '[object Function]';
+
+  /** Used to detect host constructors (Safari > 5). */
+  var reHostCtor = /^\[object .+?Constructor\]$/;
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to resolve the decompiled source of functions. */
+  var fnToString = Function.prototype.toString;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /** Used to detect if a method is native. */
+  var reNative = RegExp('^' +
+    escapeRegExp(objToString)
+    .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+  );
+
+  /**
+   * Checks if `value` is a native function.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
+   * @example
+   *
+   * _.isNative(Array.prototype.push);
+   * // => true
+   *
+   * _.isNative(_);
+   * // => false
+   */
+  function isNative(value) {
+    if (value == null) {
+      return false;
+    }
+    if (objToString.call(value) == funcTag) {
+      return reNative.test(fnToString.call(value));
+    }
+    return (isObjectLike(value) && reHostCtor.test(value)) || false;
+  }
+
+  return isNative;
+});
+
+define('lodash-amd/modern/lang/isObject',[], function() {
+
+  /**
+   * Checks if `value` is the language type of `Object`.
+   * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+   * @example
+   *
+   * _.isObject({});
+   * // => true
+   *
+   * _.isObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isObject(1);
+   * // => false
+   */
+  function isObject(value) {
+    // Avoid a V8 JIT bug in Chrome 19-20.
+    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+    var type = typeof value;
+    return type == 'function' || (value && type == 'object') || false;
+  }
+
+  return isObject;
+});
+
+define('lodash-amd/modern/lang/isArguments',['../internal/isLength', '../internal/isObjectLike'], function(isLength, isObjectLike) {
+
+  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
+  var undefined;
+
+  /** `Object#toString` result references. */
+  var argsTag = '[object Arguments]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /**
+   * Checks if `value` is classified as an `arguments` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArguments(function() { return arguments; }());
+   * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
+   */
+  function isArguments(value) {
+    var length = isObjectLike(value) ? value.length : undefined;
+    return (isLength(length) && objToString.call(value) == argsTag) || false;
+  }
+
+  return isArguments;
+});
+
+define('lodash-amd/modern/lang/isArray',['../internal/isLength', './isNative', '../internal/isObjectLike'], function(isLength, isNative, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var arrayTag = '[object Array]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
+
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(function() { return arguments; }());
+   * // => false
+   */
+  var isArray = nativeIsArray || function(value) {
+    return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
+  };
+
+  return isArray;
+});
+
+define('lodash-amd/modern/internal/isIndex',[], function() {
+
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like index.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+   */
+  function isIndex(value, length) {
+    value = +value;
+    length = length == null ? MAX_SAFE_INTEGER : length;
+    return value > -1 && value % 1 == 0 && value < length;
+  }
+
+  return isIndex;
+});
+
+define('lodash-amd/modern/internal/root',[], function() {
+
+  /** Used to determine if values are of the language type `Object`. */
+  var objectTypes = {
+    'function': true,
+    'object': true
+  };
+
+  /** Detect free variable `exports`. */
+  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+
+  /** Detect free variable `module`. */
+  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
+
+  /** Detect free variable `window`. */
+  var freeWindow = objectTypes[typeof window] && window;
+
+  /**
+   * Used as a reference to the global object.
+   *
+   * The `this` value is used if it is the global object to avoid Greasemonkey's
+   * restricted `window` object, otherwise the `window` object is used.
+   */
+  var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || this;
+
+  return root;
+});
+
+define('lodash-amd/modern/support',['./lang/isNative', './internal/root'], function(isNative, root) {
+
+  /** Used to detect functions containing a `this` reference. */
+  var reThis = /\bthis\b/;
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to detect DOM support. */
+  var document = (document = root.window) && document.document;
+
+  /** Native method references. */
+  var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+  /**
+   * An object environment feature flags.
+   *
+   * @static
+   * @memberOf _
+   * @type Object
+   */
+  var support = {};
+
+  (function(x) {
+
+    /**
+     * Detect if functions can be decompiled by `Function#toString`
+     * (all but Firefox OS certified apps, older Opera mobile browsers, and
+     * the PlayStation 3; forced `false` for Windows 8 apps).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcDecomp = !isNative(root.WinRTError) && reThis.test(function() { return this; });
+
+    /**
+     * Detect if `Function#name` is supported (all but IE).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcNames = typeof Function.name == 'string';
+
+    /**
+     * Detect if the DOM is supported.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.dom = document.createDocumentFragment().nodeType === 11;
+    } catch(e) {
+      support.dom = false;
+    }
+
+    /**
+     * Detect if `arguments` object indexes are non-enumerable.
+     *
+     * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
+     * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
+     * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
+     * checks for indexes that exceed their function's formal parameters with
+     * associated values of `0`.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
+    } catch(e) {
+      support.nonEnumArgs = true;
+    }
+  }(0, 0));
+
+  return support;
+});
+
+define('lodash-amd/modern/object/keysIn',['../lang/isArguments', '../lang/isArray', '../internal/isIndex', '../internal/isLength', '../lang/isObject', '../support'], function(isArguments, isArray, isIndex, isLength, isObject, support) {
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * Creates an array of the own and inherited enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keysIn(new Foo);
+   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+   */
+  function keysIn(object) {
+    if (object == null) {
+      return [];
+    }
+    if (!isObject(object)) {
+      object = Object(object);
+    }
+    var length = object.length;
+    length = (length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
+
+    var Ctor = object.constructor,
+        index = -1,
+        isProto = typeof Ctor == 'function' && Ctor.prototype === object,
+        result = Array(length),
+        skipIndexes = length > 0;
+
+    while (++index < length) {
+      result[index] = (index + '');
+    }
+    for (var key in object) {
+      if (!(skipIndexes && isIndex(key, length)) &&
+          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  return keysIn;
+});
+
+define('lodash-amd/modern/internal/shimKeys',['../lang/isArguments', '../lang/isArray', './isIndex', './isLength', '../object/keysIn', '../support'], function(isArguments, isArray, isIndex, isLength, keysIn, support) {
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * A fallback implementation of `Object.keys` which creates an array of the
+   * own enumerable property names of `object`.
+   *
+   * @private
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   */
+  function shimKeys(object) {
+    var props = keysIn(object),
+        propsLength = props.length,
+        length = propsLength && object.length;
+
+    var allowIndexes = length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object)));
+
+    var index = -1,
+        result = [];
+
+    while (++index < propsLength) {
+      var key = props[index];
+      if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  return shimKeys;
+});
+
+define('lodash-amd/modern/object/keys',['../internal/isLength', '../lang/isNative', '../lang/isObject', '../internal/shimKeys'], function(isLength, isNative, isObject, shimKeys) {
+
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+  /**
+   * Creates an array of the own enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
+   * for more details.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keys(new Foo);
+   * // => ['a', 'b'] (iteration order is not guaranteed)
+   *
+   * _.keys('hi');
+   * // => ['0', '1']
+   */
+  var keys = !nativeKeys ? shimKeys : function(object) {
+    if (object) {
+      var Ctor = object.constructor,
+          length = object.length;
+    }
+    if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
+        (typeof object != 'function' && (length && isLength(length)))) {
+      return shimKeys(object);
+    }
+    return isObject(object) ? nativeKeys(object) : [];
+  };
+
+  return keys;
+});
+
 define('lodash-amd/modern/internal/baseAssign',['./baseCopy', '../object/keys'], function(baseCopy, keys) {
 
   /**
@@ -8084,65 +7926,7 @@ define('undo-manager',[],function () {
 });
 
 
-define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(baseIndexOf) {
-
-  /** Used for native method references. */
-  var arrayProto = Array.prototype;
-
-  /** Native method references. */
-  var splice = arrayProto.splice;
-
-  /**
-   * Removes all provided values from `array` using `SameValueZero` for equality
-   * comparisons.
-   *
-   * **Notes:**
-   *  - Unlike `_.without`, this method mutates `array`.
-   *  - `SameValueZero` comparisons are like strict equality comparisons, e.g. `===`,
-   *    except that `NaN` matches `NaN`. See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero)
-   *    for more details.
-   *
-   * @static
-   * @memberOf _
-   * @category Array
-   * @param {Array} array The array to modify.
-   * @param {...*} [values] The values to remove.
-   * @returns {Array} Returns `array`.
-   * @example
-   *
-   * var array = [1, 2, 3, 1, 2, 3];
-   *
-   * _.pull(array, 2, 3);
-   * console.log(array);
-   * // => [1, 1]
-   */
-  function pull() {
-    var args = arguments,
-        array = args[0];
-
-    if (!(array && array.length)) {
-      return array;
-    }
-    var index = 0,
-        indexOf = baseIndexOf,
-        length = args.length;
-
-    while (++index < length) {
-      var fromIndex = 0,
-          value = args[index];
-
-      while ((fromIndex = indexOf(array, value, fromIndex)) > -1) {
-        splice.call(array, fromIndex, 1);
-      }
-    }
-    return array;
-  }
-
-  return pull;
-});
-
-define('event-emitter',['lodash-amd/modern/array/pull',
-  'immutable/dist/immutable'], function (pull, Immutable) {
+define('event-emitter',['immutable'], function (Immutable) {
 
   
 
@@ -8386,7 +8170,7 @@ define('scribe',[
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable',
+  'immutable',
   './config'
 ], function (
   plugins,
