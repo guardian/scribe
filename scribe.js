@@ -25,7 +25,7 @@ define('plugins/core/set-root-p-element',[],function () {
 });
 
 /**
- *  Copyright (c) 2014, Facebook, Inc.
+ *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
  *
  *  This source code is licensed under the BSD-style license found in the
@@ -34,7 +34,7 @@ define('plugins/core/set-root-p-element',[],function () {
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define('immutable/dist/immutable',factory) :
+  typeof define === 'function' && define.amd ? define('immutable',factory) :
   global.Immutable = factory()
 }(this, function () { var SLICE$0 = Array.prototype.slice;
 
@@ -196,22 +196,22 @@ define('plugins/core/set-root-p-element',[],function () {
   var ITERATOR_SYMBOL = REAL_ITERATOR_SYMBOL || FAUX_ITERATOR_SYMBOL;
 
 
-  function Iterator(next) {
+  function src_Iterator__Iterator(next) {
       this.next = next;
     }
 
-    Iterator.prototype.toString = function() {
+    src_Iterator__Iterator.prototype.toString = function() {
       return '[Iterator]';
     };
 
 
-  Iterator.KEYS = ITERATE_KEYS;
-  Iterator.VALUES = ITERATE_VALUES;
-  Iterator.ENTRIES = ITERATE_ENTRIES;
+  src_Iterator__Iterator.KEYS = ITERATE_KEYS;
+  src_Iterator__Iterator.VALUES = ITERATE_VALUES;
+  src_Iterator__Iterator.ENTRIES = ITERATE_ENTRIES;
 
-  Iterator.prototype.inspect =
-  Iterator.prototype.toSource = function () { return this.toString(); }
-  Iterator.prototype[ITERATOR_SYMBOL] = function () {
+  src_Iterator__Iterator.prototype.inspect =
+  src_Iterator__Iterator.prototype.toSource = function () { return this.toString(); }
+  src_Iterator__Iterator.prototype[ITERATOR_SYMBOL] = function () {
     return this;
   };
 
@@ -304,15 +304,7 @@ define('plugins/core/set-root-p-element',[],function () {
           keyedSeqFromValue(value);
     }
 
-    KeyedSeq.of = function(/*...values*/) {
-      return KeyedSeq(arguments);
-    };
-
     KeyedSeq.prototype.toKeyedSeq = function() {
-      return this;
-    };
-
-    KeyedSeq.prototype.toSeq = function() {
       return this;
     };
 
@@ -404,7 +396,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var array = this._array;
       var maxIndex = array.length - 1;
       var ii = 0;
-      return new Iterator(function() 
+      return new src_Iterator__Iterator(function() 
         {return ii > maxIndex ?
           iteratorDone() :
           iteratorValue(type, ii, array[reverse ? maxIndex - ii++ : ii++])}
@@ -450,7 +442,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var keys = this._keys;
       var maxIndex = keys.length - 1;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var key = keys[reverse ? maxIndex - ii : ii];
         return ii++ > maxIndex ?
           iteratorDone() :
@@ -492,10 +484,10 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterable = this._iterable;
       var iterator = getIterator(iterable);
       if (!isIterator(iterator)) {
-        return new Iterator(iteratorDone);
+        return new src_Iterator__Iterator(iteratorDone);
       }
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step : iteratorValue(type, iterations++, step.value);
       });
@@ -539,7 +531,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = this._iterator;
       var cache = this._iteratorCache;
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (iterations >= cache.length) {
           var step = iterator.next();
           if (step.done) {
@@ -632,7 +624,7 @@ define('plugins/core/set-root-p-element',[],function () {
     if (cache) {
       var maxIndex = cache.length - 1;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var entry = cache[reverse ? maxIndex - ii : ii];
         return ii++ > maxIndex ?
           iteratorDone() :
@@ -724,11 +716,19 @@ define('plugins/core/set-root-p-element',[],function () {
         typeof valueB.valueOf === 'function') {
       valueA = valueA.valueOf();
       valueB = valueB.valueOf();
+      if (valueA === valueB || (valueA !== valueA && valueB !== valueB)) {
+        return true;
+      }
+      if (!valueA || !valueB) {
+        return false;
+      }
     }
-    return typeof valueA.equals === 'function' &&
-      typeof valueB.equals === 'function' ?
-        valueA.equals(valueB) :
-        valueA === valueB || (valueA !== valueA && valueB !== valueB);
+    if (typeof valueA.equals === 'function' &&
+        typeof valueB.equals === 'function' &&
+        valueA.equals(valueB)) {
+      return true;
+    }
+    return false;
   }
 
   function fromJS(json, converter) {
@@ -758,13 +758,13 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function isPlainObj(value) {
-    return value && value.constructor === Object;
+    return value && (value.constructor === Object || value.constructor === undefined);
   }
 
-  var Math__imul =
+  var src_Math__imul =
     typeof Math.imul === 'function' && Math.imul(0xffffffff, 2) === -2 ?
     Math.imul :
-    function Math__imul(a, b) {
+    function imul(a, b) {
       a = a | 0; // int
       b = b | 0; // int
       var c = a & 0xffff;
@@ -845,22 +845,29 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function hashJSObj(obj) {
-    var hash = weakMap && weakMap.get(obj);
-    if (hash) return hash;
+    var hash;
+    if (usingWeakMap) {
+      hash = weakMap.get(obj);
+      if (hash !== undefined) {
+        return hash;
+      }
+    }
 
     hash = obj[UID_HASH_KEY];
-    if (hash) return hash;
+    if (hash !== undefined) {
+      return hash;
+    }
 
     if (!canDefineProperty) {
       hash = obj.propertyIsEnumerable && obj.propertyIsEnumerable[UID_HASH_KEY];
-      if (hash) return hash;
+      if (hash !== undefined) {
+        return hash;
+      }
 
       hash = getIENodeHash(obj);
-      if (hash) return hash;
-    }
-
-    if (Object.isExtensible && !Object.isExtensible(obj)) {
-      throw new Error('Non-extensible objects are not allowed as keys.');
+      if (hash !== undefined) {
+        return hash;
+      }
     }
 
     hash = ++objHashUID;
@@ -868,8 +875,10 @@ define('plugins/core/set-root-p-element',[],function () {
       objHashUID = 0;
     }
 
-    if (weakMap) {
+    if (usingWeakMap) {
       weakMap.set(obj, hash);
+    } else if (isExtensible !== undefined && isExtensible(obj) === false) {
+      throw new Error('Non-extensible objects are not allowed as keys.');
     } else if (canDefineProperty) {
       Object.defineProperty(obj, UID_HASH_KEY, {
         'enumerable': false,
@@ -877,7 +886,7 @@ define('plugins/core/set-root-p-element',[],function () {
         'writable': false,
         'value': hash
       });
-    } else if (obj.propertyIsEnumerable &&
+    } else if (obj.propertyIsEnumerable !== undefined &&
                obj.propertyIsEnumerable === obj.constructor.prototype.propertyIsEnumerable) {
       // Since we can't define a non-enumerable property on the object
       // we'll hijack one of the less-used non-enumerable properties to
@@ -887,7 +896,7 @@ define('plugins/core/set-root-p-element',[],function () {
         return this.constructor.prototype.propertyIsEnumerable.apply(this, arguments);
       };
       obj.propertyIsEnumerable[UID_HASH_KEY] = hash;
-    } else if (obj.nodeType) {
+    } else if (obj.nodeType !== undefined) {
       // At this point we couldn't get the IE `uniqueID` to use as a hash
       // and we couldn't use a non-enumerable property to exploit the
       // dontEnum bug so we simply add the `UID_HASH_KEY` on the node
@@ -900,10 +909,13 @@ define('plugins/core/set-root-p-element',[],function () {
     return hash;
   }
 
+  // Get references to ES5 object methods.
+  var isExtensible = Object.isExtensible;
+
   // True if Object.defineProperty works as expected. IE8 fails this test.
   var canDefineProperty = (function() {
     try {
-      Object.defineProperty({}, 'x', {});
+      Object.defineProperty({}, '@', {});
       return true;
     } catch (e) {
       return false;
@@ -924,7 +936,11 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   // If possible, use a WeakMap.
-  var weakMap = typeof WeakMap === 'function' && new WeakMap();
+  var usingWeakMap = typeof WeakMap === 'function';
+  var weakMap;
+  if (usingWeakMap) {
+    weakMap = new WeakMap();
+  }
 
   var objHashUID = 0;
 
@@ -1001,7 +1017,7 @@ define('plugins/core/set-root-p-element',[],function () {
       }
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
       var ii = reverse ? resolveSize(this) : 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, reverse ? --ii : ii++, step.value, step);
@@ -1017,8 +1033,8 @@ define('plugins/core/set-root-p-element',[],function () {
       this.size = iter.size;
     }
 
-    ToIndexedSequence.prototype.contains = function(value) {
-      return this._iter.contains(value);
+    ToIndexedSequence.prototype.includes = function(value) {
+      return this._iter.includes(value);
     };
 
     ToIndexedSequence.prototype.__iterate = function(fn, reverse) {var this$0 = this;
@@ -1029,7 +1045,7 @@ define('plugins/core/set-root-p-element',[],function () {
     ToIndexedSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, iterations++, step.value, step)
@@ -1045,7 +1061,7 @@ define('plugins/core/set-root-p-element',[],function () {
     }
 
     ToSetSequence.prototype.has = function(key) {
-      return this._iter.contains(key);
+      return this._iter.includes(key);
     };
 
     ToSetSequence.prototype.__iterate = function(fn, reverse) {var this$0 = this;
@@ -1054,7 +1070,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     ToSetSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         return step.done ? step :
           iteratorValue(type, step.value, step.value, step);
@@ -1079,14 +1095,19 @@ define('plugins/core/set-root-p-element',[],function () {
         // in the parent iteration.
         if (entry) {
           validateEntry(entry);
-          return fn(entry[1], entry[0], this$0);
+          var indexedIterable = isIterable(entry);
+          return fn(
+            indexedIterable ? entry.get(1) : entry[1],
+            indexedIterable ? entry.get(0) : entry[0],
+            this$0
+          );
         }
       }, reverse);
     };
 
     FromEntriesSequence.prototype.__iterator = function(type, reverse) {
       var iterator = this._iter.__iterator(ITERATE_VALUES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (true) {
           var step = iterator.next();
           if (step.done) {
@@ -1097,8 +1118,13 @@ define('plugins/core/set-root-p-element',[],function () {
           // in the parent iteration.
           if (entry) {
             validateEntry(entry);
-            return type === ITERATE_ENTRIES ? step :
-              iteratorValue(type, entry[0], entry[1], step);
+            var indexedIterable = isIterable(entry);
+            return iteratorValue(
+              type,
+              indexedIterable ? entry.get(0) : entry[0],
+              indexedIterable ? entry.get(1) : entry[1],
+              step
+            );
           }
         }
       });
@@ -1122,8 +1148,8 @@ define('plugins/core/set-root-p-element',[],function () {
       reversedSequence.flip = function()  {return iterable.reverse()};
       return reversedSequence;
     };
-    flipSequence.has = function(key ) {return iterable.contains(key)};
-    flipSequence.contains = function(key ) {return iterable.has(key)};
+    flipSequence.has = function(key ) {return iterable.includes(key)};
+    flipSequence.includes = function(key ) {return iterable.has(key)};
     flipSequence.cacheResult = cacheResultThrough;
     flipSequence.__iterateUncached = function (fn, reverse) {var this$0 = this;
       return iterable.__iterate(function(v, k)  {return fn(k, v, this$0) !== false}, reverse);
@@ -1131,7 +1157,7 @@ define('plugins/core/set-root-p-element',[],function () {
     flipSequence.__iteratorUncached = function(type, reverse) {
       if (type === ITERATE_ENTRIES) {
         var iterator = iterable.__iterator(type, reverse);
-        return new Iterator(function()  {
+        return new src_Iterator__Iterator(function()  {
           var step = iterator.next();
           if (!step.done) {
             var k = step.value[0];
@@ -1168,7 +1194,7 @@ define('plugins/core/set-root-p-element',[],function () {
     }
     mappedSequence.__iteratorUncached = function (type, reverse) {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step = iterator.next();
         if (step.done) {
           return step;
@@ -1203,7 +1229,7 @@ define('plugins/core/set-root-p-element',[],function () {
       {return iterable.get(useKeys ? key : -1 - key, notSetValue)};
     reversedSequence.has = function(key )
       {return iterable.has(useKeys ? key : -1 - key)};
-    reversedSequence.contains = function(value ) {return iterable.contains(value)};
+    reversedSequence.includes = function(value ) {return iterable.includes(value)};
     reversedSequence.cacheResult = cacheResultThrough;
     reversedSequence.__iterate = function (fn, reverse) {var this$0 = this;
       return iterable.__iterate(function(v, k)  {return fn(v, k, this$0)}, !reverse);
@@ -1240,7 +1266,7 @@ define('plugins/core/set-root-p-element',[],function () {
     filterSequence.__iteratorUncached = function (type, reverse) {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (true) {
           var step = iterator.next();
           if (step.done) {
@@ -1260,7 +1286,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
 
   function countByFactory(iterable, grouper, context) {
-    var groups = Map().asMutable();
+    var groups = src_Map__Map().asMutable();
     iterable.__iterate(function(v, k)  {
       groups.update(
         grouper.call(context, v, k, iterable),
@@ -1274,7 +1300,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
   function groupByFactory(iterable, grouper, context) {
     var isKeyedIter = isKeyed(iterable);
-    var groups = (isOrdered(iterable) ? OrderedMap() : Map()).asMutable();
+    var groups = (isOrdered(iterable) ? OrderedMap() : src_Map__Map()).asMutable();
     iterable.__iterate(function(v, k)  {
       groups.update(
         grouper.call(context, v, k, iterable),
@@ -1298,19 +1324,24 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // begin or end will be NaN if they were provided as negative numbers and
     // this iterable's size is unknown. In that case, cache first so there is
-    // a known size.
+    // a known size and these do not resolve to NaN.
     if (resolvedBegin !== resolvedBegin || resolvedEnd !== resolvedEnd) {
       return sliceFactory(iterable.toSeq().cacheResult(), begin, end, useKeys);
     }
 
-    var sliceSize = resolvedEnd - resolvedBegin;
-    if (sliceSize < 0) {
-      sliceSize = 0;
+    // Note: resolvedEnd is undefined when the original sequence's length is
+    // unknown and this slice did not supply an end and should contain all
+    // elements after resolvedBegin.
+    // In that case, resolvedSize will be NaN and sliceSize will remain undefined.
+    var resolvedSize = resolvedEnd - resolvedBegin;
+    var sliceSize;
+    if (resolvedSize === resolvedSize) {
+      sliceSize = resolvedSize < 0 ? 0 : resolvedSize;
     }
 
     var sliceSeq = makeSequence(iterable);
 
-    sliceSeq.size = sliceSize === 0 ? sliceSize : iterable.size && sliceSize || undefined;
+    sliceSeq.size = sliceSize;
 
     if (!useKeys && isSeq(iterable) && sliceSize >= 0) {
       sliceSeq.get = function (index, notSetValue) {
@@ -1342,15 +1373,15 @@ define('plugins/core/set-root-p-element',[],function () {
     };
 
     sliceSeq.__iteratorUncached = function(type, reverse) {
-      if (sliceSize && reverse) {
+      if (sliceSize !== 0 && reverse) {
         return this.cacheResult().__iterator(type, reverse);
       }
       // Don't bother instantiating parent iterator if taking 0.
-      var iterator = sliceSize && iterable.__iterator(type, reverse);
+      var iterator = sliceSize !== 0 && iterable.__iterator(type, reverse);
       var skipped = 0;
       var iterations = 0;
-      return new Iterator(function()  {
-        while (skipped++ !== resolvedBegin) {
+      return new src_Iterator__Iterator(function()  {
+        while (skipped++ < resolvedBegin) {
           iterator.next();
         }
         if (++iterations > sliceSize) {
@@ -1389,7 +1420,7 @@ define('plugins/core/set-root-p-element',[],function () {
       }
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var iterating = true;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (!iterating) {
           return iteratorDone();
         }
@@ -1435,7 +1466,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(ITERATE_ENTRIES, reverse);
       var skipping = true;
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var step, k, v;
         do {
           step = iterator.next();
@@ -1531,7 +1562,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(type, reverse);
       var stack = [];
       var iterations = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         while (iterator) {
           var step = iterator.next();
           if (step.done !== false) {
@@ -1580,7 +1611,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var iterator = iterable.__iterator(ITERATE_VALUES, reverse);
       var iterations = 0;
       var step;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (!step || iterations % 2) {
           step = iterator.next();
           if (step.done) {
@@ -1673,7 +1704,7 @@ define('plugins/core/set-root-p-element',[],function () {
       );
       var iterations = 0;
       var isDone = false;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var steps;
         if (!isDone) {
           steps = iterators.map(function(i ) {return i.next()});
@@ -1753,11 +1784,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return iter;
   }
 
-  createClass(Map, KeyedCollection);
+  createClass(src_Map__Map, KeyedCollection);
 
     // @pragma Construction
 
-    function Map(value) {
+    function src_Map__Map(value) {
       return value === null || value === undefined ? emptyMap() :
         isMap(value) ? value :
         emptyMap().withMutations(function(map ) {
@@ -1767,13 +1798,13 @@ define('plugins/core/set-root-p-element',[],function () {
         });
     }
 
-    Map.prototype.toString = function() {
+    src_Map__Map.prototype.toString = function() {
       return this.__toString('Map {', '}');
     };
 
     // @pragma Access
 
-    Map.prototype.get = function(k, notSetValue) {
+    src_Map__Map.prototype.get = function(k, notSetValue) {
       return this._root ?
         this._root.get(0, undefined, k, notSetValue) :
         notSetValue;
@@ -1781,29 +1812,29 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // @pragma Modification
 
-    Map.prototype.set = function(k, v) {
+    src_Map__Map.prototype.set = function(k, v) {
       return updateMap(this, k, v);
     };
 
-    Map.prototype.setIn = function(keyPath, v) {
+    src_Map__Map.prototype.setIn = function(keyPath, v) {
       return this.updateIn(keyPath, NOT_SET, function()  {return v});
     };
 
-    Map.prototype.remove = function(k) {
+    src_Map__Map.prototype.remove = function(k) {
       return updateMap(this, k, NOT_SET);
     };
 
-    Map.prototype.deleteIn = function(keyPath) {
+    src_Map__Map.prototype.deleteIn = function(keyPath) {
       return this.updateIn(keyPath, function()  {return NOT_SET});
     };
 
-    Map.prototype.update = function(k, notSetValue, updater) {
+    src_Map__Map.prototype.update = function(k, notSetValue, updater) {
       return arguments.length === 1 ?
         k(this) :
         this.updateIn([k], notSetValue, updater);
     };
 
-    Map.prototype.updateIn = function(keyPath, notSetValue, updater) {
+    src_Map__Map.prototype.updateIn = function(keyPath, notSetValue, updater) {
       if (!updater) {
         updater = notSetValue;
         notSetValue = undefined;
@@ -1817,7 +1848,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return updatedValue === NOT_SET ? undefined : updatedValue;
     };
 
-    Map.prototype.clear = function() {
+    src_Map__Map.prototype.clear = function() {
       if (this.size === 0) {
         return this;
       }
@@ -1833,65 +1864,77 @@ define('plugins/core/set-root-p-element',[],function () {
 
     // @pragma Composition
 
-    Map.prototype.merge = function(/*...iters*/) {
+    src_Map__Map.prototype.merge = function(/*...iters*/) {
       return mergeIntoMapWith(this, undefined, arguments);
     };
 
-    Map.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Map__Map.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return mergeIntoMapWith(this, merger, iters);
     };
 
-    Map.prototype.mergeIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.merge.apply(m, iters)});
+    src_Map__Map.prototype.mergeIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.merge === 'function' ?
+          m.merge.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
-    Map.prototype.mergeDeep = function(/*...iters*/) {
+    src_Map__Map.prototype.mergeDeep = function(/*...iters*/) {
       return mergeIntoMapWith(this, deepMerger(undefined), arguments);
     };
 
-    Map.prototype.mergeDeepWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Map__Map.prototype.mergeDeepWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return mergeIntoMapWith(this, deepMerger(merger), iters);
     };
 
-    Map.prototype.mergeDeepIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.mergeDeep.apply(m, iters)});
+    src_Map__Map.prototype.mergeDeepIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.mergeDeep === 'function' ?
+          m.mergeDeep.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
-    Map.prototype.sort = function(comparator) {
+    src_Map__Map.prototype.sort = function(comparator) {
       // Late binding
       return OrderedMap(sortFactory(this, comparator));
     };
 
-    Map.prototype.sortBy = function(mapper, comparator) {
+    src_Map__Map.prototype.sortBy = function(mapper, comparator) {
       // Late binding
       return OrderedMap(sortFactory(this, comparator, mapper));
     };
 
     // @pragma Mutability
 
-    Map.prototype.withMutations = function(fn) {
+    src_Map__Map.prototype.withMutations = function(fn) {
       var mutable = this.asMutable();
       fn(mutable);
       return mutable.wasAltered() ? mutable.__ensureOwner(this.__ownerID) : this;
     };
 
-    Map.prototype.asMutable = function() {
+    src_Map__Map.prototype.asMutable = function() {
       return this.__ownerID ? this : this.__ensureOwner(new OwnerID());
     };
 
-    Map.prototype.asImmutable = function() {
+    src_Map__Map.prototype.asImmutable = function() {
       return this.__ensureOwner();
     };
 
-    Map.prototype.wasAltered = function() {
+    src_Map__Map.prototype.wasAltered = function() {
       return this.__altered;
     };
 
-    Map.prototype.__iterator = function(type, reverse) {
+    src_Map__Map.prototype.__iterator = function(type, reverse) {
       return new MapIterator(this, type, reverse);
     };
 
-    Map.prototype.__iterate = function(fn, reverse) {var this$0 = this;
+    src_Map__Map.prototype.__iterate = function(fn, reverse) {var this$0 = this;
       var iterations = 0;
       this._root && this._root.iterate(function(entry ) {
         iterations++;
@@ -1900,7 +1943,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return iterations;
     };
 
-    Map.prototype.__ensureOwner = function(ownerID) {
+    src_Map__Map.prototype.__ensureOwner = function(ownerID) {
       if (ownerID === this.__ownerID) {
         return this;
       }
@@ -1917,11 +1960,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return !!(maybeMap && maybeMap[IS_MAP_SENTINEL]);
   }
 
-  Map.isMap = isMap;
+  src_Map__Map.isMap = isMap;
 
   var IS_MAP_SENTINEL = '@@__IMMUTABLE_MAP__@@';
 
-  var MapPrototype = Map.prototype;
+  var MapPrototype = src_Map__Map.prototype;
   MapPrototype[IS_MAP_SENTINEL] = true;
   MapPrototype[DELETE] = MapPrototype.remove;
   MapPrototype.removeIn = MapPrototype.deleteIn;
@@ -2265,7 +2308,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return fn(this.entry);
   }
 
-  createClass(MapIterator, Iterator);
+  createClass(MapIterator, src_Iterator__Iterator);
 
     function MapIterator(map, type, reverse) {
       this._type = type;
@@ -2445,10 +2488,10 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function deepMerger(merger) {
-    return function(existing, value) 
+    return function(existing, value, key) 
       {return existing && existing.mergeDeepWith && isIterable(value) ?
         existing.mergeDeepWith(merger, value) :
-        merger ? merger(existing, value) : value};
+        merger ? merger(existing, value, key) : value};
   }
 
   function mergeIntoCollectionWith(collection, merger, iters) {
@@ -2456,14 +2499,14 @@ define('plugins/core/set-root-p-element',[],function () {
     if (iters.length === 0) {
       return collection;
     }
-    if (collection.size === 0 && iters.length === 1) {
+    if (collection.size === 0 && !collection.__ownerID && iters.length === 1) {
       return collection.constructor(iters[0]);
     }
     return collection.withMutations(function(collection ) {
       var mergeIntoMap = merger ?
         function(value, key)  {
           collection.update(key, NOT_SET, function(existing )
-            {return existing === NOT_SET ? value : merger(existing, value)}
+            {return existing === NOT_SET ? value : merger(existing, value, key)}
           );
         } :
         function(value, key)  {
@@ -2698,7 +2741,7 @@ define('plugins/core/set-root-p-element',[],function () {
     List.prototype.__iterator = function(type, reverse) {
       var index = 0;
       var values = iterateList(this, reverse);
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var value = values();
         return value === DONE ?
           iteratorDone() :
@@ -3017,7 +3060,7 @@ define('plugins/core/set-root-p-element',[],function () {
     var newLevel = list._level;
     var newRoot = list._root;
 
-    // New origin might require creating a higher root.
+    // New origin might need creating a higher root.
     var offsetShift = 0;
     while (newOrigin + offsetShift < 0) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [undefined, newRoot] : [], owner);
@@ -3034,7 +3077,7 @@ define('plugins/core/set-root-p-element',[],function () {
     var oldTailOffset = getTailOffset(oldCapacity);
     var newTailOffset = getTailOffset(newCapacity);
 
-    // New size might require creating a higher root.
+    // New size might need creating a higher root.
     while (newTailOffset >= 1 << (newLevel + SHIFT)) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [newRoot] : [], owner);
       newLevel += SHIFT;
@@ -3138,7 +3181,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return size < SIZE ? 0 : (((size - 1) >>> SHIFT) << SHIFT);
   }
 
-  createClass(OrderedMap, Map);
+  createClass(OrderedMap, src_Map__Map);
 
     // @pragma Construction
 
@@ -3312,6 +3355,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.get = function(index, notSetValue) {
       var head = this._head;
+      index = wrapIndex(this, index);
       while (head && index--) {
         head = head.next;
       }
@@ -3444,7 +3488,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.__iterate = function(fn, reverse) {
       if (reverse) {
-        return this.toSeq().cacheResult.__iterate(fn, reverse);
+        return this.reverse().__iterate(fn);
       }
       var iterations = 0;
       var node = this._head;
@@ -3459,11 +3503,11 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Stack.prototype.__iterator = function(type, reverse) {
       if (reverse) {
-        return this.toSeq().cacheResult().__iterator(type, reverse);
+        return this.reverse().__iterator(type);
       }
       var iterations = 0;
       var node = this._head;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         if (node) {
           var value = node.value;
           node = node.next;
@@ -3505,11 +3549,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return EMPTY_STACK || (EMPTY_STACK = makeStack(0));
   }
 
-  createClass(Set, SetCollection);
+  createClass(src_Set__Set, SetCollection);
 
     // @pragma Construction
 
-    function Set(value) {
+    function src_Set__Set(value) {
       return value === null || value === undefined ? emptySet() :
         isSet(value) ? value :
         emptySet().withMutations(function(set ) {
@@ -3519,46 +3563,46 @@ define('plugins/core/set-root-p-element',[],function () {
         });
     }
 
-    Set.of = function(/*...values*/) {
+    src_Set__Set.of = function(/*...values*/) {
       return this(arguments);
     };
 
-    Set.fromKeys = function(value) {
+    src_Set__Set.fromKeys = function(value) {
       return this(KeyedIterable(value).keySeq());
     };
 
-    Set.prototype.toString = function() {
+    src_Set__Set.prototype.toString = function() {
       return this.__toString('Set {', '}');
     };
 
     // @pragma Access
 
-    Set.prototype.has = function(value) {
+    src_Set__Set.prototype.has = function(value) {
       return this._map.has(value);
     };
 
     // @pragma Modification
 
-    Set.prototype.add = function(value) {
+    src_Set__Set.prototype.add = function(value) {
       return updateSet(this, this._map.set(value, true));
     };
 
-    Set.prototype.remove = function(value) {
+    src_Set__Set.prototype.remove = function(value) {
       return updateSet(this, this._map.remove(value));
     };
 
-    Set.prototype.clear = function() {
+    src_Set__Set.prototype.clear = function() {
       return updateSet(this, this._map.clear());
     };
 
     // @pragma Composition
 
-    Set.prototype.union = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.union = function() {var iters = SLICE$0.call(arguments, 0);
       iters = iters.filter(function(x ) {return x.size !== 0});
       if (iters.length === 0) {
         return this;
       }
-      if (this.size === 0 && iters.length === 1) {
+      if (this.size === 0 && !this.__ownerID && iters.length === 1) {
         return this.constructor(iters[0]);
       }
       return this.withMutations(function(set ) {
@@ -3568,7 +3612,7 @@ define('plugins/core/set-root-p-element',[],function () {
       });
     };
 
-    Set.prototype.intersect = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.intersect = function() {var iters = SLICE$0.call(arguments, 0);
       if (iters.length === 0) {
         return this;
       }
@@ -3576,14 +3620,14 @@ define('plugins/core/set-root-p-element',[],function () {
       var originalSet = this;
       return this.withMutations(function(set ) {
         originalSet.forEach(function(value ) {
-          if (!iters.every(function(iter ) {return iter.contains(value)})) {
+          if (!iters.every(function(iter ) {return iter.includes(value)})) {
             set.remove(value);
           }
         });
       });
     };
 
-    Set.prototype.subtract = function() {var iters = SLICE$0.call(arguments, 0);
+    src_Set__Set.prototype.subtract = function() {var iters = SLICE$0.call(arguments, 0);
       if (iters.length === 0) {
         return this;
       }
@@ -3591,44 +3635,44 @@ define('plugins/core/set-root-p-element',[],function () {
       var originalSet = this;
       return this.withMutations(function(set ) {
         originalSet.forEach(function(value ) {
-          if (iters.some(function(iter ) {return iter.contains(value)})) {
+          if (iters.some(function(iter ) {return iter.includes(value)})) {
             set.remove(value);
           }
         });
       });
     };
 
-    Set.prototype.merge = function() {
+    src_Set__Set.prototype.merge = function() {
       return this.union.apply(this, arguments);
     };
 
-    Set.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
+    src_Set__Set.prototype.mergeWith = function(merger) {var iters = SLICE$0.call(arguments, 1);
       return this.union.apply(this, iters);
     };
 
-    Set.prototype.sort = function(comparator) {
+    src_Set__Set.prototype.sort = function(comparator) {
       // Late binding
       return OrderedSet(sortFactory(this, comparator));
     };
 
-    Set.prototype.sortBy = function(mapper, comparator) {
+    src_Set__Set.prototype.sortBy = function(mapper, comparator) {
       // Late binding
       return OrderedSet(sortFactory(this, comparator, mapper));
     };
 
-    Set.prototype.wasAltered = function() {
+    src_Set__Set.prototype.wasAltered = function() {
       return this._map.wasAltered();
     };
 
-    Set.prototype.__iterate = function(fn, reverse) {var this$0 = this;
+    src_Set__Set.prototype.__iterate = function(fn, reverse) {var this$0 = this;
       return this._map.__iterate(function(_, k)  {return fn(k, k, this$0)}, reverse);
     };
 
-    Set.prototype.__iterator = function(type, reverse) {
+    src_Set__Set.prototype.__iterator = function(type, reverse) {
       return this._map.map(function(_, k)  {return k}).__iterator(type, reverse);
     };
 
-    Set.prototype.__ensureOwner = function(ownerID) {
+    src_Set__Set.prototype.__ensureOwner = function(ownerID) {
       if (ownerID === this.__ownerID) {
         return this;
       }
@@ -3646,11 +3690,11 @@ define('plugins/core/set-root-p-element',[],function () {
     return !!(maybeSet && maybeSet[IS_SET_SENTINEL]);
   }
 
-  Set.isSet = isSet;
+  src_Set__Set.isSet = isSet;
 
   var IS_SET_SENTINEL = '@@__IMMUTABLE_SET__@@';
 
-  var SetPrototype = Set.prototype;
+  var SetPrototype = src_Set__Set.prototype;
   SetPrototype[IS_SET_SENTINEL] = true;
   SetPrototype[DELETE] = SetPrototype.remove;
   SetPrototype.mergeDeep = SetPrototype.merge;
@@ -3686,7 +3730,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return EMPTY_SET || (EMPTY_SET = makeSet(emptyMap()));
   }
 
-  createClass(OrderedSet, Set);
+  createClass(OrderedSet, src_Set__Set);
 
     // @pragma Construction
 
@@ -3741,37 +3785,29 @@ define('plugins/core/set-root-p-element',[],function () {
   createClass(Record, KeyedCollection);
 
     function Record(defaultValues, name) {
+      var hasInitialized;
+
       var RecordType = function Record(values) {
+        if (values instanceof RecordType) {
+          return values;
+        }
         if (!(this instanceof RecordType)) {
           return new RecordType(values);
         }
-        this._map = Map(values);
+        if (!hasInitialized) {
+          hasInitialized = true;
+          var keys = Object.keys(defaultValues);
+          setProps(RecordTypePrototype, keys);
+          RecordTypePrototype.size = keys.length;
+          RecordTypePrototype._name = name;
+          RecordTypePrototype._keys = keys;
+          RecordTypePrototype._defaultValues = defaultValues;
+        }
+        this._map = src_Map__Map(values);
       };
-
-      var keys = Object.keys(defaultValues);
 
       var RecordTypePrototype = RecordType.prototype = Object.create(RecordPrototype);
       RecordTypePrototype.constructor = RecordType;
-      name && (RecordTypePrototype._name = name);
-      RecordTypePrototype._defaultValues = defaultValues;
-      RecordTypePrototype._keys = keys;
-      RecordTypePrototype.size = keys.length;
-
-      try {
-        keys.forEach(function(key ) {
-          Object.defineProperty(RecordType.prototype, key, {
-            get: function() {
-              return this.get(key);
-            },
-            set: function(value) {
-              invariant(this.__ownerID, 'Cannot set on an immutable record.');
-              this.set(key, value);
-            }
-          });
-        });
-      } catch (error) {
-        // Object.defineProperty failed. Probably IE8.
-      }
 
       return RecordType;
     }
@@ -3801,8 +3837,8 @@ define('plugins/core/set-root-p-element',[],function () {
         this._map && this._map.clear();
         return this;
       }
-      var SuperRecord = Object.getPrototypeOf(this).constructor;
-      return SuperRecord._empty || (SuperRecord._empty = makeRecord(this, emptyMap()));
+      var RecordType = this.constructor;
+      return RecordType._empty || (RecordType._empty = makeRecord(this, emptyMap()));
     };
 
     Record.prototype.set = function(k, v) {
@@ -3879,7 +3915,27 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function recordName(record) {
-    return record._name || record.constructor.name;
+    return record._name || record.constructor.name || 'Record';
+  }
+
+  function setProps(prototype, names) {
+    try {
+      names.forEach(setProp.bind(undefined, prototype));
+    } catch (error) {
+      // Object.defineProperty failed. Probably IE8.
+    }
+  }
+
+  function setProp(prototype, name) {
+    Object.defineProperty(prototype, name, {
+      get: function() {
+        return this.get(name);
+      },
+      set: function(value) {
+        invariant(this.__ownerID, 'Cannot set on an immutable record.');
+        this.set(name, value);
+      }
+    });
   }
 
   function deepEqual(a, b) {
@@ -3916,7 +3972,9 @@ define('plugins/core/set-root-p-element',[],function () {
 
     if (a.size === undefined) {
       if (b.size === undefined) {
-        a.cacheResult();
+        if (typeof a.cacheResult === 'function') {
+          a.cacheResult();
+        }
       } else {
         flipped = true;
         var _ = a;
@@ -3980,7 +4038,7 @@ define('plugins/core/set-root-p-element',[],function () {
         notSetValue;
     };
 
-    Range.prototype.contains = function(searchValue) {
+    Range.prototype.includes = function(searchValue) {
       var possibleIndex = (searchValue - this._start) / this._step;
       return possibleIndex >= 0 &&
         possibleIndex < this.size &&
@@ -4032,7 +4090,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var step = this._step;
       var value = reverse ? this._start + maxIndex * step : this._start;
       var ii = 0;
-      return new Iterator(function()  {
+      return new src_Iterator__Iterator(function()  {
         var v = value;
         value += reverse ? -step : step;
         return ii > maxIndex ? iteratorDone() : iteratorValue(type, ii++, v);
@@ -4077,7 +4135,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return this.has(index) ? this._value : notSetValue;
     };
 
-    Repeat.prototype.contains = function(searchValue) {
+    Repeat.prototype.includes = function(searchValue) {
       return is(this._value, searchValue);
     };
 
@@ -4116,7 +4174,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Repeat.prototype.__iterator = function(type, reverse) {var this$0 = this;
       var ii = 0;
-      return new Iterator(function() 
+      return new src_Iterator__Iterator(function() 
         {return ii < this$0.size ? iteratorValue(type, ii++, this$0._value) : iteratorDone()}
       );
     };
@@ -4141,7 +4199,7 @@ define('plugins/core/set-root-p-element',[],function () {
     return ctor;
   }
 
-  Iterable.Iterator = Iterator;
+  Iterable.Iterator = src_Iterator__Iterator;
 
   mixin(Iterable, {
 
@@ -4176,7 +4234,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     toMap: function() {
       // Use Late Binding here to solve the circular dependency.
-      return Map(this.toKeyedSeq());
+      return src_Map__Map(this.toKeyedSeq());
     },
 
     toObject: function() {
@@ -4198,7 +4256,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
     toSet: function() {
       // Use Late Binding here to solve the circular dependency.
-      return Set(isKeyed(this) ? this.valueSeq() : this);
+      return src_Set__Set(isKeyed(this) ? this.valueSeq() : this);
     },
 
     toSetSeq: function() {
@@ -4243,6 +4301,10 @@ define('plugins/core/set-root-p-element',[],function () {
     },
 
     contains: function(searchValue) {
+      return this.includes(searchValue);
+    },
+
+    includes: function(searchValue) {
       return this.some(function(value ) {return is(value, searchValue)});
     },
 
@@ -4298,7 +4360,7 @@ define('plugins/core/set-root-p-element',[],function () {
       var isFirst = true;
       this.__iterate(function(v ) {
         isFirst ? (isFirst = false) : (joined += separator);
-        joined += v !== null && v !== undefined ? v : '';
+        joined += v !== null && v !== undefined ? v.toString() : '';
       });
       return joined;
     },
@@ -4449,8 +4511,8 @@ define('plugins/core/set-root-p-element',[],function () {
     },
 
     isSubset: function(iter) {
-      iter = typeof iter.contains === 'function' ? iter : Iterable(iter);
-      return this.every(function(value ) {return iter.contains(value)});
+      iter = typeof iter.includes === 'function' ? iter : Iterable(iter);
+      return this.every(function(value ) {return iter.includes(value)});
     },
 
     isSuperset: function(iter) {
@@ -4631,7 +4693,7 @@ define('plugins/core/set-root-p-element',[],function () {
   KeyedIterablePrototype[IS_KEYED_SENTINEL] = true;
   KeyedIterablePrototype[ITERATOR_SYMBOL] = IterablePrototype.entries;
   KeyedIterablePrototype.__toJS = IterablePrototype.toObject;
-  KeyedIterablePrototype.__toStringMapper = function(v, k)  {return k + ': ' + quoteString(v)};
+  KeyedIterablePrototype.__toStringMapper = function(v, k)  {return JSON.stringify(k) + ': ' + quoteString(v)};
 
 
 
@@ -4768,7 +4830,7 @@ define('plugins/core/set-root-p-element',[],function () {
       return this.has(value) ? value : notSetValue;
     },
 
-    contains: function(value) {
+    includes: function(value) {
       return this.has(value);
     },
 
@@ -4781,7 +4843,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
   });
 
-  SetIterable.prototype.has = IterablePrototype.contains;
+  SetIterable.prototype.has = IterablePrototype.includes;
 
 
   // Mixin subclasses
@@ -4849,12 +4911,12 @@ define('plugins/core/set-root-p-element',[],function () {
   }
 
   function murmurHashOfSize(size, h) {
-    h = Math__imul(h, 0xCC9E2D51);
-    h = Math__imul(h << 15 | h >>> -15, 0x1B873593);
-    h = Math__imul(h << 13 | h >>> -13, 5);
+    h = src_Math__imul(h, 0xCC9E2D51);
+    h = src_Math__imul(h << 15 | h >>> -15, 0x1B873593);
+    h = src_Math__imul(h << 13 | h >>> -13, 5);
     h = (h + 0xE6546B64 | 0) ^ size;
-    h = Math__imul(h ^ h >>> 16, 0x85EBCA6B);
-    h = Math__imul(h ^ h >>> 13, 0xC2B2AE35);
+    h = src_Math__imul(h ^ h >>> 16, 0x85EBCA6B);
+    h = src_Math__imul(h ^ h >>> 13, 0xC2B2AE35);
     h = smi(h ^ h >>> 16);
     return h;
   }
@@ -4869,11 +4931,11 @@ define('plugins/core/set-root-p-element',[],function () {
 
     Seq: Seq,
     Collection: Collection,
-    Map: Map,
+    Map: src_Map__Map,
     OrderedMap: OrderedMap,
     List: List,
     Stack: Stack,
-    Set: Set,
+    Set: src_Set__Set,
     OrderedSet: OrderedSet,
 
     Record: Record,
@@ -4889,7 +4951,7 @@ define('plugins/core/set-root-p-element',[],function () {
 
 }));
 define('plugins/core/formatters/html/enforce-p-elements',[
-  'immutable/dist/immutable'
+  'immutable'
 ], function (Immutable) {
 
   /**
@@ -8142,7 +8204,7 @@ define('lodash-amd/modern/array/pull',['../internal/baseIndexOf'], function(base
 });
 
 define('event-emitter',['lodash-amd/modern/array/pull',
-  'immutable/dist/immutable'], function (pull, Immutable) {
+  'immutable'], function (pull, Immutable) {
 
   
 
@@ -8386,7 +8448,7 @@ define('scribe',[
   './event-emitter',
   './element',
   './node',
-  'immutable/dist/immutable',
+  'immutable',
   './config'
 ], function (
   plugins,
