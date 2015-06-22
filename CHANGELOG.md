@@ -1,3 +1,7 @@
+# 1.4.5
+
+Corrects the NPM version of the ImmutableJS dependency
+
 # 1.4.4
 
 Replaces some of the use of Lodash contains with Immutable data structures and `includes`.

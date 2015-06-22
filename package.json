@@ -1,10 +1,10 @@
 {
   "name": "scribe-editor",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "main": "src/scribe.js",
   "dependencies": {
     "lodash-amd": "~3.5.0",
-    "immutable": "~3.6.2"
+    "immutable": "~3.7.3"
   },
   "devDependencies": {
     "chai": "~1.9.1",
