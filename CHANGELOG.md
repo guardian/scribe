@@ -1,3 +1,7 @@
+# 1.4.6
+
+Treat the clipboard data types variable as an array to avoid issues with future releases of Chrome (and other browsers). Resolves [#401](https://github.com/guardian/scribe/issues/401).
+
 # 1.4.5
 
 Corrects the NPM version of the ImmutableJS dependency

@@ -184,8 +184,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.contains('text/html')) {
-
+          if (event.clipboardData.types.indexOf('text/html') !== -1) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
