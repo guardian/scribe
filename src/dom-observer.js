@@ -14,8 +14,8 @@ define([
 
   function includeRealMutations(mutations) {
     return mutations.some(function(mutation) {
-      return mutations.some.call(mutation.addedNodes, hasRealMutation) ||
-        mutations.some.call(mutation.removedNodes, hasRealMutation);
+      return Array.prototype.some.call(mutation.addedNodes, hasRealMutation) ||
+        Array.prototype.some.call(mutation.removedNodes, hasRealMutation);
     });
   }
 
