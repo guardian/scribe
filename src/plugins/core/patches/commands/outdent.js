@@ -8,6 +8,7 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
       var outdentCommand = new scribe.api.CommandPatch('outdent');
 
       outdentCommand.execute = function () {
@@ -57,7 +58,7 @@ define(function () {
                * split the node and insert the P in the middle.
                */
 
-              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
+              var nextSiblingNodes = nodeHelpers.nextAll(pNode);
 
               if (nextSiblingNodes.length) {
                 var newContainerNode = document.createElement(blockquoteNode.nodeName);

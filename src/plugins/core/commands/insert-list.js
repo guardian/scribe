@@ -9,6 +9,8 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       var InsertListCommand = function (commandName) {
         scribe.api.Command.call(this, commandName);
       };
@@ -43,7 +45,7 @@ define(function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+              var nextListItemElements = nodeHelpers.nextAll(listItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -78,7 +80,7 @@ define(function () {
                 return listItemElement;
               });
               var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+              var listItemElementsAfterSelection = nodeHelpers.nextAll(lastSelectedListItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to

@@ -1,15 +1,13 @@
 define([
-  '../../dom-observer',
-  '../../api/children'
-], function (
-  observeDomChanges,
-  children
-) {
+  '../../dom-observer'
+], function (observeDomChanges) {
 
   'use strict';
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
@@ -28,7 +26,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = children.firstDeepestChild(scribe.el);
+            var focusElement = nodeHelpers.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 

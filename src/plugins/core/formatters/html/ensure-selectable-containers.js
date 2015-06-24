@@ -1,8 +1,8 @@
 define([
-    '../../../../element',
+    '../../../../node',
     'immutable'
   ], function (
-    element,
+    nodeHelpers,
     Immutable
   ) {
 
@@ -18,7 +18,7 @@ define([
   var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
   function parentHasNoTextContent(element, node) {
-    if (element.isCaretPositionNode(node)) {
+    if (nodeHelpers.isCaretPositionNode(node)) {
       return true;
     } else {
       return node.parentNode.textContent.trim() === '';
@@ -34,13 +34,13 @@ define([
 
     function isEmpty(node) {
 
-      if ((node.children.length === 0 && element.isBlockElement(node))
-        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+      if ((node.children.length === 0 && nodeHelpers.isBlockElement(node))
+        || (node.children.length === 1 && nodeHelpers.isSelectionMarkerNode(node.children[0]))) {
          return true;
       }
 
       // Do not insert BR in empty non block elements with parent containing text
-      if (!element.isBlockElement(node) && node.children.length === 0) {
+      if (!nodeHelpers.isBlockElement(node) && node.children.length === 0) {
         return parentHasNoTextContent(element, node);
       }
 
@@ -48,7 +48,7 @@ define([
     }
 
     while (node) {
-      if (!element.isSelectionMarkerNode(node)) {
+      if (!nodeHelpers.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
         // whitespace, and is not self-closing
         if (isEmpty(node) &&

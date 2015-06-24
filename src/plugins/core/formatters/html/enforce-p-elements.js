@@ -22,7 +22,6 @@ define([
   return function () {
     return function (scribe) {
       var nodeHelpers = scribe.node;
-      var elementHelpers = scribe.element;
 
       /**
        * Wrap consecutive inline elements and text nodes in a P element.
@@ -31,7 +30,7 @@ define([
         var index = 0;
         Immutable.List(parentNode.childNodes)
           .filter(function(node) {
-            return node.nodeType === Node.TEXT_NODE || !elementHelpers.isBlockElement(node);
+            return node.nodeType === Node.TEXT_NODE || !nodeHelpers.isBlockElement(node);
           })
           .groupBy(function(node, key, list) {
             return key === 0 || node.previousSibling === list.get(key - 1) ?
