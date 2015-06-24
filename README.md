@@ -146,23 +146,9 @@ layers sequentially.
 
 ## Plugins
 
-We have created a collection of plugins for advanced rich text editing purposes,
-all of which can be seen in use in our [example][example].
+Scribe has a rich plugin ecosystem that expands and customises what it can do.
 
-* [scribe-plugin-blockquote-command](https://github.com/guardian/scribe-plugin-blockquote-command)
-* [scribe-plugin-code-command](https://github.com/guardian/scribe-plugin-code-command)
-* [scribe-plugin-curly-quotes](https://github.com/guardian/scribe-plugin-curly-quotes)
-* [scribe-plugin-formatter-html-ensure-semantic-elements](https://github.com/guardian/scribe-plugin-formatter-html-ensure-semantic-elements)
-* [scribe-plugin-formatter-plain-text-convert-new-lines-to-html](https://github.com/guardian/scribe-plugin-formatter-plain-text-convert-new-lines-to-html)
-* [scribe-plugin-heading-command](https://github.com/guardian/scribe-plugin-heading-command)
-* [scribe-plugin-inline-styles-to-elements](https://github.com/guardian/scribe-plugin-inline-styles-to-elements)
-* [scribe-plugin-intelligent-unlink-command](https://github.com/guardian/scribe-plugin-intelligent-unlink-command)
-* [scribe-plugin-keyboard-shortcuts](https://github.com/guardian/scribe-plugin-keyboard-shortcuts)
-* [scribe-plugin-link-prompt-command](https://github.com/guardian/scribe-plugin-link-prompt-command)
-* [scribe-plugin-noting](https://github.com/guardian/scribe-plugin-noting)
-* [scribe-plugin-sanitizer](https://github.com/guardian/scribe-plugin-sanitizer)
-* [scribe-plugin-smart-lists](https://github.com/guardian/scribe-plugin-smart-lists)
-* [scribe-plugin-toolbar](https://github.com/guardian/scribe-plugin-toolbar)
+See the wiki for a [list of plugins and how to create new ones](https://github.com/guardian/scribe/wiki/Plugins)
 
 ## FAQ
 
