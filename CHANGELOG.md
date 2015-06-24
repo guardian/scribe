@@ -1,3 +1,13 @@
+# 1.4.8
+
+Short-circuits the mutation evaluation via use of Array.prototype.some
+
+[Regis Kuckaertz](https://github.com/regiskuckaertz)
+
+# 1.4.7
+
+Not a valid build, issues between Bower and NPM
+
 # 1.4.6
 
 Treat the clipboard data types variable as an array to avoid issues with future releases of Chrome (and other browsers). Resolves [#401](https://github.com/guardian/scribe/issues/401).
