@@ -5809,24 +5809,23 @@ define('dom-observer',[
   './node'
 ], function (elementHelpers, nodeHelpers) {
 
+  var MutationObserver = window.MutationObserver ||
+    window.WebKitMutationObserver ||
+    window.MozMutationObserver;
+
+  function hasRealMutation(n) {
+    return ! nodeHelpers.isEmptyTextNode(n) &&
+      ! elementHelpers.isSelectionMarkerNode(n);
+  }
+
+  function includeRealMutations(mutations) {
+    return mutations.some(function(mutation) {
+      return Array.prototype.some.call(mutation.addedNodes, hasRealMutation) ||
+        Array.prototype.some.call(mutation.removedNodes, hasRealMutation);
+    });
+  }
+
   function observeDomChanges(el, callback) {
-    function includeRealMutations(mutations) {
-      var realChangedNodes = mutations
-      .map(function(mutation) {
-        return mutations.slice.call(mutation.addedNodes)
-          .concat(mutations.slice.call(mutation.removedNodes));
-      })
-      .reduce(function(result, input) { return result.concat(input); }, [])
-      .filter(function(n) {
-        return ! nodeHelpers.isEmptyTextNode(n) &&
-          ! elementHelpers.isSelectionMarkerNode(n);
-      });
-
-      return realChangedNodes.length > 0;
-    }
-
-    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
     // Flag to avoid running recursively
     var runningPostMutation = false;
 
