@@ -3,24 +3,23 @@ define([
   './node'
 ], function (elementHelpers, nodeHelpers) {
 
+  var MutationObserver = window.MutationObserver ||
+    window.WebKitMutationObserver ||
+    window.MozMutationObserver;
+
+  function hasRealMutation(n) {
+    return ! nodeHelpers.isEmptyTextNode(n) &&
+      ! elementHelpers.isSelectionMarkerNode(n);
+  }
+
+  function includeRealMutations(mutations) {
+    return mutations.some(function(mutation) {
+      return mutations.some.call(mutation.addedNodes, hasRealMutation) ||
+        mutations.some.call(mutation.removedNodes, hasRealMutation);
+    });
+  }
+
   function observeDomChanges(el, callback) {
-    function includeRealMutations(mutations) {
-      var realChangedNodes = mutations
-      .map(function(mutation) {
-        return mutations.slice.call(mutation.addedNodes)
-          .concat(mutations.slice.call(mutation.removedNodes));
-      })
-      .reduce(function(result, input) { return result.concat(input); }, [])
-      .filter(function(n) {
-        return ! nodeHelpers.isEmptyTextNode(n) &&
-          ! elementHelpers.isSelectionMarkerNode(n);
-      });
-
-      return realChangedNodes.length > 0;
-    }
-
-    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-
     // Flag to avoid running recursively
     var runningPostMutation = false;
 
