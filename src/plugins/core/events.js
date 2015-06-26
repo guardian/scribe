@@ -1,9 +1,11 @@
 define([
   '../../dom-observer',
-  '../../api/children'
+  '../../api/children',
+  'immutable'
 ], function (
   observeDomChanges,
-  children
+  children,
+  Immutable
 ) {
 
   'use strict';
@@ -184,7 +186,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.indexOf('text/html') !== -1) {
+          if (Immutable.List(Array.from(event.clipboardData.types)).includes('text/html')) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
