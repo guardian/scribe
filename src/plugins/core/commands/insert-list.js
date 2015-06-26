@@ -1,4 +1,6 @@
-define(function () {
+define([
+  'immutable'
+], function (Immutable) {
 
   /**
    * If the paragraphs option is set to true, then when the list is
@@ -92,12 +94,11 @@ define(function () {
               selection.placeMarkers();
 
               var documentFragment = document.createDocumentFragment();
-              while (!!selectedListItemElements.size) {
+              selectedListItemElements.forEach(function (listItemElement) {
                 var pElement = document.createElement('p');
-                pElement.innerHTML = selectedListItemElements.first().innerHTML;
+                pElement.innerHTML = listItemElement.innerHTML;
                 documentFragment.appendChild(pElement);
-                selectedListItemElements = selectedListItemElements.shift();
-              }
+              });
 
               // Insert the Ps
               listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);
