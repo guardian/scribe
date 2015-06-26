@@ -1,6 +1,10 @@
 define([
-  '../../dom-observer'
-], function (observeDomChanges) {
+  '../../dom-observer',
+  'immutable'
+], function (
+  observeDomChanges,
+  Immutable
+) {
 
   'use strict';
 
@@ -182,7 +186,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.indexOf('text/html') !== -1) {
+          if (Immutable.List(Array.from(event.clipboardData.types)).includes('text/html')) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
