@@ -11,6 +11,30 @@ var initializeScribe = helpers.initializeScribe.bind(null, '../../src/scribe');
 var browserBugs = helpers.browserBugs;
 var browserName = helpers.browserName;
 
+var commandQueryState = function(commandName) {
+  return helpers.driver.executeScript(function(commandName) {
+    var command = window.scribe.getCommand(commandName)
+    return command.queryState();
+  }, commandName);
+};
+var commandQueryEnabled = function(commandName) {
+  return helpers.driver.executeScript(function(commandName) {
+    var command = window.scribe.getCommand(commandName)
+    return command.queryEnabled();
+  }, commandName);
+};
+
+// the only way I could get selenium to properly remove focus from scribe, was to type into another field :/
+var focusOther = function() {
+  return helpers.driver.executeScript(function() {
+    var b = document.createElement('input');
+    b.id = 'focusSwitchInput';
+    document.body.appendChild(b);
+  }).then(function() {
+    return helpers.driver.findElement(webdriver.By.id('focusSwitchInput')).sendKeys('!');
+  });
+};
+
 // Get new referenceS each time a new instance is created
 var driver;
 before(function () {
@@ -236,6 +260,43 @@ describe('commands', function () {
         });
       });
     });
+
+    /*
+     * Query command state
+     */
+    givenContentOf('<p>|1</p>', function() {
+      beforeEach(function () {
+        return executeCommand('insertOrderedList');
+      });
+
+      when('the command is executed and queryState is called', function() {
+        it('should return true', function() {
+          return commandQueryState('insertOrderedList').then(function(returnValue) {
+            expect(returnValue).to.be.true;
+          });
+        });
+      });
+
+      when('the command is executed and queryEnabled is called', function() {
+        it('should return true for queryEnabled', function() {
+          return commandQueryEnabled('insertOrderedList').then(function(returnValue) {
+            expect(returnValue).to.be.true;
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>1</p>', function() {
+      when('queryState is executed for the command', function() {
+        it('should return false', function() {
+          return focusOther().then(function() {
+            return commandQueryState('insertOrderedList');
+          }).then(function(returnValue) {
+            expect(returnValue).to.be.false;
+          });
+        });
+      });
+    });
   });
 
   describe('insertHTML', function () {
@@ -365,7 +426,7 @@ describe('commands', function () {
             });
           });
         });
-        
+
         when('the command is executed with a value of "<p>1<b style="line-height: 2;">2</b><span style="line-height: 2;">3</span></p>"', function () {
           beforeEach(function () {
             // Focus it before-hand
@@ -380,7 +441,7 @@ describe('commands', function () {
             });
           });
         });
-        
+
         when('the command is executed with a value of "<p>1<b style="line-height: 2;">2</b><span style="line-height: 2;">3</span><span style="line-height: 2;">4</span></p>"', function () {
           beforeEach(function () {
             // Focus it before-hand
@@ -395,7 +456,7 @@ describe('commands', function () {
             });
           });
         });
-        
+
         when('the command is executed with a value of "<p><span style="color:green;">1</span></p>"', function () {
           beforeEach(function () {
             // Focus it before-hand
