@@ -20,12 +20,13 @@ define(function () {
 
       InsertListCommand.prototype.execute = function (value) {
         function splitList(listItemElements) {
-          if (listItemElements.length > 0) {
+          if (!!listItemElements.size) {
             var newListNode = document.createElement(listNode.nodeName);
 
-            listItemElements.forEach(function (listItemElement) {
-              newListNode.appendChild(listItemElement);
-            });
+            while (!!listItemElements.size) {
+              newListNode.appendChild(listItemElements.first());
+              listItemElements = listItemElements.shift();
+            }
 
             listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
           }
@@ -45,7 +46,7 @@ define(function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = nodeHelpers.nextAll(listItemElement);
+              var nextListItemElements = nodeHelpers.nextSiblings(listItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -72,15 +73,12 @@ define(function () {
 
               // We can't query for list items in the selection so we loop
               // through them all and find the intersection ourselves.
-              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
-                function (listItemElement) {
-                return range.intersectsNode(listItemElement) && listItemElement;
-              }).filter(function (listItemElement) {
-                // TODO: identity
-                return listItemElement;
-              });
-              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = nodeHelpers.nextAll(lastSelectedListItemElement);
+              var selectedListItemElements = Immutable.List(listNode.querySelectorAll('li'))
+                .filter(function (listItemElement) {
+                  return range.intersectsNode(listItemElement);
+                });
+              var lastSelectedListItemElement = selectedListItemElements.last();
+              var listItemElementsAfterSelection = nodeHelpers.nextSiblings(lastSelectedListItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -94,11 +92,12 @@ define(function () {
               selection.placeMarkers();
 
               var documentFragment = document.createDocumentFragment();
-              selectedListItemElements.forEach(function (listItemElement) {
+              while (!!selectedListItemElements.size) {
                 var pElement = document.createElement('p');
-                pElement.innerHTML = listItemElement.innerHTML;
+                pElement.innerHTML = selectedListItemElements.first().innerHTML;
                 documentFragment.appendChild(pElement);
-              });
+                selectedListItemElements = selectedListItemElements.shift();
+              }
 
               // Insert the Ps
               listNode.parentNode.insertBefore(documentFragment, listNode.nextElementSibling);

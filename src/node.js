@@ -47,16 +47,10 @@ define([
   }
 
   function firstDeepestChild(node) {
-    if(!node.hasChildNodes()) {
-      return node;
-    }
-
-    var child = node.firstChild;
-    if( child.nodeName === 'BR' ) {
-      return node;
-    }
-
-    return firstDeepestChild(child);
+    var fs = node.firstChild;
+    return !fs || fs.nodeName === 'BR' ?
+      node :
+      firstDeepestChild(fs);
   }
 
   function insertAfter(newNode, referenceNode) {
@@ -88,10 +82,10 @@ define([
     }
   }
 
-  function nextAll(node) {
-    var all = [];
+  function nextSiblings(node) {
+    var all = Immutable.List();
     while (node = node.nextSibling) {
-      all.push(node);
+      all = all.push(node);
     }
     return all;
   }
@@ -124,7 +118,7 @@ define([
     insertAfter: insertAfter,
     removeNode: removeNode,
     getAncestor: getAncestor,
-    nextAll: nextAll,
+    nextSiblings: nextSiblings,
     wrap: wrap,
     unwrap: unwrap
   };
