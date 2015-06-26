@@ -15,13 +15,15 @@ var testEnvironment = require('scribe-test-harness/environment');
 
 var mocha = new Mocha();
 
+var specs = process.argv[2] || (__dirname + '/**/*.spec.js');
+
 /**
  * Wait for the connection to Sauce Labs to finish.
  */
 mocha.timeout(15 * 1000);
 mocha.reporter('spec');
 
-testEnvironment.loadSpecifications(__dirname + '/**/*.spec.js', mocha)
+testEnvironment.loadSpecifications(specs, mocha)
   .then(function(mocha) {
     createRunner(mocha);
   });
