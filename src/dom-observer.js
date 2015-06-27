@@ -1,7 +1,6 @@
 define([
-  './element',
   './node'
-], function (elementHelpers, nodeHelpers) {
+], function (nodeHelpers) {
 
   var MutationObserver = window.MutationObserver ||
     window.WebKitMutationObserver ||
@@ -9,7 +8,7 @@ define([
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
-      ! elementHelpers.isSelectionMarkerNode(n);
+      ! nodeHelpers.isSelectionMarkerNode(n);
   }
 
   function includeRealMutations(mutations) {

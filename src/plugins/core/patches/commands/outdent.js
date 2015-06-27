@@ -8,6 +8,7 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
       var outdentCommand = new scribe.api.CommandPatch('outdent');
 
       outdentCommand.execute = function () {
@@ -57,14 +58,15 @@ define(function () {
                * split the node and insert the P in the middle.
                */
 
-              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
+              var nextSiblingNodes = nodeHelpers.nextSiblings(pNode);
 
-              if (nextSiblingNodes.length) {
+              if (!!nextSiblingNodes.size) {
                 var newContainerNode = document.createElement(blockquoteNode.nodeName);
 
-                nextSiblingNodes.forEach(function (siblingNode) {
-                  newContainerNode.appendChild(siblingNode);
-                });
+                while (!!nextSiblingNodes.size) {
+                  newContainerNode.appendChild(nextSiblingNodes.first());
+                  nextSiblingNodes = nextSiblingNodes.shift();
+                }
 
                 blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
               }

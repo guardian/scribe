@@ -3,7 +3,7 @@ define([], function () {
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
-      var element = scribe.element;
+      var nodeHelpers = scribe.node;
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
@@ -17,7 +17,7 @@ define([], function () {
            * insertHTML command, Chrome appends a SPAN to plain content with
            * inline styling replicating that `line-height`, and adjusts the
            * `line-height` on inline elements.
-           * 
+           *
            * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
            * More from the web: http://stackoverflow.com/q/15015019/40352
            */
@@ -35,21 +35,21 @@ define([], function () {
               if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
                 childElement.style.lineHeight = null;
               }
-              
+
               // We can discard an empty style attribute.
               if (childElement.getAttribute('style') === '') {
                 childElement.removeAttribute('style');
               }
-              
+
               // Sanitize children.
               removeChromeArtifacts(childElement);
-              
+
               // We can discard an empty SPAN.
               // (Don't do this until traversal's gone to the next element.)
               var originalChild = childElement;
               childElement = childElement.nextElementSibling;
               if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
-                element.unwrap(parentElement, originalChild);
+                nodeHelpers.unwrap(parentElement, originalChild);
               }
             }
           }

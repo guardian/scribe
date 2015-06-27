@@ -1,4 +1,6 @@
-define(function () {
+define([
+  'immutable'
+], function (Immutable) {
 
   /**
    * If the paragraphs option is set to true, then when the list is
@@ -9,6 +11,8 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       var InsertListCommand = function (commandName) {
         scribe.api.Command.call(this, commandName);
       };
@@ -18,12 +22,13 @@ define(function () {
 
       InsertListCommand.prototype.execute = function (value) {
         function splitList(listItemElements) {
-          if (listItemElements.length > 0) {
+          if (!!listItemElements.size) {
             var newListNode = document.createElement(listNode.nodeName);
 
-            listItemElements.forEach(function (listItemElement) {
-              newListNode.appendChild(listItemElement);
-            });
+            while (!!listItemElements.size) {
+              newListNode.appendChild(listItemElements.first());
+              listItemElements = listItemElements.shift();
+            }
 
             listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
           }
@@ -43,7 +48,7 @@ define(function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+              var nextListItemElements = nodeHelpers.nextSiblings(listItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -70,15 +75,12 @@ define(function () {
 
               // We can't query for list items in the selection so we loop
               // through them all and find the intersection ourselves.
-              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
-                function (listItemElement) {
-                return range.intersectsNode(listItemElement) && listItemElement;
-              }).filter(function (listItemElement) {
-                // TODO: identity
-                return listItemElement;
-              });
-              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+              var selectedListItemElements = Immutable.List(listNode.querySelectorAll('li'))
+                .filter(function (listItemElement) {
+                  return range.intersectsNode(listItemElement);
+                });
+              var lastSelectedListItemElement = selectedListItemElements.last();
+              var listItemElementsAfterSelection = nodeHelpers.nextSiblings(lastSelectedListItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
