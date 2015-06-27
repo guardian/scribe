@@ -1,3 +1,9 @@
+# 1.4.9
+
+Consolidates a number of api operations into the node module.
+
+Restructing by [Regis Kuckaertz](https://github.com/regiskuckaertz)
+
 # 1.4.8
 
 Short-circuits the mutation evaluation via use of Array.prototype.some
