@@ -4974,7 +4974,6 @@ define('plugins/core/formatters/html/enforce-p-elements',[
   return function () {
     return function (scribe) {
       var nodeHelpers = scribe.node;
-      var elementHelpers = scribe.element;
 
       /**
        * Wrap consecutive inline elements and text nodes in a P element.
@@ -4983,7 +4982,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
         var index = 0;
         Immutable.List(parentNode.childNodes)
           .filter(function(node) {
-            return node.nodeType === Node.TEXT_NODE || !elementHelpers.isBlockElement(node);
+            return node.nodeType === Node.TEXT_NODE || !nodeHelpers.isBlockElement(node);
           })
           .groupBy(function(node, key, list) {
             return key === 0 || node.previousSibling === list.get(key - 1) ?
@@ -5030,7 +5029,9 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 
 });
 
-define('element',['immutable'], function (Immutable) {
+define('node',[
+  'immutable'
+], function (Immutable) {
 
   
 
@@ -5039,8 +5040,33 @@ define('element',['immutable'], function (Immutable) {
                            'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
                            'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
                            'TH', 'TFOOT', 'UL', 'VIDEO');
+
   function isBlockElement(node) {
     return blockElementNames.includes(node.nodeName);
+  }
+
+  // return true if nested inline tags ultimately just contain <br> or ""
+  function isEmptyInlineElement(node) {
+    if( node.children.length > 1 ) return false;
+    if( node.children.length === 1 && node.textContent.trim() !== '' ) return false;
+    if( node.children.length === 0 ) return node.textContent.trim() === '';
+    return isEmptyInlineElement(node.children[0]);
+  }
+
+  function isText(node) {
+    return node.nodeType === Node.TEXT_NODE;
+  }
+
+  function isEmptyTextNode(node) {
+    return isText(node) && node.data === '';
+  }
+
+  function isFragment(node) {
+    return node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
+  }
+
+  function isBefore(node1, node2) {
+    return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
   }
 
   function isSelectionMarkerNode(node) {
@@ -5049,6 +5075,58 @@ define('element',['immutable'], function (Immutable) {
 
   function isCaretPositionNode(node) {
     return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
+  }
+
+  function firstDeepestChild(node) {
+    var fs = node.firstChild;
+    return !fs || fs.nodeName === 'BR' ?
+      node :
+      firstDeepestChild(fs);
+  }
+
+  function insertAfter(newNode, referenceNode) {
+    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
+
+  function removeNode(node) {
+    return node.parentNode.removeChild(node);
+  }
+
+  function getAncestor(node, rootElement, nodeFilter) {
+    function isTopContainerElement (element) {
+      return rootElement === element;
+    }
+    // TODO: should this happen here?
+    if (isTopContainerElement(node)) {
+      return;
+    }
+
+    var currentNode = node.parentNode;
+
+    // If it's a `contenteditable` then it's likely going to be the Scribe
+    // instance, so stop traversing there.
+    while (currentNode && ! isTopContainerElement(currentNode)) {
+      if (nodeFilter(currentNode)) {
+        return currentNode;
+      }
+      currentNode = currentNode.parentNode;
+    }
+  }
+
+  function nextSiblings(node) {
+    var all = Immutable.List();
+    while (node = node.nextSibling) {
+      all = all.push(node);
+    }
+    return all;
+  }
+
+  function wrap(nodes, parentNode) {
+    nodes[0].parentNode.insertBefore(parentNode, nodes[0]);
+    nodes.forEach(function (node) {
+      parentNode.appendChild(node);
+    });
+    return parentNode;
   }
 
   function unwrap(node, childNode) {
@@ -5060,18 +5138,29 @@ define('element',['immutable'], function (Immutable) {
 
   return {
     isBlockElement: isBlockElement,
+    isEmptyInlineElement: isEmptyInlineElement,
+    isText: isText,
+    isEmptyTextNode: isEmptyTextNode,
+    isFragment: isFragment,
+    isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,
     isCaretPositionNode: isCaretPositionNode,
+    firstDeepestChild: firstDeepestChild,
+    insertAfter: insertAfter,
+    removeNode: removeNode,
+    getAncestor: getAncestor,
+    nextSiblings: nextSiblings,
+    wrap: wrap,
     unwrap: unwrap
   };
 
 });
 
 define('plugins/core/formatters/html/ensure-selectable-containers',[
-    '../../../../element',
+    '../../../../node',
     'immutable'
   ], function (
-    element,
+    nodeHelpers,
     Immutable
   ) {
 
@@ -5086,8 +5175,8 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
-  function parentHasNoTextContent(element, node) {
-    if (element.isCaretPositionNode(node)) {
+  function parentHasNoTextContent(node) {
+    if (nodeHelpers.isCaretPositionNode(node)) {
       return true;
     } else {
       return node.parentNode.textContent.trim() === '';
@@ -5095,7 +5184,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
   }
 
 
-  function traverse(element, parentNode) {
+  function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
@@ -5103,21 +5192,21 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
     function isEmpty(node) {
 
-      if ((node.children.length === 0 && element.isBlockElement(node))
-        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+      if ((node.children.length === 0 && nodeHelpers.isBlockElement(node))
+        || (node.children.length === 1 && nodeHelpers.isSelectionMarkerNode(node.children[0]))) {
          return true;
       }
 
       // Do not insert BR in empty non block elements with parent containing text
-      if (!element.isBlockElement(node) && node.children.length === 0) {
-        return parentHasNoTextContent(element, node);
+      if (!nodeHelpers.isBlockElement(node) && node.children.length === 0) {
+        return parentHasNoTextContent(node);
       }
 
       return false;
     }
 
     while (node) {
-      if (!element.isSelectionMarkerNode(node)) {
+      if (!nodeHelpers.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
@@ -5125,7 +5214,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
           !html5VoidElements.includes(node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
-          traverse(element, node);
+          traverse(node);
         }
       }
       node = node.nextElementSibling;
@@ -5139,7 +5228,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        traverse(scribe.element, bin);
+        traverse(bin);
 
         return bin.innerHTML;
       });
@@ -5314,7 +5403,9 @@ define('plugins/core/commands/indent',[],function () {
 
 });
 
-define('plugins/core/commands/insert-list',[],function () {
+define('plugins/core/commands/insert-list',[
+  'immutable'
+], function (Immutable) {
 
   /**
    * If the paragraphs option is set to true, then when the list is
@@ -5325,6 +5416,8 @@ define('plugins/core/commands/insert-list',[],function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       var InsertListCommand = function (commandName) {
         scribe.api.Command.call(this, commandName);
       };
@@ -5334,12 +5427,13 @@ define('plugins/core/commands/insert-list',[],function () {
 
       InsertListCommand.prototype.execute = function (value) {
         function splitList(listItemElements) {
-          if (listItemElements.length > 0) {
+          if (!!listItemElements.size) {
             var newListNode = document.createElement(listNode.nodeName);
 
-            listItemElements.forEach(function (listItemElement) {
-              newListNode.appendChild(listItemElement);
-            });
+            while (!!listItemElements.size) {
+              newListNode.appendChild(listItemElements.first());
+              listItemElements = listItemElements.shift();
+            }
 
             listNode.parentNode.insertBefore(newListNode, listNode.nextElementSibling);
           }
@@ -5359,7 +5453,7 @@ define('plugins/core/commands/insert-list',[],function () {
 
           scribe.transactionManager.run(function () {
             if (listItemElement) {
-              var nextListItemElements = (new scribe.api.Node(listItemElement)).nextAll();
+              var nextListItemElements = nodeHelpers.nextSiblings(listItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -5386,15 +5480,12 @@ define('plugins/core/commands/insert-list',[],function () {
 
               // We can't query for list items in the selection so we loop
               // through them all and find the intersection ourselves.
-              var selectedListItemElements = Array.prototype.map.call(listNode.querySelectorAll('li'),
-                function (listItemElement) {
-                return range.intersectsNode(listItemElement) && listItemElement;
-              }).filter(function (listItemElement) {
-                // TODO: identity
-                return listItemElement;
-              });
-              var lastSelectedListItemElement = selectedListItemElements.slice(-1)[0];
-              var listItemElementsAfterSelection = (new scribe.api.Node(lastSelectedListItemElement)).nextAll();
+              var selectedListItemElements = Immutable.List(listNode.querySelectorAll('li'))
+                .filter(function (listItemElement) {
+                  return range.intersectsNode(listItemElement);
+                });
+              var lastSelectedListItemElement = selectedListItemElements.last();
+              var listItemElementsAfterSelection = nodeHelpers.nextSiblings(lastSelectedListItemElement);
 
               /**
                * If we are not at the start or end of a UL/OL, we have to
@@ -5747,67 +5838,9 @@ define('plugins/core/formatters',[
   };
 });
 
-define('node',[],function () {
-
-  
-
-  // return true if nested inline tags ultimately just contain <br> or ""
-  function isEmptyInlineElement(node) {
-    if( node.children.length > 1 ) return false;
-    if( node.children.length === 1 && node.textContent.trim() !== '' ) return false;
-    if( node.children.length === 0 ) return node.textContent.trim() === '';
-    return isEmptyInlineElement(node.children[0]);
-  }
-
-  function isText(node) {
-    return node.nodeType === Node.TEXT_NODE;
-  }
-
-  function isEmptyTextNode(node) {
-    return isText(node) && node.data === '';
-  }
-
-  function isFragment(node) {
-    return node.nodeType === Node.DOCUMENT_FRAGMENT_NODE;
-  }
-
-  function isBefore(node1, node2) {
-    return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
-  }
-
-  function insertAfter(newNode, referenceNode) {
-    return referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-  }
-
-  function removeNode(node) {
-    return node.parentNode.removeChild(node);
-  }
-
-  function wrap(nodes, parentNode) {
-    nodes[0].parentNode.insertBefore(parentNode, nodes[0]);
-    nodes.forEach(function (node) {
-      parentNode.appendChild(node);
-    });
-    return parentNode;
-  }
-
-  return {
-    isEmptyInlineElement: isEmptyInlineElement,
-    isText: isText,
-    isEmptyTextNode: isEmptyTextNode,
-    isFragment: isFragment,
-    isBefore: isBefore,
-    insertAfter: insertAfter,
-    removeNode: removeNode,
-    wrap: wrap
-  };
-
-});
-
 define('dom-observer',[
-  './element',
   './node'
-], function (elementHelpers, nodeHelpers) {
+], function (nodeHelpers) {
 
   var MutationObserver = window.MutationObserver ||
     window.WebKitMutationObserver ||
@@ -5815,7 +5848,7 @@ define('dom-observer',[
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
-      ! elementHelpers.isSelectionMarkerNode(n);
+      ! nodeHelpers.isSelectionMarkerNode(n);
   }
 
   function includeRealMutations(mutations) {
@@ -5859,47 +5892,20 @@ define('dom-observer',[
   return observeDomChanges;
 });
 
-define('api/children',[],function () {
-
-  
-
-  function firstDeepestChild(node) {
-    if(!node.hasChildNodes()) {
-      return node;
-    }
-
-    var treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL, null, false);
-    var previousNode = treeWalker.currentNode;
-    if (treeWalker.firstChild()) {
-      // TODO: build list of non-empty elements (used elsewhere)
-      // Do not include non-empty elements
-      if (treeWalker.currentNode.nodeName === 'BR') {
-        return previousNode;
-      } else {
-        return firstDeepestChild(treeWalker.currentNode);
-      }
-    } else {
-      return treeWalker.currentNode;
-    }
-  }
-
-  return {
-    firstDeepestChild: firstDeepestChild
-  }
-});
-
 define('plugins/core/events',[
   '../../dom-observer',
-  '../../api/children'
+  'immutable'
 ], function (
   observeDomChanges,
-  children
+  Immutable
 ) {
 
   
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
@@ -5918,7 +5924,7 @@ define('plugins/core/events',[
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = children.firstDeepestChild(scribe.el);
+            var focusElement = nodeHelpers.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 
@@ -6074,7 +6080,7 @@ define('plugins/core/events',[
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.indexOf('text/html') !== -1) {
+          if (Immutable.List(Array.from(event.clipboardData.types)).includes('text/html')) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
@@ -6232,7 +6238,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
-      var element = scribe.element;
+      var nodeHelpers = scribe.node;
 
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
@@ -6246,7 +6252,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
            * insertHTML command, Chrome appends a SPAN to plain content with
            * inline styling replicating that `line-height`, and adjusts the
            * `line-height` on inline elements.
-           * 
+           *
            * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
            * More from the web: http://stackoverflow.com/q/15015019/40352
            */
@@ -6264,21 +6270,21 @@ define('plugins/core/patches/commands/insert-html',[], function () {
               if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
                 childElement.style.lineHeight = null;
               }
-              
+
               // We can discard an empty style attribute.
               if (childElement.getAttribute('style') === '') {
                 childElement.removeAttribute('style');
               }
-              
+
               // Sanitize children.
               removeChromeArtifacts(childElement);
-              
+
               // We can discard an empty SPAN.
               // (Don't do this until traversal's gone to the next element.)
               var originalChild = childElement;
               childElement = childElement.nextElementSibling;
               if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
-                element.unwrap(parentElement, originalChild);
+                nodeHelpers.unwrap(parentElement, originalChild);
               }
             }
           }
@@ -6297,7 +6303,6 @@ define('plugins/core/patches/commands/insert-list',[], function () {
 
   return function () {
     return function (scribe) {
-      var element = scribe.element;
       var nodeHelpers = scribe.node;
 
       var InsertListCommandPatch = function (commandName) {
@@ -6381,7 +6386,7 @@ define('plugins/core/patches/commands/insert-list',[], function () {
                 if (listElementChildNode.nodeName === 'SPAN') {
                   // Unwrap any SPAN that has been inserted
                   var spanElement = listElementChildNode;
-                  element.unwrap(listItemElement, spanElement);
+                  nodeHelpers.unwrap(listItemElement, spanElement);
                 } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
                   /**
                    * If the list item contains inline elements such as
@@ -6419,6 +6424,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
       var outdentCommand = new scribe.api.CommandPatch('outdent');
 
       outdentCommand.execute = function () {
@@ -6468,14 +6474,15 @@ define('plugins/core/patches/commands/outdent',[],function () {
                * split the node and insert the P in the middle.
                */
 
-              var nextSiblingNodes = (new scribe.api.Node(pNode)).nextAll();
+              var nextSiblingNodes = nodeHelpers.nextSiblings(pNode);
 
-              if (nextSiblingNodes.length) {
+              if (!!nextSiblingNodes.size) {
                 var newContainerNode = document.createElement(blockquoteNode.nodeName);
 
-                nextSiblingNodes.forEach(function (siblingNode) {
-                  newContainerNode.appendChild(siblingNode);
-                });
+                while (!!nextSiblingNodes.size) {
+                  newContainerNode.appendChild(nextSiblingNodes.first());
+                  nextSiblingNodes = nextSiblingNodes.shift();
+                }
 
                 blockquoteNode.parentNode.insertBefore(newContainerNode, blockquoteNode.nextElementSibling);
               }
@@ -6565,7 +6572,7 @@ define('plugins/core/patches/events',[], function () {
       //       we know in advance whether there will be a change though?
       // TODO: share somehow with `InsertList` command
 
-      var element = scribe.element;
+      var nodeHelpers = scribe.node;
 
       if (scribe.allowsBlockElements()) {
         scribe.el.addEventListener('keyup', function (event) {
@@ -6603,7 +6610,7 @@ define('plugins/core/patches/events',[], function () {
                   if (pElementChildNode.nodeName === 'SPAN') {
                     // Unwrap any SPAN that has been inserted
                     var spanElement = pElementChildNode;
-                    element.unwrap(containerPElement, spanElement);
+                    nodeHelpers.unwrap(containerPElement, spanElement);
                   } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
                     /**
                      * If the paragraph contains inline elements such as
@@ -6739,64 +6746,18 @@ define('api/command',[],function () {
 
 });
 
-define('api/node',[],function () {
-
-  
-
-  function Node(node) {
-    this.node = node;
-  }
-
-  // TODO: should the return value be wrapped in one of our APIs?
-  // Node or Selection?
-  // TODO: write tests. unit or integration?
-  Node.prototype.getAncestor = function (rootElement, nodeFilter) {
-    var isTopContainerElement = function (element) {
-      return rootElement === element;
-    };
-    // TODO: should this happen here?
-    if (isTopContainerElement(this.node)) {
-      return;
-    }
-
-    var currentNode = this.node.parentNode;
-
-    // If it's a `contenteditable` then it's likely going to be the Scribe
-    // instance, so stop traversing there.
-    while (currentNode && ! isTopContainerElement(currentNode)) {
-      if (nodeFilter(currentNode)) {
-        return currentNode;
-      }
-      currentNode = currentNode.parentNode;
-    }
-  };
-
-  Node.prototype.nextAll = function () {
-    var all = [];
-    var el = this.node.nextSibling;
-    while (el) {
-      all.push(el);
-      el = el.nextSibling;
-    }
-    return all;
-  };
-
-  return Node;
-
-});
-
 define('api/selection',[],function () {
 
   
 
   return function (scribe) {
     var rootDoc = scribe.el.ownerDocument;
-    var nodeHelper = scribe.node;
+    var nodeHelpers = scribe.node;
 
     // find the parent document or document fragment
     if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
       var currentElement = scribe.el.parentNode;
-      while(currentElement && nodeHelper.isFragment(currentElement)) {
+      while(currentElement && nodeHelpers.isFragment(currentElement)) {
         currentElement = currentElement.parentNode;
       }
 
@@ -6823,8 +6784,8 @@ define('api/selection',[],function () {
        * node (`removeFormat`, `unlink`).
        * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
-      if (marker.nextSibling && nodeHelper.isEmptyTextNode(marker.nextSibling)) {
-        nodeHelper.removeNode(marker.nextSibling);
+      if (marker.nextSibling && nodeHelpers.isEmptyTextNode(marker.nextSibling)) {
+        nodeHelpers.removeNode(marker.nextSibling);
       }
 
       /**
@@ -6834,8 +6795,8 @@ define('api/selection',[],function () {
        * FIXME: Document why we need to remove this
        * As per: http://jsbin.com/sifez/1/edit?js,console,output
        */
-      if (marker.previousSibling && nodeHelper.isEmptyTextNode(marker.previousSibling)) {
-        nodeHelper.removeNode(marker.previousSibling);
+      if (marker.previousSibling && nodeHelpers.isEmptyTextNode(marker.previousSibling)) {
+        nodeHelpers.removeNode(marker.previousSibling);
       }
     }
 
@@ -6858,7 +6819,7 @@ define('api/selection',[],function () {
           endOffset = tmp;
         }
         // if the range ends *before* it starts, then we must reverse the range
-        else if (nodeHelper.isBefore(endNode, startNode)) {
+        else if (nodeHelpers.isBefore(endNode, startNode)) {
           var tmpNode = startNode,
             tmpOffset = startOffset;
           startNode = endNode;
@@ -6882,10 +6843,10 @@ define('api/selection',[],function () {
       var range = this.range;
       if (!range) { return; }
 
-      var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return ! (node.node && scribe.el === node.node) && nodeFilter(node.node) ?
-        node.node :
-        node.getAncestor(scribe.el, nodeFilter);
+      var node = this.range.commonAncestorContainer;
+      return ! (node && scribe.el === node) && nodeFilter(node) ?
+        node :
+        nodeHelpers.getAncestor(node, scribe.el, nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
@@ -6925,7 +6886,7 @@ define('api/selection',[],function () {
 
     Selection.prototype.removeMarkers = function () {
       Array.prototype.forEach.call(this.getMarkers(), function (marker) {
-        nodeHelper.removeNode(marker);
+        nodeHelpers.removeNode(marker);
       });
     };
 
@@ -6957,7 +6918,7 @@ define('api/selection',[],function () {
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      return !! containerPElement && nodeHelper.isEmptyInlineElement(containerPElement);
+      return !! containerPElement && nodeHelpers.isEmptyInlineElement(containerPElement);
     };
 
     return Selection;
@@ -6994,13 +6955,11 @@ define('api/simple-command',[],function () {
 define('api',[
   './api/command-patch',
   './api/command',
-  './api/node',
   './api/selection',
   './api/simple-command'
 ], function (
   buildCommandPatch,
   buildCommand,
-  Node,
   buildSelection,
   buildSimpleCommand
 ) {
@@ -7010,7 +6969,6 @@ define('api',[
   return function Api(scribe) {
     this.CommandPatch = buildCommandPatch(scribe);
     this.Command = buildCommand(scribe);
-    this.Node = Node;
     this.Selection = buildSelection(scribe);
     this.SimpleCommand = buildSimpleCommand(this, scribe);
   };
@@ -8166,7 +8124,6 @@ define('scribe',[
   './transaction-manager',
   './undo-manager',
   './event-emitter',
-  './element',
   './node',
   'immutable',
   './config'
@@ -8180,7 +8137,6 @@ define('scribe',[
   buildTransactionManager,
   UndoManager,
   EventEmitter,
-  elementHelpers,
   nodeHelpers,
   Immutable,
   config
@@ -8283,7 +8239,6 @@ define('scribe',[
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
   Scribe.prototype.node = nodeHelpers;
-  Scribe.prototype.element = elementHelpers;
 
   // For plugins
   // TODO: tap combinator?
