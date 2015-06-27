@@ -1,6 +1,6 @@
 {
   "name": "scribe",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "main": "./scribe.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
