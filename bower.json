@@ -2,7 +2,7 @@
   "name": "scribe-example",
   "dependencies": {
     "requirejs": "2.1.15",
-    "scribe": "1.4.8",
+    "scribe": "1.4.9",
     "scribe-plugin-blockquote-command": "0.1.0",
     "scribe-plugin-code-command": "0.1.0",
     "scribe-plugin-curly-quotes": "0.1.7",
