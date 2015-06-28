@@ -1,8 +1,10 @@
-define(function () {
+define([
+  'immutable'
+], function (Immutable) {
   'use strict';
 
   function UndoManager(limit, undoScopeHost) {
-    this._stack = [];
+    this._stack = Immutable.List();
     this._limit = limit;
     this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
     this._ush = undoScopeHost;
@@ -18,70 +20,80 @@ define(function () {
 
     transaction.execute();
 
-    this._stack.splice(0, this.position);
+    if (this.position > 0) {
+      this.clearRedo();
+    }
+
+    var transactions;
     if (merge && this.length) {
-      this._stack[0].push(transaction);
+      transactions = this._stack.first().push(transaction);
+      this._stack = this._stack.shift().unshift(transactions);
     }
     else {
-      this._stack.unshift([transaction]);
-    }
-    this.position = 0;
+      transactions = Immutable.List.of(transaction);
+      this._stack = this._stack.unshift(transactions);
+      this.length++;
 
-    if (this._limit && this._stack.length > this._limit) {
-      this.length = this._stack.length = this._limit;
-    }
-    else {
-      this.length = this._stack.length;
+      if (this._limit && this.length > this._limit) {
+        this.clearUndo(this._limit);
+      }
     }
 
-    if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
-    }
+    this._dispatch('DOMTransaction', transactions);
   };
 
   UndoManager.prototype.undo = function () {
-    if (this.position < this.length) {
-      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
-        this._stack[this.position][i].undo();
-      }
-      this.position++;
+    if (this.position >= this.length) { return; }
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
-      }
+    var transactions = this._stack.get(this.position);
+    var i = transactions.size;
+    while (i--) {
+      transactions.get(i).undo();
     }
+    this.position++;
+
+    this._dispatch('undo', transactions);
   };
 
   UndoManager.prototype.redo = function () {
-    if (this.position > 0) {
-      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
-        this._stack[this.position - 1][i].redo();
-      }
-      this.position--;
+    if (this.position === 0) { return; }
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
-      }
+    this.position--;
+    var transactions = this._stack.get(this.position);
+    var i = -1;
+    while (i++ < transactions.size - 1) {
+      transactions.get(i).redo();
     }
+
+    this._dispatch('redo', transactions);
   };
 
   UndoManager.prototype.item = function (index) {
-    if (index >= 0 && index < this.length) {
-      return this._stack[index].slice();
-    }
-    return null;
+    return index >= 0 && index < this.length ?
+      this._stack.get(index).toArray() :
+      null;
   };
 
-  UndoManager.prototype.clearUndo = function () {
-    this._stack.length = this.length = this.position;
+  UndoManager.prototype.clearUndo = function (position) {
+    this._stack = this._stack.take(position !== undefined ? position : this.position);
+    this.length = this._stack.size;
   };
 
   UndoManager.prototype.clearRedo = function () {
-    this._stack.splice(0, this.position);
+    this._stack = this._stack.skip(this.position);
+    this.length = this._stack.size;
     this.position = 0;
-    this.length = this._stack.length;
   };
+
+  UndoManager.prototype._dispatch = function(event, transactions) {
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent(event, {
+        detail: {transactions: transactions.toArray()},
+        bubbles: true,
+        cancelable: false
+      }));
+    }
+  }
 
   return UndoManager;
 });
-
