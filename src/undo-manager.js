@@ -60,8 +60,7 @@ define([
 
     this.position--;
     var transactions = this._stack.get(this.position);
-    var i = -1;
-    while (i++ < transactions.size - 1) {
+    for (var i = 0; i < transactions.size; i++) {
       transactions.get(i).redo();
     }
 
