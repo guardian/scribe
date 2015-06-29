@@ -1,6 +1,6 @@
 {
   "name": "scribe",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "main": "./scribe.js",
   "description": "Content editable wrapper and polyfill",
   "authors": [
