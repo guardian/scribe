@@ -2,8 +2,14 @@
   "name": "scribe",
   "version": "1.4.10",
   "main": "./scribe.js",
+  "description": "Content editable wrapper and polyfill",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "ignore": [],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/guardian/scribe.git"
+  }
 }
