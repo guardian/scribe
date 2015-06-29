@@ -108,6 +108,19 @@ define([], function () {
         }.bind(this));
       };
 
+      InsertListCommandPatch.prototype.queryState = function() {
+        try {
+          return scribe.api.CommandPatch.prototype.queryState.apply(this, arguments);
+        } catch (err) {
+          // Explicitly catch unexpected error when calling queryState - bug in Firefox: https://github.com/guardian/scribe/issues/208
+          if (err.name == 'NS_ERROR_UNEXPECTED') {
+            return false;
+          } else {
+            throw err;
+          }
+        }
+      };
+
       scribe.commandPatches.insertOrderedList = new InsertListCommandPatch('insertOrderedList');
       scribe.commandPatches.insertUnorderedList = new InsertListCommandPatch('insertUnorderedList');
     };
