@@ -1,3 +1,7 @@
+# 1.4.12
+
+Restores `scribe.element` (lost in release 1.4.9) to avoid breaking backwards compatibility
+
 # 1.4.11
 
 Another attempt to fix [#401](https://github.com/guardian/scribe/issues/401), this time using Immutable data and Array.prototype.slice.
