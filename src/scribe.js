@@ -123,6 +123,7 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
   Scribe.prototype.node = nodeHelpers;
+  Scribe.prototype.element= Scribe.prototype.node;
 
   // For plugins
   // TODO: tap combinator?
