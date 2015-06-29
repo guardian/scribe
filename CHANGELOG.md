@@ -1,3 +1,7 @@
+# 1.4.11
+
+Another attempt to fix [#401](https://github.com/guardian/scribe/issues/401), this time using Immutable data and Array.prototype.slice.
+
 # 1.4.10
 
 The `NS_ERROR_UNEXPECTED` is now caught and supressed. This exeception is being [thrown by Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=562623) and seems to be a browser specific bug to do with element focus. This change just avoids lots of supurious errors being thrown.
