@@ -6080,7 +6080,7 @@ define('plugins/core/events',[
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (Immutable.List(Array.prototype.slice.call(event.clipboardData.types)).includes('text/html')) {
+          if (Immutable.List(event.clipboardData.types).includes('text/html')) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));
