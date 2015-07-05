@@ -1,6 +1,4 @@
-define([
-  './../../../../shared/remove-chrome-artifacts'
-], function (removeChromeArtifacts) {
+define(function () {
 
   'use strict';
 
@@ -25,7 +23,6 @@ define([
             var listElement = selection.getContaining(function (node) {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
-
 
             /**
              * Firefox: If we apply the insertOrderedList or the insertUnorderedList
@@ -68,7 +65,7 @@ define([
               }
             }
 
-            removeChromeArtifacts(listElement);
+            nodeHelpers.removeChromeArtifacts(listElement);
           }
         }.bind(this));
       };

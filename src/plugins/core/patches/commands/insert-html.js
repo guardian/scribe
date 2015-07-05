@@ -1,6 +1,4 @@
-define([
-  './../../../../shared/remove-chrome-artifacts'
-], function (removeChromeArtifacts) {
+define(function () {
   "use strict";
   return function () {
     return function (scribe) {
@@ -10,7 +8,7 @@ define([
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
           scribe.api.CommandPatch.prototype.execute.call(this, value);
-          removeChromeArtifacts(scribe.el);
+          nodeHelpers.removeChromeArtifacts(scribe.el);
         }.bind(this));
       };
 

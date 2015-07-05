@@ -1,8 +1,9 @@
 define([
-  './element'
-], function (elementHelpers) {
+  './node',
+  'immutable'
+], function (nodeHelpers, Immutable) {
   function isInline(parentStyle, element) {
-    return elementHelpers.isInlineElement(element) &&
+    return nodeHelpers.isInlineElement(element) &&
       element.style.lineHeight === parentStyle.lineHeight ?
       NodeFilter.FILTER_ACCEPT :
       NodeFilter.FILTER_SKIP;
@@ -21,9 +22,11 @@ define([
     var iterator = document.createNodeIterator(
       parentElement,
       NodeFilter.SHOW_ELEMENT,
+      // arguments to .bind(), starting from the second, are automatically
+      // prepended to actual the arguments when the function is called
       isInline.bind(null, window.getComputedStyle(parentElement))
     );
-    var emptySpans = [];
+    var emptySpans = Immutable.List();
     var node;
 
     while (node = iterator.nextNode()) {
@@ -32,12 +35,13 @@ define([
         node.removeAttribute('style');
       }
       if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
-        emptySpans.push(node);
+        emptySpans = emptySpans.push(node);
       }
     }
 
-    while (!!emptySpans.length) {
-      elementHelpers.unwrap(parentElement, emptySpans.pop());
+    while (!!emptySpans.size) {
+      nodeHelpers.unwrap(parentElement, emptySpans.first());
+      emptySpans = emptySpans.shift();
     }
   }
 
