@@ -1,3 +1,37 @@
+# 1.4.13
+
+A more elegant fix for [#401](https://github.com/guardian/scribe/issues/401) from [Alexy Golev](https://github.com/alexeygolev), thanks!
+
+# 1.4.12
+
+Restores `scribe.element` (lost in release 1.4.9) to avoid breaking backwards compatibility
+
+# 1.4.11
+
+Another attempt to fix [#401](https://github.com/guardian/scribe/issues/401), this time using Immutable data and Array.prototype.slice.
+
+# 1.4.10
+
+The `NS_ERROR_UNEXPECTED` is now caught and supressed. This exeception is being [thrown by Firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=562623) and seems to be a browser specific bug to do with element focus. This change just avoids lots of supurious errors being thrown.
+
+We should remove it once the bug has been fixed.
+
+# 1.4.9
+
+Consolidates a number of api operations into the node module.
+
+Restructing by [Regis Kuckaertz](https://github.com/regiskuckaertz)
+
+# 1.4.8
+
+Short-circuits the mutation evaluation via use of Array.prototype.some
+
+[Regis Kuckaertz](https://github.com/regiskuckaertz)
+
+# 1.4.7
+
+Not a valid build, issues between Bower and NPM
+
 # 1.4.6
 
 Treat the clipboard data types variable as an array to avoid issues with future releases of Chrome (and other browsers). Resolves [#401](https://github.com/guardian/scribe/issues/401).

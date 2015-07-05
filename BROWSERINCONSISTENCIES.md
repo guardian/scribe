@@ -73,6 +73,9 @@ Playground: http://jsbin.com/iwEWUXo/2/edit?js,console,output
 * `subscript`: Firefox: Returns false when a whole `SUB` is selected:
   http://jsbin.com/marox/1/edit?js,console,output
   - True for all inline elements?
+* Firefox throws `NS_ERROR_UNEXPECTED` error for `insertUnorderedList` and
+  `insertOrderedList` when a contenteditable is not focussed, see:
+  https://github.com/guardian/scribe/issues/208
 
 ### `Element.focus`
 * Firefox: Giving focus to a `contenteditable` will place the caret outside of

@@ -4,12 +4,12 @@ define(function () {
 
   return function (scribe) {
     var rootDoc = scribe.el.ownerDocument;
-    var nodeHelper = scribe.node;
+    var nodeHelpers = scribe.node;
 
     // find the parent document or document fragment
     if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
       var currentElement = scribe.el.parentNode;
-      while(currentElement && nodeHelper.isFragment(currentElement)) {
+      while(currentElement && nodeHelpers.isFragment(currentElement)) {
         currentElement = currentElement.parentNode;
       }
 
@@ -36,8 +36,8 @@ define(function () {
        * node (`removeFormat`, `unlink`).
        * As per: http://jsbin.com/hajim/5/edit?js,console,output
        */
-      if (marker.nextSibling && nodeHelper.isEmptyTextNode(marker.nextSibling)) {
-        nodeHelper.removeNode(marker.nextSibling);
+      if (marker.nextSibling && nodeHelpers.isEmptyTextNode(marker.nextSibling)) {
+        nodeHelpers.removeNode(marker.nextSibling);
       }
 
       /**
@@ -47,8 +47,8 @@ define(function () {
        * FIXME: Document why we need to remove this
        * As per: http://jsbin.com/sifez/1/edit?js,console,output
        */
-      if (marker.previousSibling && nodeHelper.isEmptyTextNode(marker.previousSibling)) {
-        nodeHelper.removeNode(marker.previousSibling);
+      if (marker.previousSibling && nodeHelpers.isEmptyTextNode(marker.previousSibling)) {
+        nodeHelpers.removeNode(marker.previousSibling);
       }
     }
 
@@ -71,7 +71,7 @@ define(function () {
           endOffset = tmp;
         }
         // if the range ends *before* it starts, then we must reverse the range
-        else if (nodeHelper.isBefore(endNode, startNode)) {
+        else if (nodeHelpers.isBefore(endNode, startNode)) {
           var tmpNode = startNode,
             tmpOffset = startOffset;
           startNode = endNode;
@@ -95,10 +95,10 @@ define(function () {
       var range = this.range;
       if (!range) { return; }
 
-      var node = new scribe.api.Node(this.range.commonAncestorContainer);
-      return ! (node.node && scribe.el === node.node) && nodeFilter(node.node) ?
-        node.node :
-        node.getAncestor(scribe.el, nodeFilter);
+      var node = this.range.commonAncestorContainer;
+      return ! (node && scribe.el === node) && nodeFilter(node) ?
+        node :
+        nodeHelpers.getAncestor(node, scribe.el, nodeFilter);
     };
 
     Selection.prototype.placeMarkers = function () {
@@ -138,7 +138,7 @@ define(function () {
 
     Selection.prototype.removeMarkers = function () {
       Array.prototype.forEach.call(this.getMarkers(), function (marker) {
-        nodeHelper.removeNode(marker);
+        nodeHelpers.removeNode(marker);
       });
     };
 
@@ -170,7 +170,7 @@ define(function () {
       var containerPElement = this.getContaining(function (node) {
         return node.nodeName === 'P';
       });
-      return !! containerPElement && nodeHelper.isEmptyInlineElement(containerPElement);
+      return !! containerPElement && nodeHelpers.isEmptyInlineElement(containerPElement);
     };
 
     return Selection;

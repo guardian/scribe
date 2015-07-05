@@ -1,15 +1,17 @@
 define([
   '../../dom-observer',
-  '../../api/children'
+  'immutable'
 ], function (
   observeDomChanges,
-  children
+  Immutable
 ) {
 
   'use strict';
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
+
       /**
        * Firefox: Giving focus to a `contenteditable` will place the caret
        * outside of any block elements. Chrome behaves correctly by placing the
@@ -28,7 +30,7 @@ define([
                   selection.range.startContainer === scribe.el;
 
           if (isFirefoxBug) {
-            var focusElement = children.firstDeepestChild(scribe.el);
+            var focusElement = nodeHelpers.firstDeepestChild(scribe.el);
 
             var range = selection.range;
 
@@ -184,7 +186,7 @@ define([
         if (event.clipboardData) {
           event.preventDefault();
 
-          if (event.clipboardData.types.indexOf('text/html') !== -1) {
+          if (Immutable.List(event.clipboardData.types).includes('text/html')) {
             scribe.insertHTML(event.clipboardData.getData('text/html'));
           } else {
             scribe.insertPlainText(event.clipboardData.getData('text/plain'));

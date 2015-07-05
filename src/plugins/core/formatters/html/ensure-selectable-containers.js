@@ -1,8 +1,8 @@
 define([
-    '../../../../element',
+    '../../../../node',
     'immutable'
   ], function (
-    element,
+    nodeHelpers,
     Immutable
   ) {
 
@@ -17,8 +17,8 @@ define([
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
 
-  function parentHasNoTextContent(element, node) {
-    if (element.isCaretPositionNode(node)) {
+  function parentHasNoTextContent(node) {
+    if (nodeHelpers.isCaretPositionNode(node)) {
       return true;
     } else {
       return node.parentNode.textContent.trim() === '';
@@ -26,7 +26,7 @@ define([
   }
 
 
-  function traverse(element, parentNode) {
+  function traverse(parentNode) {
     // Instead of TreeWalker, which gets confused when the BR is added to the dom,
     // we recursively traverse the tree to look for an empty node that can have childNodes
 
@@ -34,21 +34,21 @@ define([
 
     function isEmpty(node) {
 
-      if ((node.children.length === 0 && element.isBlockElement(node))
-        || (node.children.length === 1 && element.isSelectionMarkerNode(node.children[0]))) {
+      if ((node.children.length === 0 && nodeHelpers.isBlockElement(node))
+        || (node.children.length === 1 && nodeHelpers.isSelectionMarkerNode(node.children[0]))) {
          return true;
       }
 
       // Do not insert BR in empty non block elements with parent containing text
-      if (!element.isBlockElement(node) && node.children.length === 0) {
-        return parentHasNoTextContent(element, node);
+      if (!nodeHelpers.isBlockElement(node) && node.children.length === 0) {
+        return parentHasNoTextContent(node);
       }
 
       return false;
     }
 
     while (node) {
-      if (!element.isSelectionMarkerNode(node)) {
+      if (!nodeHelpers.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
         // whitespace, and is not self-closing
         if (isEmpty(node) &&
@@ -56,7 +56,7 @@ define([
           !html5VoidElements.includes(node.nodeName)) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
-          traverse(element, node);
+          traverse(node);
         }
       }
       node = node.nextElementSibling;
@@ -70,7 +70,7 @@ define([
         var bin = document.createElement('div');
         bin.innerHTML = html;
 
-        traverse(scribe.element, bin);
+        traverse(bin);
 
         return bin.innerHTML;
       });

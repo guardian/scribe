@@ -6,7 +6,7 @@ require('node-amd-require')({
   }
 });
 
-var children = require('../../src/api/children');
+var children = require('../../src/node');
 
 var chai = require('chai');
 var expect = chai.expect;

@@ -8,7 +8,6 @@ define([
   './transaction-manager',
   './undo-manager',
   './event-emitter',
-  './element',
   './node',
   'immutable',
   './config'
@@ -22,7 +21,6 @@ define([
   buildTransactionManager,
   UndoManager,
   EventEmitter,
-  elementHelpers,
   nodeHelpers,
   Immutable,
   config
@@ -125,7 +123,7 @@ define([
 
   Scribe.prototype = Object.create(EventEmitter.prototype);
   Scribe.prototype.node = nodeHelpers;
-  Scribe.prototype.element = elementHelpers;
+  Scribe.prototype.element= Scribe.prototype.node;
 
   // For plugins
   // TODO: tap combinator?
