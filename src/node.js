@@ -125,7 +125,7 @@ define([
    * More from the web: http://stackoverflow.com/q/15015019/40352
    */
   function removeChromeArtifacts(parentElement) {
-    function isInlineWitStyle(parentStyle, element) {
+    function isInlineWithStyle(parentStyle, element) {
       return isInlineElement(element) &&
         element.style.lineHeight &&
         window.getComputedStyle(element).lineHeight === parentStyle.lineHeight ?
@@ -137,8 +137,8 @@ define([
       parentElement,
       NodeFilter.SHOW_ELEMENT,
       // arguments to .bind(), starting from the second, are automatically
-      // prepended to actual the arguments when the function is called
-      isInlineWitStyle.bind(null, window.getComputedStyle(parentElement))
+      // prepended to the actual arguments when the function is called
+      isInlineWithStyle.bind(null, window.getComputedStyle(parentElement))
     );
     var emptySpans = Immutable.List();
     var node;
