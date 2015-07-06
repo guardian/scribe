@@ -14,6 +14,16 @@ define([
     return blockElementNames.includes(node.nodeName);
   }
 
+  // Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elemente
+  var inlineElementNames = Immutable.Set.of('B', 'BIG', 'I', 'SMALL', 'TT',
+    'ABBR', 'ACRONYM', 'CITE', 'CODE', 'DFN', 'EM', 'KBD', 'STRONG', 'SAMP', 'VAR',
+    'A', 'BDO', 'BR', 'IMG', 'MAP', 'OBJECT', 'Q', 'SCRIPT', 'SPAN', 'SUB', 'SUP',
+    'BUTTON', 'INPUT', 'LABEL', 'SELECT', 'TEXTAREA');
+
+  function isInlineElement(node) {
+    return inlineElementNames.includes(node.nodeName);
+  }
+
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
@@ -117,7 +127,8 @@ define([
   function removeChromeArtifacts(parentElement) {
     function isInlineWitStyle(parentStyle, element) {
       return isInlineElement(element) &&
-        element.style.lineHeight === parentStyle.lineHeight ?
+        element.style.lineHeight &&
+        window.getComputedStyle(element).lineHeight === parentStyle.lineHeight ?
         NodeFilter.FILTER_ACCEPT :
         NodeFilter.FILTER_SKIP;
     }
@@ -134,7 +145,7 @@ define([
 
     while (node = iterator.nextNode()) {
       node.style.lineHeight = null;
-      if (node.getAttribute('style') === '') {
+      if (!node.getAttribute('style')) {
         node.removeAttribute('style');
       }
       if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
@@ -143,12 +154,14 @@ define([
     }
 
     while (!!emptySpans.size) {
-      unwrap(parentElement, emptySpans.first());
+      node = emptySpans.first();
+      unwrap(node.parentNode, node);
       emptySpans = emptySpans.shift();
     }
   }
 
   return {
+    isInlineElement: isInlineElement,
     isBlockElement: isBlockElement,
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
