@@ -600,7 +600,9 @@ describe('commands', function () {
         it('should have no characters left unselected', function () {
           var selection = new window.scribe.api.Selection();
           var range = selection.range;
-          return expect(range.endOffset).to.equal(range.endContainer.length);
+          return scribeNode.getInnerHTML().then(function () {
+            expect(range.endOffset).to.equal(range.endContainer.length);
+          });
         });
       });
     });
