@@ -1,6 +1,6 @@
 {
   "name": "scribe-editor",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "main": "src/scribe.js",
   "dependencies": {
     "lodash-amd": "~3.5.0",
@@ -29,7 +29,9 @@
     "sinon": "^1.12.2"
   },
   "scripts": {
-    "test": "./run-tests.sh"
+    "setup-tests": "node_modules/scribe-test-harness/bin/setup-tests.sh",
+    "test": "./run-tests.sh",
+    "test-firefox": "BROWSER_NAME=firefox ./run-tests.sh"
   },
   "repository": {
     "type": "git",

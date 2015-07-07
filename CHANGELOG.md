@@ -1,3 +1,7 @@
+# 1.4.13
+
+A more elegant fix for [#401](https://github.com/guardian/scribe/issues/401) from [Alexy Golev](https://github.com/alexeygolev), thanks!
+
 # 1.4.12
 
 Restores `scribe.element` (lost in release 1.4.9) to avoid breaking backwards compatibility
