@@ -590,6 +590,20 @@ describe('commands', function () {
         });
       });
     });
+
+    givenContentOf('<p>|test<br>test<br>test|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        it('should have no characters left unselected', function () {
+          var selection = new window.scribe.api.Selection();
+          var range = selection.range;
+          return expect(range.endOffset).to.equal(range.endContainer.length);
+        });
+      });
+    });
   });
 
   describe('createLink', function  () {
