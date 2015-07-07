@@ -1,24 +1,14 @@
 define([
+  './vars/inline-element-names',
+  './vars/block-element-names',
   'immutable'
-], function (Immutable) {
+], function (inlineElementNames, blockElementNames, Immutable) {
 
   'use strict';
-
-  var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
-                           'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
-                           'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO');
 
   function isBlockElement(node) {
     return blockElementNames.includes(node.nodeName);
   }
-
-  // Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elemente
-  var inlineElementNames = Immutable.Set.of('B', 'BIG', 'I', 'SMALL', 'TT',
-    'ABBR', 'ACRONYM', 'CITE', 'CODE', 'DFN', 'EM', 'KBD', 'STRONG', 'SAMP', 'VAR',
-    'A', 'BDO', 'BR', 'IMG', 'MAP', 'OBJECT', 'Q', 'SCRIPT', 'SPAN', 'SUB', 'SUP',
-    'BUTTON', 'INPUT', 'LABEL', 'SELECT', 'TEXTAREA');
 
   function isInlineElement(node) {
     return inlineElementNames.includes(node.nodeName);
@@ -153,11 +143,9 @@ define([
       }
     }
 
-    while (!!emptySpans.size) {
-      node = emptySpans.first();
+    emptySpans.forEach(function(node) {
       unwrap(node.parentNode, node);
-      emptySpans = emptySpans.shift();
-    }
+    });
   }
 
   return {
