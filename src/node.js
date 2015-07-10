@@ -116,24 +116,18 @@ define([
    */
   function removeChromeArtifacts(parentElement) {
     function isInlineWithStyle(parentStyle, element) {
-      return isInlineElement(element) &&
-        element.style.lineHeight &&
-        window.getComputedStyle(element).lineHeight === parentStyle.lineHeight ?
-        NodeFilter.FILTER_ACCEPT :
-        NodeFilter.FILTER_SKIP;
+      return window.getComputedStyle(element).lineHeight === parentStyle.lineHeight;
     }
 
-    var iterator = document.createNodeIterator(
-      parentElement,
-      NodeFilter.SHOW_ELEMENT,
-      // arguments to .bind(), starting from the second, are automatically
-      // prepended to the actual arguments when the function is called
-      isInlineWithStyle.bind(null, window.getComputedStyle(parentElement))
-    );
-    var emptySpans = Immutable.List();
-    var node;
+    var nodes = Immutable.List(parentElement.querySelectorAll(inlineElementNames
+      .map(function(elName) { return elName + '[style*="line-height"]' })
+      .join(',')
+      ));
+    nodes = nodes.filter(isInlineWithStyle.bind(null, window.getComputedStyle(parentElement)));
 
-    while (node = iterator.nextNode()) {
+    var emptySpans = Immutable.List();
+
+    nodes.forEach(function(node) {
       node.style.lineHeight = null;
       if (!node.getAttribute('style')) {
         node.removeAttribute('style');
@@ -141,7 +135,7 @@ define([
       if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
         emptySpans = emptySpans.push(node);
       }
-    }
+    });
 
     emptySpans.forEach(function(node) {
       unwrap(node.parentNode, node);
