@@ -1,3 +1,7 @@
+# 1.4.14
+
+The undo manager has been re-written to use Immutable data structures. Thanks [Regis Kuckaertz](https://github.com/regiskuckaertz)
+
 # 1.4.13
 
 A more elegant fix for [#401](https://github.com/guardian/scribe/issues/401) from [Alexy Golev](https://github.com/alexeygolev), thanks!
