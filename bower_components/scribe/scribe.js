@@ -5,7 +5,7 @@ define('plugins/core/set-root-p-element',[],function () {
    * a P.
    */
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -36,7 +36,7 @@ define('plugins/core/set-root-p-element',[],function () {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define('immutable',factory) :
   global.Immutable = factory()
-}(this, function () { var SLICE$0 = Array.prototype.slice;
+}(this, function () { 'use strict';var SLICE$0 = Array.prototype.slice;
 
   function createClass(ctor, superClass) {
     if (superClass) {
@@ -4969,7 +4969,7 @@ define('plugins/core/formatters/html/enforce-p-elements',[
    * that we do not end up in a pristine state.
    */
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5033,7 +5033,7 @@ define('node',[
   'immutable'
 ], function (Immutable) {
 
-  
+  'use strict';
 
   var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
                            'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
@@ -5170,7 +5170,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
    * CSS(?), as per: http://jsbin.com/gulob/2/edit?html,css,js,output)
    */
 
-  
+  'use strict';
 
   // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
   var html5VoidElements = Immutable.Set.of('AREA', 'BASE', 'BR', 'COL', 'COMMAND', 'EMBED', 'HR', 'IMG', 'INPUT', 'KEYGEN', 'LINK', 'META', 'PARAM', 'SOURCE', 'TRACK', 'WBR');
@@ -5240,7 +5240,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
 define('plugins/core/inline-elements-mode',[],function () {
 
-  
+  'use strict';
 
   // TODO: abstract
   function hasContent(rootNode) {
@@ -5364,7 +5364,7 @@ define('plugins/core/plugins',[
   ensureSelectableContainers,
   inlineElementsMode
 ) {
-  
+  'use strict';
 
   return {
     setRootPElement: setRootPElement,
@@ -5376,7 +5376,7 @@ define('plugins/core/plugins',[
 
 define('plugins/core/commands/indent',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5412,7 +5412,7 @@ define('plugins/core/commands/insert-list',[
    * unapplied, ensure that we enter a P element.
    */
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5539,7 +5539,7 @@ define('plugins/core/commands/insert-list',[
 
 define('plugins/core/commands/outdent',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5569,7 +5569,7 @@ define('plugins/core/commands/outdent',[],function () {
 
 define('plugins/core/commands/redo',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5601,7 +5601,7 @@ define('plugins/core/commands/redo',[],function () {
 
 define('plugins/core/commands/subscript',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5615,7 +5615,7 @@ define('plugins/core/commands/subscript',[],function () {
 
 define('plugins/core/commands/superscript',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5629,7 +5629,7 @@ define('plugins/core/commands/superscript',[],function () {
 
 define('plugins/core/commands/undo',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5677,7 +5677,7 @@ define('plugins/core/commands',[
   undo
 ) {
 
-  
+  'use strict';
 
   return {
     indent: indent,
@@ -5697,7 +5697,7 @@ define('plugins/core/formatters/html/replace-nbsp-chars',[],function () {
    * Chrome:
    */
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5813,7 +5813,7 @@ define('plugins/core/formatters/plain-text/escape-html-characters',[
   escape
 ) {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -5830,7 +5830,7 @@ define('plugins/core/formatters',[
   replaceNbspCharsFormatter,
   escapeHtmlCharactersFormatter
 ) {
-  
+  'use strict';
 
   return {
     replaceNbspCharsFormatter: replaceNbspCharsFormatter,
@@ -5900,7 +5900,7 @@ define('plugins/core/events',[
   Immutable
 ) {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6138,7 +6138,7 @@ define('plugins/core/events',[
 
 define('plugins/core/patches/commands/bold',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6173,7 +6173,7 @@ define('plugins/core/patches/commands/indent',[],function () {
    * adding a redundant `style` attribute to the created BLOCKQUOTE.
    */
 
-  
+  'use strict';
 
   var INVISIBLE_CHAR = '\uFEFF';
 
@@ -6234,7 +6234,7 @@ define('plugins/core/patches/commands/indent',[],function () {
 });
 
 define('plugins/core/patches/commands/insert-html',[], function () {
-  
+  "use strict";
   return function () {
     return function (scribe) {
       var insertHTMLCommandPatch = new scribe.api.CommandPatch('insertHTML');
@@ -6299,7 +6299,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
 
 define('plugins/core/patches/commands/insert-list',[], function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6433,7 +6433,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
    * Prevent Chrome from removing formatting of BLOCKQUOTE contents.
    */
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6523,7 +6523,7 @@ define('plugins/core/patches/commands/outdent',[],function () {
 
 define('plugins/core/patches/commands/create-link',[],function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6563,7 +6563,7 @@ define('plugins/core/patches/commands/create-link',[],function () {
 
 define('plugins/core/patches/events',[], function () {
 
-  
+  'use strict';
 
   return function () {
     return function (scribe) {
@@ -6674,7 +6674,7 @@ define('plugins/core/patches',[
    * applying/unapplying commands — that is the job of the core commands.
    */
 
-  
+  'use strict';
 
   return {
     commands: {
@@ -6692,7 +6692,7 @@ define('plugins/core/patches',[
 
 define('api/command-patch',[],function () {
 
-  
+  'use strict';
 
   return function (scribe) {
     function CommandPatch(commandName) {
@@ -6720,7 +6720,7 @@ define('api/command-patch',[],function () {
 
 define('api/command',[],function () {
 
-  
+  'use strict';
 
   return function (scribe) {
     function Command(commandName) {
@@ -6761,7 +6761,7 @@ define('api/command',[],function () {
 
 define('api/selection',[],function () {
 
-  
+  'use strict';
 
   return function (scribe) {
     var rootDoc = scribe.el.ownerDocument;
@@ -6941,7 +6941,7 @@ define('api/selection',[],function () {
 
 define('api/simple-command',[],function () {
 
-  
+  'use strict';
 
   return function (api, scribe) {
     function SimpleCommand(commandName, nodeName) {
@@ -6977,7 +6977,7 @@ define('api',[
   buildSimpleCommand
 ) {
 
-  
+  'use strict';
 
   return function Api(scribe) {
     this.CommandPatch = buildCommandPatch(scribe);
@@ -7767,7 +7767,7 @@ define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal
 
 define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
 
-  
+  'use strict';
 
   return function (scribe) {
     function TransactionManager() {
@@ -7807,11 +7807,13 @@ define('transaction-manager',['lodash-amd/modern/object/assign'], function (assi
   };
 });
 
-define('undo-manager',[],function () {
-  
+define('undo-manager',[
+  'immutable'
+], function (Immutable) {
+  'use strict';
 
   function UndoManager(limit, undoScopeHost) {
-    this._stack = [];
+    this._stack = Immutable.List();
     this._limit = limit;
     this._fireEvent = typeof CustomEvent != 'undefined' && undoScopeHost && undoScopeHost.dispatchEvent;
     this._ush = undoScopeHost;
@@ -7827,77 +7829,86 @@ define('undo-manager',[],function () {
 
     transaction.execute();
 
-    this._stack.splice(0, this.position);
+    if (this.position > 0) {
+      this.clearRedo();
+    }
+
+    var transactions;
     if (merge && this.length) {
-      this._stack[0].push(transaction);
+      transactions = this._stack.first().push(transaction);
+      this._stack = this._stack.shift().unshift(transactions);
     }
     else {
-      this._stack.unshift([transaction]);
-    }
-    this.position = 0;
+      transactions = Immutable.List.of(transaction);
+      this._stack = this._stack.unshift(transactions);
+      this.length++;
 
-    if (this._limit && this._stack.length > this._limit) {
-      this.length = this._stack.length = this._limit;
-    }
-    else {
-      this.length = this._stack.length;
+      if (this._limit && this.length > this._limit) {
+        this.clearUndo(this._limit);
+      }
     }
 
-    if (this._fireEvent) {
-      this._ush.dispatchEvent(new CustomEvent('DOMTransaction', {detail: {transactions: this._stack[0].slice()}, bubbles: true, cancelable: false}));
-    }
+    this._dispatch('DOMTransaction', transactions);
   };
 
   UndoManager.prototype.undo = function () {
-    if (this.position < this.length) {
-      for (var i = this._stack[this.position].length - 1; i >= 0; i--) {
-        this._stack[this.position][i].undo();
-      }
-      this.position++;
+    if (this.position >= this.length) { return; }
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('undo', {detail: {transactions: this._stack[this.position - 1].slice()}, bubbles: true, cancelable: false}));
-      }
+    var transactions = this._stack.get(this.position);
+    var i = transactions.size;
+    while (i--) {
+      transactions.get(i).undo();
     }
+    this.position++;
+
+    this._dispatch('undo', transactions);
   };
 
   UndoManager.prototype.redo = function () {
-    if (this.position > 0) {
-      for (var i = 0, n = this._stack[this.position - 1].length; i < n; i++) {
-        this._stack[this.position - 1][i].redo();
-      }
-      this.position--;
+    if (this.position === 0) { return; }
 
-      if (this._fireEvent) {
-        this._ush.dispatchEvent(new CustomEvent('redo', {detail: {transactions: this._stack[this.position].slice()}, bubbles: true, cancelable: false}));
-      }
+    this.position--;
+    var transactions = this._stack.get(this.position);
+    for (var i = 0; i < transactions.size; i++) {
+      transactions.get(i).redo();
     }
+
+    this._dispatch('redo', transactions);
   };
 
   UndoManager.prototype.item = function (index) {
-    if (index >= 0 && index < this.length) {
-      return this._stack[index].slice();
-    }
-    return null;
+    return index >= 0 && index < this.length ?
+      this._stack.get(index).toArray() :
+      null;
   };
 
-  UndoManager.prototype.clearUndo = function () {
-    this._stack.length = this.length = this.position;
+  UndoManager.prototype.clearUndo = function (position) {
+    this._stack = this._stack.take(position !== undefined ? position : this.position);
+    this.length = this._stack.size;
   };
 
   UndoManager.prototype.clearRedo = function () {
-    this._stack.splice(0, this.position);
+    this._stack = this._stack.skip(this.position);
+    this.length = this._stack.size;
     this.position = 0;
-    this.length = this._stack.length;
   };
+
+  UndoManager.prototype._dispatch = function(event, transactions) {
+    if (this._fireEvent) {
+      this._ush.dispatchEvent(new CustomEvent(event, {
+        detail: {transactions: transactions.toArray()},
+        bubbles: true,
+        cancelable: false
+      }));
+    }
+  }
 
   return UndoManager;
 });
 
-
 define('event-emitter',['immutable'], function (Immutable) {
 
-  
+  'use strict';
 
   // TODO: once
   // TODO: unit test
@@ -8155,7 +8166,7 @@ define('scribe',[
   config
 ) {
 
-  
+  'use strict';
 
   function Scribe(el, options) {
     EventEmitter.call(this);
