@@ -1,6 +1,6 @@
 define([
-  './vars/inline-element-names',
-  './vars/block-element-names',
+  './constants/inline-element-names',
+  './constants/block-element-names',
   'immutable'
 ], function (inlineElementNames, blockElementNames, Immutable) {
 
