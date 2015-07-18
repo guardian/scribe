@@ -1,3 +1,7 @@
+# 1.4.15
+
+Stripping of Chrome artifacts has been consolidated into a single function. Thanks [Regis Kuckaertz](https://github.com/regiskuckaertz)
+
 # 1.4.14
 
 The undo manager has been re-written to use Immutable data structures. Thanks [Regis Kuckaertz](https://github.com/regiskuckaertz)
