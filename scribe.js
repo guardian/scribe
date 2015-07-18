@@ -5029,20 +5029,44 @@ define('plugins/core/formatters/html/enforce-p-elements',[
 
 });
 
-define('node',[
+define('constants/inline-element-names',[
   'immutable'
 ], function (Immutable) {
+  // Source: https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elemente
+  var inlineElementNames = Immutable.Set.of('B', 'BIG', 'I', 'SMALL', 'TT',
+    'ABBR', 'ACRONYM', 'CITE', 'CODE', 'DFN', 'EM', 'KBD', 'STRONG', 'SAMP', 'VAR',
+    'A', 'BDO', 'BR', 'IMG', 'MAP', 'OBJECT', 'Q', 'SCRIPT', 'SPAN', 'SUB', 'SUP',
+    'BUTTON', 'INPUT', 'LABEL', 'SELECT', 'TEXTAREA');
 
-  'use strict';
+  return inlineElementNames;
+});
 
+define('constants/block-element-names',[
+  'immutable'
+], function(Immutable) {
   var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
                            'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
                            'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
                            'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
                            'TH', 'TFOOT', 'UL', 'VIDEO');
 
+  return blockElementNames;
+});
+
+define('node',[
+  './constants/inline-element-names',
+  './constants/block-element-names',
+  'immutable'
+], function (inlineElementNames, blockElementNames, Immutable) {
+
+  'use strict';
+
   function isBlockElement(node) {
     return blockElementNames.includes(node.nodeName);
+  }
+
+  function isInlineElement(node) {
+    return inlineElementNames.includes(node.nodeName);
   }
 
   // return true if nested inline tags ultimately just contain <br> or ""
@@ -5136,7 +5160,45 @@ define('node',[
     node.removeChild(childNode);
   }
 
+  /**
+   * Chrome: If a parent node has a CSS `line-height` when we apply the
+   * insertHTML command, Chrome appends a SPAN to plain content with
+   * inline styling replicating that `line-height`, and adjusts the
+   * `line-height` on inline elements.
+   *
+   * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
+   * More from the web: http://stackoverflow.com/q/15015019/40352
+   */
+  function removeChromeArtifacts(parentElement) {
+    function isInlineWithStyle(parentStyle, element) {
+      return window.getComputedStyle(element).lineHeight === parentStyle.lineHeight;
+    }
+
+    var nodes = Immutable.List(parentElement.querySelectorAll(inlineElementNames
+      .map(function(elName) { return elName + '[style*="line-height"]' })
+      .join(',')
+      ));
+    nodes = nodes.filter(isInlineWithStyle.bind(null, window.getComputedStyle(parentElement)));
+
+    var emptySpans = Immutable.List();
+
+    nodes.forEach(function(node) {
+      node.style.lineHeight = null;
+      if (!node.getAttribute('style')) {
+        node.removeAttribute('style');
+      }
+      if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
+        emptySpans = emptySpans.push(node);
+      }
+    });
+
+    emptySpans.forEach(function(node) {
+      unwrap(node.parentNode, node);
+    });
+  }
+
   return {
+    isInlineElement: isInlineElement,
     isBlockElement: isBlockElement,
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
@@ -5151,7 +5213,8 @@ define('node',[
     getAncestor: getAncestor,
     nextSiblings: nextSiblings,
     wrap: wrap,
-    unwrap: unwrap
+    unwrap: unwrap,
+    removeChromeArtifacts: removeChromeArtifacts
   };
 
 });
@@ -6243,51 +6306,7 @@ define('plugins/core/patches/commands/insert-html',[], function () {
       insertHTMLCommandPatch.execute = function (value) {
         scribe.transactionManager.run(function () {
           scribe.api.CommandPatch.prototype.execute.call(this, value);
-
-          // TODO: share somehow with similar event patch for P nodes
-          removeChromeArtifacts(scribe.el);
-
-          /**
-           * Chrome: If a parent node has a CSS `line-height` when we apply the
-           * insertHTML command, Chrome appends a SPAN to plain content with
-           * inline styling replicating that `line-height`, and adjusts the
-           * `line-height` on inline elements.
-           *
-           * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
-           * More from the web: http://stackoverflow.com/q/15015019/40352
-           */
-          function removeChromeArtifacts(parentElement) {
-            // Can't use treeWalker: In at least Chrome, if a node is unwrapped,
-            // treeWalker.nextSibling will not work properly after that.
-            var childElement = parentElement.firstElementChild;
-            while (childElement) {
-              /**
-               * If the list item contains inline elements such as
-               * A, B, or I, Chrome will also append an inline style for
-               * `line-height` on those elements, so we remove it here.
-               */
-              var childStyle = window.getComputedStyle(childElement);
-              if ((childStyle.display === 'inline' || childElement.nodeName === 'SPAN') && window.getComputedStyle(parentElement)['line-height'] === childStyle['line-height']) {
-                childElement.style.lineHeight = null;
-              }
-
-              // We can discard an empty style attribute.
-              if (childElement.getAttribute('style') === '') {
-                childElement.removeAttribute('style');
-              }
-
-              // Sanitize children.
-              removeChromeArtifacts(childElement);
-
-              // We can discard an empty SPAN.
-              // (Don't do this until traversal's gone to the next element.)
-              var originalChild = childElement;
-              childElement = childElement.nextElementSibling;
-              if (originalChild.nodeName === 'SPAN' && originalChild.attributes.length === 0) {
-                nodeHelpers.unwrap(parentElement, originalChild);
-              }
-            }
-          }
+          nodeHelpers.removeChromeArtifacts(scribe.el);
         }.bind(this));
       };
 
@@ -6322,7 +6341,6 @@ define('plugins/core/patches/commands/insert-list',[], function () {
             var listElement = selection.getContaining(function (node) {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
-
 
             /**
              * Firefox: If we apply the insertOrderedList or the insertUnorderedList
@@ -6365,44 +6383,7 @@ define('plugins/core/patches/commands/insert-list',[], function () {
               }
             }
 
-            /**
-             * Chrome: If a parent node has a CSS `line-height` when we apply the
-             * insertOrderedList or the insertUnorderedList command, Chrome appends
-             * a SPAN to LIs with inline styling replicating that `line-height`.
-             * As per: http://jsbin.com/OtemujAY/7/edit?html,css,js,output
-             *
-             * FIXME: what if the user actually wants to use SPANs? This could
-             * cause conflicts.
-             */
-
-            // TODO: share somehow with similar event patch for P nodes
-            var listItemElements = Array.prototype.slice.call(listElement.childNodes);
-            listItemElements.forEach(function(listItemElement) {
-              // We clone the childNodes into an Array so that it's
-              // not affected by any manipulation below when we
-              // iterate over it
-              var listItemElementChildNodes = Array.prototype.slice.call(listItemElement.childNodes);
-              listItemElementChildNodes.forEach(function(listElementChildNode) {
-                if (listElementChildNode.nodeName === 'SPAN') {
-                  // Unwrap any SPAN that has been inserted
-                  var spanElement = listElementChildNode;
-                  nodeHelpers.unwrap(listItemElement, spanElement);
-                } else if (listElementChildNode.nodeType === Node.ELEMENT_NODE) {
-                  /**
-                   * If the list item contains inline elements such as
-                   * A, B, or I, Chrome will also append an inline style for
-                   * `line-height` on those elements, so we remove it here.
-                   */
-                  listElementChildNode.style.lineHeight = null;
-
-                  // There probably wasn’t a `style` attribute before, so
-                  // remove it if it is now empty.
-                  if (listElementChildNode.getAttribute('style') === '') {
-                    listElementChildNode.removeAttribute('style');
-                  }
-                }
-              });
-            });
+            nodeHelpers.removeChromeArtifacts(listElement);
           }
         }.bind(this));
       };
@@ -6567,18 +6548,6 @@ define('plugins/core/patches/events',[], function () {
 
   return function () {
     return function (scribe) {
-      /**
-       * Chrome: If a parent node has a CSS `line-height` when we apply the
-       * insert(Un)OrderedList command, altering the paragraph structure by pressing
-       * <backspace> or <delete> (merging/deleting paragraphs) sometimes
-       * results in the application of a line-height attribute to the
-       * contents of the paragraph, either onto existing elements or
-       * by wrapping text in a span.
-       * As per: http://jsbin.com/isIdoKA/4/edit?html,css,js,output
-       *
-       * FIXME: what if the user actually wants to use SPANs? This could
-       * cause conflicts.
-       */
       // TODO: do we need to run this on every key press, or could we
       //       detect when the issue may have occurred?
       // TODO: run in a transaction so as to record the change? how do
@@ -6614,32 +6583,7 @@ define('plugins/core/patches/events',[], function () {
               scribe.transactionManager.run(function () {
                 // Store the caret position
                 selection.placeMarkers();
-
-                // We clone the childNodes into an Array so that it's
-                // not affected by any manipulation below when we
-                // iterate over it
-                var pElementChildNodes = Array.prototype.slice.call(containerPElement.childNodes);
-                pElementChildNodes.forEach(function(pElementChildNode) {
-                  if (pElementChildNode.nodeName === 'SPAN') {
-                    // Unwrap any SPAN that has been inserted
-                    var spanElement = pElementChildNode;
-                    nodeHelpers.unwrap(containerPElement, spanElement);
-                  } else if (pElementChildNode.nodeType === Node.ELEMENT_NODE) {
-                    /**
-                     * If the paragraph contains inline elements such as
-                     * A, B, or I, Chrome will also append an inline style for
-                     * `line-height` on those elements, so we remove it here.
-                     */
-                    pElementChildNode.style.lineHeight = null;
-
-                    // There probably wasn’t a `style` attribute before, so
-                    // remove it if it is now empty.
-                    if (pElementChildNode.getAttribute('style') === '') {
-                      pElementChildNode.removeAttribute('style');
-                    }
-                  }
-                });
-
+                nodeHelpers.removeChromeArtifacts(containerPElement);
                 selection.selectMarkers();
               }, true);
             }
