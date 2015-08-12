@@ -75,6 +75,22 @@ require({
   });
 
   /**
+   * Example validation functions
+   */
+  function linkValidator(url) {
+      if(/dailymail/.test(url)) {
+        return {
+          valid: false,
+          message: "I'm afraid I can't let you link to that Dave..."
+        }
+      }
+
+      return {
+        valid: true
+      };
+  }
+
+  /**
    * Plugins
    */
 
@@ -82,7 +98,9 @@ require({
   scribe.use(scribePluginCodeCommand());
   scribe.use(scribePluginHeadingCommand(2));
   scribe.use(scribePluginIntelligentUnlinkCommand());
-  scribe.use(scribePluginLinkPromptCommand());
+  scribe.use(scribePluginLinkPromptCommand({
+      validation: linkValidator
+    }));
   scribe.use(scribePluginToolbar(document.querySelector('.toolbar')));
   scribe.use(scribePluginSmartLists());
   scribe.use(scribePluginCurlyQuotes());

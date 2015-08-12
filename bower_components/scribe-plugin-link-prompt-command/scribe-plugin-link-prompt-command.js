@@ -6,20 +6,38 @@ define('scribe-plugin-link-prompt-command',[],function () {
 
   
 
-  return function () {
+  return function (options) {
+    var options = options || {};
+
     return function (scribe) {
       var linkPromptCommand = new scribe.api.Command('createLink');
 
       linkPromptCommand.nodeName = 'A';
 
-      linkPromptCommand.execute = function () {
+      linkPromptCommand.execute = function (passedLink) {
+        var link;
         var selection = new scribe.api.Selection();
         var range = selection.range;
         var anchorNode = selection.getContaining(function (node) {
           return node.nodeName === this.nodeName;
         }.bind(this));
+
         var initialLink = anchorNode ? anchorNode.href : '';
-        var link = window.prompt('Enter a link.', initialLink);
+
+        if (!passedLink)  {
+          link = window.prompt('Enter a link.', initialLink);
+        } else {
+          link = passedLink;
+        }
+
+        if(options && options.validation) {
+          var validationResult = options.validation(link);
+
+          if(!validationResult.valid) {
+            window.alert(validationResult.message || 'The link is not valid');
+            return;
+          }
+        }
 
         if (anchorNode) {
           range.selectNode(anchorNode);
