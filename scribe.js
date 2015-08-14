@@ -6843,7 +6843,12 @@ define('api/selection',[],function () {
 
     Selection.prototype.removeMarkers = function () {
       Array.prototype.forEach.call(this.getMarkers(), function (marker) {
+        var markerParent = marker.parentNode;
         nodeHelpers.removeNode(marker);
+        // Placing the markers may have split a text node. Sew it up, otherwise
+        // if the user presses space between the nodes the browser will insert
+        // an `&nbsp;` and that will cause word wrapping issues.
+        markerParent.normalize();
       });
     };
 
