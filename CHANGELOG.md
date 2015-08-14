@@ -1,3 +1,9 @@
+# 2.0.0
+
+A split text node will [no longer be replaced by a non-breaking backspace](https://github.com/guardian/scribe/pull/421) but instead should be a regular space character.
+
+Thanks [Jeffrey Wear](https://github.com/wearhere) for this change/fix
+
 # 1.4.15
 
 Stripping of Chrome artifacts has been consolidated into a single function. Thanks [Regis Kuckaertz](https://github.com/regiskuckaertz)
