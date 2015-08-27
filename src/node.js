@@ -1,17 +1,17 @@
 define([
+  './constants/inline-element-names',
+  './constants/block-element-names',
   'immutable'
-], function (Immutable) {
+], function (inlineElementNames, blockElementNames, Immutable) {
 
   'use strict';
 
-  var blockElementNames = Immutable.Set.of('ADDRESS', 'ARTICLE', 'ASIDE', 'AUDIO', 'BLOCKQUOTE', 'CANVAS', 'DD',
-                           'DIV', 'FIELDSET', 'FIGCAPTION', 'FIGURE', 'FOOTER', 'FORM', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6', 'HEADER', 'HGROUP', 'HR', 'LI',
-                           'NOSCRIPT', 'OL', 'OUTPUT', 'P', 'PRE', 'SECTION', 'TABLE', 'TD',
-                           'TH', 'TFOOT', 'UL', 'VIDEO');
-
   function isBlockElement(node) {
     return blockElementNames.includes(node.nodeName);
+  }
+
+  function isInlineElement(node) {
+    return inlineElementNames.includes(node.nodeName);
   }
 
   // return true if nested inline tags ultimately just contain <br> or ""
@@ -105,7 +105,45 @@ define([
     node.removeChild(childNode);
   }
 
+  /**
+   * Chrome: If a parent node has a CSS `line-height` when we apply the
+   * insertHTML command, Chrome appends a SPAN to plain content with
+   * inline styling replicating that `line-height`, and adjusts the
+   * `line-height` on inline elements.
+   *
+   * As per: http://jsbin.com/ilEmudi/4/edit?css,js,output
+   * More from the web: http://stackoverflow.com/q/15015019/40352
+   */
+  function removeChromeArtifacts(parentElement) {
+    function isInlineWithStyle(parentStyle, element) {
+      return window.getComputedStyle(element).lineHeight === parentStyle.lineHeight;
+    }
+
+    var nodes = Immutable.List(parentElement.querySelectorAll(inlineElementNames
+      .map(function(elName) { return elName + '[style*="line-height"]' })
+      .join(',')
+      ));
+    nodes = nodes.filter(isInlineWithStyle.bind(null, window.getComputedStyle(parentElement)));
+
+    var emptySpans = Immutable.List();
+
+    nodes.forEach(function(node) {
+      node.style.lineHeight = null;
+      if (!node.getAttribute('style')) {
+        node.removeAttribute('style');
+      }
+      if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
+        emptySpans = emptySpans.push(node);
+      }
+    });
+
+    emptySpans.forEach(function(node) {
+      unwrap(node.parentNode, node);
+    });
+  }
+
   return {
+    isInlineElement: isInlineElement,
     isBlockElement: isBlockElement,
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
@@ -120,7 +158,8 @@ define([
     getAncestor: getAncestor,
     nextSiblings: nextSiblings,
     wrap: wrap,
-    unwrap: unwrap
+    unwrap: unwrap,
+    removeChromeArtifacts: removeChromeArtifacts
   };
 
 });
