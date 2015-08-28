@@ -1,6 +1,6 @@
 define('scribe-plugin-smart-lists',[], function () {
 
-  
+  'use strict';
 
   return function () {
 
@@ -23,7 +23,7 @@ define('scribe-plugin-smart-lists',[], function () {
       var preLastChar, lastChar, currentChar;
 
       function findBlockContainer(node) {
-        while (node && ! scribe.element.isBlockElement(node)) {
+        while (node && ! scribe.node.isBlockElement(node)) {
           node = node.parentNode;
         }
 
@@ -33,32 +33,17 @@ define('scribe-plugin-smart-lists',[], function () {
       function removeSelectedTextNode() {
         var selection = new scribe.api.Selection();
         var container = selection.selection.anchorNode;
-        /**
-         * Firefox: Selection object never gets access to text nodes, only
-         * parent elements.
-         * As per: http://jsbin.com/rotus/2/edit?js,output,console
-         * Bugzilla: https://bugzilla.mozilla.org/show_bug.cgi?id=1042701
-         */
-        var textNode;
-        if (container.nodeType === Node.TEXT_NODE) {
-          textNode = container;
-        } else if (container.firstChild.nodeType === Node.TEXT_NODE) {
-          textNode = container.firstChild;
+
+        if(container.data) {
+          container.data = container.data.replace(/^([•*-.\d]+)/, "");
         }
 
-        if (textNode) {
-          var parentNode = textNode.parentNode;
-          /**
-           * Firefox: Given text of "1.", we sometimes have two text nodes
-           * (why?): "1" and "."
-           */
-          if (textNode.previousSibling) {
-            parentNode.removeChild(textNode.previousSibling);
-          }
-          parentNode.removeChild(textNode);
-        } else {
-          throw new Error('Cannot empty non-text node!');
+        if(!container.data
+          && container.firstChild
+          && container.firstChild.nodeType === Node.TEXT_NODE) {
+          container.removeChild(container.firstChild);
         }
+
       }
 
       function input(event) {
