@@ -17,6 +17,8 @@ You can join us on IRC at [#scribejs] on freenode, or via the [Google Group](htt
 
 [See an example][example].
 
+Scribe only actively supports a [sub-set of browsers](https://github.com/guardian/scribe/wiki/Browser-support).
+
 ## Core
 
 At the core of Scribe we have:
@@ -111,14 +113,7 @@ function myPlugin(scribe) {
 
 ### Browser Support
 
-Theoretically, Scribe should work in any browser with the
-[Selection][Selection API] API, the [Range][Range API] API, and support for most
-of the non-standardised list of commands that appears in
-[this MDN article][Executing Commands]. It has been tested in Firefox >= 36,
-Chrome >= 41.
-
-See the [status of our integration tests](https://travis-ci.org/guardian/scribe)
-for more up-to-date support information.
+[Moved to the Github Wiki](https://github.com/guardian/scribe/wiki/Browser-support)
 
 
 ### Commands
