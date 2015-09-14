@@ -6117,6 +6117,8 @@ define('plugins/core/events',[
 
                 var command = scribe.getCommand(listNode.nodeName === 'OL' ? 'insertOrderedList' : 'insertUnorderedList');
 
+                command.event = event;
+
                 command.execute();
               }
             }
