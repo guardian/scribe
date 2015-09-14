@@ -1,3 +1,9 @@
+# 2.0.1
+
+The code for handling manual navigation in list elements now passes the event to its associated command for plugins to use in their response.
+
+Thank you to [Josh Moore](https://github.com/josh-infusionsoft) for contributing this change. Please raise issues on how you think this should work generally if you are interested.
+
 # 2.0.0
 
 A split text node will [no longer be replaced by a non-breaking backspace](https://github.com/guardian/scribe/pull/421) but instead should be a regular space character.
