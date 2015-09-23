@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 cd ..
 command -v browserify >/dev/null 2>&1 || { echo >&2 "browserify not installed. run 'npm install -g browserify'. Aborting."; exit 1; }
+bower install
 npm install deamdify
 npm install scribe-plugin-toolbar
 browserify -g deamdify \
