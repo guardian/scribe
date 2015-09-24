@@ -7,11 +7,7 @@
  * through `npm install`. `npm` is installed with Node.js.
  * See http://nodejs.org/ if you are unfamiliar.
  *
- * In order to compile the `build.js` file, run these commands:
- *
- *   $ npm install deamdify
- *   $ npm install scribe-plugin-toolbar
- *   $ browserify -g deamdify examples/cjs.js > examples/build.js
+ * In order to compile the `build.js` file, run the following file: build-cjs.sh.
  *
  * See the `examples/cjs.html` file to see where this entry point
  * ends up being consumed.
