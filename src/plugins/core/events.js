@@ -184,8 +184,10 @@ define([
         /**
          * Browsers without the Clipboard API (specifically `ClipboardEvent.clipboardData`)
          * will execute the second branch here.
+         *
+         * Chrome on android provides `ClipboardEvent.clipboardData` but the types array is not filled
          */
-        if (event.clipboardData) {
+        if (event.clipboardData && event.clipboardData.types.length > 0) {
           event.preventDefault();
 
           if (Immutable.List(event.clipboardData.types).includes('text/html')) {
