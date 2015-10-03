@@ -1,3 +1,7 @@
+# 2.0.2
+
+Adds a workaround to allow paste events to work on Android. Thanks to [crasu](https://github.com/crasu) for the contribution.
+
 # 2.0.1
 
 The code for handling manual navigation in list elements now passes the event to its associated command for plugins to use in their response.

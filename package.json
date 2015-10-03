@@ -1,6 +1,6 @@
 {
   "name": "scribe-editor",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "src/scribe.js",
   "dependencies": {
     "lodash-amd": "~3.5.0",
