@@ -7,7 +7,8 @@ define([
     window.MozMutationObserver;
 
   function hasRealMutation(n) {
-    return ! nodeHelpers.isEmptyTextNode(n) &&
+    return nodeHelpers.isNotObservableNode(n) &&
+      ! nodeHelpers.isEmptyTextNode(n) &&
       ! nodeHelpers.isSelectionMarkerNode(n);
   }
 
