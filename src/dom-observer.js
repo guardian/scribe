@@ -5,6 +5,7 @@ define([
   var MutationObserver = getMutationObserver();
   
   function getMutationObserver() {
+    // This enables server side rendering
     if (typeof window === 'undefined') {
       // Stub observe function to avoid error
       return function() {
