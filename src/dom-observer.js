@@ -2,18 +2,20 @@ define([
   './node'
 ], function (nodeHelpers) {
 
-  var MutationObserver;
-  // This enables server side rendering
-  if (typeof window !== 'undefined') {
-    MutationObserver = window.MutationObserver ||
-      window.WebKitMutationObserver ||
-      window.MozMutationObserver;
-  } else {
-    // Stub observe function to escape error
-    MutationObserver = function() {
-      return {
-        observe: function() {}
-      };
+  var MutationObserver = getMutationObserver();
+  
+  function getMutationObserver() {
+    if (typeof window === 'undefined') {
+      // Stub observe function to escape error
+      return function() {
+        return {
+          observe: function() {}
+        };
+      }
+    } else {
+      return window.MutationObserver ||
+        window.WebKitMutationObserver ||
+        window.MozMutationObserver;
     }
   }
 
