@@ -2,9 +2,23 @@ define([
   './node'
 ], function (nodeHelpers) {
 
-  var MutationObserver = window.MutationObserver ||
-    window.WebKitMutationObserver ||
-    window.MozMutationObserver;
+  var MutationObserver = getMutationObserver();
+  
+  function getMutationObserver() {
+    // This enables server side rendering
+    if (typeof window === 'undefined') {
+      // Stub observe function to avoid error
+      return function() {
+        return {
+          observe: function() {}
+        };
+      }
+    } else {
+      return window.MutationObserver ||
+        window.WebKitMutationObserver ||
+        window.MozMutationObserver;
+    }
+  }
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
