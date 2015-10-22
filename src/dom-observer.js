@@ -6,7 +6,7 @@ define([
   
   function getMutationObserver() {
     if (typeof window === 'undefined') {
-      // Stub observe function to escape error
+      // Stub observe function to avoid error
       return function() {
         return {
           observe: function() {}
