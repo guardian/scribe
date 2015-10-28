@@ -10,7 +10,7 @@
     "scribe-plugin-heading-command": "0.1.0",
     "scribe-plugin-intelligent-unlink-command": "0.1.6",
     "scribe-plugin-keyboard-shortcuts": "0.1.1",
-    "scribe-plugin-link-prompt-command": "0.3.0",
+    "scribe-plugin-link-prompt-command": "0.3.1",
     "scribe-plugin-sanitizer": "0.1.9",
     "scribe-plugin-smart-lists": "0.1.8",
     "scribe-plugin-toolbar": "0.2.1",

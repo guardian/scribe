@@ -1,4 +1,18 @@
-define('scribe-plugin-link-prompt-command',[],function () {
+define('checks',[], function () {
+
+  
+
+  function emptyLink(string) {
+    return /\w/.test(string);
+  }
+
+  return {
+    emptyLink: emptyLink
+  };
+});
+
+
+define('scribe-plugin-link-prompt-command',['./checks'], function (checks) {
 
   /**
    * This plugin adds a command for creating links, including a basic prompt.
@@ -28,6 +42,11 @@ define('scribe-plugin-link-prompt-command',[],function () {
           link = window.prompt('Enter a link.', initialLink);
         } else {
           link = passedLink;
+        }
+
+        if(!checks.emptyLink(link)) {
+          window.alert('This link appears empty');
+          return;
         }
 
         if(options && options.validation) {
