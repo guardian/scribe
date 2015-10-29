@@ -30,53 +30,59 @@ describe('formatters', function () {
   describe('plain text', function () {
     // TODO: Abstract plugin tests
     describe('escape HTML characters', function () {
-      when('content of "&" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+      givenContentOf('', function () {
+        when('content of "&" is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return driver.executeScript(function () {
-            window.scribe.insertPlainText('&');
+            return driver.executeScript(function () {
+              window.scribe.insertPlainText('&');
+            });
           });
-        });
 
-        it('should convert the "&" character to the corresponding HTML entity', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>&amp;</p>');
-          });
-        });
-      });
-
-      when('content of "<" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
-
-          return driver.executeScript(function () {
-            window.scribe.insertPlainText('<');
-          });
-        });
-
-        it('should convert the "<" character to the corresponding HTML entity', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>&lt;</p>');
+          it('should convert the "&" character to the corresponding HTML entity', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>&amp;</p>');
+            });
           });
         });
       });
 
-      when('content of ">" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+      givenContentOf('', function () {
+        when('content of "<" is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return driver.executeScript(function () {
-            window.scribe.insertPlainText('>');
+            return driver.executeScript(function () {
+              window.scribe.insertPlainText('<');
+            });
+          });
+
+          it('should convert the "<" character to the corresponding HTML entity', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>&lt;</p>');
+            });
           });
         });
+      });
 
-        it('should convert the ">" character to the corresponding HTML entity', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>&gt;</p>');
+      givenContentOf('', function () {
+        when('content of ">" is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
+
+            return driver.executeScript(function () {
+              window.scribe.insertPlainText('>');
+            });
+          });
+
+          it('should convert the ">" character to the corresponding HTML entity', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>&gt;</p>');
+            });
           });
         });
       });
@@ -125,27 +131,29 @@ describe('formatters', function () {
         });
       });
 
-      when('content of "<p>1</p>" is inserted', function () {
-        beforeEach(function () {
-          // Focus it before-hand
-          scribeNode.click();
+      givenContentOf('', function () {
+        when('content of "<p>1</p>" is inserted', function () {
+          beforeEach(function () {
+            // Focus it before-hand
+            scribeNode.click();
 
-          return driver.executeScript(function () {
-            window.scribe.insertPlainText('<p>1</p>');
+            return driver.executeScript(function () {
+              window.scribe.insertPlainText('<p>1</p>');
+            });
           });
-        });
 
-        /**
-         * FIXME: "&", "<" and ">" are escaped natively when you set
-         * `Element.innerHTML`. Thus, those tests would pass with or without
-         * the formatter. This test brings everything together to make sure
-         * it really works.
-         *
-         * This could be fixed by having unit tests.
-         */
-        it('should convert HTML characters to their corresponding HTML entities', function () {
-          return scribeNode.getInnerHTML().then(function (innerHTML) {
-            expect(innerHTML).to.have.html('<p>&lt;p&gt;1&lt;/p&gt;</p>');
+          /**
+           * FIXME: "&", "<" and ">" are escaped natively when you set
+           * `Element.innerHTML`. Thus, those tests would pass with or without
+           * the formatter. This test brings everything together to make sure
+           * it really works.
+           *
+           * This could be fixed by having unit tests.
+           */
+          it('should convert HTML characters to their corresponding HTML entities', function () {
+            return scribeNode.getInnerHTML().then(function (innerHTML) {
+              expect(innerHTML).to.have.html('<p>&lt;p&gt;1&lt;/p&gt;</p>');
+            });
           });
         });
       });
@@ -199,7 +207,7 @@ describe('formatters', function () {
 
   describe('HTML', function () {
     describe('non-breaking space characters', function () {
-      given('default content', function () {
+      givenContentOf('', function () {
         it('should keep the non-breaking space character when typing', function () {
           scribeNode.sendKeys('1\xa02');
           return scribeNode.getInnerHTML().then(function(innerHtml) {

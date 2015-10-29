@@ -25,7 +25,7 @@ describe('block mode', function () {
     return initializeScribe();
   });
 
-  given('default content', function () {
+  givenContentOf('<p>|<br></p>', function () {
     when('the user types', function () {
       beforeEach(function () {
         return scribeNode.sendKeys('1');

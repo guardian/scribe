@@ -26,6 +26,7 @@
     "request": "~2.33.0",
     "scribe-test-harness": "~0.0.21",
     "selenium-webdriver": "~2.41.0",
+    "chromedriver": "^2.19",
     "sinon": "^1.12.2"
   },
   "scripts": {

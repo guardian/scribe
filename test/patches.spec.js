@@ -298,7 +298,7 @@ describe('patches', function () {
       });
     });
 
-    given('an empty editor', function () {
+    givenContentOf('<p>|<br></p>', function () {
       when('the user presses <backspace>', function () {
         beforeEach(function () {
           return scribeNode.sendKeys(webdriver.Key.BACK_SPACE);

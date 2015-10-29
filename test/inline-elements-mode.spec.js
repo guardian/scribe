@@ -157,7 +157,7 @@ describe('inline elements mode', function () {
     });
   });
 
-  given('default content', function () {
+  givenContentOf('', function () {
     it('should append a bogus BR to the content', function () {
       return scribeNode.getInnerHTML().then(function (innerHTML) {
         expect(innerHTML).to.have.html('<bogus-br>');
