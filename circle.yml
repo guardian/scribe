@@ -1,6 +1,11 @@
 
 dependencies:
-    pre:
-        - npm install -g bower
-        - bower install
-        - ./setup.sh
+  pre:
+    - npm install -g bower
+    - bower install
+    - ./setup.sh
+
+test:
+  override:
+    - ./run-tests.sh
+
