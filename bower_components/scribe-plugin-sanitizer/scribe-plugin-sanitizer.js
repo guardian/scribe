@@ -13,6 +13,18 @@
    * @param {boolean} config.keepNestedBlockElements Default false.
    */
   function HTMLJanitor(config) {
+
+    var tagDefinitions = config['tags'];
+    var tags = Object.keys(tagDefinitions);
+
+    var validConfigValues = tags
+      .map(function(k) { return typeof tagDefinitions[k]; })
+      .every(function(type) { return type === 'object' || type === 'boolean' || type === 'function'; });
+
+    if(!validConfigValues) {
+      throw new Error("The configuration was invalid");
+    }
+
     this.config = config;
   }
 
@@ -42,9 +54,6 @@
     if (!node) { return; }
 
     do {
-      var nodeName = node.nodeName.toLowerCase();
-      var allowedAttrs = this.config.tags[nodeName];
-
       // Ignore nodes that have already been sanitized
       if (node._sanitized) {
         continue;
@@ -80,8 +89,6 @@
         containsBlockElement = Array.prototype.some.call(node.childNodes, isBlockElement);
       }
 
-      var isInvalid = isInline && containsBlockElement;
-
       // Block elements should not be nested (e.g. <li><p>...); if
       // they are, we want to unwrap the inner block element.
       var isNotTopContainer = !! parentNode.parentNode;
@@ -90,9 +97,16 @@
             isBlockElement(node) &&
             isNotTopContainer;
 
+      var nodeName = node.nodeName.toLowerCase();
+
+      var allowedAttrs = getAllowedAttrs(this.config, nodeName, node);
+
+      var isInvalid = isInline && containsBlockElement;
+
       // Drop tag entirely according to the whitelist *and* if the markup
       // is invalid.
-      if (!this.config.tags[nodeName] || isInvalid || (!this.config.keepNestedBlockElements && isNestedBlockElement)) {
+      if (isInvalid || shouldRejectNode(node, allowedAttrs)
+          || (!this.config.keepNestedBlockElements && isNestedBlockElement)) {
         // Do not keep the inner text of SCRIPT/STYLE elements.
         if (! (node.nodeName === 'SCRIPT' || node.nodeName === 'STYLE')) {
           while (node.childNodes.length > 0) {
@@ -108,13 +122,8 @@
       // Sanitize attributes
       for (var a = 0; a < node.attributes.length; a += 1) {
         var attr = node.attributes[a];
-        var attrName = attr.name.toLowerCase();
 
-        // Allow attribute?
-        var allowedAttrValue = allowedAttrs[attrName];
-        var notInAttrList = ! allowedAttrValue;
-        var valueNotAllowed = allowedAttrValue !== true && attr.value !== allowedAttrValue;
-        if (notInAttrList || valueNotAllowed) {
+        if (shouldRejectAttr(attr, allowedAttrs, node)) {
           node.removeAttribute(attr.name);
           // Shift the array to continue looping.
           a = a - 1;
@@ -133,6 +142,42 @@
     return document.createTreeWalker(node,
                                      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT,
                                      null, false);
+  }
+
+  function getAllowedAttrs(config, nodeName, node){
+    if (typeof config.tags[nodeName] === 'function') {
+      return config.tags[nodeName](node);
+    } else {
+      return config.tags[nodeName];
+    }
+  }
+
+  function shouldRejectNode(node, allowedAttrs){
+    if (typeof allowedAttrs === 'undefined') {
+      return true;
+    } else if (typeof allowedAttrs === 'boolean') {
+      return !allowedAttrs;
+    }
+
+    return false;
+  }
+
+  function shouldRejectAttr(attr, allowedAttrs, node){
+    var attrName = attr.name.toLowerCase();
+
+    if (allowedAttrs === true){
+      return false;
+    } else if (typeof allowedAttrs[attrName] === 'function'){
+      return !allowedAttrs[attrName](attr.value, node);
+    } else if (typeof allowedAttrs[attrName] === 'undefined'){
+      return true;
+    } else if (allowedAttrs[attrName] === false) {
+      return true;
+    } else if (typeof allowedAttrs[attrName] === 'string') {
+      return (allowedAttrs[attrName] !== attr.value);
+    }
+
+    return false;
   }
 
   return HTMLJanitor;
