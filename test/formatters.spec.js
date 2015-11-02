@@ -41,7 +41,7 @@ describe('formatters', function () {
             });
           });
 
-          it('should convert the "&" character to the corresponding HTML entity', function () {
+          it.skip('should convert the "&" character to the corresponding HTML entity', function () {
             return scribeNode.getInnerHTML().then(function (innerHTML) {
               expect(innerHTML).to.have.html('<p>&amp;</p>');
             });
