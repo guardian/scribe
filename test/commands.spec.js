@@ -31,7 +31,7 @@ var focusOther = function() {
     b.id = 'focusSwitchInput';
     document.body.appendChild(b);
   }).then(function() {
-    return helpers.driver.findElement(webdriver.By.id('focusSwitchInput')).sendKeys('!');
+    return helpers.driver.findElement({"id" : 'focusSwitchInput'}).sendKeys('!');
   });
 };
 
@@ -76,7 +76,7 @@ describe('commands', function () {
     });
 
 
-    given('an empty editor', function () {
+    givenContentOf('<p>|<br></p>', function () {
       when('the command is executed', function () {
         beforeEach(function () {
           scribeNode.click();
@@ -320,7 +320,7 @@ describe('commands', function () {
         });
       });
 
-      given('default content', function () {
+      givenContentOf('<p>|<br></p>', function () {
         when('the command is executed with a value of "<p>1</p>2"', function () {
           beforeEach(function () {
             // Focus it before-hand
