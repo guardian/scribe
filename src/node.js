@@ -43,15 +43,15 @@ define([
   }
 
   function isSelectionMarkerNode(node) {
-    return elementHasClass('scribe-marker');
+    return elementHasClass(node, 'scribe-marker');
   }
 
   function isCaretPositionNode(node) {
-    return elementHasClass('caret-position');
+    return elementHasClass(node, 'caret-position');
   }
 
   function isNotObservableNode(node) {
-    return elementHasClass('scribe-not-observable');
+    return elementHasClass(node, 'scribe-not-observable');
   }
 
   function firstDeepestChild(node) {
