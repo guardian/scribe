@@ -46,6 +46,10 @@ define([
     return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
   }
 
+  function isNotObservableNode(node) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-not-observable');
+  }
+
   function firstDeepestChild(node) {
     var fs = node.firstChild;
     return !fs || fs.nodeName === 'BR' ?
