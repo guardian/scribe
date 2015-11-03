@@ -21,5 +21,15 @@ describe('Mutations', function() {
         chai.assert.isFunction(stubObserver().observe);
       });
     });
+
+    describe('browser', function() {
+      it("should use the window's MutationObserver if present", function() {
+        var fakeObserver = function() {};
+        var returnedObserver = Mutations.determineMutationObserver({MutationObserver: fakeObserver});
+
+        chai.assert.strictEqual(fakeObserver, returnedObserver);
+      });
+
+    });
   });
 });
