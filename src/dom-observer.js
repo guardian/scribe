@@ -1,10 +1,9 @@
 define([
-  './node'
-], function (nodeHelpers) {
+  './node',
+  './mutations'
+], function (nodeHelpers, mutations) {
 
-  var MutationObserver = window.MutationObserver ||
-    window.WebKitMutationObserver ||
-    window.MozMutationObserver;
+  var MutationObserver = mutations.determineMutationObserver(window);
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
