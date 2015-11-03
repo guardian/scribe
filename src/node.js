@@ -38,16 +38,20 @@ define([
     return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
   }
 
+  function elementHasClass(node, className) {
+    return (node.nodeType === Node.ELEMENT_NODE && node.className === className)
+  }
+
   function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+    return elementHasClass('scribe-marker');
   }
 
   function isCaretPositionNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
+    return elementHasClass('caret-position');
   }
 
   function isNotObservableNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-not-observable');
+    return elementHasClass('scribe-not-observable');
   }
 
   function firstDeepestChild(node) {
