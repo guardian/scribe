@@ -16,21 +16,7 @@ define([], function() {
     }
   }
 
-  function hasRealMutation(n) {
-    return ! nodeHelpers.isEmptyTextNode(n) &&
-      ! nodeHelpers.isSelectionMarkerNode(n);
-  }
-
-  function includeRealMutations(mutations) {
-    return mutations.some(function(mutation) {
-      return Array.prototype.some.call(mutation.addedNodes, hasRealMutation) ||
-        Array.prototype.some.call(mutation.removedNodes, hasRealMutation);
-    });
-  }
-
   return {
-    determineMutationObserver: determineMutationObserver,
-    hasRealMutation: hasRealMutation,
-    includeRealMutations: includeRealMutations
+    determineMutationObserver: determineMutationObserver
   };
 });
