@@ -26,7 +26,8 @@
     "request": "~2.33.0",
     "scribe-test-harness": "~0.0.21",
     "selenium-webdriver": "~2.41.0",
-    "sinon": "^1.12.2"
+    "sinon": "^1.12.2",
+    "mock-browser": "0.90.33"
   },
   "scripts": {
     "setup-tests": "node_modules/scribe-test-harness/bin/setup-tests.sh",
