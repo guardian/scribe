@@ -5093,12 +5093,22 @@ define('node',[
     return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
   }
 
+  function elementHasClass(Node, className) {
+    return function(node) {
+      return (node.nodeType === Node.ELEMENT_NODE && node.className === className)
+    }
+  }
+
   function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+    return elementHasClass(Node, 'scribe-marker')(node);
   }
 
   function isCaretPositionNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
+    return elementHasClass(Node, 'caret-position')(node);
+  }
+
+  function isNotObservableNode(node) {
+    return elementHasClass(Node, 'scribe-not-observable')(node);
   }
 
   function firstDeepestChild(node) {
@@ -5214,7 +5224,8 @@ define('node',[
     nextSiblings: nextSiblings,
     wrap: wrap,
     unwrap: unwrap,
-    removeChromeArtifacts: removeChromeArtifacts
+    removeChromeArtifacts: removeChromeArtifacts,
+    elementHasClass: elementHasClass
   };
 
 });
@@ -5901,13 +5912,35 @@ define('plugins/core/formatters',[
   };
 });
 
-define('dom-observer',[
-  './node'
-], function (nodeHelpers) {
+define('mutations',[], function() {
 
-  var MutationObserver = window.MutationObserver ||
-    window.WebKitMutationObserver ||
-    window.MozMutationObserver;
+  function determineMutationObserver(window) {
+    // This enables server side rendering
+    if (typeof window === 'undefined') {
+      // Stub observe function to avoid error
+      return function() {
+        return {
+          observe: function() {}
+        };
+      }
+    } else {
+      return window.MutationObserver ||
+        window.WebKitMutationObserver ||
+        window.MozMutationObserver;
+    }
+  }
+
+  return {
+    determineMutationObserver: determineMutationObserver
+  };
+});
+
+define('dom-observer',[
+  './node',
+  './mutations'
+], function (nodeHelpers, mutations) {
+
+  var MutationObserver = mutations.determineMutationObserver(window);
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
