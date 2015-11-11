@@ -38,12 +38,22 @@ define([
     return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
   }
 
+  function elementHasClass(Node, className) {
+    return function(node) {
+      return (node.nodeType === Node.ELEMENT_NODE && node.className === className)
+    }
+  }
+
   function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
+    return elementHasClass(Node, 'scribe-marker')(node);
   }
 
   function isCaretPositionNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'caret-position');
+    return elementHasClass(Node, 'caret-position')(node);
+  }
+
+  function isNotObservableNode(node) {
+    return elementHasClass(Node, 'scribe-not-observable')(node);
   }
 
   function firstDeepestChild(node) {
@@ -159,7 +169,8 @@ define([
     nextSiblings: nextSiblings,
     wrap: wrap,
     unwrap: unwrap,
-    removeChromeArtifacts: removeChromeArtifacts
+    removeChromeArtifacts: removeChromeArtifacts,
+    elementHasClass: elementHasClass
   };
 
 });
