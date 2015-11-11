@@ -1,3 +1,9 @@
+# 2.1.0
+
+Changes the way the mutation observer is determined and changes the way that nodes with certain classes are checked for. Both of these changes are aimed at offerring better support for server-side rendering.
+
+Thank you [Sergey Zyablitsky](https://github.com/szyablitsky) and [Simon Degraeve](https://github.com/SimonDegraeve) for your contributions towards this goal.
+
 # 2.0.2
 
 Adds a workaround to allow paste events to work on Android. Thanks to [crasu](https://github.com/crasu) for the contribution.
