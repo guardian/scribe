@@ -3,7 +3,9 @@ define([
   './mutations'
 ], function (nodeHelpers, mutations) {
 
-  var MutationObserver = mutations.determineMutationObserver(window);
+  var maybeWindow = typeof window === 'object' ? window : undefined;
+
+  var MutationObserver = mutations.determineMutationObserver(maybeWindow);
 
   function hasRealMutation(n) {
     return ! nodeHelpers.isEmptyTextNode(n) &&
