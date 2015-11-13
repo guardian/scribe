@@ -1,3 +1,7 @@
+# 2.1.1
+
+Fixes an issue where the window global was still being referenced so the module still couldn't be used server-side.
+
 # 2.1.0
 
 Changes the way the mutation observer is determined and changes the way that nodes with certain classes are checked for. Both of these changes are aimed at offerring better support for server-side rendering.
