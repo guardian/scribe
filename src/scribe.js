@@ -323,8 +323,10 @@ define([
     var formatters = this.formatters.sanitize.concat(this.formatters.normalize);
 
     var formatted = formatters.reduce(function (formattedData, formatter) {
-      return formatter(formattedData);
-    }, html);
+      return Promise.resolve(formattedData).then(function(html){
+        return Promise.resolve(formatter(html))
+      });
+    }, Promise.resolve(html));
 
     return formatted;
   };
