@@ -1,117 +1,219 @@
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/baseIndexOf',[], function() {
+define('lodash-amd/modern/internal/arrayCopy',[], function() {
 
   /**
-   * The base implementation of `_.indexOf` without support for binary searches
-   * or `fromIndex` constraints.
+   * Copies the values of `source` to `array`.
    *
    * @private
-   * @param {Array} array The array to search.
-   * @param {*} value The value to search for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {number} Returns the index of the matched value or `-1`.
+   * @param {Array} source The array to copy values from.
+   * @param {Array} [array=[]] The array to copy values to.
+   * @returns {Array} Returns `array`.
    */
-  function baseIndexOf(array, value, fromIndex) {
-    var index = (fromIndex || 0) - 1,
-        length = array ? array.length : 0;
+  function arrayCopy(source, array) {
+    var index = -1,
+        length = source.length;
 
+    array || (array = Array(length));
     while (++index < length) {
-      if (array[index] === value) {
-        return index;
-      }
+      array[index] = source[index];
     }
-    return -1;
+    return array;
   }
 
-  return baseIndexOf;
+  return arrayCopy;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/isNative',[], function() {
+define('lodash-amd/modern/internal/isLength',[], function() {
 
-  /** Used for native method references */
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like length.
+   *
+   * **Note:** This function is based on ES `ToLength`. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength)
+   * for more details.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+   */
+  function isLength(value) {
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+  }
+
+  return isLength;
+});
+
+define('lodash-amd/modern/internal/baseValues',[], function() {
+
+  /**
+   * The base implementation of `_.values` and `_.valuesIn` which creates an
+   * array of `object` property values corresponding to the property names
+   * returned by `keysFunc`.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {Array} props The property names to get values for.
+   * @returns {Object} Returns the array of property values.
+   */
+  function baseValues(object, props) {
+    var index = -1,
+        length = props.length,
+        result = Array(length);
+
+    while (++index < length) {
+      result[index] = object[props[index]];
+    }
+    return result;
+  }
+
+  return baseValues;
+});
+
+define('lodash-amd/modern/internal/baseToString',[], function() {
+
+  /**
+   * Converts `value` to a string if it is not one. An empty string is returned
+   * for `null` or `undefined` values.
+   *
+   * @private
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
+   */
+  function baseToString(value) {
+    if (typeof value == 'string') {
+      return value;
+    }
+    return value == null ? '' : (value + '');
+  }
+
+  return baseToString;
+});
+
+define('lodash-amd/modern/string/escapeRegExp',['../internal/baseToString'], function(baseToString) {
+
+  /**
+   * Used to match `RegExp` special characters.
+   * See this [article on `RegExp` characters](http://www.regular-expressions.info/characters.html#special)
+   * for more details.
+   */
+  var reRegExpChars = /[.*+?^${}()|[\]\/\\]/g,
+      reHasRegExpChars = RegExp(reRegExpChars.source);
+
+  /**
+   * Escapes the `RegExp` special characters "\", "^", "$", ".", "|", "?", "*",
+   * "+", "(", ")", "[", "]", "{" and "}" in `string`.
+   *
+   * @static
+   * @memberOf _
+   * @category String
+   * @param {string} [string=''] The string to escape.
+   * @returns {string} Returns the escaped string.
+   * @example
+   *
+   * _.escapeRegExp('[lodash](https://lodash.com/)');
+   * // => '\[lodash\]\(https://lodash\.com/\)'
+   */
+  function escapeRegExp(string) {
+    string = baseToString(string);
+    return (string && reHasRegExpChars.test(string))
+      ? string.replace(reRegExpChars, '\\$&')
+      : string;
+  }
+
+  return escapeRegExp;
+});
+
+define('lodash-amd/modern/internal/isObjectLike',[], function() {
+
+  /**
+   * Checks if `value` is object-like.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   */
+  function isObjectLike(value) {
+    return (value && typeof value == 'object') || false;
+  }
+
+  return isObjectLike;
+});
+
+define('lodash-amd/modern/lang/isNative',['../string/escapeRegExp', '../internal/isObjectLike'], function(escapeRegExp, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var funcTag = '[object Function]';
+
+  /** Used to detect host constructors (Safari > 5). */
+  var reHostCtor = /^\[object .+?Constructor\]$/;
+
+  /** Used for native method references. */
   var objectProto = Object.prototype;
 
-  /** Used to resolve the internal [[Class]] of values */
-  var toString = objectProto.toString;
+  /** Used to resolve the decompiled source of functions. */
+  var fnToString = Function.prototype.toString;
 
-  /** Used to detect if a method is native */
+  /**
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /** Used to detect if a method is native. */
   var reNative = RegExp('^' +
-    String(toString)
-      .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      .replace(/toString| for [^\]]+/g, '.*?') + '$'
+    escapeRegExp(objToString)
+    .replace(/toString|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
   );
 
   /**
    * Checks if `value` is a native function.
    *
-   * @private
+   * @static
+   * @memberOf _
+   * @category Lang
    * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+   * @returns {boolean} Returns `true` if `value` is a native function, else `false`.
+   * @example
+   *
+   * _.isNative(Array.prototype.push);
+   * // => true
+   *
+   * _.isNative(_);
+   * // => false
    */
   function isNative(value) {
-    return typeof value == 'function' && reNative.test(value);
+    if (value == null) {
+      return false;
+    }
+    if (objToString.call(value) == funcTag) {
+      return reNative.test(fnToString.call(value));
+    }
+    return (isObjectLike(value) && reHostCtor.test(value)) || false;
   }
 
   return isNative;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/objectTypes',[], function() {
-
-  /** Used to determine if values are of the language type Object */
-  var objectTypes = {
-    'boolean': false,
-    'function': true,
-    'object': true,
-    'number': false,
-    'string': false,
-    'undefined': false
-  };
-
-  return objectTypes;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/isObject',['../internals/objectTypes'], function(objectTypes) {
+define('lodash-amd/modern/lang/isObject',[], function() {
 
   /**
-   * Checks if `value` is the language type of Object.
+   * Checks if `value` is the language type of `Object`.
    * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+   *
+   * **Note:** See the [ES5 spec](https://es5.github.io/#x8) for more details.
    *
    * @static
    * @memberOf _
-   * @category Objects
+   * @category Lang
    * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+   * @returns {boolean} Returns `true` if `value` is an object, else `false`.
    * @example
    *
    * _.isObject({});
@@ -124,532 +226,171 @@ define('lodash-amd/modern/objects/isObject',['../internals/objectTypes'], functi
    * // => false
    */
   function isObject(value) {
-    // check if the value is the ECMAScript language type of Object
-    // http://es5.github.io/#x8
-    // and avoid a V8 bug
-    // http://code.google.com/p/v8/issues/detail?id=2291
-    return !!(value && objectTypes[typeof value]);
+    // Avoid a V8 JIT bug in Chrome 19-20.
+    // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
+    var type = typeof value;
+    return type == 'function' || (value && type == 'object') || false;
   }
 
   return isObject;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/utilities/noop',[], function() {
+define('lodash-amd/modern/lang/isArguments',['../internal/isLength', '../internal/isObjectLike'], function(isLength, isObjectLike) {
+
+  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
+  var undefined;
+
+  /** `Object#toString` result references. */
+  var argsTag = '[object Arguments]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
 
   /**
-   * A no-operation function.
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
+   */
+  var objToString = objectProto.toString;
+
+  /**
+   * Checks if `value` is classified as an `arguments` object.
    *
    * @static
    * @memberOf _
-   * @category Utilities
-   * @example
-   *
-   * var object = { 'name': 'fred' };
-   * _.noop(object) === undefined;
-   * // => true
-   */
-  function noop() {
-    // no operation performed
-  }
-
-  return noop;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/baseCreate',['./isNative', '../objects/isObject', '../utilities/noop'], function(isNative, isObject, noop) {
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeCreate = isNative(nativeCreate = Object.create) && nativeCreate;
-
-  /**
-   * The base implementation of `_.create` without support for assigning
-   * properties to the created object.
-   *
-   * @private
-   * @param {Object} prototype The object to inherit from.
-   * @returns {Object} Returns the new object.
-   */
-  function baseCreate(prototype, properties) {
-    return isObject(prototype) ? nativeCreate(prototype) : {};
-  }
-  // fallback for browsers without `Object.create`
-  if (!nativeCreate) {
-    baseCreate = (function() {
-      function Object() {}
-      return function(prototype) {
-        if (isObject(prototype)) {
-          Object.prototype = prototype;
-          var result = new Object;
-          Object.prototype = null;
-        }
-        return result || window.Object();
-      };
-    }());
-  }
-
-  return baseCreate;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/setBindData',['./isNative', '../utilities/noop'], function(isNative, noop) {
-
-  /** Used as the property descriptor for `__bindData__` */
-  var descriptor = {
-    'configurable': false,
-    'enumerable': false,
-    'value': null,
-    'writable': false
-  };
-
-  /** Used to set meta data on functions */
-  var defineProperty = (function() {
-    // IE 8 only accepts DOM elements
-    try {
-      var o = {},
-          func = isNative(func = Object.defineProperty) && func,
-          result = func(o, o, o) && func;
-    } catch(e) { }
-    return result;
-  }());
-
-  /**
-   * Sets `this` binding data on a given function.
-   *
-   * @private
-   * @param {Function} func The function to set data on.
-   * @param {Array} value The data array to set.
-   */
-  var setBindData = !defineProperty ? noop : function(func, value) {
-    descriptor.value = value;
-    defineProperty(func, '__bindData__', descriptor);
-  };
-
-  return setBindData;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/slice',[], function() {
-
-  /**
-   * Slices the `collection` from the `start` index up to, but not including,
-   * the `end` index.
-   *
-   * Note: This function is used instead of `Array#slice` to support node lists
-   * in IE < 9 and to ensure dense arrays are returned.
-   *
-   * @private
-   * @param {Array|Object|string} collection The collection to slice.
-   * @param {number} start The start index.
-   * @param {number} end The end index.
-   * @returns {Array} Returns the new array.
-   */
-  function slice(array, start, end) {
-    start || (start = 0);
-    if (typeof end == 'undefined') {
-      end = array ? array.length : 0;
-    }
-    var index = -1,
-        length = end - start || 0,
-        result = Array(length < 0 ? 0 : length);
-
-    while (++index < length) {
-      result[index] = array[start + index];
-    }
-    return result;
-  }
-
-  return slice;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/baseBind',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
-
-  /**
-   * Used for `Array` method references.
-   *
-   * Normally `Array.prototype` would suffice, however, using an array literal
-   * avoids issues in Narwhal.
-   */
-  var arrayRef = [];
-
-  /** Native method shortcuts */
-  var push = arrayRef.push;
-
-  /**
-   * The base implementation of `_.bind` that creates the bound function and
-   * sets its meta data.
-   *
-   * @private
-   * @param {Array} bindData The bind data array.
-   * @returns {Function} Returns the new bound function.
-   */
-  function baseBind(bindData) {
-    var func = bindData[0],
-        partialArgs = bindData[2],
-        thisArg = bindData[4];
-
-    function bound() {
-      // `Function#bind` spec
-      // http://es5.github.io/#x15.3.4.5
-      if (partialArgs) {
-        // avoid `arguments` object deoptimizations by using `slice` instead
-        // of `Array.prototype.slice.call` and not assigning `arguments` to a
-        // variable as a ternary expression
-        var args = slice(partialArgs);
-        push.apply(args, arguments);
-      }
-      // mimic the constructor's `return` behavior
-      // http://es5.github.io/#x13.2.2
-      if (this instanceof bound) {
-        // ensure `new bound` is an instance of `func`
-        var thisBinding = baseCreate(func.prototype),
-            result = func.apply(thisBinding, args || arguments);
-        return isObject(result) ? result : thisBinding;
-      }
-      return func.apply(thisArg, args || arguments);
-    }
-    setBindData(bound, bindData);
-    return bound;
-  }
-
-  return baseBind;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/baseCreateWrapper',['./baseCreate', '../objects/isObject', './setBindData', './slice'], function(baseCreate, isObject, setBindData, slice) {
-
-  /**
-   * Used for `Array` method references.
-   *
-   * Normally `Array.prototype` would suffice, however, using an array literal
-   * avoids issues in Narwhal.
-   */
-  var arrayRef = [];
-
-  /** Native method shortcuts */
-  var push = arrayRef.push;
-
-  /**
-   * The base implementation of `createWrapper` that creates the wrapper and
-   * sets its meta data.
-   *
-   * @private
-   * @param {Array} bindData The bind data array.
-   * @returns {Function} Returns the new function.
-   */
-  function baseCreateWrapper(bindData) {
-    var func = bindData[0],
-        bitmask = bindData[1],
-        partialArgs = bindData[2],
-        partialRightArgs = bindData[3],
-        thisArg = bindData[4],
-        arity = bindData[5];
-
-    var isBind = bitmask & 1,
-        isBindKey = bitmask & 2,
-        isCurry = bitmask & 4,
-        isCurryBound = bitmask & 8,
-        key = func;
-
-    function bound() {
-      var thisBinding = isBind ? thisArg : this;
-      if (partialArgs) {
-        var args = slice(partialArgs);
-        push.apply(args, arguments);
-      }
-      if (partialRightArgs || isCurry) {
-        args || (args = slice(arguments));
-        if (partialRightArgs) {
-          push.apply(args, partialRightArgs);
-        }
-        if (isCurry && args.length < arity) {
-          bitmask |= 16 & ~32;
-          return baseCreateWrapper([func, (isCurryBound ? bitmask : bitmask & ~3), args, null, thisArg, arity]);
-        }
-      }
-      args || (args = arguments);
-      if (isBindKey) {
-        func = thisBinding[key];
-      }
-      if (this instanceof bound) {
-        thisBinding = baseCreate(func.prototype);
-        var result = func.apply(thisBinding, args);
-        return isObject(result) ? result : thisBinding;
-      }
-      return func.apply(thisBinding, args);
-    }
-    setBindData(bound, bindData);
-    return bound;
-  }
-
-  return baseCreateWrapper;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/isFunction',[], function() {
-
-  /**
-   * Checks if `value` is a function.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
+   * @category Lang
    * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is a function, else `false`.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
    * @example
    *
-   * _.isFunction(_);
+   * _.isArguments(function() { return arguments; }());
    * // => true
+   *
+   * _.isArguments([1, 2, 3]);
+   * // => false
    */
-  function isFunction(value) {
-    return typeof value == 'function';
+  function isArguments(value) {
+    var length = isObjectLike(value) ? value.length : undefined;
+    return (isLength(length) && objToString.call(value) == argsTag) || false;
   }
 
-  return isFunction;
+  return isArguments;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/createWrapper',['./baseBind', './baseCreateWrapper', '../objects/isFunction', './slice'], function(baseBind, baseCreateWrapper, isFunction, slice) {
+define('lodash-amd/modern/lang/isArray',['../internal/isLength', './isNative', '../internal/isObjectLike'], function(isLength, isNative, isObjectLike) {
+
+  /** `Object#toString` result references. */
+  var arrayTag = '[object Array]';
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
 
   /**
-   * Used for `Array` method references.
-   *
-   * Normally `Array.prototype` would suffice, however, using an array literal
-   * avoids issues in Narwhal.
+   * Used to resolve the `toStringTag` of values.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.prototype.tostring)
+   * for more details.
    */
-  var arrayRef = [];
+  var objToString = objectProto.toString;
 
-  /** Native method shortcuts */
-  var push = arrayRef.push,
-      unshift = arrayRef.unshift;
+  /* Native method references for those with the same name as other `lodash` methods. */
+  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
 
   /**
-   * Creates a function that, when called, either curries or invokes `func`
-   * with an optional `this` binding and partially applied arguments.
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(function() { return arguments; }());
+   * // => false
+   */
+  var isArray = nativeIsArray || function(value) {
+    return (isObjectLike(value) && isLength(value.length) && objToString.call(value) == arrayTag) || false;
+  };
+
+  return isArray;
+});
+
+define('lodash-amd/modern/internal/isIndex',[], function() {
+
+  /**
+   * Used as the maximum length of an array-like value.
+   * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
+   * for more details.
+   */
+  var MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+
+  /**
+   * Checks if `value` is a valid array-like index.
    *
    * @private
-   * @param {Function|string} func The function or method name to reference.
-   * @param {number} bitmask The bitmask of method flags to compose.
-   *  The bitmask may be composed of the following flags:
-   *  1 - `_.bind`
-   *  2 - `_.bindKey`
-   *  4 - `_.curry`
-   *  8 - `_.curry` (bound)
-   *  16 - `_.partial`
-   *  32 - `_.partialRight`
-   * @param {Array} [partialArgs] An array of arguments to prepend to those
-   *  provided to the new function.
-   * @param {Array} [partialRightArgs] An array of arguments to append to those
-   *  provided to the new function.
-   * @param {*} [thisArg] The `this` binding of `func`.
-   * @param {number} [arity] The arity of `func`.
-   * @returns {Function} Returns the new function.
+   * @param {*} value The value to check.
+   * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+   * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
    */
-  function createWrapper(func, bitmask, partialArgs, partialRightArgs, thisArg, arity) {
-    var isBind = bitmask & 1,
-        isBindKey = bitmask & 2,
-        isCurry = bitmask & 4,
-        isCurryBound = bitmask & 8,
-        isPartial = bitmask & 16,
-        isPartialRight = bitmask & 32;
-
-    if (!isBindKey && !isFunction(func)) {
-      throw new TypeError;
-    }
-    if (isPartial && !partialArgs.length) {
-      bitmask &= ~16;
-      isPartial = partialArgs = false;
-    }
-    if (isPartialRight && !partialRightArgs.length) {
-      bitmask &= ~32;
-      isPartialRight = partialRightArgs = false;
-    }
-    var bindData = func && func.__bindData__;
-    if (bindData && bindData !== true) {
-      // clone `bindData`
-      bindData = slice(bindData);
-      if (bindData[2]) {
-        bindData[2] = slice(bindData[2]);
-      }
-      if (bindData[3]) {
-        bindData[3] = slice(bindData[3]);
-      }
-      // set `thisBinding` is not previously bound
-      if (isBind && !(bindData[1] & 1)) {
-        bindData[4] = thisArg;
-      }
-      // set if previously bound but not currently (subsequent curried functions)
-      if (!isBind && bindData[1] & 1) {
-        bitmask |= 8;
-      }
-      // set curried arity if not yet set
-      if (isCurry && !(bindData[1] & 4)) {
-        bindData[5] = arity;
-      }
-      // append partial left arguments
-      if (isPartial) {
-        push.apply(bindData[2] || (bindData[2] = []), partialArgs);
-      }
-      // append partial right arguments
-      if (isPartialRight) {
-        unshift.apply(bindData[3] || (bindData[3] = []), partialRightArgs);
-      }
-      // merge flags
-      bindData[1] |= bitmask;
-      return createWrapper.apply(null, bindData);
-    }
-    // fast path for `_.bind`
-    var creater = (bitmask == 1 || bitmask === 17) ? baseBind : baseCreateWrapper;
-    return creater([func, bitmask, partialArgs, partialRightArgs, thisArg, arity]);
+  function isIndex(value, length) {
+    value = +value;
+    length = length == null ? MAX_SAFE_INTEGER : length;
+    return value > -1 && value % 1 == 0 && value < length;
   }
 
-  return createWrapper;
+  return isIndex;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/functions/bind',['../internals/createWrapper', '../internals/slice'], function(createWrapper, slice) {
+define('lodash-amd/modern/internal/root',[], function() {
+
+  /** Used to determine if values are of the language type `Object`. */
+  var objectTypes = {
+    'function': true,
+    'object': true
+  };
+
+  /** Detect free variable `exports`. */
+  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+
+  /** Detect free variable `module`. */
+  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+
+  /** Detect free variable `global` from Node.js. */
+  var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
+
+  /** Detect free variable `window`. */
+  var freeWindow = objectTypes[typeof window] && window;
 
   /**
-   * Creates a function that, when called, invokes `func` with the `this`
-   * binding of `thisArg` and prepends any additional `bind` arguments to those
-   * provided to the bound function.
+   * Used as a reference to the global object.
    *
-   * @static
-   * @memberOf _
-   * @category Functions
-   * @param {Function} func The function to bind.
-   * @param {*} [thisArg] The `this` binding of `func`.
-   * @param {...*} [arg] Arguments to be partially applied.
-   * @returns {Function} Returns the new bound function.
-   * @example
-   *
-   * var func = function(greeting) {
-   *   return greeting + ' ' + this.name;
-   * };
-   *
-   * func = _.bind(func, { 'name': 'fred' }, 'hi');
-   * func();
-   * // => 'hi fred'
+   * The `this` value is used if it is the global object to avoid Greasemonkey's
+   * restricted `window` object, otherwise the `window` object is used.
    */
-  function bind(func, thisArg) {
-    return arguments.length > 2
-      ? createWrapper(func, 17, slice(arguments, 2), null, thisArg)
-      : createWrapper(func, 1, null, null, thisArg);
-  }
+  var root = freeGlobal || ((freeWindow !== (this && this.window)) && freeWindow) || this;
 
-  return bind;
+  return root;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/utilities/identity',[], function() {
+define('lodash-amd/modern/support',['./lang/isNative', './internal/root'], function(isNative, root) {
 
-  /**
-   * This method returns the first argument provided to it.
-   *
-   * @static
-   * @memberOf _
-   * @category Utilities
-   * @param {*} value Any value.
-   * @returns {*} Returns `value`.
-   * @example
-   *
-   * var object = { 'name': 'fred' };
-   * _.identity(object) === object;
-   * // => true
-   */
-  function identity(value) {
-    return value;
-  }
-
-  return identity;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/support',['./internals/isNative'], function(isNative) {
-
-  /** Used to detect functions containing a `this` reference */
+  /** Used to detect functions containing a `this` reference. */
   var reThis = /\bthis\b/;
 
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to detect DOM support. */
+  var document = (document = root.window) && document.document;
+
+  /** Native method references. */
+  var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
   /**
-   * An object used to flag environments features.
+   * An object environment feature flags.
    *
    * @static
    * @memberOf _
@@ -657,502 +398,337 @@ define('lodash-amd/modern/support',['./internals/isNative'], function(isNative) 
    */
   var support = {};
 
-  /**
-   * Detect if functions can be decompiled by `Function#toString`
-   * (all but PS3 and older Opera mobile browsers & avoided in Windows 8 apps).
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  support.funcDecomp = !isNative(window.WinRTError) && reThis.test(function() { return this; });
+  (function(x) {
 
-  /**
-   * Detect if `Function#name` is supported (all but IE).
-   *
-   * @memberOf _.support
-   * @type boolean
-   */
-  support.funcNames = typeof Function.name == 'string';
+    /**
+     * Detect if functions can be decompiled by `Function#toString`
+     * (all but Firefox OS certified apps, older Opera mobile browsers, and
+     * the PlayStation 3; forced `false` for Windows 8 apps).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcDecomp = !isNative(root.WinRTError) && reThis.test(function() { return this; });
+
+    /**
+     * Detect if `Function#name` is supported (all but IE).
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    support.funcNames = typeof Function.name == 'string';
+
+    /**
+     * Detect if the DOM is supported.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.dom = document.createDocumentFragment().nodeType === 11;
+    } catch(e) {
+      support.dom = false;
+    }
+
+    /**
+     * Detect if `arguments` object indexes are non-enumerable.
+     *
+     * In Firefox < 4, IE < 9, PhantomJS, and Safari < 5.1 `arguments` object
+     * indexes are non-enumerable. Chrome < 25 and Node.js < 0.11.0 treat
+     * `arguments` object indexes as non-enumerable and fail `hasOwnProperty`
+     * checks for indexes that exceed their function's formal parameters with
+     * associated values of `0`.
+     *
+     * @memberOf _.support
+     * @type boolean
+     */
+    try {
+      support.nonEnumArgs = !propertyIsEnumerable.call(arguments, 1);
+    } catch(e) {
+      support.nonEnumArgs = true;
+    }
+  }(0, 0));
 
   return support;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/baseCreateCallback',['../functions/bind', '../utilities/identity', './setBindData', '../support'], function(bind, identity, setBindData, support) {
+define('lodash-amd/modern/object/keysIn',['../lang/isArguments', '../lang/isArray', '../internal/isIndex', '../internal/isLength', '../lang/isObject', '../support'], function(isArguments, isArray, isIndex, isLength, isObject, support) {
 
-  /** Used to detected named functions */
-  var reFuncName = /^\s*function[ \n\r\t]+\w/;
-
-  /** Used to detect functions containing a `this` reference */
-  var reThis = /\bthis\b/;
-
-  /** Native method shortcuts */
-  var fnToString = Function.prototype.toString;
-
-  /**
-   * The base implementation of `_.createCallback` without support for creating
-   * "_.pluck" or "_.where" style callbacks.
-   *
-   * @private
-   * @param {*} [func=identity] The value to convert to a callback.
-   * @param {*} [thisArg] The `this` binding of the created callback.
-   * @param {number} [argCount] The number of arguments the callback accepts.
-   * @returns {Function} Returns a callback function.
-   */
-  function baseCreateCallback(func, thisArg, argCount) {
-    if (typeof func != 'function') {
-      return identity;
-    }
-    // exit early for no `thisArg` or already bound by `Function#bind`
-    if (typeof thisArg == 'undefined' || !('prototype' in func)) {
-      return func;
-    }
-    var bindData = func.__bindData__;
-    if (typeof bindData == 'undefined') {
-      if (support.funcNames) {
-        bindData = !func.name;
-      }
-      bindData = bindData || !support.funcDecomp;
-      if (!bindData) {
-        var source = fnToString.call(func);
-        if (!support.funcNames) {
-          bindData = !reFuncName.test(source);
-        }
-        if (!bindData) {
-          // checks if `func` references the `this` keyword and stores the result
-          bindData = reThis.test(source);
-          setBindData(func, bindData);
-        }
-      }
-    }
-    // exit early if there are no `this` references or `func` is bound
-    if (bindData === false || (bindData !== true && bindData[1] & 1)) {
-      return func;
-    }
-    switch (argCount) {
-      case 1: return function(value) {
-        return func.call(thisArg, value);
-      };
-      case 2: return function(a, b) {
-        return func.call(thisArg, a, b);
-      };
-      case 3: return function(value, index, collection) {
-        return func.call(thisArg, value, index, collection);
-      };
-      case 4: return function(accumulator, value, index, collection) {
-        return func.call(thisArg, accumulator, value, index, collection);
-      };
-    }
-    return bind(func, thisArg);
-  }
-
-  return baseCreateCallback;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/internals/shimKeys',['./objectTypes'], function(objectTypes) {
-
-  /** Used for native method references */
+  /** Used for native method references. */
   var objectProto = Object.prototype;
 
-  /** Native method shortcuts */
+  /** Used to check objects for own properties. */
   var hasOwnProperty = objectProto.hasOwnProperty;
 
   /**
-   * A fallback implementation of `Object.keys` which produces an array of the
-   * given object's own enumerable property names.
+   * Creates an array of the own and inherited enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
+   *
+   * @static
+   * @memberOf _
+   * @category Object
+   * @param {Object} object The object to inspect.
+   * @returns {Array} Returns the array of property names.
+   * @example
+   *
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keysIn(new Foo);
+   * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
+   */
+  function keysIn(object) {
+    if (object == null) {
+      return [];
+    }
+    if (!isObject(object)) {
+      object = Object(object);
+    }
+    var length = object.length;
+    length = (length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object))) && length) || 0;
+
+    var Ctor = object.constructor,
+        index = -1,
+        isProto = typeof Ctor == 'function' && Ctor.prototype === object,
+        result = Array(length),
+        skipIndexes = length > 0;
+
+    while (++index < length) {
+      result[index] = (index + '');
+    }
+    for (var key in object) {
+      if (!(skipIndexes && isIndex(key, length)) &&
+          !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+        result.push(key);
+      }
+    }
+    return result;
+  }
+
+  return keysIn;
+});
+
+define('lodash-amd/modern/internal/shimKeys',['../lang/isArguments', '../lang/isArray', './isIndex', './isLength', '../object/keysIn', '../support'], function(isArguments, isArray, isIndex, isLength, keysIn, support) {
+
+  /** Used for native method references. */
+  var objectProto = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto.hasOwnProperty;
+
+  /**
+   * A fallback implementation of `Object.keys` which creates an array of the
+   * own enumerable property names of `object`.
    *
    * @private
-   * @type Function
    * @param {Object} object The object to inspect.
-   * @returns {Array} Returns an array of property names.
+   * @returns {Array} Returns the array of property names.
    */
-  var shimKeys = function(object) {
-    var index, iterable = object, result = [];
-    if (!iterable) return result;
-    if (!(objectTypes[typeof object])) return result;
-      for (index in iterable) {
-        if (hasOwnProperty.call(iterable, index)) {
-          result.push(index);
-        }
+  function shimKeys(object) {
+    var props = keysIn(object),
+        propsLength = props.length,
+        length = propsLength && object.length;
+
+    var allowIndexes = length && isLength(length) &&
+      (isArray(object) || (support.nonEnumArgs && isArguments(object)));
+
+    var index = -1,
+        result = [];
+
+    while (++index < propsLength) {
+      var key = props[index];
+      if ((allowIndexes && isIndex(key, length)) || hasOwnProperty.call(object, key)) {
+        result.push(key);
       }
-    return result
-  };
+    }
+    return result;
+  }
 
   return shimKeys;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/keys',['../internals/isNative', './isObject', '../internals/shimKeys'], function(isNative, isObject, shimKeys) {
+define('lodash-amd/modern/object/keys',['../internal/isLength', '../lang/isNative', '../lang/isObject', '../internal/shimKeys'], function(isLength, isNative, isObject, shimKeys) {
 
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
+  /* Native method references for those with the same name as other `lodash` methods. */
   var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
 
   /**
-   * Creates an array composed of the own enumerable property names of an object.
+   * Creates an array of the own enumerable property names of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects. See the
+   * [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.keys)
+   * for more details.
    *
    * @static
    * @memberOf _
-   * @category Objects
+   * @category Object
    * @param {Object} object The object to inspect.
-   * @returns {Array} Returns an array of property names.
+   * @returns {Array} Returns the array of property names.
    * @example
    *
-   * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
+   *
+   * Foo.prototype.c = 3;
+   *
+   * _.keys(new Foo);
+   * // => ['a', 'b'] (iteration order is not guaranteed)
+   *
+   * _.keys('hi');
+   * // => ['0', '1']
    */
   var keys = !nativeKeys ? shimKeys : function(object) {
-    if (!isObject(object)) {
-      return [];
+    if (object) {
+      var Ctor = object.constructor,
+          length = object.length;
     }
-    return nativeKeys(object);
+    if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
+        (typeof object != 'function' && (length && isLength(length)))) {
+      return shimKeys(object);
+    }
+    return isObject(object) ? nativeKeys(object) : [];
   };
 
   return keys;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/forOwn',['../internals/baseCreateCallback', './keys', '../internals/objectTypes'], function(baseCreateCallback, keys, objectTypes) {
+define('lodash-amd/modern/object/values',['../internal/baseValues', './keys'], function(baseValues, keys) {
 
   /**
-   * Iterates over own enumerable properties of an object, executing the callback
-   * for each property. The callback is bound to `thisArg` and invoked with three
-   * arguments; (value, key, object). Callbacks may exit iteration early by
-   * explicitly returning `false`.
+   * Creates an array of the own enumerable property values of `object`.
+   *
+   * **Note:** Non-object values are coerced to objects.
    *
    * @static
    * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {Object} object The object to iterate over.
-   * @param {Function} [callback=identity] The function called per iteration.
-   * @param {*} [thisArg] The `this` binding of `callback`.
-   * @returns {Object} Returns `object`.
+   * @category Object
+   * @param {Object} object The object to query.
+   * @returns {Array} Returns the array of property values.
    * @example
    *
-   * _.forOwn({ '0': 'zero', '1': 'one', 'length': 2 }, function(num, key) {
-   *   console.log(key);
-   * });
-   * // => logs '0', '1', and 'length' (property order is not guaranteed across environments)
-   */
-  var forOwn = function(collection, callback, thisArg) {
-    var index, iterable = collection, result = iterable;
-    if (!iterable) return result;
-    if (!objectTypes[typeof iterable]) return result;
-    callback = callback && typeof thisArg == 'undefined' ? callback : baseCreateCallback(callback, thisArg, 3);
-      var ownIndex = -1,
-          ownProps = objectTypes[typeof iterable] && keys(iterable),
-          length = ownProps ? ownProps.length : 0;
-
-      while (++ownIndex < length) {
-        index = ownProps[ownIndex];
-        if (callback(iterable[index], index, collection) === false) return result;
-      }
-    return result
-  };
-
-  return forOwn;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/isArray',['../internals/isNative'], function(isNative) {
-
-  /** `Object#toString` result shortcuts */
-  var arrayClass = '[object Array]';
-
-  /** Used for native method references */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the internal [[Class]] of values */
-  var toString = objectProto.toString;
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeIsArray = isNative(nativeIsArray = Array.isArray) && nativeIsArray;
-
-  /**
-   * Checks if `value` is an array.
+   * function Foo() {
+   *   this.a = 1;
+   *   this.b = 2;
+   * }
    *
-   * @static
-   * @memberOf _
-   * @type Function
-   * @category Objects
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is an array, else `false`.
-   * @example
+   * Foo.prototype.c = 3;
    *
-   * (function() { return _.isArray(arguments); })();
-   * // => false
+   * _.values(new Foo);
+   * // => [1, 2] (iteration order is not guaranteed)
    *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   */
-  var isArray = nativeIsArray || function(value) {
-    return value && typeof value == 'object' && typeof value.length == 'number' &&
-      toString.call(value) == arrayClass || false;
-  };
-
-  return isArray;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/isString',[], function() {
-
-  /** `Object#toString` result shortcuts */
-  var stringClass = '[object String]';
-
-  /** Used for native method references */
-  var objectProto = Object.prototype;
-
-  /** Used to resolve the internal [[Class]] of values */
-  var toString = objectProto.toString;
-
-  /**
-   * Checks if `value` is a string.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if the `value` is a string, else `false`.
-   * @example
-   *
-   * _.isString('fred');
-   * // => true
-   */
-  function isString(value) {
-    return typeof value == 'string' ||
-      value && typeof value == 'object' && toString.call(value) == stringClass || false;
-  }
-
-  return isString;
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/collections/contains',['../internals/baseIndexOf', '../objects/forOwn', '../objects/isArray', '../objects/isString'], function(baseIndexOf, forOwn, isArray, isString) {
-
-  /* Native method shortcuts for methods with the same name as other `lodash` methods */
-  var nativeMax = Math.max;
-
-  /**
-   * Checks if a given value is present in a collection using strict equality
-   * for comparisons, i.e. `===`. If `fromIndex` is negative, it is used as the
-   * offset from the end of the collection.
-   *
-   * @static
-   * @memberOf _
-   * @alias include
-   * @category Collections
-   * @param {Array|Object|string} collection The collection to iterate over.
-   * @param {*} target The value to check for.
-   * @param {number} [fromIndex=0] The index to search from.
-   * @returns {boolean} Returns `true` if the `target` element is found, else `false`.
-   * @example
-   *
-   * _.contains([1, 2, 3], 1);
-   * // => true
-   *
-   * _.contains([1, 2, 3], 1, 2);
-   * // => false
-   *
-   * _.contains({ 'name': 'fred', 'age': 40 }, 'fred');
-   * // => true
-   *
-   * _.contains('pebbles', 'eb');
-   * // => true
-   */
-  function contains(collection, target, fromIndex) {
-    var index = -1,
-        indexOf = baseIndexOf,
-        length = collection ? collection.length : 0,
-        result = false;
-
-    fromIndex = (fromIndex < 0 ? nativeMax(0, length + fromIndex) : fromIndex) || 0;
-    if (isArray(collection)) {
-      result = indexOf(collection, target, fromIndex) > -1;
-    } else if (typeof length == 'number') {
-      result = (isString(collection) ? collection.indexOf(target, fromIndex) : indexOf(collection, target, fromIndex)) > -1;
-    } else {
-      forOwn(collection, function(value) {
-        if (++index >= fromIndex) {
-          return !(result = value === target);
-        }
-      });
-    }
-    return result;
-  }
-
-  return contains;
-});
-
-define('scribe-common/src/element',['lodash-amd/modern/collections/contains'], function (contains) {
-
-  
-
-  // TODO: not exhaustive?
-  var blockElementNames = ['P', 'LI', 'DIV', 'BLOCKQUOTE', 'UL', 'OL', 'H1',
-                           'H2', 'H3', 'H4', 'H5', 'H6'];
-  function isBlockElement(node) {
-    return contains(blockElementNames, node.nodeName);
-  }
-
-  function isSelectionMarkerNode(node) {
-    return (node.nodeType === Node.ELEMENT_NODE && node.className === 'scribe-marker');
-  }
-
-  function unwrap(node, childNode) {
-    while (childNode.childNodes.length > 0) {
-      node.insertBefore(childNode.childNodes[0], childNode);
-    }
-    node.removeChild(childNode);
-  }
-
-  return {
-    isBlockElement: isBlockElement,
-    isSelectionMarkerNode: isSelectionMarkerNode,
-    unwrap: unwrap
-  };
-
-});
-
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/objects/values',['./keys'], function(keys) {
-
-  /**
-   * Creates an array composed of the own enumerable property values of `object`.
-   *
-   * @static
-   * @memberOf _
-   * @category Objects
-   * @param {Object} object The object to inspect.
-   * @returns {Array} Returns an array of property values.
-   * @example
-   *
-   * _.values({ 'one': 1, 'two': 2, 'three': 3 });
-   * // => [1, 2, 3] (property order is not guaranteed across environments)
+   * _.values('hi');
+   * // => ['h', 'i']
    */
   function values(object) {
-    var index = -1,
-        props = keys(object),
-        length = props.length,
-        result = Array(length);
-
-    while (++index < length) {
-      result[index] = object[props[index]];
-    }
-    return result;
+    return baseValues(object, keys(object));
   }
 
   return values;
 });
 
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="amd" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-define('lodash-amd/modern/collections/toArray',['../objects/isString', '../internals/slice', '../objects/values'], function(isString, slice, values) {
+define('lodash-amd/modern/lang/toArray',['../internal/arrayCopy', '../internal/isLength', '../object/values'], function(arrayCopy, isLength, values) {
 
   /**
-   * Converts the `collection` to an array.
+   * Converts `value` to an array.
    *
    * @static
    * @memberOf _
-   * @category Collections
-   * @param {Array|Object|string} collection The collection to convert.
-   * @returns {Array} Returns the new converted array.
+   * @category Lang
+   * @param {*} value The value to convert.
+   * @returns {Array} Returns the converted array.
    * @example
    *
-   * (function() { return _.toArray(arguments).slice(1); })(1, 2, 3, 4);
-   * // => [2, 3, 4]
+   * (function() {
+   *   return _.toArray(arguments).slice(1);
+   * }(1, 2, 3));
+   * // => [2, 3]
    */
-  function toArray(collection) {
-    if (collection && typeof collection.length == 'number') {
-      return slice(collection);
+  function toArray(value) {
+    var length = value ? value.length : 0;
+    if (!isLength(length)) {
+      return values(value);
     }
-    return values(collection);
+    if (!length) {
+      return [];
+    }
+    return arrayCopy(value);
   }
 
   return toArray;
 });
 
+define('constants',[], function () {
+  return {
+    openDoubleCurly: '“',
+    closeDoubleCurly: '”',
+    openSingleCurly: '‘',
+    closeSingleCurly: '’'
+  }
+});
+
+define('formatters',['./constants'], function (constants) {
+
+  function isWordCharacter(character) {
+      return /[^\s()]/.test(character);
+  }
+
+  function replaceQuotesFromContext(openCurly, closeCurly) {
+    return function(m, prev) {
+      prev = prev || '';
+      var hasCharsBefore = isWordCharacter(prev);
+      // Optimistic heuristic, would need to look at DOM structure
+      // (esp block vs inline elements) for more robust inference
+      if (hasCharsBefore) {
+        return prev + closeCurly;
+      } else {
+        return prev + openCurly;
+      }
+    };
+  }
+
+  // Recursively convert the quotes to curly quotes. We have to do this
+  // recursively instead of with a global match because the latter would
+  // not detect overlaps, e.g. "'1'" (text can only be matched once).
+  function convert(str) {
+    if (! /['"]/.test(str)) {
+      return str;
+    } else {
+      var foo = str.
+        // Use [\s\S] instead of . to match any characters _including newlines_
+        replace(/([\s\S])?'/,
+                replaceQuotesFromContext(constants.openSingleCurly, constants.closeSingleCurly)).
+        replace(/([\s\S])?"/,
+                replaceQuotesFromContext(constants.openDoubleCurly, constants.closeDoubleCurly));
+      return convert(foo);
+    }
+  }
+
+  return {
+    convert: convert
+  }
+});
+
 define('scribe-plugin-curly-quotes',[
-  'scribe-common/src/element',
-  'lodash-amd/modern/collections/toArray'
+  'lodash-amd/modern/lang/toArray',
+  './constants',
+  './formatters'
 ], function (
-  elementHelpers,
-  toArray
+  toArray,
+  constants,
+  formatters
 ) {
 
   
 
   return function () {
-
-    var openDoubleCurly = '“';
-    var closeDoubleCurly = '”';
-
-    var openSingleCurly = '‘';
-    var closeSingleCurly = '’';
-
-    var NON_BREAKING_SPACE = '\u00A0';
 
     return function (scribe) {
       /**
@@ -1162,14 +738,17 @@ define('scribe-plugin-curly-quotes',[
        * node mutations, but that's expensive unil we have a virtual DOM.
        */
 
-      var keys = {
-        34: '"',
-        39: '\''
-      };
       var curlyQuoteChar;
+
+      var elementHelpers = scribe.node;
 
       // `input` doesn't tell us what key was pressed, so we grab it beforehand
       scribe.el.addEventListener('keypress', function (event) {
+        var keys = {
+          34: '"',
+          39: '\''
+        };
+
         curlyQuoteChar = keys[event.charCode];
       });
 
@@ -1192,10 +771,6 @@ define('scribe-plugin-curly-quotes',[
       // Substitute quotes on setting content or paste
       scribe.registerHTMLFormatter('normalize', substituteCurlyQuotes);
 
-      function isWordCharacter(character) {
-          return /[^\s()]/.test(character);
-      }
-
       function substituteCurlyQuotes(html) {
         // We don't want to replace quotes within the HTML markup
         // (e.g. attributes), only to text nodes
@@ -1217,7 +792,7 @@ define('scribe-plugin-curly-quotes',[
               if (/^</.test(token)) {
                 return token;
               } else {
-                return convert(token);
+                return formatters.convert(token);
               }
             })
             .join('')
@@ -1225,37 +800,6 @@ define('scribe-plugin-curly-quotes',[
         });
 
         return holder.innerHTML;
-      }
-
-      // Recursively convert the quotes to curly quotes. We have to do this
-      // recursively instead of with a global match because the latter would
-      // not detect overlaps, e.g. "'1'" (text can only be matched once).
-      function convert(str) {
-        if (! /['"]/.test(str)) {
-          return str;
-        } else {
-          var foo = str.
-            // Use [\s\S] instead of . to match any characters _including newlines_
-            replace(/([\s\S])?'/,
-                    replaceQuotesFromContext(openSingleCurly, closeSingleCurly)).
-            replace(/([\s\S])?"/,
-                    replaceQuotesFromContext(openDoubleCurly, closeDoubleCurly));
-          return convert(foo);
-        }
-      }
-
-      function replaceQuotesFromContext(openCurly, closeCurly) {
-        return function(m, prev) {
-          prev = prev || '';
-          var hasCharsBefore = isWordCharacter(prev);
-          // Optimistic heuristic, would need to look at DOM structure
-          // (esp block vs inline elements) for more robust inference
-          if (hasCharsBefore) {
-            return prev + closeCurly;
-          } else {
-            return prev + openCurly;
-          }
-        };
       }
 
       // Apply a function on all text nodes in a container, mutating in place
@@ -1293,5 +837,6 @@ define('scribe-plugin-curly-quotes',[
   };
 
 });
+
 
 //# sourceMappingURL=scribe-plugin-curly-quotes.js.map
