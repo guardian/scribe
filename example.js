@@ -99,7 +99,12 @@ require({
   scribe.use(scribePluginHeadingCommand(2));
   scribe.use(scribePluginIntelligentUnlinkCommand());
   scribe.use(scribePluginLinkPromptCommand({
-      validation: linkValidator
+      validation: linkValidator,
+      transforms: {
+        post: [function(link) {
+          return link.replace('www.guardian.co.uk', 'www.theguardian.com');
+        }]
+      }
     }));
   scribe.use(scribePluginToolbar(document.querySelector('.toolbar')));
   scribe.use(scribePluginSmartLists());
