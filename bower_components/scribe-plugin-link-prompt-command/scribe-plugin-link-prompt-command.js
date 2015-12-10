@@ -2,17 +2,125 @@ define('checks',[], function () {
 
   
 
+  var urlProtocolRegExp = /^https?\:\/\//;
+  var mailtoProtocolRegExp = /^mailto\:/;
+  var telProtocolRegExp = /^tel\:/;
+
+  var knownProtocols = [urlProtocolRegExp, mailtoProtocolRegExp, telProtocolRegExp];
+
   function emptyLink(string) {
     return /\w/.test(string);
   }
 
+  function hasKnownProtocol(urlValue) {
+    // If a http/s or mailto link is provided, then we will trust that an link is valid
+    return knownProtocols.some(function(protocol) { return protocol.test(urlValue)});
+  }
+
   return {
-    emptyLink: emptyLink
+    emptyLink: emptyLink,
+    hasKnownProtocol: hasKnownProtocol
   };
 });
 
+define('init',[], function () {
 
-define('scribe-plugin-link-prompt-command',['./checks'], function (checks) {
+  function init(options) {
+    var options = options || {};
+
+    if(!options.transforms) {
+      options.transforms = {};
+    }
+
+    ['pre', 'post'].forEach(function(key) {
+      if(!options.transforms[key]) {
+        options.transforms[key] = [];
+      }
+    });
+
+    return options;
+  }
+
+  return {
+    init: init
+  }
+});
+
+define('prompts',[], function() {
+
+  var userPrompts = [
+    {
+      // For emails we just look for a `@` symbol as it is easier.
+      regexp: /@/,
+      message: 'The URL you entered appears to be an email address. ' +
+      'Do you want to add the required “mailto:” prefix?',
+      action: function(link) {
+        return 'mailto:' + link;
+      }
+    },
+    {
+      // For tel numbers check for + and numerical values
+      regexp: /\+?\d+/,
+      message: 'The URL you entered appears to be a telephone number. ' +
+                'Do you want to add the required “tel:” prefix?',
+      action: function(link) {
+        return 'tel:' + link;
+      }
+    },
+    {
+      regexp: /.+/,
+      message: 'The URL you entered appears to be a link. ' +
+                'Do you want to add the required “http://” prefix?',
+      action: function(link) {
+        return 'http://' + link;
+      }
+    }
+  ];
+
+  function process(window, link) {
+    for (var i = 0; i < userPrompts.length; i++) {
+      var prompt = userPrompts[i];
+
+      if(prompt.regexp.test(link)) {
+        var userResponse = window.confirm(prompt.message);
+
+        if(userResponse) {
+          // Only process the first prompt
+          return prompt.action(link);
+        }
+      }
+
+    };
+
+    return link;
+  }
+
+  return {
+    process: process
+  }
+
+});
+
+define('transforms',[], function () {
+
+
+  function run(transforms, initialLink) {
+    return transforms.reduce(function(currentLinkValue, transform) {
+      return transform(currentLinkValue);
+      }, initialLink);
+  }
+
+  return {
+    run: run
+  }
+});
+
+
+define('scribe-plugin-link-prompt-command',['./checks',
+  './init',
+  './prompts',
+  './transforms'], function (checks, init, prompts, transforms) {
+
 
   /**
    * This plugin adds a command for creating links, including a basic prompt.
@@ -21,7 +129,7 @@ define('scribe-plugin-link-prompt-command',['./checks'], function (checks) {
   
 
   return function (options) {
-    var options = options || {};
+    var options = init.init(options);
 
     return function (scribe) {
       var linkPromptCommand = new scribe.api.Command('createLink');
@@ -44,6 +152,8 @@ define('scribe-plugin-link-prompt-command',['./checks'], function (checks) {
           link = passedLink;
         }
 
+        link = transforms.run(options.transforms.pre, link);
+
         if(!checks.emptyLink(link)) {
           window.alert('This link appears empty');
           return;
@@ -64,34 +174,13 @@ define('scribe-plugin-link-prompt-command',['./checks'], function (checks) {
           selection.selection.addRange(range);
         }
 
-        // FIXME: I don't like how plugins like this do so much. Is there a way
-        // to compose?
-
         if (link) {
-          // Prepend href protocol if missing
-          // If a http/s or mailto link is provided, then we will trust that an link is valid
-          var urlProtocolRegExp = /^https?\:\/\//;
-          var mailtoProtocolRegExp = /^mailto\:/;
-          if (! urlProtocolRegExp.test(link) && ! mailtoProtocolRegExp.test(link)) {
-            // For emails we just look for a `@` symbol as it is easier.
-            if (/@/.test(link)) {
-              var shouldPrefixEmail = window.confirm(
-                'The URL you entered appears to be an email address. ' +
-                'Do you want to add the required “mailto:” prefix?'
-              );
-              if (shouldPrefixEmail) {
-                link = 'mailto:' + link;
-              }
-            } else {
-              var shouldPrefixLink = window.confirm(
-                'The URL you entered appears to be a link. ' +
-                'Do you want to add the required “http://” prefix?'
-              );
-              if (shouldPrefixLink) {
-                link = 'http://' + link;
-              }
-            }
+
+          if (! checks.hasKnownProtocol(link) ) {
+            link = prompts.process(window, link);
           }
+
+          link = transforms.run(options.transforms.post, link);
 
           scribe.api.SimpleCommand.prototype.execute.call(this, link);
         }

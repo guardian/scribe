@@ -1,19 +1,19 @@
 {
   "name": "scribe-plugin-link-prompt-command",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "main": "./scribe-plugin-link-prompt-command.js",
   "authors": [
     "Oliver Joseph Ash <oliverjash@icloud.com>"
   ],
   "license": "Apache 2.0",
   "homepage": "https://github.com/guardian/scribe-plugin-link-prompt-command",
-  "_release": "0.3.1",
+  "_release": "1.0.0",
   "_resolution": {
     "type": "version",
-    "tag": "v0.3.1",
-    "commit": "b3262782755f71927998e157eb278a46e38b51df"
+    "tag": "v1.0.0",
+    "commit": "0c96dbadd2fbbb38658b6aeda6111a745246b61f"
   },
   "_source": "git://github.com/guardian/scribe-plugin-link-prompt-command.git",
-  "_target": "0.3.1",
+  "_target": "1.0.0",
   "_originalSource": "scribe-plugin-link-prompt-command"
 }
