@@ -2,12 +2,36 @@ define('scribe-plugin-toolbar',[],function () {
 
   'use strict';
 
-  return function (toolbarNode) {
+  var focusedElement = null;
+
+  return function (toolbarNode, options) {
+
+    var defaultOptions = {
+      shared: false
+    };
+
+    if(!options) {
+      options = defaultOptions;
+    }
+
+    options = Object.freeze(options);
+
     return function (scribe) {
+
+      if(options.shared) {
+        scribe.el.addEventListener('focus', function() {
+          focusedElement = scribe.el;
+        });
+      }
+
       var buttons = toolbarNode.querySelectorAll('[data-command-name]');
 
       Array.prototype.forEach.call(buttons, function (button) {
         button.addEventListener('mousedown', function () {
+          if (options.shared && (scribe.el !== focusedElement)) {
+            return;
+          }
+
           // Look for a predefined command.
           var command = scribe.getCommand(button.dataset.commandName);
 
