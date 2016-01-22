@@ -52,39 +52,53 @@ define(function () {
       }
     }
 
+    function getRange(selection) {
+      var startNode   = selection.anchorNode;
+      var startOffset = selection.anchorOffset;
+      var endNode     = selection.focusNode;
+      var endOffset   = selection.focusOffset;
+
+      // if the range starts and ends on the same node, then we must swap the
+      // offsets if ever focusOffset is smaller than anchorOffset
+      if (startNode === endNode && endOffset < startOffset) {
+        var tmp = startOffset;
+        startOffset = endOffset;
+        endOffset = tmp;
+      }
+      // if the range ends *before* it starts, then we must reverse the range
+      else if (nodeHelpers.isBefore(endNode, startNode)) {
+        var tmpNode = startNode,
+          tmpOffset = startOffset;
+        startNode = endNode;
+        startOffset = endOffset;
+        endNode = tmpNode;
+        endOffset = tmpOffset;
+      }
+
+      // create the range to avoid chrome bug from getRangeAt / window.getSelection()
+      // https://code.google.com/p/chromium/issues/detail?id=380690
+      var range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+      return range;
+    }
+
     /**
      * Wrapper for object holding currently selected text.
      */
     function Selection() {
-      this.selection = rootDoc.getSelection();
-      if (this.selection.rangeCount && this.selection.anchorNode) {
-        var startNode   = this.selection.anchorNode;
-        var startOffset = this.selection.anchorOffset;
-        var endNode     = this.selection.focusNode;
-        var endOffset   = this.selection.focusOffset;
+      this.update();
+    }
 
-        // if the range starts and ends on the same node, then we must swap the
-        // offsets if ever focusOffset is smaller than anchorOffset
-        if (startNode === endNode && endOffset < startOffset) {
-          var tmp = startOffset;
-          startOffset = endOffset;
-          endOffset = tmp;
+    Selection.prototype.update = function(range) {
+      if (range !== undefined) {
+        this.selection.removeAllRanges();
+        this.selection.addRange(range);
+      } else {
+        this.selection = rootDoc.getSelection();
+        if (this.selection.rangeCount && this.selection.anchorNode) {
+          this.range = getRange(this.selection);
         }
-        // if the range ends *before* it starts, then we must reverse the range
-        else if (nodeHelpers.isBefore(endNode, startNode)) {
-          var tmpNode = startNode,
-            tmpOffset = startOffset;
-          startNode = endNode;
-          startOffset = endOffset;
-          endNode = tmpNode;
-          endOffset = tmpOffset;
-        }
-
-        // create the range to avoid chrome bug from getRangeAt / window.getSelection()
-        // https://code.google.com/p/chromium/issues/detail?id=380690
-        this.range = document.createRange();
-        this.range.setStart(startNode, startOffset);
-        this.range.setEnd(endNode, endOffset);
       }
     }
 

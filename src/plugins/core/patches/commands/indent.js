@@ -11,6 +11,7 @@ define(function () {
 
   return function () {
     return function (scribe) {
+      var nodeHelpers = scribe.node;
       var indentCommand = new scribe.api.CommandPatch('indent');
 
       indentCommand.execute = function (value) {
@@ -42,13 +43,21 @@ define(function () {
 
           scribe.api.CommandPatch.prototype.execute.call(this, value);
 
+          // Chrome will reportedly leave characters off the current selection
+          // after the command is executed. We just make sure the whole node
+          // is selected if that happens.
+          selection.update();
+          range = selection.range;
+          if (nodeHelpers.isText(range.endContainer)) {
+            range.setEnd(range.endContainer, range.endContainer.length);
+            selection.update(range);
+          }
+
           /**
            * Chrome: The BLOCKQUOTE created contains a redundant style attribute.
            * As per: http://jsbin.com/AkasOzu/1/edit?html,js,output
            */
 
-          // Renew the selection
-          selection = new scribe.api.Selection();
           var blockquoteNode = selection.getContaining(function (node) {
             return node.nodeName === 'BLOCKQUOTE';
           });

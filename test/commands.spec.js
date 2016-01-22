@@ -23,6 +23,12 @@ var commandQueryEnabled = function(commandName) {
     return command.queryEnabled();
   }, commandName);
 };
+var getSelectionRange = function() {
+  return helpers.driver.executeScript(function() {
+    var selection = new window.scribe.api.Selection();
+    return selection.range;
+  });
+};
 
 // the only way I could get selenium to properly remove focus from scribe, was to type into another field :/
 var focusOther = function() {
@@ -586,6 +592,20 @@ describe('commands', function () {
             // Chrome: '<blockquote><p>1</p></blockquote><p>2</p>''
             // Firefox: '<p>1<br>2</p>'
             expect(innerHTML).to.have.html('<blockquote><p>1<br>2</p></blockquote>');
+          });
+        });
+      });
+    });
+
+    givenContentOf('<p>|test<br>test<br>test|</p>', function () {
+      when('the command is executed', function () {
+        beforeEach(function () {
+          return executeCommand('indent');
+        });
+
+        it('should have no characters left unselected', function () {
+          return getSelectionRange().then(function(range) {
+            expect(range.endOffset).to.equal(range.endContainer.length);
           });
         });
       });
