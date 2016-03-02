@@ -1,3 +1,7 @@
+# 2.1.2
+
+Fixes an issue where the undo manager could not be disabled due to an unconditional execution of the manager code in the setHTML method (issue #452).
+
 # 2.1.1
 
 Fixes an issue where the window global was still being referenced so the module still couldn't be used server-side.
