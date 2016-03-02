@@ -1,0 +1,105 @@
+<!--
+This example demonstrates how to consume the Scribe
+editor using RequireJS and the AMD module syntax.
+
+Note that you'll need to install scribe's dependencies through
+`bower install`. See http://bower.io/ if you are unfamiliar.
+-->
+<style>
+  button {
+    height: 3em;
+  }
+
+  .active {
+    border-style: inset;
+  }
+
+  .rte, .rte-toolbar {
+    display: block;
+  }
+
+  p {
+    margin-top: 0;
+  }
+
+  .rte {
+    border: 1px solid gray;
+    height: 300px;
+    overflow: auto;
+  }
+  .rte-output {
+    width: 100%;
+    height: 10em;
+  }
+</style>
+<script src="../bower_components/requirejs/require.js"></script>
+<script>
+require({
+  paths: {
+    'scribe-common': '../bower_components/scribe-common',
+    'lodash-amd': '../bower_components/lodash-amd',
+    'html-janitor':  '../bower_components/html-janitor/html-janitor',
+    'immutable': '../bower_components/immutable/dist/immutable'
+  }
+}, [
+  '../src/scribe',
+  '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+  '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
+  '../bower_components/scribe-plugin-heading-command/src/scribe-plugin-heading-command',
+  '../bower_components/scribe-plugin-link-prompt-command/src/scribe-plugin-link-prompt-command',
+  '../bower_components/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'
+
+], function (
+  Scribe,
+  scribePluginToolbar,
+  scribePluginFormatterPlainTextConvertNewLinesToHtml,
+  scribePluginSanitizer,
+  scribePluginInlineStyles,
+  scribePluginHeadingCommand,
+  scribePluginLinkPromptCommand,
+  scribePluginBlockquoteCommand
+) {
+  var scribe = new Scribe(document.querySelector('.rte'), {undo: {enabled: false}});
+  window.scribe = scribe;
+
+  scribe.setContent('<p>Hello, World!<\/p>');
+
+  scribe.use(scribePluginToolbar(document.querySelector('.rte-toolbar')));
+  scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHtml());
+  scribe.use(scribePluginInlineStyles());
+  scribe.use(scribePluginHeadingCommand(2));
+  scribe.use(scribePluginBlockquoteCommand());
+  scribe.use(scribePluginSanitizer({ tags: {
+    p: {},
+    b: {},
+    i: {},
+    br: {},
+    h2: {},
+    a: {},
+    blockquote: {}
+  }}));
+  scribe.use(scribePluginLinkPromptCommand());
+
+  scribe.on('content-changed', updateHtml);
+
+  function updateHtml() {
+    document.querySelector('.rte-output').value = scribe.getHTML();
+  }
+
+  updateHtml();
+});
+</script>
+<div class="rte-toolbar">
+  <button data-command-name="bold">Bold</button>
+  <button data-command-name="italic">Italic</button>
+  <button data-command-name="linkPrompt">Link</button>
+  <button data-command-name="h2">H2</button>
+  <button data-command-name="blockquote">Blockquote</button>
+</div>
+<div class="rte"></div>
+<section>
+  <h1>Output</h1>
+  <textarea class="rte-output" readonly></textarea>
+</section>

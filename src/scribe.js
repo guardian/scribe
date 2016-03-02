@@ -133,7 +133,9 @@ define([
   };
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
-    this._lastItem.content = html;
+    if (this.options.undo.enabled) {
+      this._lastItem.content = html;
+    }
 
     if (skipFormatters) {
       this._skipFormatters = true;
