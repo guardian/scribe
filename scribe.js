@@ -7939,83 +7939,7 @@ define('event-emitter',['immutable'], function (Immutable) {
 
 });
 
-define('lodash-amd/modern/internal/arrayCopy',[], function() {
-
-  /**
-   * Copies the values of `source` to `array`.
-   *
-   * @private
-   * @param {Array} source The array to copy values from.
-   * @param {Array} [array=[]] The array to copy values to.
-   * @returns {Array} Returns `array`.
-   */
-  function arrayCopy(source, array) {
-    var index = -1,
-        length = source.length;
-
-    array || (array = Array(length));
-    while (++index < length) {
-      array[index] = source[index];
-    }
-    return array;
-  }
-
-  return arrayCopy;
-});
-
-define('lodash-amd/modern/internal/assignDefaults',[], function() {
-
-  /**
-   * Used by `_.defaults` to customize its `_.assign` use.
-   *
-   * @private
-   * @param {*} objectValue The destination object property value.
-   * @param {*} sourceValue The source object property value.
-   * @returns {*} Returns the value to assign to the destination object.
-   */
-  function assignDefaults(objectValue, sourceValue) {
-    return typeof objectValue == 'undefined' ? sourceValue : objectValue;
-  }
-
-  return assignDefaults;
-});
-
-define('lodash-amd/modern/object/defaults',['../internal/arrayCopy', './assign', '../internal/assignDefaults'], function(arrayCopy, assign, assignDefaults) {
-
-  /** Used as a safe reference for `undefined` in pre-ES5 environments. */
-  var undefined;
-
-  /**
-   * Assigns own enumerable properties of source object(s) to the destination
-   * object for all destination properties that resolve to `undefined`. Once a
-   * property is set, additional values of the same property are ignored.
-   *
-   * @static
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The destination object.
-   * @param {...Object} [sources] The source objects.
-   * @returns {Object} Returns `object`.
-   * @example
-   *
-   * _.defaults({ 'user': 'barney' }, { 'age': 36 }, { 'user': 'fred' });
-   * // => { 'user': 'barney', 'age': 36 }
-   */
-  function defaults(object) {
-    if (object == null) {
-      return object;
-    }
-    var args = arrayCopy(arguments);
-    args.push(assignDefaults);
-    return assign.apply(undefined, args);
-  }
-
-  return defaults;
-});
-
-define('config',[
-  'lodash-amd/modern/object/defaults'
-], function (defaults) {
+define('config',['immutable'], function (immutable) {
 
   var blockModePlugins = [
     'setRootPElement',
@@ -8050,6 +7974,14 @@ define('config',[
       'replaceNbspCharsFormatter'
     ]
   };
+
+
+  function defaults(options, defaultOptions) {
+    const optionsCopy = immutable.fromJS(options);
+    const defaultsCopy = immutable.fromJS(defaultOptions);
+    const mergedOptions = defaultsCopy.merge(optionsCopy);
+    return mergedOptions.toJS();
+  }
 
   /**
    * Overrides defaults with user's options
@@ -8261,7 +8193,9 @@ define('scribe',[
   };
 
   Scribe.prototype.setHTML = function (html, skipFormatters) {
-    this._lastItem.content = html;
+    if (this.options.undo.enabled) {
+      this._lastItem.content = html;
+    }
 
     if (skipFormatters) {
       this._skipFormatters = true;
