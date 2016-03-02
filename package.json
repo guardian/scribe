@@ -28,12 +28,12 @@
     "scribe-test-harness": "~0.0.21",
     "selenium-webdriver": "~2.41.0",
     "sinon": "^1.12.2",
-    "mock-browser": "0.90.33"
+    "mock-browser": "0.90.33",
+    "gulp": "~3.9",
+    "gulp-mocha": "~2.2"
   },
   "scripts": {
-    "setup-tests": "node_modules/scribe-test-harness/bin/setup-tests.sh",
-    "test": "./run-tests.sh",
-    "test-firefox": "BROWSER_NAME=firefox ./run-tests.sh"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",

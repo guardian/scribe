@@ -1,6 +1,4 @@
-define([
-  'lodash-amd/modern/object/defaults'
-], function (defaults) {
+define(['immutable'], function (immutable) {
 
   var blockModePlugins = [
     'setRootPElement',
@@ -35,6 +33,14 @@ define([
       'replaceNbspCharsFormatter'
     ]
   };
+
+
+  function defaults(options, defaultOptions) {
+    const optionsCopy = immutable.fromJS(options);
+    const defaultsCopy = immutable.fromJS(defaultOptions);
+    const mergedOptions = defaultsCopy.merge(optionsCopy);
+    return mergedOptions.toJS();
+  }
 
   /**
    * Overrides defaults with user's options
