@@ -1,4 +1,4 @@
-define(['lodash-amd/modern/object/assign'], function (assign) {
+define([], function () {
 
   'use strict';
 
@@ -7,7 +7,7 @@ define(['lodash-amd/modern/object/assign'], function (assign) {
       this.history = [];
     }
 
-    assign(TransactionManager.prototype, {
+    Object.assign(TransactionManager.prototype, {
       start: function () {
         this.history.push(1);
       },
