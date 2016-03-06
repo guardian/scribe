@@ -11,6 +11,7 @@
     "chai": "~1.9.1",
     "connect": "~2.12.0",
     "grunt": "^0.4.5",
+    "grunt-contrib-requirejs": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
     "gulp": "~3.9",
     "gulp-mocha": "~2.2",
