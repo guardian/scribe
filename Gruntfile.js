@@ -33,6 +33,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('build', ['requirejs']);
 
+  grunt.registerTask('test', ['mochaTest']);
+
   grunt.registerTask('default', 'mochaTest');
 
 };
