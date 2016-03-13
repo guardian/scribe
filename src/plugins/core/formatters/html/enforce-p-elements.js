@@ -28,7 +28,11 @@ define([
        */
       function wrapChildNodes(parentNode) {
         var index = 0;
+
         Immutable.List(parentNode.childNodes)
+          .filterNot(function(node) {
+            return nodeHelpers.isWhitespaceOnlyTextNode(Node, node);
+          })
           .filter(function(node) {
             return node.nodeType === Node.TEXT_NODE || !nodeHelpers.isBlockElement(node);
           })
