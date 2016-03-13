@@ -10,9 +10,14 @@
   "devDependencies": {
     "chai": "~1.9.1",
     "connect": "~2.12.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-requirejs": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "grunt-cli": "^0.1",
     "http-server": "~0.6.1",
     "lodash-node": "~2.4.1",
-    "mocha": "~1.18.2",
+    "mocha": "~2.4",
+    "mock-browser": "0.90.33",
     "mversion": "~0.4.3",
     "node-amd-require": "^0.2.2",
     "npm": "^2.5.0",
@@ -27,13 +32,11 @@
     "request": "~2.33.0",
     "scribe-test-harness": "~0.0.21",
     "selenium-webdriver": "~2.41.0",
-    "sinon": "^1.12.2",
-    "mock-browser": "0.90.33",
-    "gulp": "~3.9",
-    "gulp-mocha": "~2.2"
+    "sinon": "^1.12.2"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "node_modules/.bin/grunt test",
+    "build": "node_modules/.bin/grunt build"
   },
   "repository": {
     "type": "git",
