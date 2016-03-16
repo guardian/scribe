@@ -1,3 +1,11 @@
+# 2.2.0
+
+Addresses issue #456 where one of the core plugins (enforce-p-elements) would wrap empty text nodes in paragraph elements. This behaviour was hidden by the use of the HTML Sanitizer.
+
+Text nodes consisting just of whitespace are not changed now when the plugin runs.
+
+Thanks to [Rasmus Schultz](https://github.com/mindplay-dk) for reporting the issue.
+
 # 2.1.2
 
 Fixes an issue where the undo manager could not be disabled due to an unconditional execution of the manager code in the setHTML method (issue #452).
