@@ -4980,7 +4980,11 @@ define('plugins/core/formatters/html/enforce-p-elements',[
        */
       function wrapChildNodes(parentNode) {
         var index = 0;
+
         Immutable.List(parentNode.childNodes)
+          .filterNot(function(node) {
+            return nodeHelpers.isWhitespaceOnlyTextNode(Node, node);
+          })
           .filter(function(node) {
             return node.nodeType === Node.TEXT_NODE || !nodeHelpers.isBlockElement(node);
           })
@@ -5111,6 +5115,16 @@ define('node',[
     return elementHasClass(Node, 'scribe-not-observable')(node);
   }
 
+  function isWhitespaceOnlyTextNode(Node, node) {
+    if(node.nodeType === Node.TEXT_NODE
+      && /^\s*$/.test(node.nodeValue)) {
+      return true;
+    }
+
+    return false;
+
+  }
+
   function firstDeepestChild(node) {
     var fs = node.firstChild;
     return !fs || fs.nodeName === 'BR' ?
@@ -5213,6 +5227,7 @@ define('node',[
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
     isEmptyTextNode: isEmptyTextNode,
+    isWhitespaceOnlyTextNode: isWhitespaceOnlyTextNode,
     isFragment: isFragment,
     isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,
