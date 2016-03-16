@@ -41,7 +41,7 @@ require({
     'lodash-amd': '../bower_components/lodash-amd',
     'html-janitor':  '../bower_components/html-janitor/html-janitor',
     'immutable': '../bower_components/immutable/dist/immutable',
-    'scribe': '../dist/scribe'
+    'scribe': '../build/scribe'
   }
 }, [
   'scribe',
@@ -63,7 +63,6 @@ require({
   scribePluginLinkPromptCommand,
   scribePluginBlockquoteCommand
 ) {
-  console.log(Scribe);
 
   var scribe = new Scribe(document.querySelector('.rte'));
   window.scribe = scribe;
