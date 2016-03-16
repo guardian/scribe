@@ -1,0 +1,89 @@
+<!--
+This example demonstrates how to consume the Scribe
+editor using RequireJS and the AMD module syntax.
+
+Note that you'll need to install scribe's dependencies through
+`bower install`. See http://bower.io/ if you are unfamiliar.
+-->
+<style>
+  button {
+    height: 3em;
+  }
+
+  .active {
+    border-style: inset;
+  }
+
+  .rte, .rte-toolbar {
+    display: block;
+  }
+
+  p {
+    margin-top: 0;
+  }
+
+  .rte {
+    border: 1px solid gray;
+    height: 300px;
+    overflow: auto;
+  }
+  .rte-output {
+    width: 100%;
+    height: 10em;
+  }
+
+  .raw-content-editable {
+    width: 100%;
+    min-height: 2rem;
+    border: solid 1px lightgray;
+  }
+</style>
+<script src="../bower_components/requirejs/require.js"></script>
+<script>
+require({
+  paths: {
+    'lodash-amd': '../bower_components/lodash-amd',
+    'immutable': '../bower_components/immutable/dist/immutable'
+  }
+}, [
+  '../src/scribe',
+  '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+], function (
+  Scribe,
+  scribePluginToolbar
+) {
+  var scribe = new Scribe(document.querySelector('.rte'));
+  window.scribe = scribe;
+
+  scribe.setContent('<p>Hello, World!<\/p>');
+
+  scribe.use(scribePluginToolbar(document.querySelector('.rte-toolbar')));
+
+  scribe.on('content-changed', updateHtml);
+
+  function updateHtml() {
+    document.querySelector('.rte-output').value = scribe.getHTML();
+  }
+
+  updateHtml();
+});
+</script>
+<div class="rte-toolbar">
+  <button data-command-name="bold">Bold</button>
+  <button data-command-name="italic">Italic</button>
+  <button data-command-name="h2">H2</button>
+</div>
+<div class="rte">
+</div>
+
+<section>
+  <h1>Output</h1>
+  <textarea class="rte-output" readonly></textarea>
+</section>
+
+<section>
+  <h1>Basic content-editable</h1>
+
+  <div class="raw-content-editable" contenteditable="true"></div>
+</section>

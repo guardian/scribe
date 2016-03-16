@@ -56,6 +56,16 @@ define([
     return elementHasClass(Node, 'scribe-not-observable')(node);
   }
 
+  function isWhitespaceOnlyTextNode(Node, node) {
+    if(node.nodeType === Node.TEXT_NODE
+      && /^\s*$/.test(node.nodeValue)) {
+      return true;
+    }
+
+    return false;
+
+  }
+
   function firstDeepestChild(node) {
     var fs = node.firstChild;
     return !fs || fs.nodeName === 'BR' ?
@@ -158,6 +168,7 @@ define([
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
     isEmptyTextNode: isEmptyTextNode,
+    isWhitespaceOnlyTextNode: isWhitespaceOnlyTextNode,
     isFragment: isFragment,
     isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,
