@@ -52,10 +52,6 @@ define([
     return elementHasClass(Node, 'caret-position')(node);
   }
 
-  function isNotObservableNode(node) {
-    return elementHasClass(Node, 'scribe-not-observable')(node);
-  }
-
   function isWhitespaceOnlyTextNode(Node, node) {
     if(node.nodeType === Node.TEXT_NODE
       && /^\s*$/.test(node.nodeValue)) {
