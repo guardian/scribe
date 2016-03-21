@@ -5208,7 +5208,7 @@ define('node',[
 
     nodes.forEach(function(node) {
       node.style.lineHeight = null;
-      if (!node.getAttribute('style')) {
+      if (node.getAttribute('style') === '') {
         node.removeAttribute('style');
       }
       if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
