@@ -1,3 +1,7 @@
+# 2.2.1
+
+Corrects a small style issue where one of the tests was relying on the default coercion of the empty string to the false boolean. The test is now explicit.
+
 # 2.2.0
 
 Addresses issue #456 where one of the core plugins (enforce-p-elements) would wrap empty text nodes in paragraph elements. This behaviour was hidden by the use of the HTML Sanitizer.
