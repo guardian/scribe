@@ -1,3 +1,7 @@
+# 2.2.2
+
+Removes the observable check function introduced in 2.1.0. As this was not exported I'm treating it as a non-breaking change.
+
 # 2.2.1
 
 Corrects a small style issue where one of the tests was relying on the default coercion of the empty string to the false boolean. The test is now explicit.
