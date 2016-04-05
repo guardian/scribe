@@ -14,6 +14,14 @@ define([
     return inlineElementNames.includes(node.nodeName);
   }
 
+  function hasContent(node) {
+    if(node && node.children && node.children.length > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
@@ -177,7 +185,8 @@ define([
     wrap: wrap,
     unwrap: unwrap,
     removeChromeArtifacts: removeChromeArtifacts,
-    elementHasClass: elementHasClass
+    elementHasClass: elementHasClass,
+    hasContent: hasContent
   };
 
 });
