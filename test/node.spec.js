@@ -61,6 +61,12 @@ describe('Node type checking', function() {
       assert.isTrue(nodeHelpers.hasContent(fakeNode));
 
     });
+
+    it('should detect a non-BR node might have content', function() {
+      var fakeNode = {nodeName: "P"};
+
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+    });
   });
 
   describe('text nodes', function() {

@@ -19,6 +19,10 @@ define([
       return true;
     }
 
+    if(node && node.nodeName !== 'BR') {
+      return true;
+    }
+
     return false;
   }
 
