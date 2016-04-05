@@ -1,4 +1,4 @@
-define(function () {
+define(['../../node'], function (nodeHelpers) {
 
   'use strict';
 
@@ -9,6 +9,10 @@ define(function () {
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
+        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
+          return true;
+        }
+
         if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
           return true;
         }
