@@ -52,7 +52,7 @@ describe('Node type checking', function() {
     it('should detect a BR element has no content', function() {
       var fakeNode = {nodeName: "BR"};
 
-      assert.isFalse(nodeHelpers.hasContent(fakeNode));
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
     });
 
     it('should detect a node has children', function() {
@@ -62,10 +62,10 @@ describe('Node type checking', function() {
 
     });
 
-    it('should detect a non-BR node might have content', function() {
+    it('should detect a non-BR node', function() {
       var fakeNode = {nodeName: "P"};
 
-      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+      assert.isFalse(nodeHelpers.hasContent(fakeNode));
     });
   });
 

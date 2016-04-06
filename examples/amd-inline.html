@@ -62,7 +62,7 @@ require({
   scribePluginBlockquoteCommand
 ) {
   var scribe = new Scribe(document.querySelector('.rte'),
-    {allowsBlockElements: false});
+    {allowBlockElements: false});
   window.scribe = scribe;
 
   scribe.setContent('<p>Hello, World!<\/p>');
