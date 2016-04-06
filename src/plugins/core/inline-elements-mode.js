@@ -7,7 +7,6 @@ define(['../../node'], function (nodeHelpers) {
     var treeWalker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ALL, null, false);
 
     while (treeWalker.nextNode()) {
-      console.log(treeWalker.currentNode);
       if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
         if(nodeHelpers.hasContent(treeWalker.currentNode)) {
