@@ -5404,7 +5404,7 @@ define('plugins/core/inline-elements-mode',[],function () {
                */
 
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
+              contentToEndRange.setEndAfter(scribe.el.lastChild);
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
@@ -5418,8 +5418,8 @@ define('plugins/core/inline-elements-mode',[],function () {
 
               var newRange = range.cloneRange();
 
-              newRange.setStartAfter(brNode, 0);
-              newRange.setEndAfter(brNode, 0);
+              newRange.setStartAfter(brNode);
+              newRange.setEndAfter(brNode);
 
               selection.selection.removeAllRanges();
               selection.selection.addRange(newRange);
@@ -6105,7 +6105,7 @@ define('plugins/core/events',[
              */
             if (headingNode && range.collapsed) {
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(headingNode, 0);
+              contentToEndRange.setEndAfter(headingNode);
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
