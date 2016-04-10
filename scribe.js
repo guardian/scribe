@@ -5073,6 +5073,18 @@ define('node',[
     return inlineElementNames.includes(node.nodeName);
   }
 
+  function hasContent(node) {
+    if(node && node.children && node.children.length > 0) {
+      return true;
+    }
+
+    if(node && node.nodeName === 'BR') {
+      return true;
+    }
+
+    return false;
+  }
+
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
@@ -5236,7 +5248,8 @@ define('node',[
     wrap: wrap,
     unwrap: unwrap,
     removeChromeArtifacts: removeChromeArtifacts,
-    elementHasClass: elementHasClass
+    elementHasClass: elementHasClass,
+    hasContent: hasContent
   };
 
 });
@@ -5323,7 +5336,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
 });
 
-define('plugins/core/inline-elements-mode',[],function () {
+define('plugins/core/inline-elements-mode',['../../node'], function (nodeHelpers) {
 
   'use strict';
 
@@ -5334,7 +5347,7 @@ define('plugins/core/inline-elements-mode',[],function () {
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
-        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
           return true;
         }
       }
