@@ -1,3 +1,9 @@
+# 2.2.4
+
+Attempts to simplify the code in the `inline-elements-mode` plugin as per the suggestions from [Rasmus Schultz](https://github.com/mindplay-dk).
+
+This change also covers the code with a unit test in case it needs to be modified in future.
+
 # 2.2.3
 
 Removes unneeded paramters from calls to `setStartAfter` and `setEndAfter`.
