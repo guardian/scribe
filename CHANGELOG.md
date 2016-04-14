@@ -1,3 +1,7 @@
+# 2.2.5
+
+Switches the events from literal strings to using identities from an events module.
+
 # 2.2.4
 
 Attempts to simplify the code in the `inline-elements-mode` plugin as per the suggestions from [Rasmus Schultz](https://github.com/mindplay-dk).
