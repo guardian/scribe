@@ -5073,6 +5073,18 @@ define('node',[
     return inlineElementNames.includes(node.nodeName);
   }
 
+  function hasContent(node) {
+    if(node && node.children && node.children.length > 0) {
+      return true;
+    }
+
+    if(node && node.nodeName === 'BR') {
+      return true;
+    }
+
+    return false;
+  }
+
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
@@ -5236,7 +5248,8 @@ define('node',[
     wrap: wrap,
     unwrap: unwrap,
     removeChromeArtifacts: removeChromeArtifacts,
-    elementHasClass: elementHasClass
+    elementHasClass: elementHasClass,
+    hasContent: hasContent
   };
 
 });
@@ -5323,7 +5336,7 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
 
 });
 
-define('plugins/core/inline-elements-mode',[],function () {
+define('plugins/core/inline-elements-mode',['../../node'], function (nodeHelpers) {
 
   'use strict';
 
@@ -5334,7 +5347,7 @@ define('plugins/core/inline-elements-mode',[],function () {
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
-        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
           return true;
         }
       }
@@ -7764,7 +7777,20 @@ define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal
   return assign;
 });
 
-define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
+define('events',[], function() {
+
+  'use strict';
+
+  return {
+    contentChanged: "scribe:content-changed",
+    legacyContentChanged: "content-changed"
+  };
+});
+
+define('transaction-manager',[
+  'lodash-amd/modern/object/assign',
+  './events'
+  ], function (assign, events) {
 
   'use strict';
 
@@ -7783,7 +7809,8 @@ define('transaction-manager',['lodash-amd/modern/object/assign'], function (assi
 
         if (this.history.length === 0) {
           scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.trigger(events.legacyContentChanged);
+          scribe.trigger(events.contentChanged);
         }
       },
 
@@ -8081,7 +8108,8 @@ define('scribe',[
   './event-emitter',
   './node',
   'immutable',
-  './config'
+  './config',
+  './events'
 ], function (
   plugins,
   commands,
@@ -8094,7 +8122,8 @@ define('scribe',[
   EventEmitter,
   nodeHelpers,
   Immutable,
-  config
+  config,
+  eventNames
 ) {
 
   'use strict';
@@ -8300,7 +8329,8 @@ define('scribe',[
 
     // Because we skip the formatters, a transaction is not run, so we have to
     // emit this event ourselves.
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   // This will most likely be moved to another object eventually
@@ -8316,7 +8346,8 @@ define('scribe',[
 
     this.setHTML(content);
 
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
