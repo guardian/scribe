@@ -7777,7 +7777,20 @@ define('lodash-amd/modern/object/assign',['../internal/baseAssign', '../internal
   return assign;
 });
 
-define('transaction-manager',['lodash-amd/modern/object/assign'], function (assign) {
+define('events',[], function() {
+
+  'use strict';
+
+  return {
+    contentChanged: "scribe:content-changed",
+    legacyContentChanged: "content-changed"
+  };
+});
+
+define('transaction-manager',[
+  'lodash-amd/modern/object/assign',
+  './events'
+  ], function (assign, events) {
 
   'use strict';
 
@@ -7796,7 +7809,8 @@ define('transaction-manager',['lodash-amd/modern/object/assign'], function (assi
 
         if (this.history.length === 0) {
           scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.trigger(events.legacyContentChanged);
+          scribe.trigger(events.contentChanged);
         }
       },
 
@@ -8094,7 +8108,8 @@ define('scribe',[
   './event-emitter',
   './node',
   'immutable',
-  './config'
+  './config',
+  './events'
 ], function (
   plugins,
   commands,
@@ -8107,7 +8122,8 @@ define('scribe',[
   EventEmitter,
   nodeHelpers,
   Immutable,
-  config
+  config,
+  eventNames
 ) {
 
   'use strict';
@@ -8313,7 +8329,8 @@ define('scribe',[
 
     // Because we skip the formatters, a transaction is not run, so we have to
     // emit this event ourselves.
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   // This will most likely be moved to another object eventually
@@ -8329,7 +8346,8 @@ define('scribe',[
 
     this.setHTML(content);
 
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
