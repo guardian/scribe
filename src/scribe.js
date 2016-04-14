@@ -10,7 +10,8 @@ define([
   './event-emitter',
   './node',
   'immutable',
-  './config'
+  './config',
+  './events'
 ], function (
   plugins,
   commands,
@@ -23,7 +24,8 @@ define([
   EventEmitter,
   nodeHelpers,
   Immutable,
-  config
+  config,
+  eventNames
 ) {
 
   'use strict';
@@ -229,7 +231,8 @@ define([
 
     // Because we skip the formatters, a transaction is not run, so we have to
     // emit this event ourselves.
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   // This will most likely be moved to another object eventually
@@ -245,7 +248,8 @@ define([
 
     this.setHTML(content);
 
-    this.trigger('content-changed');
+    this.trigger(eventNames.legacyContentChanged);
+    this.trigger(eventNames.contentChanged);
   };
 
   Scribe.prototype.insertPlainText = function (plainText) {
