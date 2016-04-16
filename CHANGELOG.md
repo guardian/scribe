@@ -1,3 +1,9 @@
+# 2.3.0
+
+Introduces a destroy event that plugins can use to clean up after themselves.
+
+This re-implements an initial implementation by [Craig Speath](https://github.com/craigspaeth), thanks for the contribution.
+
 # 2.2.5
 
 Switches the events from literal strings to using identities from an events module.
