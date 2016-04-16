@@ -7783,7 +7783,8 @@ define('events',[], function() {
 
   return {
     contentChanged: "scribe:content-changed",
-    legacyContentChanged: "content-changed"
+    legacyContentChanged: "content-changed",
+    destroy: "scribe:destroy"
   };
 });
 
@@ -8391,6 +8392,10 @@ define('scribe',[
   Scribe.prototype.registerPlainTextFormatter = function (formatter) {
     this._plainTextFormatterFactory.formatters
       = this._plainTextFormatterFactory.formatters.push(formatter);
+  };
+
+  Scribe.prototype.destroy = function (options) {
+        this.trigger(eventNames.destroy);
   };
 
   // TODO: abstract
