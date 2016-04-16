@@ -1,3 +1,19 @@
+# 2.2.5
+
+Switches the events from literal strings to using identities from an events module.
+
+# 2.2.4
+
+Attempts to simplify the code in the `inline-elements-mode` plugin as per the suggestions from [Rasmus Schultz](https://github.com/mindplay-dk).
+
+This change also covers the code with a unit test in case it needs to be modified in future.
+
+# 2.2.3
+
+Removes unneeded paramters from calls to `setStartAfter` and `setEndAfter`.
+
+Thanks to [Rasmus Schultz](https://github.com/mindplay-dk) for reporting the issue.
+
 # 2.2.2
 
 Removes the observable check function introduced in 2.1.0. As this was not exported I'm treating it as a non-breaking change.

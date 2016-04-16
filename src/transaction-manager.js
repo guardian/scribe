@@ -1,4 +1,7 @@
-define(['lodash-amd/modern/object/assign'], function (assign) {
+define([
+  'lodash-amd/modern/object/assign',
+  './events'
+  ], function (assign, events) {
 
   'use strict';
 
@@ -17,7 +20,8 @@ define(['lodash-amd/modern/object/assign'], function (assign) {
 
         if (this.history.length === 0) {
           scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.trigger(events.legacyContentChanged);
+          scribe.trigger(events.contentChanged);
         }
       },
 

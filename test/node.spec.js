@@ -48,6 +48,27 @@ describe('Node type checking', function() {
     });
   });
 
+  describe('for whether a node has content', function() {
+    it('should detect a BR element has no content', function() {
+      var fakeNode = {nodeName: "BR"};
+
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+    });
+
+    it('should detect a node has children', function() {
+      var fakeNode = {nodeName: "DIV", children: [{}]};
+
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+
+    });
+
+    it('should detect a non-BR node', function() {
+      var fakeNode = {nodeName: "P"};
+
+      assert.isFalse(nodeHelpers.hasContent(fakeNode));
+    });
+  });
+
   describe('text nodes', function() {
     describe('that are whitespace-only', function() {
       it('are detected', function() {
