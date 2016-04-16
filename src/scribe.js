@@ -296,7 +296,7 @@ define([
   };
 
   Scribe.prototype.destroy = function (options) {
-        this.trigger("scribe:destroy");
+        this.trigger(eventNames.destroy);
   };
 
   // TODO: abstract
