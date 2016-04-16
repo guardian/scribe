@@ -295,6 +295,10 @@ define([
       = this._plainTextFormatterFactory.formatters.push(formatter);
   };
 
+  Scribe.prototype.destroy = function (options) {
+        this.trigger(eventNames.destroy);
+  };
+
   // TODO: abstract
   function FormatterFactory() {
     this.formatters = Immutable.List();

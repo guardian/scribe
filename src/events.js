@@ -4,6 +4,7 @@ define([], function() {
 
   return {
     contentChanged: "scribe:content-changed",
-    legacyContentChanged: "content-changed"
+    legacyContentChanged: "content-changed",
+    destroy: "scribe:destroy"
   };
 });
