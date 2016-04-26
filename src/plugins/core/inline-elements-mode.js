@@ -1,4 +1,4 @@
-define(function () {
+define(['../../node'], function (nodeHelpers) {
 
   'use strict';
 
@@ -9,7 +9,7 @@ define(function () {
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
         // If the node is a non-empty element or has content
-        if (~['br'].indexOf(treeWalker.currentNode.nodeName.toLowerCase()) || treeWalker.currentNode.length > 0) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
           return true;
         }
       }
@@ -79,7 +79,7 @@ define(function () {
                */
 
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(scribe.el.lastChild, 0);
+              contentToEndRange.setEndAfter(scribe.el.lastChild);
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
@@ -93,8 +93,8 @@ define(function () {
 
               var newRange = range.cloneRange();
 
-              newRange.setStartAfter(brNode, 0);
-              newRange.setEndAfter(brNode, 0);
+              newRange.setStartAfter(brNode);
+              newRange.setEndAfter(brNode);
 
               selection.selection.removeAllRanges();
               selection.selection.addRange(newRange);

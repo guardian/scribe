@@ -17,7 +17,8 @@ var fakeBrowser = new MockBrowser();
 var doc = fakeBrowser.getDocument();
 
 var FakeNode = {
-  ELEMENT_NODE: 1
+  ELEMENT_NODE: 1,
+  TEXT_NODE: 3
 };
 
 describe('Node type checking', function() {
@@ -44,6 +45,50 @@ describe('Node type checking', function() {
       fakeElement.className = 'fake-name';
 
       assert.isFalse(checkFunction(fakeElement));
+    });
+  });
+
+  describe('for whether a node has content', function() {
+    it('should detect a BR element has no content', function() {
+      var fakeNode = {nodeName: "BR"};
+
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+    });
+
+    it('should detect a node has children', function() {
+      var fakeNode = {nodeName: "DIV", children: [{}]};
+
+      assert.isTrue(nodeHelpers.hasContent(fakeNode));
+
+    });
+
+    it('should detect a non-BR node', function() {
+      var fakeNode = {nodeName: "P"};
+
+      assert.isFalse(nodeHelpers.hasContent(fakeNode));
+    });
+  });
+
+  describe('text nodes', function() {
+    describe('that are whitespace-only', function() {
+      it('are detected', function() {
+        var emptyTextNode = {
+          nodeValue: "   ",
+          nodeType: 3
+        }
+
+        assert.isTrue(nodeHelpers.isWhitespaceOnlyTextNode(FakeNode, emptyTextNode), "Whitespace-only node not detected correctly");
+      });
+
+      it('are not falsely identified', function() {
+        var testNode = {
+          nodeValue: "hello world",
+          nodeType: 3
+        }
+
+        assert.isFalse(nodeHelpers.isWhitespaceOnlyTextNode(FakeNode, testNode), "Regular text node identified as whitespace-only");
+
+      });
     });
   });
 });

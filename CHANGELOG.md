@@ -1,3 +1,41 @@
+# 2.3.0
+
+Introduces a destroy event that plugins can use to clean up after themselves.
+
+This re-implements an initial implementation by [Craig Speath](https://github.com/craigspaeth), thanks for the contribution.
+
+# 2.2.5
+
+Switches the events from literal strings to using identities from an events module.
+
+# 2.2.4
+
+Attempts to simplify the code in the `inline-elements-mode` plugin as per the suggestions from [Rasmus Schultz](https://github.com/mindplay-dk).
+
+This change also covers the code with a unit test in case it needs to be modified in future.
+
+# 2.2.3
+
+Removes unneeded paramters from calls to `setStartAfter` and `setEndAfter`.
+
+Thanks to [Rasmus Schultz](https://github.com/mindplay-dk) for reporting the issue.
+
+# 2.2.2
+
+Removes the observable check function introduced in 2.1.0. As this was not exported I'm treating it as a non-breaking change.
+
+# 2.2.1
+
+Corrects a small style issue where one of the tests was relying on the default coercion of the empty string to the false boolean. The test is now explicit.
+
+# 2.2.0
+
+Addresses issue #456 where one of the core plugins (enforce-p-elements) would wrap empty text nodes in paragraph elements. This behaviour was hidden by the use of the HTML Sanitizer.
+
+Text nodes consisting just of whitespace are not changed now when the plugin runs.
+
+Thanks to [Rasmus Schultz](https://github.com/mindplay-dk) for reporting the issue.
+
 # 2.1.2
 
 Fixes an issue where the undo manager could not be disabled due to an unconditional execution of the manager code in the setHTML method (issue #452).

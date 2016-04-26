@@ -1,4 +1,6 @@
-define([], function () {
+define([
+  './events'
+  ], function (events) {
 
   'use strict';
 
@@ -17,7 +19,8 @@ define([], function () {
 
         if (this.history.length === 0) {
           scribe.pushHistory();
-          scribe.trigger('content-changed');
+          scribe.trigger(events.legacyContentChanged);
+          scribe.trigger(events.contentChanged);
         }
       },
 

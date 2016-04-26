@@ -5,7 +5,6 @@ editor using RequireJS and the AMD module syntax.
 Note that you'll need to install scribe's dependencies through
 `bower install`. See http://bower.io/ if you are unfamiliar.
 -->
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <style>
   button {
     height: 3em;
@@ -40,11 +39,10 @@ require({
     'scribe-common': '../bower_components/scribe-common',
     'lodash-amd': '../bower_components/lodash-amd',
     'html-janitor':  '../bower_components/html-janitor/html-janitor',
-    'immutable': '../bower_components/immutable/dist/immutable',
-    'scribe': '../build/scribe'
+    'immutable': '../bower_components/immutable/dist/immutable'
   }
 }, [
-  'scribe',
+  '../src/scribe',
   '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
   '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
   '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
@@ -63,8 +61,8 @@ require({
   scribePluginLinkPromptCommand,
   scribePluginBlockquoteCommand
 ) {
-
-  var scribe = new Scribe(document.querySelector('.rte'));
+  var scribe = new Scribe(document.querySelector('.rte'),
+    {allowBlockElements: false});
   window.scribe = scribe;
 
   scribe.setContent('<p>Hello, World!<\/p>');

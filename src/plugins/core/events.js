@@ -102,7 +102,7 @@ define([
              */
             if (headingNode && range.collapsed) {
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(headingNode, 0);
+              contentToEndRange.setEndAfter(headingNode);
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();

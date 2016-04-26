@@ -14,6 +14,18 @@ define([
     return inlineElementNames.includes(node.nodeName);
   }
 
+  function hasContent(node) {
+    if(node && node.children && node.children.length > 0) {
+      return true;
+    }
+
+    if(node && node.nodeName === 'BR') {
+      return true;
+    }
+
+    return false;
+  }
+
   // return true if nested inline tags ultimately just contain <br> or ""
   function isEmptyInlineElement(node) {
     if( node.children.length > 1 ) return false;
@@ -52,8 +64,14 @@ define([
     return elementHasClass(Node, 'caret-position')(node);
   }
 
-  function isNotObservableNode(node) {
-    return elementHasClass(Node, 'scribe-not-observable')(node);
+  function isWhitespaceOnlyTextNode(Node, node) {
+    if(node.nodeType === Node.TEXT_NODE
+      && /^\s*$/.test(node.nodeValue)) {
+      return true;
+    }
+
+    return false;
+
   }
 
   function firstDeepestChild(node) {
@@ -139,7 +157,7 @@ define([
 
     nodes.forEach(function(node) {
       node.style.lineHeight = null;
-      if (!node.getAttribute('style')) {
+      if (node.getAttribute('style') === '') {
         node.removeAttribute('style');
       }
       if (node.nodeName === 'SPAN' && node.attributes.length === 0) {
@@ -158,6 +176,7 @@ define([
     isEmptyInlineElement: isEmptyInlineElement,
     isText: isText,
     isEmptyTextNode: isEmptyTextNode,
+    isWhitespaceOnlyTextNode: isWhitespaceOnlyTextNode,
     isFragment: isFragment,
     isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,
@@ -170,7 +189,8 @@ define([
     wrap: wrap,
     unwrap: unwrap,
     removeChromeArtifacts: removeChromeArtifacts,
-    elementHasClass: elementHasClass
+    elementHasClass: elementHasClass,
+    hasContent: hasContent
   };
 
 });

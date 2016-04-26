@@ -14,7 +14,10 @@ module.exports = function(grunt) {
         src: ['test/**/*.spec.js']
       }
     },
-    requirejs: {
+  });
+
+  function requireConfiguration(optimize, outputFilename) {
+    return {
       compile: {
         options: {
           baseUrl: "src",
@@ -23,15 +26,22 @@ module.exports = function(grunt) {
             'lodash-amd': '../bower_components/lodash-amd',
             'immutable': '../bower_components/immutable/dist/immutable'
           },
-          optimize: "none",
+          optimize: optimize,
+          preserveLicenseComments: false,
           generateSourceMaps: true,
-          out: "dist/scribe.js"
+          out: "build/" + outputFilename
         }
       }
     }
-  });
+  }
 
-  grunt.registerTask('build', ['requirejs']);
+  grunt.registerTask('build', 'Build output files', function() {
+    grunt.config('requirejs', requireConfiguration('uglify2', 'scribe.min.js'));
+    grunt.task.run('requirejs');
+
+    grunt.config('requirejs', requireConfiguration('none', 'scribe.js'));
+    grunt.task.run('requirejs');
+  });
 
   grunt.registerTask('test', ['mochaTest']);
 
