@@ -1,10 +1,13 @@
-Scribe [![Build Status](https://travis-ci.org/guardian/scribe.svg?branch=master)](https://travis-ci.org/guardian/scribe) <img src="https://david-dm.org/guardian/scribe.svg">
-======
-
-[![Join the chat at https://gitter.im/guardian/scribe](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/guardian/scribe?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+#Scribe
 
 A rich text editor framework for the web platform, with patches for
 browser inconsistencies and sensible defaults.
+
+## Status
+
+ [![Build Status](https://travis-ci.org/guardian/scribe.svg?branch=master)](https://travis-ci.org/guardian/scribe) <a href="https://david-dm.org/guardian/scribe"><img src="https://david-dm.org/guardian/scribe.svg"></a> [![Join the chat at https://gitter.im/guardian/scribe](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/guardian/scribe?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+## Description
 
 For an introduction, you may want to read the blog post [Inside the Guardian’s CMS: meet Scribe, an extensible rich text editor](http://www.theguardian.com/info/developer-blog/2014/mar/20/inside-the-guardians-cms-meet-scribe-an-extensible-rich-text-editor).
 
