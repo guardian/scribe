@@ -1,3 +1,7 @@
+# 3.0.0
+
+Replaces the last Lodash call with `Object.assign`. This was already available in the browsers Scribe is targeted at but in addition the build process has been changed to use later versions of Node.
+
 # 2.3.0
 
 Introduces a destroy event that plugins can use to clean up after themselves.
