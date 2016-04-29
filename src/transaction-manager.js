@@ -1,7 +1,6 @@
 define([
-  'lodash-amd/modern/object/assign',
   './events'
-  ], function (assign, events) {
+  ], function (events) {
 
   'use strict';
 
@@ -10,7 +9,7 @@ define([
       this.history = [];
     }
 
-    assign(TransactionManager.prototype, {
+    Object.assign(TransactionManager.prototype, {
       start: function () {
         this.history.push(1);
       },
