@@ -19,7 +19,8 @@ define(function () {
       //is scribe is configured to undo assign listener
       if (scribe.options.undo.enabled) {
         scribe.el.addEventListener('keydown', function (event) {
-          if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+          // TODO: use lib to abstract meta/ctrl keys?
+          if (event.shiftKey && (event.metaKey || (event.ctrlKey && !event.altKey)) && event.keyCode === 90) {
             event.preventDefault();
             redoCommand.execute();
           }
