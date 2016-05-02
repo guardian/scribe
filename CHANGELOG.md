@@ -1,3 +1,7 @@
+# 3.1.0
+
+Updates the version of Immutable Scribe uses to 3.8.x.
+
 # 3.0.0
 
 Replaces the last Lodash call with `Object.assign`. This was already available in the browsers Scribe is targeted at but in addition the build process has been changed to use later versions of Node.
