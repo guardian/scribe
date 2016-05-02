@@ -1,6 +1,6 @@
 {
   "name": "scribe",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "main": "./scribe.js",
   "description": "Content editable wrapper and polyfill",
   "authors": [
@@ -13,13 +13,13 @@
     "url": "git://github.com/guardian/scribe.git"
   },
   "homepage": "https://github.com/guardian/scribe",
-  "_release": "3.0.0",
+  "_release": "3.1.0",
   "_resolution": {
     "type": "version",
-    "tag": "v3.0.0",
-    "commit": "0e9f630dbf748cb3eaf0bef9987587aabcef7b72"
+    "tag": "v3.1.0",
+    "commit": "5a497f16389cf8d1a8cb831954a5cda3dc00390e"
   },
   "_source": "https://github.com/guardian/scribe.git",
-  "_target": "3.0.0",
+  "_target": "3.1.0",
   "_originalSource": "scribe"
 }
