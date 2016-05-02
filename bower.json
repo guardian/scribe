@@ -1,8 +1,7 @@
 {
   "name": "scribe",
   "dependencies": {
-    "lodash-amd": "3.5.0",
-    "immutable" : "3.7.3"
+    "immutable" : "3.8.1"
   },
   "devDependencies": {
     "requirejs": "~2.1.9",
