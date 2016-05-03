@@ -1,4 +1,6 @@
-define(function () {
+define([
+  '../../../keystrokes'
+], function (keystrokes) {
 
   'use strict';
 
@@ -19,8 +21,7 @@ define(function () {
       //is scribe is configured to undo assign listener
       if (scribe.options.undo.enabled) {
         scribe.el.addEventListener('keydown', function (event) {
-          // TODO: use lib to abstract meta/ctrl keys?
-          if (event.shiftKey && (event.metaKey || (event.ctrlKey && !event.altKey)) && event.keyCode === 90) {
+          if (keystrokes.isRedoKeyCombination(event)) {
             event.preventDefault();
             redoCommand.execute();
           }
