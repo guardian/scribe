@@ -1,3 +1,9 @@
+# 3.2.0
+
+This changes the key bindings for undo and redo so that they are more specific and should no longer capture the key sequence for certain Polish letters. See #448 for details.
+
+Thank you [Dan Burzo](https://github.com/danburzo) for contributing this fix.
+
 # 3.1.0
 
 Updates the version of Immutable Scribe uses to 3.8.x.

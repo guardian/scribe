@@ -1,6 +1,6 @@
 {
   "name": "scribe-editor",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "license": "Apache-2.0",
   "main": "src/scribe.js",
   "dependencies": {
