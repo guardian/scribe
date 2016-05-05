@@ -5718,7 +5718,26 @@ define('plugins/core/commands/outdent',[],function () {
 
 });
 
-define('plugins/core/commands/redo',[],function () {
+define('keystrokes',[],function() {
+
+  'use strict';
+
+  function isUndoKeyCombination(event) {
+    return !event.shiftKey && (event.metaKey || (event.ctrlKey && !event.altKey)) && event.keyCode === 90;
+  }
+
+  function isRedoKeyCombination(event) {
+    return event.shiftKey && (event.metaKey || (event.ctrlKey && !event.altKey)) && event.keyCode === 90;
+  }
+
+  return {
+    isUndoKeyCombination: isUndoKeyCombination,
+    isRedoKeyCombination: isRedoKeyCombination
+  };
+});
+define('plugins/core/commands/redo',[
+  '../../../keystrokes'
+], function (keystrokes) {
 
   'use strict';
 
@@ -5739,7 +5758,7 @@ define('plugins/core/commands/redo',[],function () {
       //is scribe is configured to undo assign listener
       if (scribe.options.undo.enabled) {
         scribe.el.addEventListener('keydown', function (event) {
-          if (event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+          if (keystrokes.isRedoKeyCombination(event)) {
             event.preventDefault();
             redoCommand.execute();
           }
@@ -5778,7 +5797,9 @@ define('plugins/core/commands/superscript',[],function () {
 
 });
 
-define('plugins/core/commands/undo',[],function () {
+define('plugins/core/commands/undo',[
+  '../../../keystrokes'
+], function (keystrokes) {
 
   'use strict';
 
@@ -5798,8 +5819,7 @@ define('plugins/core/commands/undo',[],function () {
 
       if (scribe.options.undo.enabled) {
         scribe.el.addEventListener('keydown', function (event) {
-          // TODO: use lib to abstract meta/ctrl keys?
-          if (! event.shiftKey && (event.metaKey || event.ctrlKey) && event.keyCode === 90) {
+          if (keystrokes.isUndoKeyCombination(event)) {
             event.preventDefault();
             undoCommand.execute();
           }
