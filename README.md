@@ -52,14 +52,91 @@ Alternatively, you can [access the distribution files through GitHub releases](h
 
 ## Options
 
-<dl>
-  <dt><pre>allowBlockElements</pre></dt>
-  <dd>Enable/disable block element mode (enabled by default)</dd>
-  <dt><pre>defaultCommandPatches</pre></dt>
-  <dd>Defines which command patches should be loaded by default</dd>
-  <dt><pre>undo: { enabled: false }</pre></dt>
-  <dd>Enable/disable Scribe's custom undo manager</dd>
-</dl>
+### `allowBlockElements`
+
+Boolean, default `true`
+
+Enable/disable block element mode.
+
+### `undo`
+
+Configuration object, defaults to:
+
+```js
+{
+  manager: false,
+  enabled: true,
+  limit: 100,
+  interval: 250
+}
+```
+
+You can use the `enabled` flag to enable/disable Scribe's custom Undo Manager:
+
+
+```js
+undo: {
+  enabled: false // disables Scribe's Undo Manager
+}
+```
+
+
+
+### `defaultCommandPatches`
+
+Array of strings, defaults to:
+
+```js
+[
+  'bold',
+  'indent',
+  'insertHTML',
+  'insertList',
+  'outdent',
+  'createLink'
+]
+```
+
+Defines which command patches should be loaded by default. You can use this option to load only a subset of the default command patches.
+
+### `defaultFormatters`
+
+Array of strings, defaults to:
+
+```js
+[
+  'escapeHtmlCharactersFormatter',
+  'replaceNbspCharsFormatter'
+]
+```
+
+Defines which formatters should be loaded by default. You can use this option to load only a subset of the default formatters.
+
+* `escapeHtmlCharactersFormatter` converts the characters "&", "<", ">", '"', "'", and "`"  to their corresponding HTML entities;
+* `replaceNbspCharsFormatter` replaces sequences of consecutive whitespace characters (including `&nbsp;`) with a single space character.
+
+### `defaultPlugins`
+
+Array of strings, defaults to an array based on block element mode.
+
+`allowBlockElements: true` default plugins:
+```js
+[
+  'setRootPElement',
+  'enforcePElements',
+  'ensureSelectableContainers'
+]
+```
+
+`allowBlockElements: false` default plugins:
+```js
+[
+  'inlineElementsMode'
+]
+```
+
+Defines which plugins should be loaded by default. You can use this option to load only a subset of the default plugins. See [the source code](https://github.com/guardian/scribe/tree/master/src/plugins) for explanations of what each plugin does.
+
 
 ## Usage Example
 
@@ -152,8 +229,9 @@ See the wiki for a [list of plugins and how to create new ones](https://github.c
 
 ### Is it production ready?
 
-Yes. [The Guardian](http://gu.com) is using Scribe as the basis for their
-internal CMS’ rich text editor.
+Yes. [The Guardian](http://gu.com) is using Scribe as the basis for their internal CMS’ rich text editor.
+
+If you plan to use Scribe to provide _end users_ with a rich text editor, please consult the [Browser Support page](https://github.com/guardian/scribe/wiki/Browser-support), as some browsers are not officially supported.
 
 It is likely that there will be unknown edge cases, but these will be addressed
 when they are discovered.
