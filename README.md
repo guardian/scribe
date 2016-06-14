@@ -11,10 +11,7 @@ browser inconsistencies and sensible defaults.
 
 For an introduction, you may want to read the blog post [Inside the Guardian’s CMS: meet Scribe, an extensible rich text editor](http://www.theguardian.com/info/developer-blog/2014/mar/20/inside-the-guardians-cms-meet-scribe-an-extensible-rich-text-editor).
 
-**Please note:** There is a lot of missing documentation for Scribe and many of
-its plugins. We plan to improve this, however in the meantime we encourage
-you to look at the code. Scribe is very small in comparison to other libraries
-of its kind.
+**Please note:** There is a lot of missing documentation for Scribe and many of its plugins. We plan to improve this, however in the meantime we encourage you to look at the code. Scribe is very small in comparison to other libraries of its kind.
 
 You can join us on IRC at [#scribejs] on freenode, or via the [Google Group](https://groups.google.com/forum/#!forum/scribe-editor).
 
@@ -27,21 +24,11 @@ Scribe only actively supports a [sub-set of browsers](https://github.com/guardia
 At the core of Scribe we have:
 
 * [Patches for many browser inconsistencies surrounding `contenteditable`](#patches);
-* [Inline and block element modes](#modes).
+* [Inline and block element modes](https://github.com/guardian/scribe/wiki/Modes#).
 
 ### Patches
 
-Scribe patches [many browser inconsistencies][browser inconsistencies] in the
-[native command API][Executing Commands].
-
-### Modes
-
-Natively, `contenteditable` will produce DIVs for new lines. This is not a bug.
-However, this is not ideal because in most cases we require semantic HTML to be
-produced.
-
-Scribe overrides this behaviour to produce paragraphs (Ps; default) or BRs (with
-block element mode turned off) for new lines instead.
+Scribe patches [many browser inconsistencies][browser inconsistencies] in the [native command API][Executing Commands].
 
 ## Installation
 ```
@@ -49,94 +36,6 @@ bower install scribe
 ```
 
 Alternatively, you can [access the distribution files through GitHub releases](https://github.com/guardian/scribe/releases).
-
-## Options
-
-### `allowBlockElements`
-
-Boolean, default `true`
-
-Enable/disable block element mode.
-
-### `undo`
-
-Configuration object, defaults to:
-
-```js
-{
-  manager: false,
-  enabled: true,
-  limit: 100,
-  interval: 250
-}
-```
-
-You can use the `enabled` flag to enable/disable Scribe's custom Undo Manager:
-
-
-```js
-undo: {
-  enabled: false // disables Scribe's Undo Manager
-}
-```
-
-
-
-### `defaultCommandPatches`
-
-Array of strings, defaults to:
-
-```js
-[
-  'bold',
-  'indent',
-  'insertHTML',
-  'insertList',
-  'outdent',
-  'createLink'
-]
-```
-
-Defines which command patches should be loaded by default. You can use this option to load only a subset of the default command patches.
-
-### `defaultFormatters`
-
-Array of strings, defaults to:
-
-```js
-[
-  'escapeHtmlCharactersFormatter',
-  'replaceNbspCharsFormatter'
-]
-```
-
-Defines which formatters should be loaded by default. You can use this option to load only a subset of the default formatters.
-
-* `escapeHtmlCharactersFormatter` converts the characters "&", "<", ">", '"', "'", and "`"  to their corresponding HTML entities;
-* `replaceNbspCharsFormatter` replaces sequences of consecutive whitespace characters (including `&nbsp;`) with a single space character.
-
-### `defaultPlugins`
-
-Array of strings, defaults to an array based on block element mode.
-
-`allowBlockElements: true` default plugins:
-```js
-[
-  'setRootPElement',
-  'enforcePElements',
-  'ensureSelectableContainers'
-]
-```
-
-`allowBlockElements: false` default plugins:
-```js
-[
-  'inlineElementsMode'
-]
-```
-
-Defines which plugins should be loaded by default. You can use this option to load only a subset of the default plugins. See [the source code](https://github.com/guardian/scribe/tree/master/src/plugins) for explanations of what each plugin does.
-
 
 ## Usage Example
 
@@ -156,10 +55,27 @@ require(['scribe', 'scribe-plugin-blockquote-command', 'scribe-plugin-toolbar'],
 });
 ```
 
-You can [see a live example here][example], or [view the code here](https://github.com/guardian/scribe/tree/gh-pages).
+You can [see a live example here][example], or [view the code here](https://github.com/guardian/scribe).
 
 Also be sure to check the [`examples`](./examples) directory for an
 AMD syntax example as well as a CommonJS (browserify) example.
+
+## Options
+
+<dl>
+  <dt><pre>allowBlockElements</pre></dt>
+  <dd>Enable/disable block element <a href="https://github.com/guardian/scribe/wiki/Modes">mode</a> (enabled by default)</dd>
+  <dt><pre>undo: { enabled: false }</pre></dt>
+  <dd>Enable/disable Scribe's custom undo manager</dd>
+  <dt><pre>defaultCommandPatches</pre></dt>
+  <dd>Defines which command patches should be loaded by default</dd>
+  <dt><pre>defaultPlugins</pre></dt>
+  <dd>Defines which of Scribe's built-in plugins should be active</dd>
+  <dt><pre>defaultFormatters</pre></dt>
+  <dd>Defines which of Scribe's default formatters should be active</dd>
+</dl>
+
+For detailed documentation see the [wiki page on options](https://github.com/guardian/scribe/wiki/Scribe-configuration-options).
 
 ## Architecture
 
@@ -195,30 +111,6 @@ function myPlugin(scribe) {
 
 [Moved to the Github Wiki](https://github.com/guardian/scribe/wiki/Browser-support)
 
-
-### Commands
-
-Commands are objects that describe formatting operations. For example,
-the bold command.
-
-Commands tell Scribe:
-
-* how to format some HTML when executed (similar to `document.queryCommand`);
-* how to query for whether the given command has been executed on the current selection (similar to `document.queryCommandState`);
-* how to query for whether the command can be executed on the document in its current state (similar to `document.queryCommandEnabled`)
-
-To ensure a separation of concerns, commands are split into multiple layers.
-When a command method is called by Scribe, it will be filtered through these
-layers sequentially.
-
-<dl>
-  <dt>Scribe</dt>
-  <dd>Where custom behaviour is defined.</dd>
-  <dt>Scribe Patches</dt>
-  <dd>Where patches for browser inconsistencies in native commands are defined.</dd>
-  <dt>Native</dt>
-</dl>
-
 ## Plugins
 
 Scribe has a rich plugin ecosystem that expands and customises what it can do.
@@ -227,39 +119,7 @@ See the wiki for a [list of plugins and how to create new ones](https://github.c
 
 ## FAQ
 
-### Is it production ready?
-
-Yes. [The Guardian](http://gu.com) is using Scribe as the basis for their internal CMS’ rich text editor.
-
-If you plan to use Scribe to provide _end users_ with a rich text editor, please consult the [Browser Support page](https://github.com/guardian/scribe/wiki/Browser-support), as some browsers are not officially supported.
-
-It is likely that there will be unknown edge cases, but these will be addressed
-when they are discovered.
-
-### How do I run tests?
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for information about running tests.
-
-### Why does Scribe have a custom undo manager?
-
-The [native API for formatting content in a
-`contenteditable`][Executing Commands] has [many browser inconsistencies][browser inconsistencies].
-Scribe has to manipulate the DOM directly on top of using these commands in order to patch
-those inconsistencies. What’s more, there is no widely supported command for
-telling `contenteditable` to insert Ps or BRs for line breaks. Thus, to add
-this behaviour Scribe needs to manipulate the DOM once again.
-
-The undo stack breaks whenever DOM manipulation is used instead of the native
-command API, therefore we have to use our own.
-
-Scribe's undo manager can be turned off by configuration eg:
-``` js
-var scribe = new Scribe(scribeElement, {
-  undo: {
-    enabled: false
-  }
-})
-```
+See the wiki's [FAQ](https://github.com/guardian/scribe/wiki/FAQ)
 
 [browser inconsistencies]: https://github.com/guardian/scribe/blob/master/BROWSERINCONSISTENCIES.md
 [Executing Commands]: https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla#Executing_Commands
