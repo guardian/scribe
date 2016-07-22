@@ -10,7 +10,7 @@ define(['../../node'], function (nodeHelpers) {
       if (treeWalker.currentNode) {
 
         // If the node is a non-empty element or has content
-        if(nodeHelpers.hasContent(treeWalker.currentNode) || nodeHelpers.isTextNodeWithContent(treeWalker.currentNode)) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode) || nodeHelpers.isTextNodeWithContent(Node, treeWalker.currentNode)) {
           return true;
         }
       }
