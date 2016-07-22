@@ -8,8 +8,9 @@ define(['../../node'], function (nodeHelpers) {
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
+
         // If the node is a non-empty element or has content
-        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode) || nodeHelpers.isTextNodeWithContent(treeWalker.currentNode)) {
           return true;
         }
       }
@@ -40,6 +41,12 @@ define(['../../node'], function (nodeHelpers) {
             event.preventDefault();
 
             scribe.transactionManager.run(function () {
+              
+              if (!range.collapsed) {
+                range.deleteContents();
+              }
+
+
               /**
                * Firefox: Delete the bogus BR as we insert another one later.
                * We have to do this because otherwise the browser will believe

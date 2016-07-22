@@ -15,6 +15,7 @@ define([
   }
 
   function hasContent(node) {
+
     if(node && node.children && node.children.length > 0) {
       return true;
     }
@@ -22,7 +23,6 @@ define([
     if(node && node.nodeName === 'BR') {
       return true;
     }
-
     return false;
   }
 
@@ -72,6 +72,10 @@ define([
 
     return false;
 
+  }
+
+  function isTextNodeWithContent(Node, node) {
+    return node.nodeType === Node.TEXT_NODE && !isWhitespaceOnlyTextNode(Node, node);
   }
 
   function firstDeepestChild(node) {
@@ -177,6 +181,7 @@ define([
     isText: isText,
     isEmptyTextNode: isEmptyTextNode,
     isWhitespaceOnlyTextNode: isWhitespaceOnlyTextNode,
+    isTextNodeWithContent: isTextNodeWithContent,
     isFragment: isFragment,
     isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,

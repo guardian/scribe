@@ -49,7 +49,7 @@ describe('Node type checking', function() {
   });
 
   describe('for whether a node has content', function() {
-    it('should detect a BR element has no content', function() {
+    it('should detect a BR element', function() {
       var fakeNode = {nodeName: "BR"};
 
       assert.isTrue(nodeHelpers.hasContent(fakeNode));
@@ -88,6 +88,34 @@ describe('Node type checking', function() {
 
         assert.isFalse(nodeHelpers.isWhitespaceOnlyTextNode(FakeNode, testNode), "Regular text node identified as whitespace-only");
 
+      });
+    });
+    describe('that have non-whitespace content', function() {
+      it('are correctly detected', function() {
+        var fakeNode = { 
+          nodeValue: "hello world",
+          nodeType: 3
+        };
+
+        assert.isTrue(nodeHelpers.isTextNodeWithContent(FakeNode, fakeNode), "Text node with content not detected as having content.");
+      });
+
+      it('but are actually empty', function() {
+        var fakeNode = { 
+          nodeValue: "",
+          nodeType: 3
+        };
+
+        assert.isFalse(nodeHelpers.isTextNodeWithContent(FakeNode, fakeNode), "Empty text node detected as having content.");
+      });
+
+      it('but only whitespace', function() {
+        var fakeNode = { 
+          nodeValue: "     ",
+          nodeType: 3
+        };
+
+        assert.isFalse(nodeHelpers.isTextNodeWithContent(FakeNode, fakeNode), "Whitespace-only text node detected as having content.");
       });
     });
   });
