@@ -52,7 +52,7 @@ define(['../../node'], function (nodeHelpers) {
                * We have to do this because otherwise the browser will believe
                * there is content to the right of the selection.
                */
-              if (scribe.el.lastChild.nodeName === 'BR') {
+              if (scribe.el.lastChild && scribe.el.lastChild.nodeName === 'BR') {
                 scribe.el.removeChild(scribe.el.lastChild);
               }
 
@@ -86,7 +86,9 @@ define(['../../node'], function (nodeHelpers) {
                */
 
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(scribe.el.lastChild);
+              if (scribe.el.lastChild) {
+                contentToEndRange.setEndAfter(scribe.el.lastChild);
+              }
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
