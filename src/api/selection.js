@@ -9,8 +9,21 @@ define(function () {
     // find the parent document or document fragment
     if( rootDoc.compareDocumentPosition(scribe.el) & Node.DOCUMENT_POSITION_DISCONNECTED ) {
       var currentElement = scribe.el.parentNode;
-      while(currentElement && nodeHelpers.isFragment(currentElement)) {
-        currentElement = currentElement.parentNode;
+      // Old browsers might not know about `:host` without polyfill, lets catch exception if it is the case
+      try {
+        var withinShadowRoot = currentElement.matches && currentElement.matches(':host *');
+      } catch (e) {}
+
+      // We need to use closest Shadow Root instead of Document for elements withing Shadow Root
+      // Otherwise we'll get no useful information about actual selection
+      if (withinShadowRoot) {
+        while (!currentElement.host) {
+          currentElement = currentElement.parentNode;
+        }
+      } else {
+        while(currentElement && nodeHelpers.isFragment(currentElement)) {
+          currentElement = currentElement.parentNode;
+        }
       }
 
       // if we found a document fragment and it has a getSelection method, set it to the root doc
