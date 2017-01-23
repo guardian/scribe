@@ -11,6 +11,7 @@
     "scribe-plugin-link-prompt-command": "guardian/scribe-plugin-link-prompt-command#master",
     "scribe-plugin-sanitizer": "guardian/scribe-plugin-sanitizer#master",
     "scribe-plugin-toolbar": "guardian/scribe-plugin-toolbar#master",
-    "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master"
+    "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master",
+    "scribe-plugin-noting": "guardian/scribe-plugin-noting#master"
   }
 }
