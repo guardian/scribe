@@ -36,9 +36,9 @@ define(['immutable'], function (immutable) {
 
 
   function defaults(options, defaultOptions) {
-    const optionsCopy = immutable.fromJS(options);
-    const defaultsCopy = immutable.fromJS(defaultOptions);
-    const mergedOptions = defaultsCopy.merge(optionsCopy);
+    var optionsCopy = immutable.fromJS(options);
+    var defaultsCopy = immutable.fromJS(defaultOptions);
+    var mergedOptions = defaultsCopy.merge(optionsCopy);
     return mergedOptions.toJS();
   }
 
