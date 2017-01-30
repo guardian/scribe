@@ -24,24 +24,25 @@ define([], function () {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
 
-            /**
-             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, a P will be inserted after the OL/UL.
-             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
-             */
-
-            if (listElement.nextElementSibling &&
-                listElement.nextElementSibling.childNodes.length === 0) {
-              nodeHelpers.removeNode(listElement.nextElementSibling);
-            }
-
-            /**
-             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, the OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
-             */
-
             if (listElement) {
+
+              /**
+               * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+               * command on an empty block, a P will be inserted after the OL/UL.
+               * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+               */
+
+              if (listElement.nextElementSibling &&
+                  listElement.nextElementSibling.childNodes.length === 0) {
+                nodeHelpers.removeNode(listElement.nextElementSibling);
+              }
+
+              /**
+               * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+               * command on an empty block, the OL/UL will be nested inside the block.
+               * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
+               */
+
               var listParentNode = listElement.parentNode;
               // If list is within a text block then split that block
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
@@ -63,9 +64,9 @@ define([], function () {
                   nodeHelpers.removeNode(listParentNode);
                 }
               }
-            }
 
-            nodeHelpers.removeChromeArtifacts(listElement);
+              nodeHelpers.removeChromeArtifacts(listElement);
+            }
           }
         }.bind(this));
       };
