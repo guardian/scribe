@@ -4,8 +4,7 @@
   "license": "Apache-2.0",
   "main": "src/scribe.js",
   "dependencies": {
-    "immutable": "~3.8.1",
-    "lodash-amd": "3.5.0"
+    "immutable": "~3.8.1"
   },
   "devDependencies": {
     "chai": "~1.9.1",
