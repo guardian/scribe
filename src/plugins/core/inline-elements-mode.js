@@ -59,6 +59,14 @@ define(['../../node'], function (nodeHelpers) {
               var brNode = document.createElement('br');
 
               range.insertNode(brNode);
+
+              // Safari does not update the endoffset after inserting the BR element
+              // so we have to do it ourselves.
+              // References: 
+              // https://bugs.webkit.org/show_bug.cgi?id=63538#c3
+              // https://dom.spec.whatwg.org/#dom-range-selectnode
+              range.setEndAfter(brNode);
+              
               // After inserting the BR into the range is no longer collapsed, so
               // we have to collapse it again.
               // TODO: Older versions of Firefox require this argument even though
