@@ -50,10 +50,11 @@ define([
     while (node) {
       if (!nodeHelpers.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
-        // whitespace, and is not self-closing
+        // whitespace, is not self-closing and is not a custom element
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !html5VoidElements.includes(node.nodeName)) {
+          !html5VoidElements.includes(node.nodeName) &&
+          node.nodeName.indexOf('-') === -1) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(node);
