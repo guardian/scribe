@@ -1,3 +1,11 @@
+# 3.3.0
+
+Merges a range of bug fixes including removing the dependency on lodash, use of ES6 `const` not inserting `<br>` tags into custom elements and a sanity check to ensure a `listElement` exists before inserting a list.
+
+Thank you [Dan Burzo](https://github.com/danburzo), [James Lawson](https://github.com/jameslawson), [code-smith](https://github.com/code-smith), [Nazar Mokrynskyi](https://github.com/nazar-pc), [Rob Rees](https://github.com/rrees) and [Oliver J Ash](https://github.com/OliverJAsh) for contributing to these fixes.
+
+We hope to move towards more granular releases from now on.
+
 # 3.2.0
 
 This changes the key bindings for undo and redo so that they are more specific and should no longer capture the key sequence for certain Polish letters. See #448 for details.
