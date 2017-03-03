@@ -5978,6 +5978,7 @@ define('lodash-amd/modern/string/escape',['../internal/baseToString', '../intern
   return escape;
 });
 
+
 define('plugins/core/formatters/plain-text/escape-html-characters',[
   'lodash-amd/modern/string/escape'
 ], function (
@@ -6478,24 +6479,25 @@ define('plugins/core/patches/commands/insert-list',[], function () {
               return node.nodeName === 'OL' || node.nodeName === 'UL';
             });
 
-            /**
-             * Firefox: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, a P will be inserted after the OL/UL.
-             * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
-             */
-
-            if (listElement.nextElementSibling &&
-                listElement.nextElementSibling.childNodes.length === 0) {
-              nodeHelpers.removeNode(listElement.nextElementSibling);
-            }
-
-            /**
-             * Chrome: If we apply the insertOrderedList or the insertUnorderedList
-             * command on an empty block, the OL/UL will be nested inside the block.
-             * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
-             */
-
             if (listElement) {
+
+              /**
+               * Firefox: If we apply the insertOrderedList or the insertUnorderedList
+               * command on an empty block, a P will be inserted after the OL/UL.
+               * As per: http://jsbin.com/cubacoli/3/edit?html,js,output
+               */
+
+              if (listElement.nextElementSibling &&
+                  listElement.nextElementSibling.childNodes.length === 0) {
+                nodeHelpers.removeNode(listElement.nextElementSibling);
+              }
+
+              /**
+               * Chrome: If we apply the insertOrderedList or the insertUnorderedList
+               * command on an empty block, the OL/UL will be nested inside the block.
+               * As per: http://jsbin.com/eFiRedUc/1/edit?html,js,output
+               */
+
               var listParentNode = listElement.parentNode;
               // If list is within a text block then split that block
               if (listParentNode && /^(H[1-6]|P)$/.test(listParentNode.nodeName)) {
@@ -6517,9 +6519,9 @@ define('plugins/core/patches/commands/insert-list',[], function () {
                   nodeHelpers.removeNode(listParentNode);
                 }
               }
-            }
 
-            nodeHelpers.removeChromeArtifacts(listElement);
+              nodeHelpers.removeChromeArtifacts(listElement);
+            }
           }
         }.bind(this));
       };
@@ -7310,9 +7312,9 @@ define('config',['immutable'], function (immutable) {
 
 
   function defaults(options, defaultOptions) {
-    const optionsCopy = immutable.fromJS(options);
-    const defaultsCopy = immutable.fromJS(defaultOptions);
-    const mergedOptions = defaultsCopy.merge(optionsCopy);
+    var optionsCopy = immutable.fromJS(options);
+    var defaultsCopy = immutable.fromJS(defaultOptions);
+    var mergedOptions = defaultsCopy.merge(optionsCopy);
     return mergedOptions.toJS();
   }
 
