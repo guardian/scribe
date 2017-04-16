@@ -31,8 +31,13 @@ At the core of Scribe we have:
 Scribe patches [many browser inconsistencies][browser inconsistencies] in the [native command API][Executing Commands].
 
 ## Installation
+
+Download and install npm.
+Download chromedriver and make sure that it is reachable through your system path.
 ```
+./setup.sh
 bower install scribe
+./ci
 ```
 
 Alternatively, you can [access the distribution files through GitHub releases](https://github.com/guardian/scribe/releases).
