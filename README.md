@@ -1,4 +1,4 @@
-#Scribe
+# Scribe
 
 A rich text editor framework for the web platform, with patches for
 browser inconsistencies and sensible defaults.
