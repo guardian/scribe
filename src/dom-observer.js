@@ -8,7 +8,8 @@ define([
   var MutationObserver = mutations.determineMutationObserver(maybeWindow);
 
   function hasRealMutation(n) {
-    return ! nodeHelpers.isEmptyTextNode(n) &&
+    return nodeHelpers.isNotObservableNode(n) &&
+      ! nodeHelpers.isEmptyTextNode(n) &&
       ! nodeHelpers.isSelectionMarkerNode(n);
   }
 
