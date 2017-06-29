@@ -177,6 +177,20 @@ define(function () {
       });
       return !! containerPElement && nodeHelpers.isEmptyInlineElement(containerPElement);
     };
+    
+    Selection.prototype.save = function () {
+      if (this.selection.rangeCount > 0) {
+        return this.selection.getRangeAt(0);
+      }
+      return null;
+    };
+
+    Selection.prototype.restore = function (range) {
+      if (range) {
+        this.selection.removeAllRanges();
+        this.selection.addRange(range);
+      }
+    };
 
     return Selection;
   };
