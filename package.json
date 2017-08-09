@@ -4,26 +4,28 @@
   "license": "Apache-2.0",
   "main": "src/scribe.js",
   "dependencies": {
-    "immutable": "~3.8.1"
+    "immutable": "~3.8.1",
+    "mversion": "^1.10.1"
   },
   "devDependencies": {
-    "chai": "~1.9.1",
-    "grunt": "^1.0",
-    "grunt-contrib-requirejs": "^1.0.0",
-    "grunt-mocha-test": "^0.12.7",
-    "grunt-cli": "^0.1",
-    "http-server": "~0.6.1",
-    "mocha": "~2.4",
-    "mock-browser": "0.92.11",
-    "mversion": "~1.10",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "~4.1.1",
+    "http-server": "~0.10.0",
+    "mocha": "~3.5.0",
+    "mock-browser": "0.92.14",
     "node-amd-require": "^0.2.2",
-    "q": "~1.2",
-    "request": "~2.33.0",
-    "sinon": "^1.12.2"
+    "q": "~1.5.0",
+    "request": "~2.81.0",
+    "sinon": "^3.1.0",
+    "webpack": "^3.5.1"
   },
   "scripts": {
-    "test": "node_modules/.bin/grunt test",
-    "build": "node_modules/.bin/grunt build"
+    "test": "mochaTest",
+    "build": "webpack -p src/scribe.js build/scribe.min.js",
+    "build-dev": "webpack src/scribe.js build/scribe.js"
   },
   "repository": {
     "type": "git",
