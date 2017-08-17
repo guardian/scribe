@@ -4,8 +4,7 @@
   "license": "Apache-2.0",
   "main": "src/scribe.js",
   "dependencies": {
-    "immutable": "~3.8.1",
-    "mversion": "^1.10.1"
+    "immutable": "^3.8.1"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -13,14 +12,24 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "chai": "~4.1.1",
+    "html-janitor": "^2.0.2",
     "http-server": "~0.10.0",
     "mocha": "~3.5.0",
     "mock-browser": "0.92.14",
+    "mversion": "^1.10.1",
     "node-amd-require": "^0.2.2",
     "q": "~1.5.0",
     "request": "~2.81.0",
     "sinon": "^3.1.0",
-    "webpack": "^3.5.1"
+    "webpack": "^3.5.1",
+    "requirejs": "~2.1.9",
+    "scribe-plugin-blockquote-command": "guardian/scribe-plugin-blockquote-command#master",
+    "scribe-plugin-formatter-plain-text-convert-new-lines-to-html": "guardian/scribe-plugin-formatter-plain-text-convert-new-lines-to-html#master",
+    "scribe-plugin-heading-command": "guardian/scribe-plugin-heading-command#master",
+    "scribe-plugin-link-prompt-command": "guardian/scribe-plugin-link-prompt-command#master",
+    "scribe-plugin-sanitizer": "guardian/scribe-plugin-sanitizer#master",
+    "scribe-plugin-toolbar": "guardian/scribe-plugin-toolbar#master",
+    "scribe-plugin-inline-styles-to-elements": "guardian/scribe-plugin-inline-styles-to-elements#master"
   },
   "scripts": {
     "test": "mochaTest",
