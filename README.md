@@ -32,7 +32,7 @@ Scribe patches [many browser inconsistencies][browser inconsistencies] in the [n
 
 ## Installation
 ```
-bower install scribe
+npm install scribe-editor
 ```
 
 Alternatively, you can [access the distribution files through GitHub releases](https://github.com/guardian/scribe/releases).

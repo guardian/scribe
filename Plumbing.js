@@ -5,7 +5,6 @@
  */
 
 var all       = require('plumber-all');
-// var bower  = require('plumber-bower');
 var glob      = require('plumber-glob');
 var requireJS = require('plumber-requirejs');
 var uglifyJS  = require('plumber-uglifyjs')();
@@ -16,8 +15,8 @@ module.exports = function (pipelines) {
       // FIXME: auto?
       preserveLicenseComments: false,
       paths: {
-          'lodash-amd': '../bower_components/lodash-amd',
-          'immutable': '../bower_components/immutable/dist/immutable'
+          'lodash-amd': '../node_modules/lodash-amd',
+          'immutable': '../node_modules/immutable/dist/immutable'
       }
   });
 
@@ -30,9 +29,6 @@ module.exports = function (pipelines) {
   /* jshint -W069 */
 
   pipelines['build'] = [
-    // TODO: use bower operation to find main of this component?
-    // As per: https://github.com/bower/bower/issues/1090
-    // bower('scribe'),
     glob('./src/scribe.js'),
     mainRequireJS,
     // Send the resource along these branches

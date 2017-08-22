@@ -1,9 +1,8 @@
 machine:
   node:
-    version: 5
+    version: 6
 
 dependencies:
     pre:
-        - npm install -g bower
-        - bower install
+        - npm install
         - ./setup.sh

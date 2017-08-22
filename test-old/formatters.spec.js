@@ -154,7 +154,7 @@ describe('formatters', function () {
     describe('convert new lines to HTML', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['../../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
+          require(['../../node_modules/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html'], function (convertNewLinesToHtmlFormatter) {
             window.scribe.use(convertNewLinesToHtmlFormatter());
             done();
           });
@@ -242,7 +242,7 @@ describe('formatters', function () {
       when('the sanitizer plugin is enabled', function () {
         beforeEach(function () {
           return driver.executeAsyncScript(function (done) {
-            require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+            require(['../../node_modules/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
               window.scribe.use(scribePluginSanitizer({ tags: { p: {} } }));
               done();
             });
@@ -281,7 +281,7 @@ describe('formatters', function () {
     describe('normalization phase', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+          require(['../../node_modules/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: {
                 p: {}
@@ -310,7 +310,7 @@ describe('formatters', function () {
     describe('trim whitespace', function () {
       beforeEach(function () {
         return driver.executeAsyncScript(function (done) {
-          require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+          require(['../../node_modules/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: {
                 p: {}
@@ -344,7 +344,7 @@ describe('formatters', function () {
            * The file below contains the formatter which corrects invalid HTML,
            * ideally it should live in core and we wouldn't need to require it
            **/
-          require(['../../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
+          require(['../../node_modules/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer'], function (scribePluginSanitizer) {
             window.scribe.use(scribePluginSanitizer({
               tags: { p: {}, b: {}  }}));
             done();

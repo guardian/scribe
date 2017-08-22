@@ -21,15 +21,6 @@ Please see the [wiki](https://github.com/guardian/scribe/wiki/Testing) for detai
 
 ## Releasing
 
-### Bower
-* `git checkout master`
-* Run `./release.sh [ <newversion> | major | minor | patch | build ]` (we use
-  [mversion](https://github.com/mikaelbr/mversion#usage-cli)). (If releasing a
-  plugin, run the script inside this repository from the plugin’s directory.)
-* Checkout the `dist` branch to check you're happy with the compilation result.
-  If you are, run `git push; git push --tags`. (The `dist` tree is for
-  distribution via Bower).
-
 ### npm
 * `git checkout master`.
 * Update `CHANGELOG.md`
@@ -38,7 +29,22 @@ Please see the [wiki](https://github.com/guardian/scribe/wiki/Testing) for detai
 * `git push`
 * Run `npm publish`
 
+### Bower
+
+** NOTE: as of version 4.0.0, Scribe is no longer distributed via Bower. **
+
+* `git checkout master`
+* Run `./release.sh [ <newversion> | major | minor | patch | build ]` (we use
+  [mversion](https://github.com/mikaelbr/mversion#usage-cli)). (If releasing a
+  plugin, run the script inside this repository from the plugin’s directory.)
+* Checkout the `dist` branch to check you're happy with the compilation result.
+  If you are, run `git push; git push --tags`. (The `dist` tree is for
+  distribution via Bower).
+
 ### Update example
+
+** NOTE: as of version 4.0.0, Scribe is no longer distributed via Bower. **
+
 * `git checkout gh-pages`
 * `git pull`
 * Update necessary dependency versions in `bower.json`. Check `bower ls` to see

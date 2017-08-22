@@ -1,8 +1,8 @@
 require('node-amd-require')({
   baseUrl: __dirname + "/../../src",
   paths: {
-    'lodash-amd': '../../bower_components/lodash-amd',
-    'immutable': '../../bower_components/immutable'
+    'lodash-amd': '../../node_modules/lodash-amd',
+    'immutable': '../../node_modules/immutable'
   }
 });
 

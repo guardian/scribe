@@ -66,7 +66,7 @@ describe('block mode', function () {
   describe('blockquotes', function () {
     beforeEach(function () {
       return driver.executeAsyncScript(function (done) {
-        require(['../../bower_components/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'], function (blockquoteCommand) {
+        require(['../../node_modules/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'], function (blockquoteCommand) {
           window.scribe.use(blockquoteCommand());
           done();
         });
