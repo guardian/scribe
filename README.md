@@ -58,7 +58,7 @@ require(['scribe', 'scribe-plugin-blockquote-command', 'scribe-plugin-toolbar'],
 You can [see a live example here][example], or [view the code here](https://github.com/guardian/scribe).
 
 Also be sure to check the [`examples`](./examples) directory for an
-AMD syntax example as well as a CommonJS (browserify) example.
+AMD syntax example as well as a CommonJS example.
 
 ## Options
 
