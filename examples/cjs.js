@@ -1,7 +1,7 @@
 
 /**
  * This example demonstrates how to consume the Scribe
- * editor using `browserify` and CommonJS module syntax.
+ * editor using `webpack` and CommonJS module syntax.
  *
  * Note that you'll need to install scribe's dependencies
  * through `npm install`. `npm` is installed with Node.js.
@@ -13,7 +13,7 @@
  * ends up being consumed.
  */
 
-var Scribe = require('../');
+var Scribe = require('../build/scribe.js');
 var scribePluginToolbar = require('scribe-plugin-toolbar');
 
 var scribe = new Scribe(document.getElementById('editor'));

@@ -2,6 +2,7 @@
 /node_modules/
 /vendor/
 /examples/build.js
+/examples/build.js.map
 .tern-port
 .npm-debug.log
 .DS_Store
