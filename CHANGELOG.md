@@ -1,6 +1,6 @@
 # 4.0.0
 
-- Builds using [webpack 2](https://webpack.js.org/)
+- Builds using [webpack](https://webpack.js.org/)
 - Switches to [npm](https://npmjs.com)-only dependency management and publishing, removing [bower](https://bower.io/) support.
 - Updates dependencies
 
