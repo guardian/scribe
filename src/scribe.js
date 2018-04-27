@@ -11,7 +11,8 @@ define([
   './node',
   'immutable',
   './config',
-  './events'
+  './events',
+  './debounce'
 ], function (
   plugins,
   commands,
@@ -25,13 +26,16 @@ define([
   nodeHelpers,
   Immutable,
   config,
-  eventNames
+  eventNames,
+  debounce
 ) {
 
   'use strict';
 
   function Scribe(el, options) {
     EventEmitter.call(this);
+
+    var INPUT_DELAY = 300;
 
     this.el = el;
     this.commands = {};
@@ -68,7 +72,7 @@ define([
 
     this.el.setAttribute('contenteditable', true);
 
-    this.el.addEventListener('input', function () {
+    this.el.addEventListener('input', debounce(function () {
       /**
        * This event triggers when either the user types something or a native
        * command is executed which causes the content to change (i.e.
@@ -76,7 +80,7 @@ define([
        * these actions, so instead we run the transaction in this event.
        */
       this.transactionManager.run();
-    }.bind(this), false);
+    }.bind(this), INPUT_DELAY).bind(this), false);
 
     /**
      * Core Plugins
