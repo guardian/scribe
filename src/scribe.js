@@ -35,8 +35,6 @@ define([
   function Scribe(el, options) {
     EventEmitter.call(this);
 
-    var INPUT_DELAY = 300;
-
     this.el = el;
     this.commands = {};
 
@@ -80,7 +78,7 @@ define([
        * these actions, so instead we run the transaction in this event.
        */
       this.transactionManager.run();
-    }.bind(this), INPUT_DELAY).bind(this), false);
+    }.bind(this), this.options.inputDelay).bind(this), false);
 
     /**
      * Core Plugins
