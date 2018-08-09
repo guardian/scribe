@@ -11,6 +11,14 @@ define(function () {
         var selection = new scribe.api.Selection();
 
         /**
+         * make sure we're not touching any none Scribe elements
+         * in the page
+         */
+        if (!scribe.api.Selection().isInScribe()) {
+          return;
+        }
+
+        /**
          * Firefox does not create a link when selection is collapsed
          * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */

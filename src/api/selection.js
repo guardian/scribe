@@ -101,35 +101,36 @@ define(function () {
         nodeHelpers.getAncestor(node, scribe.el, nodeFilter);
     };
 
-    Selection.prototype.placeMarkers = function () {
+    Selection.prototype.isInScribe = function () {
       var range = this.range;
-      if (!range) {
+      return range
+        //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
+        //one way to do this is to check if it's visible (is this the best way?).
+        && document.contains(scribe.el)
+        //we want to ensure that the current selection is within the current scribe node
+        //if this isn't true scribe will place markers within the selections parent
+        //we want to ensure that scribe ONLY places markers within it's own element
+        && scribe.el.contains(range.startContainer)
+        && scribe.el.contains(range.endContainer);
+    }
+
+    Selection.prototype.placeMarkers = function () {
+      if (!this.isInScribe()) {
         return;
       }
 
-      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
-      //one way to do this is to check if it's visible (is this the best way?).
-      if (!document.contains(scribe.el)) {
-        return;
+      // insert start marker
+      insertMarker(range.cloneRange(), createMarker());
+
+      if (! range.collapsed ) {
+        // End marker
+        var rangeEnd = range.cloneRange();
+        rangeEnd.collapse(false);
+        insertMarker(rangeEnd, createMarker());
       }
 
-      //we want to ensure that the current selection is within the current scribe node
-      //if this isn't true scribe will place markers within the selections parent
-      //we want to ensure that scribe ONLY places markers within it's own element
-      if (scribe.el.contains(range.startContainer) && scribe.el.contains(range.endContainer)) {
-        // insert start marker
-        insertMarker(range.cloneRange(), createMarker());
-
-        if (! range.collapsed ) {
-          // End marker
-          var rangeEnd = range.cloneRange();
-          rangeEnd.collapse(false);
-          insertMarker(rangeEnd, createMarker());
-        }
-
-        this.selection.removeAllRanges();
-        this.selection.addRange(range);
-      }
+      this.selection.removeAllRanges();
+      this.selection.addRange(range);
     };
 
     Selection.prototype.getMarkers = function () {
