@@ -5127,6 +5127,7 @@ define('node',[
   }
 
   function hasContent(node) {
+
     if(node && node.children && node.children.length > 0) {
       return true;
     }
@@ -5134,7 +5135,6 @@ define('node',[
     if(node && node.nodeName === 'BR') {
       return true;
     }
-
     return false;
   }
 
@@ -5184,6 +5184,10 @@ define('node',[
 
     return false;
 
+  }
+
+  function isTextNodeWithContent(Node, node) {
+    return node.nodeType === Node.TEXT_NODE && !isWhitespaceOnlyTextNode(Node, node);
   }
 
   function firstDeepestChild(node) {
@@ -5289,6 +5293,7 @@ define('node',[
     isText: isText,
     isEmptyTextNode: isEmptyTextNode,
     isWhitespaceOnlyTextNode: isWhitespaceOnlyTextNode,
+    isTextNodeWithContent: isTextNodeWithContent,
     isFragment: isFragment,
     isBefore: isBefore,
     isSelectionMarkerNode: isSelectionMarkerNode,
@@ -5359,10 +5364,11 @@ define('plugins/core/formatters/html/ensure-selectable-containers',[
     while (node) {
       if (!nodeHelpers.isSelectionMarkerNode(node)) {
         // Find any node that contains no child *elements*, or just contains
-        // whitespace, and is not self-closing
+        // whitespace, is not self-closing and is not a custom element
         if (isEmpty(node) &&
           node.textContent.trim() === '' &&
-          !html5VoidElements.includes(node.nodeName)) {
+          !html5VoidElements.includes(node.nodeName) &&
+          node.nodeName.indexOf('-') === -1) {
           node.appendChild(document.createElement('br'));
         } else if (node.children.length > 0) {
           traverse(node);
@@ -5399,8 +5405,9 @@ define('plugins/core/inline-elements-mode',['../../node'], function (nodeHelpers
 
     while (treeWalker.nextNode()) {
       if (treeWalker.currentNode) {
+
         // If the node is a non-empty element or has content
-        if(nodeHelpers.hasContent(treeWalker.currentNode)) {
+        if(nodeHelpers.hasContent(treeWalker.currentNode) || nodeHelpers.isTextNodeWithContent(Node, treeWalker.currentNode)) {
           return true;
         }
       }
@@ -5431,18 +5438,32 @@ define('plugins/core/inline-elements-mode',['../../node'], function (nodeHelpers
             event.preventDefault();
 
             scribe.transactionManager.run(function () {
+              
+              if (!range.collapsed) {
+                range.deleteContents();
+              }
+
+
               /**
                * Firefox: Delete the bogus BR as we insert another one later.
                * We have to do this because otherwise the browser will believe
                * there is content to the right of the selection.
                */
-              if (scribe.el.lastChild.nodeName === 'BR') {
+              if (scribe.el.lastChild && scribe.el.lastChild.nodeName === 'BR') {
                 scribe.el.removeChild(scribe.el.lastChild);
               }
 
               var brNode = document.createElement('br');
 
               range.insertNode(brNode);
+
+              // Safari does not update the endoffset after inserting the BR element
+              // so we have to do it ourselves.
+              // References: 
+              // https://bugs.webkit.org/show_bug.cgi?id=63538#c3
+              // https://dom.spec.whatwg.org/#dom-range-selectnode
+              range.setEndAfter(brNode);
+              
               // After inserting the BR into the range is no longer collapsed, so
               // we have to collapse it again.
               // TODO: Older versions of Firefox require this argument even though
@@ -5470,7 +5491,9 @@ define('plugins/core/inline-elements-mode',['../../node'], function (nodeHelpers
                */
 
               var contentToEndRange = range.cloneRange();
-              contentToEndRange.setEndAfter(scribe.el.lastChild);
+              if (scribe.el.lastChild) {
+                contentToEndRange.setEndAfter(scribe.el.lastChild);
+              }
 
               // Get the content from the range to the end of the heading
               var contentToEndFragment = contentToEndRange.cloneContents();
@@ -6653,6 +6676,14 @@ define('plugins/core/patches/commands/create-link',[],function () {
         var selection = new scribe.api.Selection();
 
         /**
+         * make sure we're not touching any none Scribe elements
+         * in the page
+         */
+        if (!scribe.api.Selection().isInScribe()) {
+          return;
+        }
+
+        /**
          * Firefox does not create a link when selection is collapsed
          * so we create it manually. http://jsbin.com/tutufi/2/edit?js,output
          */
@@ -6944,35 +6975,36 @@ define('api/selection',[],function () {
         nodeHelpers.getAncestor(node, scribe.el, nodeFilter);
     };
 
-    Selection.prototype.placeMarkers = function () {
+    Selection.prototype.isInScribe = function () {
       var range = this.range;
-      if (!range) {
+      return range
+        //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
+        //one way to do this is to check if it's visible (is this the best way?).
+        && document.contains(scribe.el)
+        //we want to ensure that the current selection is within the current scribe node
+        //if this isn't true scribe will place markers within the selections parent
+        //we want to ensure that scribe ONLY places markers within it's own element
+        && scribe.el.contains(range.startContainer)
+        && scribe.el.contains(range.endContainer);
+    }
+
+    Selection.prototype.placeMarkers = function () {
+      if (!this.isInScribe()) {
         return;
       }
 
-      //we need to ensure that the scribe's element lives within the current document to avoid errors with the range comparison (see below)
-      //one way to do this is to check if it's visible (is this the best way?).
-      if (!document.contains(scribe.el)) {
-        return;
+      // insert start marker
+      insertMarker(range.cloneRange(), createMarker());
+
+      if (! range.collapsed ) {
+        // End marker
+        var rangeEnd = range.cloneRange();
+        rangeEnd.collapse(false);
+        insertMarker(rangeEnd, createMarker());
       }
 
-      //we want to ensure that the current selection is within the current scribe node
-      //if this isn't true scribe will place markers within the selections parent
-      //we want to ensure that scribe ONLY places markers within it's own element
-      if (scribe.el.contains(range.startContainer) && scribe.el.contains(range.endContainer)) {
-        // insert start marker
-        insertMarker(range.cloneRange(), createMarker());
-
-        if (! range.collapsed ) {
-          // End marker
-          var rangeEnd = range.cloneRange();
-          rangeEnd.collapse(false);
-          insertMarker(rangeEnd, createMarker());
-        }
-
-        this.selection.removeAllRanges();
-        this.selection.addRange(range);
-      }
+      this.selection.removeAllRanges();
+      this.selection.addRange(range);
     };
 
     Selection.prototype.getMarkers = function () {
