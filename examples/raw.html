@@ -3,7 +3,7 @@ This example demonstrates how to consume the Scribe
 editor using RequireJS and the AMD module syntax.
 
 Note that you'll need to install scribe's dependencies through
-`bower install`. See http://bower.io/ if you are unfamiliar.
+`npm install`. See https://npmjs.com/ if you are unfamiliar.
 -->
 <style>
   button {
@@ -38,17 +38,17 @@ Note that you'll need to install scribe's dependencies through
     border: solid 1px lightgray;
   }
 </style>
-<script src="../bower_components/requirejs/require.js"></script>
+<script src="../node_modules/requirejs/require.js"></script>
 <script>
 require({
   paths: {
-    'lodash-amd': '../bower_components/lodash-amd',
-    'immutable': '../bower_components/immutable/dist/immutable'
+    'lodash-amd': '../node_modules/lodash-amd',
+    'immutable': '../node_modules/immutable/dist/immutable'
   }
 }, [
   '../src/scribe',
-  '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
-  '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+  '../node_modules/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  '../node_modules/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
 ], function (
   Scribe,
   scribePluginToolbar

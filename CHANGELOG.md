@@ -1,3 +1,11 @@
+# 4.0.0
+
+- Builds using [webpack](https://webpack.js.org/)
+- Switches to [npm](https://npmjs.com)-only dependency management and publishing, removing [bower](https://bower.io/) support.
+- Updates dependencies
+
+These changes are the first in a wide-ranging modernisation process that scribe will be going through.
+
 # 3.3.0
 
 Merges a range of bug fixes including removing the dependency on lodash, use of ES6 `const` not inserting `<br>` tags into custom elements and a sanity check to ensure a `listElement` exists before inserting a list.

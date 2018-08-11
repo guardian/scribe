@@ -1,8 +1,8 @@
 require('node-amd-require')({
   baseUrl: __dirname + "/../../src",
   paths: {
-    'lodash-amd': '../../bower_components/lodash-amd',
-    'immutable': '../../bower_components/immutable'
+    'lodash-amd': '../../node_modules/lodash-amd',
+    'immutable': '../../node_modules/immutable'
   }
 });
 
@@ -92,7 +92,7 @@ describe('Node type checking', function() {
     });
     describe('that have non-whitespace content', function() {
       it('are correctly detected', function() {
-        var fakeNode = { 
+        var fakeNode = {
           nodeValue: "hello world",
           nodeType: 3
         };
@@ -101,7 +101,7 @@ describe('Node type checking', function() {
       });
 
       it('but are actually empty', function() {
-        var fakeNode = { 
+        var fakeNode = {
           nodeValue: "",
           nodeType: 3
         };
@@ -110,7 +110,7 @@ describe('Node type checking', function() {
       });
 
       it('but only whitespace', function() {
-        var fakeNode = { 
+        var fakeNode = {
           nodeValue: "     ",
           nodeType: 3
         };

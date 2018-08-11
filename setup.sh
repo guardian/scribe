@@ -1,7 +1,6 @@
 #!/bin/bash
 
 npm install
-bower install
 
 # Download the selenium JAR
 SELENIUM_VERSION=2.41.0

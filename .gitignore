@@ -1,8 +1,8 @@
 /build/
 /node_modules/
-/bower_components/
 /vendor/
 /examples/build.js
+/examples/build.js.map
 .tern-port
 .npm-debug.log
 .DS_Store

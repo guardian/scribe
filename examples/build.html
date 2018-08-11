@@ -3,7 +3,7 @@ This example demonstrates how to consume the Scribe
 editor using RequireJS and the AMD module syntax.
 
 Note that you'll need to install scribe's dependencies through
-`bower install`. See http://bower.io/ if you are unfamiliar.
+`npm install`. See https://npmjs.com/ if you are unfamiliar.
 -->
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <style>
@@ -33,25 +33,25 @@ Note that you'll need to install scribe's dependencies through
     height: 10em;
   }
 </style>
-<script src="../bower_components/requirejs/require.js"></script>
+<script src="../node_modules/requirejs/require.js"></script>
 <script>
 require({
   paths: {
-    'scribe-common': '../bower_components/scribe-common',
-    'lodash-amd': '../bower_components/lodash-amd',
-    'html-janitor':  '../bower_components/html-janitor/html-janitor',
-    'immutable': '../bower_components/immutable/dist/immutable',
+    'scribe-common': '../node_modules/scribe-common',
+    'lodash-amd': '../node_modules/lodash-amd',
+    'html-janitor':  '../node_modules/html-janitor/src/html-janitor',
+    'immutable': '../node_modules/immutable/dist/immutable',
     'scribe': '../build/scribe'
   }
 }, [
   'scribe',
-  '../bower_components/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
-  '../bower_components/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
-  '../bower_components/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
-  '../bower_components/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
-  '../bower_components/scribe-plugin-heading-command/src/scribe-plugin-heading-command',
-  '../bower_components/scribe-plugin-link-prompt-command/src/scribe-plugin-link-prompt-command',
-  '../bower_components/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'
+  '../node_modules/scribe-plugin-toolbar/src/scribe-plugin-toolbar',
+  '../node_modules/scribe-plugin-formatter-plain-text-convert-new-lines-to-html/src/scribe-plugin-formatter-plain-text-convert-new-lines-to-html',
+  '../node_modules/scribe-plugin-sanitizer/src/scribe-plugin-sanitizer',
+  '../node_modules/scribe-plugin-inline-styles-to-elements/src/scribe-plugin-inline-styles-to-elements',
+  '../node_modules/scribe-plugin-heading-command/src/scribe-plugin-heading-command',
+  '../node_modules/scribe-plugin-link-prompt-command/src/scribe-plugin-link-prompt-command',
+  '../node_modules/scribe-plugin-blockquote-command/src/scribe-plugin-blockquote-command'
 
 ], function (
   Scribe,

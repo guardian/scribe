@@ -1,16 +1,14 @@
 language: node_js
 
 node_js:
-  - "5.11"
+  - "6.11"
 
 sudo: false
 
 cache:
   directories:
     - node_modules
-    - bower_components
 
 before_script:
-  - npm install -g bower
-  - bower install
+  - npm install
 script: TEST_SERVER_PORT=8090 npm test

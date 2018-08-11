@@ -3,8 +3,8 @@
     "requirejs": {
       "baseURL": "./src",
       "paths": {
-        "html-janitor": "./bower_components/html-janitor/src/html-janitor",
-        "lodash-amd": "../bower_components/lodash-amd"
+        "html-janitor": "./node_modules/html-janitor/src/html-janitor",
+        "lodash-amd": "../node_modules/lodash-amd"
       }
     },
     "node": {}
