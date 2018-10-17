@@ -55,8 +55,10 @@ define([
             if (isEditorActive) {
               selection.placeMarkers();
             }
-            scribe.setHTML(scribe._htmlFormatterFactory.format(scribe.getHTML()));
-            selection.selectMarkers();
+            scribe._htmlFormatterFactory.format(scribe.getHTML()).then(function(html){
+              scribe.setHTML(html);
+              selection.selectMarkers();
+            })
           }.bind(scribe);
 
           // We only want to wrap the formatting in a transaction if the editor is
