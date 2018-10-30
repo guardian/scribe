@@ -71,7 +71,7 @@ define(function () {
           endOffset = tmp;
         }
         // if the range ends *before* it starts, then we must reverse the range
-        else if (nodeHelpers.isBefore(endNode, startNode)) {
+        else if (nodeHelpers.isBefore(endNode, startNode) && !endNode.contains(startNode)) {
           var tmpNode = startNode,
             tmpOffset = startOffset;
           startNode = endNode;
