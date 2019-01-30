@@ -1,3 +1,9 @@
+**THIS PROJECT IS DEPRECATED** - You can find more information about this in our blog post, [Leaving Scribe](https://www.theguardian.com/info/2019/jan/24/leaving-scribe). In summary:
+
+- We have no plans to add features to Scribe but may make critical updates throughout the period that we continue to use instances of Scribe internally
+- We recommend forking the project in order to do any feature work as we will not be moving the Scribe repository out of the Guardian organisation
+- In time we hope to be able to open source the new text editor we are working on
+
 # Scribe
 
 A rich text editor framework for the web platform, with patches for
