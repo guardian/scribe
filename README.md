@@ -79,6 +79,8 @@ AMD syntax example as well as a CommonJS (browserify) example.
   <dd>Defines which of Scribe's built-in plugins should be active</dd>
   <dt><pre>defaultFormatters</pre></dt>
   <dd>Defines which of Scribe's default formatters should be active</dd>
+  <dt><pre>inputDelay</pre></dt>
+  <dd>Defines the debounce delay for input events on editor container (default is 0)</dd>
 </dl>
 
 For detailed documentation see the [wiki page on options](https://github.com/guardian/scribe/wiki/Scribe-configuration-options).

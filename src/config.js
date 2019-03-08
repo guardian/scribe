@@ -31,7 +31,9 @@ define(['immutable'], function (immutable) {
     defaultFormatters: [
       'escapeHtmlCharactersFormatter',
       'replaceNbspCharsFormatter'
-    ]
+    ],
+
+    inputDelay: 0
   };
 
 
