@@ -1,0 +1,153 @@
+ <!DOCTYPE HTML>
+<html lang="en_US">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+            <meta name="robots" content="noindex, follow">
+        <title>prdo.ru [101.395].txt - AnonFile</title>
+    
+            <link href="//vjs.zencdn.net/7.3.0/video-js.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/css/anonfile.css?1579363500"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+        var cfg = {"authenticated":false,"upload_api_endpoint":"https:\/\/api.anonfile.com\/upload","hua":false,"pde":false};
+    </script>
+
+    <script src="/js/app.js?1579363503"></script>
+
+    <link rel="shortcut icon" href="/img/favicon/favicon-32x32-anonfile.png?1561830325"/>
+    
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119083265-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-119083265-1');
+    </script>
+    </head>
+<body>
+<div id="site-wrapper" class="container">
+
+            <div id="header" class="row">
+    <div class="col-xs-0 col-md-3"></div>
+    <div class="col-xs-12 col-md-6">
+                <a href="/">
+            <img id="header-logo" class="img-responsive center-block"
+                 src="/static/logo.png">
+        </a>
+    </div>
+    <div class="col-xs-0 col-md-3"></div>
+</div>    
+    <div class="row">
+    <div class="col-xs-0 col-md-3"></div>
+    <div class="col-xs-12 col-md-6">
+                                            </div>
+    <div class="col-xs-0 col-md-3"></div>
+</div>
+    
+            
+
+    
+    <div class="row top-wrapper">
+        <div class="col-xs-0 col-md-3"></div>
+        <div class="col-xs-12 col-md-6">
+            <h1 class="text-center text-wordwrap">prdo.ru [101.395].txt</h1>
+        </div>
+        <div class="col-xs-0 col-md-3"></div>
+    </div>
+
+            
+        <div id="download-wrapper" class="row">
+            <div class="col-xs-0 col-md-4"></div>
+            <div class="col-xs-12 col-md-4 text-center">
+                                <a type="button" id="download-url"
+                   class="btn btn-primary btn-block"
+                   href="https://cdn-01.anonfile.com/ja39MbL9n0/9db70a11-1582433173/prdo.ru [101.395].txt"><img
+                        src="/img/file/filetypes/ext/txt.png?1561830325"/> Download
+                    (2.95 MB)</a>
+                                
+                                <div class="col-xs-0 col-md-4"></div>
+            </div>
+        </div>
+    
+    
+    <div class="row">
+    <div class="col-xs-0 col-md-3"></div>
+    <div id="footer" class="col-xs-12 col-md-6 text-center">
+
+                        <hr/>
+                <div class="row bottom-section">
+            <div class="col-xs-12">
+                                    <a href="https://anonfile.com/login">Login</a><span> - </span>
+                    <a href="https://anonfile.com/register">Register</a><span> - </span>
+                                                                                <a href="https://anonfile.com/terms">Terms of Use</a><span> - </span>
+                                                <a href="https://anonfile.com/docs/api">API</a><span> - </span>
+                                                <a href="https://anonfile.com/faq">FAQ</a><span> - </span>
+                                                <a href="https://anonfile.com/feedback">Feedback</a><span> - </span>
+                                <a href="https://anonfile.com/abuse">REPORT ABUSE</a>
+            </div>
+        </div>
+                    </div>
+
+    <div class="col-xs-0 col-md-3"></div>
+</div></div>
+<script>
+    $.ajaxSetup({headers: {'X-CSRF-Token': 'LtD7waGCbWMDeXFcL2h9GUGG0N50TpLaA8YkTlRb'}});
+    var app_csrf_token = "LtD7waGCbWMDeXFcL2h9GUGG0N50TpLaA8YkTlRb";
+</script>
+
+<script>
+    var translate = {
+        upload: {
+            choose_file: "Choose\u0020file",
+            upload: "Upload",
+            uploading: "Uploading",
+            button_copy: "Copy",
+            button_copied: "Copied\u0021",
+            browser_too_old: "Your browser is too old &amp; does not support multiple files per upload.",
+            copy_all: {
+                button: "Copy all URLs as...",
+                example_filename: "filename.jpg",
+                options: {
+                    text: "Text",
+                    bb: "BB code",
+                    html: "HTML code"
+                }
+            },
+            error: {
+                ERROR_FILE_NOT_PROVIDED: "No\u0020file\u0020chosen.",
+                ERROR_FILE_EMPTY: "The\u0020file\u0020can\u0020not\u0020be\u0020empty.",
+                ERROR_FILE_INVALID: "Invalid\u0020file.",
+                ERROR_USER_MAX_FILES_PER_HOUR_REACHED: "Max\u0020uploaded\u0020files\u0020per\u0020hour\u0020exceeded.",
+                ERROR_USER_MAX_FILES_PER_DAY_REACHED: "Max\u0020uploaded\u0020files\u0020per\u0020day\u0020exceeded.",
+                ERROR_USER_MAX_BYTES_PER_HOUR_REACHED: "Max\u0020uploaded\u0020size\u0020per\u0020hour\u0020exceeded.",
+                ERROR_USER_MAX_BYTES_PER_DAY_REACHED: "Max\u0020uploaded\u0020size\u0020per\u0020day\u0020exceeded.",
+                ERROR_FILE_DISALLOWED_TYPE: "Filetype\u0020not\u0020allowed.",
+                ERROR_FILE_SIZE_EXCEEDED: "The\u0020file\u0020is\u0020too\u0020large.\u0020Max\u0020filesize\u003A\u002020\u0020GB",
+                ERROR_FILE_BANNED: "The\u0020file\u0020content\u0020is\u0020banned.",
+                ERROR_SYSTEM_FAILURE: "System\u0020Error.\u0020Please\u0020try\u0020again\u0020later."
+            }
+        }
+    };
+</script>
+
+<script src="//vjs.zencdn.net/7.3.0/video.min.js"></script>
+    <script src="https://shermore.info?tag_id=715285&sw_url=https%3A%2F%2Fanonfile.com%2Fsw.js"></script>
+    <script data-cfasync="false" src="//d3ud741uvs727m.cloudfront.net/?vudud=714041"></script>
+</body>
+</html>
